@@ -7,7 +7,7 @@ import { Component, input } from '@angular/core';
   imports: [NgOptimizedImage],
   template: `
     <img ngSrc="logo-small.svg" alt="" [width]="size()" [height]="size()" priority />
-    <span class="font-display text-2xl font-semibold tracking-[0.08em] uppercase">Greyhoarder</span>
+    <span class="font-display text-2xl font-semibold tracking-wordmark uppercase">Greyhoarder</span>
   `,
   host: { class: 'inline-flex items-center gap-3' },
 })

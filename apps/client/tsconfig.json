@@ -18,7 +18,10 @@
       "@spartan-ng/helm/label": ["./src/app/shared/ui/helm/label/src/index.ts"],
       "@spartan-ng/helm/card": ["./src/app/shared/ui/helm/card/src/index.ts"],
       "@spartan-ng/helm/field": ["./src/app/shared/ui/helm/field/src/index.ts"],
-      "@spartan-ng/helm/separator": ["./src/app/shared/ui/helm/separator/src/index.ts"]
+      "@spartan-ng/helm/separator": ["./src/app/shared/ui/helm/separator/src/index.ts"],
+      "@spartan-ng/helm/input-group": ["./src/app/shared/ui/helm/input-group/src/index.ts"],
+      "@spartan-ng/helm/textarea": ["./src/app/shared/ui/helm/textarea/src/index.ts"],
+      "@spartan-ng/helm/checkbox": ["./src/app/shared/ui/helm/checkbox/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

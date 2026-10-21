@@ -21,7 +21,6 @@ import { classes } from '@spartan-ng/helm/utils';
     role: 'alert',
     'data-slot': 'field-error',
     '[attr.id]': 'id()',
-    '[hidden]': '!_display()',
   },
   template: `
     @if (_display()) {
@@ -88,7 +87,8 @@ export class HlmFieldError implements OnDestroy {
     : null;
 
   constructor() {
-    classes(() => 'text-destructive text-sm font-normal');
+    // Always takes one line, so showing an error does not shift the layout.
+    classes(() => 'text-destructive text-xs font-normal min-h-4');
   }
 
   ngOnDestroy() {

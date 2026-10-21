@@ -1,7 +1,7 @@
 import { inject, InjectionToken, type ValueProvider } from '@angular/core';
 
 export type HlmCardConfig = {
-  size: 'sm' | 'default';
+  size: 'sm' | 'default' | 'lg';
 };
 
 const defaultConfig: HlmCardConfig = {

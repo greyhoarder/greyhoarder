@@ -1,14 +1,16 @@
+<app-logo [size]="52" />
+
 <main class="w-full max-w-sm">
-  <section hlmCard aria-labelledby="login-title">
+  <section hlmCard size="lg" aria-labelledby="login-title">
     <div hlmCardHeader>
-      <h1 hlmCardTitle id="login-title"><app-logo /></h1>
-      <p hlmCardDescription>Sign in to your collection.</p>
+      <h1 hlmCardTitle id="login-title">Sign in</h1>
+      <p hlmCardDescription>Welcome back to your hoard.</p>
     </div>
 
     <form hlmCardContent [formRoot]="loginForm">
       <div hlmFieldGroup>
         <div hlmField>
-          <label hlmFieldLabel for="username">Username</label>
+          <label hlmFieldLabel for="username" class="text-base">Username</label>
           <input
             hlmInput
             id="username"
@@ -16,6 +18,7 @@
             autocomplete="username"
             autocapitalize="none"
             spellcheck="false"
+            class="h-11"
             [formField]="loginForm.username"
           />
           <hlm-field-error validator="required">
@@ -24,24 +27,56 @@
         </div>
 
         <div hlmField>
-          <label hlmFieldLabel for="password">Password</label>
-          <input
-            hlmInput
-            id="password"
-            type="password"
-            autocomplete="current-password"
-            [formField]="loginForm.password"
-          />
+          <label hlmFieldLabel for="password" class="text-base">Password</label>
+          <div hlmInputGroup class="h-11">
+            <input
+              hlmInputGroupInput
+              id="password"
+              autocomplete="current-password"
+              [type]="passwordVisible() ? 'text' : 'password'"
+              [formField]="loginForm.password"
+            />
+            <div hlmInputGroupAddon align="inline-end">
+              <button
+                hlmInputGroupButton
+                size="icon-sm"
+                [attr.aria-label]="passwordVisible() ? 'Hide password' : 'Show password'"
+                [attr.aria-pressed]="passwordVisible()"
+                (click)="togglePasswordVisibility()"
+              >
+                <ng-icon [name]="passwordVisible() ? 'lucideEyeOff' : 'lucideEye'" />
+              </button>
+            </div>
+          </div>
           <hlm-field-error validator="required">
             {{ loginForm.password().errors()[0]?.message }}
           </hlm-field-error>
         </div>
 
-        <button hlmBtn type="submit" class="w-full">Sign in</button>
+        <div hlmField orientation="horizontal">
+          <hlm-checkbox inputId="keep-signed-in" [formField]="loginForm.keepSignedIn" />
+          <label hlmFieldLabel for="keep-signed-in" class="font-normal">
+            Keep me signed in on this device
+          </label>
+        </div>
+
+        <button
+          hlmBtn
+          type="submit"
+          class="mt-4 h-11 w-full text-base font-semibold"
+          [disabled]="loginForm().submitting()"
+          [attr.aria-busy]="loginForm().submitting()"
+        >
+          Sign in
+        </button>
 
         @if (notice(); as message) {
           <p role="status" class="text-sm text-muted-foreground">{{ message }}</p>
         }
+
+        <p class="text-center text-sm text-muted-foreground">
+          Forgot your password? Ask your administrator.
+        </p>
       </div>
     </form>
   </section>
