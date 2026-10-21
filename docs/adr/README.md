@@ -17,3 +17,4 @@ written and changed.
 | 0010 | [Authorization and data ownership](0010-authorization-and-data-ownership.md)            | Accepted |
 | 0011 | [UI components with Spartan UI and Tailwind CSS](0011-ui-components-with-spartan-and-tailwind.md) | Accepted |
 | 0012 | [Unit tests with Vitest](0012-unit-tests-with-vitest.md)                                | Accepted |
+| 0013 | [Browser end-to-end tests with Playwright](0013-browser-e2e-tests-with-playwright.md)   | Accepted |

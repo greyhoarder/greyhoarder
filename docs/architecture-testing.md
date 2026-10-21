@@ -1,8 +1,8 @@
 # Architecture: testing
 
-Rules for unit tests in the client, the server and `libs/`. Integration and
-end-to-end tests are not covered yet. To write or change tests, follow the
-`write-tests` skill.
+Rules for unit tests in the client, the server and `libs/`, and for browser
+end-to-end tests in `apps/e2e`. Integration and API tests are not covered
+yet. To write or change tests, follow the `write-tests` skill.
 
 ## Framework and setup
 
@@ -45,10 +45,27 @@ _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
 
 _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
 
+## End-to-end tests
+
+- Write browser end-to-end tests with Playwright in `apps/e2e`.
+- Run every end-to-end test in Chromium, Firefox and WebKit.
+- Find elements by `data-testid` only; never by text, role, label or CSS
+  class.
+- Name test IDs in kebab-case, starting with the screen name
+  (`login-username`).
+- Use waiting assertions; no fixed waits.
+- Keep tests independent of each other.
+- Every screen in [screens/](screens/README.md) has end-to-end tests for its
+  main path.
+- The description rules above apply to end-to-end tests as well.
+
+_(derived from [ADR-0013](adr/0013-browser-e2e-tests-with-playwright.md))_
+
 ## Approval
 
 - Write, change or delete a test case only after the user has approved that
-  case.
+  case. This applies to unit and end-to-end tests.
 - Report a failing test instead of changing it to pass.
 
-_(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
+_(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md),
+[ADR-0013](adr/0013-browser-e2e-tests-with-playwright.md))_
