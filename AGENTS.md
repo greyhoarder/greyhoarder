@@ -32,9 +32,15 @@ through a new ADR.
 
 ## Commands
 
-_Added once the workspace is scaffolded._ Until then there is nothing to build,
-lint or test. Never invent scripts; use only those defined in `package.json`,
-per workspace with `-w <workspace>`.
+Run from the repository root:
+
+- `npm start`: client dev server
+- `npm run build`: build all workspaces
+- `npm test`: run all unit tests once
+- `npm run <script> -w @greyhoarder/client`: a single workspace's script
+
+There is no lint setup yet. Never invent scripts; use only those defined in
+the `package.json` files.
 
 ## Workflow
 
@@ -42,6 +48,10 @@ per workspace with `-w <workspace>`.
   changed, and report failures instead of hiding them.
 - Don't add, remove or upgrade dependencies without asking.
 - Don't commit or push unless asked.
+- Don't create, edit or supersede ADRs unless explicitly asked.
+- Don't change Markdown files (`AGENTS.md`, `README.md`, `docs/`, skills)
+  without asking first, even when a code change makes them outdated;
+  point out what is outdated instead.
 - Never read, change or create secrets or `.env` files.
 
 ## Language
