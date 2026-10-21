@@ -115,6 +115,29 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 
 _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 
+## Events between domains
+
+- Call directly within a domain and across domains through `api/`. Use
+  events only to react across a domain boundary against the direction of
+  dependency, or for side effects outside the use case.
+- Publish through the service in `apps/server/src/shared/events/`, never
+  through `EventEmitter2` directly:
+  - `await events.dispatch(event)` for synchronous events: the listeners
+    are part of the use case, and a listener error aborts it;
+  - `events.notify(event)` for asynchronous events: side effects whose
+    errors are logged and whose loss is acceptable.
+- Name synchronous events in the present participle (`UserDeleting`) and
+  asynchronous events in the past tense (`BoxAdded`).
+- Events are classes, never strings. Define an event where it is published
+  and re-export it through the publishing domain's `api/`.
+- Listeners are entry points in `features/` of the listening domain and
+  are idempotent.
+- Destructive flows: make the subject inactive, dispatch the synchronous
+  event, then remove the subject.
+- No command bus, no event sourcing, no message broker.
+
+_(derived from [ADR-0016](adr/0016-in-process-events-between-domains.md))_
+
 ## Shared domain models
 
 - Types and rules needed by both client and server belong in

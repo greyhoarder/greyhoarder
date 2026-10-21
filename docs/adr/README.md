@@ -20,3 +20,4 @@ written and changed.
 | 0013 | [Browser end-to-end tests with Playwright](0013-browser-e2e-tests-with-playwright.md)   | Accepted |
 | 0014 | [Layers within a domain](0014-layers-within-a-domain.md)                                | Proposed |
 | 0015 | [API protocol with shared Zod schemas](0015-api-protocol-with-shared-zod-schemas.md)    | Proposed |
+| 0016 | [In-process events between domains](0016-in-process-events-between-domains.md)          | Proposed |
