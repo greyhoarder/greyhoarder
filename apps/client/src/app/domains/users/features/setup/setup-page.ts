@@ -8,6 +8,7 @@ import { HlmFieldImports } from '@spartan-ng/helm/field';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { Logo } from '../../../../shared/ui/logo/logo';
+import { PasswordStrengthMeter } from '../../ui/password-strength/password-strength';
 
 interface InitialAdministrator {
   username: string;
@@ -28,6 +29,7 @@ interface InitialAdministrator {
     HlmInput,
     HlmInputGroupImports,
     Logo,
+    PasswordStrengthMeter,
   ],
   providers: [provideIcons({ lucideEye, lucideEyeOff })],
   templateUrl: './setup-page.html',

@@ -22,7 +22,8 @@ the `background`, from top to bottom:
    1. the card header with title and description;
    2. the username field, the password field and the password confirmation
       field, each password field with a show/hide toggle, stacked with one
-      consistent gap;
+      consistent gap; a strength meter sits directly below the password
+      field;
    3. the primary button over the full card width;
    4. the hint, centered below the button in `muted-foreground`.
 
@@ -40,6 +41,7 @@ height.
 | Password label | Password |
 | Password confirmation label | Repeat password |
 | Password toggles (accessible name) | Show password / Hide password |
+| Strength meter levels | Too weak / Weak / Fair / Strong |
 | Primary button | Create administrator |
 | Hint | You can add more accounts later as administrator. |
 
@@ -62,6 +64,11 @@ height.
   autocomplete).
 - Each toggle switches its password field between hidden and visible and
   does not send the form.
+- The strength meter appears as soon as a password is typed: four
+  segments, "Too weak" in `destructive`, "Weak" and "Fair" in
+  `muted-foreground`, "Strong" in `primary`. It is rated in the browser
+  (zxcvbn with common, English and German dictionaries, the username counts
+  as easy to guess) and only informs; it never blocks sending.
 - The screen is only reachable while no account exists; otherwise `/setup`
   leads to the login.
 - The new account always gets the role `admin` (ADR-0007).

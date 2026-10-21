@@ -48,6 +48,10 @@
               </button>
             </div>
           </div>
+          <app-password-strength
+            [password]="setupForm.password().value()"
+            [userInputs]="[setupForm.username().value()]"
+          />
           <hlm-field-error>{{ setupForm.password().errors()[0]?.message }}</hlm-field-error>
         </div>
 
