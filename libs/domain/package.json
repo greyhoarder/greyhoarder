@@ -1,0 +1,19 @@
+{
+  "name": "@greyhoarder/domain",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    "./users": {
+      "types": "./dist/users/index.d.ts",
+      "default": "./dist/users/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@greyhoarder/protocol",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "default": "./dist/auth/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2"
+  },
+  "dependencies": {
+    "@greyhoarder/domain": "*",
+    "zod": "^4.6.7"
+  }
+}
