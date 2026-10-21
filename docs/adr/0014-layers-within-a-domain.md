@@ -28,22 +28,38 @@ holding one kind of code. On the server, use cases depend on interfaces
 ```text
 apps/server/src/domains/<domain>/
 ├── api/                  ← contract for other domains (ADR-0004)
-├── features/<feature>/   ← one use case: entry point + use case service
+├── features/<feature>/   ← use case(s) that change together: entry point + service
 ├── ports/                ← abstract classes for what features need from outside
 ├── infrastructure/       ← implementations of ports: Mongoose, Redis, files, push
 ├── util/                 ← small helpers without business logic
 └── <domain>.module.ts    ← binds ports to their implementations
 ```
 
-- A **feature** is one use case as a vertical slice: its entry point and
-  the service that carries it out. The entry point is usually a controller,
+- A **feature** is one use case, or a few use cases on the same resource
+  that change together (e.g. sign in, show and end the session). Use cases
+  with their own rules or dependencies are features of their own. The
+  criterion is cohesion: what changes together stays together, so a
+  domain does not fall apart into one folder per endpoint.
+- A feature is a vertical slice: its entry point and the service that
+  carries it out. The entry point is usually a controller,
   but can also be a guard (e.g. `features/authenticate/session.guard.ts`),
-  a gateway or an event listener. Mapping between protocol DTOs and domain
-  models happens in the entry point.
-- Inside a feature, NestJS file suffixes (`.controller.ts`, `.guard.ts`,
-  `.service.ts`) show what a file is. Subfolders by kind (e.g. `guards/`)
-  are used only when a feature has several files of that kind, and never
-  as features of their own.
+  a gateway or an event listener. The domain's `api/` is an entry point as
+  well: a feature can be entered by calls from other domains instead of a
+  controller (e.g. `features/accounts/accounts.service.ts`, published
+  through `users/api`). Mapping between protocol DTOs and domain models
+  happens in the entry point.
+- Other domains get **read access** through a read-only port, published in
+  `api/` without a service in between, e.g. `UserQueries`: reading has no
+  rules that could be bypassed. The name ends in `Queries` and says that it
+  never gets a writing method (CQS). Everything that writes, or touches
+  data protected by rules, goes through a feature.
+- Inside a feature, file suffixes (`.controller.ts`, `.service.ts`,
+  `.guard.ts`, `.dto.ts`, `.error.ts`) show what a file is. Controllers and
+  services sit directly in the feature folder. Every other kind always gets
+  a subfolder named after the kind, even for a single file: `guards/`,
+  `dtos/`, `errors/` and so on. The structure is then the same in every
+  feature and does not change when a second file of a kind arrives. Kinds
+  are never features of their own (`features/guards/`).
 - A **port** is an abstract class without behavior, e.g. `UserRepository`
   or `PasswordHasher`. It is both the interface and the injection token.
 - **Infrastructure** contains only implementations of ports, e.g.

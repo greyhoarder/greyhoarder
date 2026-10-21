@@ -54,13 +54,22 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 
 - A server domain contains only `api/`, `features/<feature>/`, `ports/`,
   `infrastructure/`, `util/` and `<domain>.module.ts`.
-- A feature is one use case: its entry point (controller, guard, gateway
-  or event listener) and its use case service. Entry points map between
+- A feature is one use case or a few use cases on the same resource that
+  change together; use cases with their own rules or dependencies are
+  features of their own. It holds its entry point (controller, guard,
+  gateway or event listener) and its service. Calls from other domains
+  through `api/` are an entry point as well. Entry points map between
   protocol DTOs and domain models.
-- Name files with NestJS suffixes (`.controller.ts`, `.guard.ts`,
-  `.service.ts`). Use a subfolder by kind (e.g. `guards/`) inside a feature
-  only when it has several files of that kind; never create a feature
-  named after a kind (`features/guards/`).
+- Other domains read through a read-only port named `<Entity>Queries`
+  (e.g. `UserQueries`), published in `api/` and implemented by the
+  repository; never add a writing method to it. Writes and access to
+  rule-protected data go through a feature published in `api/`.
+- Name files with a kind suffix (`.controller.ts`, `.service.ts`,
+  `.guard.ts`, `.dto.ts`, `.error.ts`). Controllers and services sit
+  directly in the feature folder; every other kind always goes into a
+  subfolder named after it (`guards/`, `dtos/`, `errors/`), even for a
+  single file. Never create a feature named after a kind
+  (`features/guards/`).
 - `ports/` holds only abstract classes without behavior; each is the
   interface and the injection token. No string tokens.
 - `infrastructure/` holds only implementations of ports and what they need
