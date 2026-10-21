@@ -1,0 +1,14 @@
+{
+  "name": "greyhoarder",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "start": "npm run start -w @greyhoarder/client",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  }
+}

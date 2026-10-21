@@ -1,0 +1,48 @@
+<main class="w-full max-w-sm">
+  <section hlmCard aria-labelledby="login-title">
+    <div hlmCardHeader>
+      <h1 hlmCardTitle id="login-title" class="text-xl">Greyhoarder</h1>
+      <p hlmCardDescription>Sign in to your collection.</p>
+    </div>
+
+    <form hlmCardContent [formRoot]="loginForm">
+      <div hlmFieldGroup>
+        <div hlmField>
+          <label hlmFieldLabel for="username">Username</label>
+          <input
+            hlmInput
+            id="username"
+            type="text"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false"
+            [formField]="loginForm.username"
+          />
+          <hlm-field-error validator="required">
+            {{ loginForm.username().errors()[0]?.message }}
+          </hlm-field-error>
+        </div>
+
+        <div hlmField>
+          <label hlmFieldLabel for="password">Password</label>
+          <input
+            hlmInput
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            [formField]="loginForm.password"
+          />
+          <hlm-field-error validator="required">
+            {{ loginForm.password().errors()[0]?.message }}
+          </hlm-field-error>
+        </div>
+
+        <button hlmBtn type="submit" class="w-full">Sign in</button>
+
+        @if (notice(); as message) {
+          <p role="status" class="text-sm text-muted-foreground">{{ message }}</p>
+        }
+      </div>
+    </form>
+  </section>
+</main>
