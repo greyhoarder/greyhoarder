@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <title>Greyhoarder</title>
+  <defs>
+    <linearGradient id="goldRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F8D88A"/><stop offset="0.5" stop-color="#CF942E"/><stop offset="1" stop-color="#8A5A17"/></linearGradient>
+    <radialGradient id="goldField" cx="0.3" cy="0.25" r="0.9"><stop offset="0" stop-color="#E9B455"/><stop offset="0.55" stop-color="#B57A22"/><stop offset="1" stop-color="#6E460F"/></radialGradient>
+    <linearGradient id="plRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7BDB4"/><stop offset="1" stop-color="#7A8079"/></linearGradient>
+    <linearGradient id="plField" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#959B92"/><stop offset="1" stop-color="#646A63"/></linearGradient>
+    <linearGradient id="hlGold" x1="0" y1="0" x2="0.55" y2="1"><stop offset="0" stop-color="#FFF3CF" stop-opacity="1"/><stop offset="0.45" stop-color="#FBE2A3" stop-opacity="0.7"/><stop offset="0.85" stop-color="#FBE2A3" stop-opacity="0"/></linearGradient>
+    <linearGradient id="hlPlastic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E1E5DE" stop-opacity="0.7"/><stop offset="0.6" stop-color="#E1E5DE" stop-opacity="0"/></linearGradient>
+    <linearGradient id="recess" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#2A1A05" stop-opacity="0.7"/><stop offset="0.5" stop-color="#2A1A05" stop-opacity="0"/></linearGradient>
+    <clipPath id="L"><rect x="0" y="0" width="160" height="320"/></clipPath>
+    <clipPath id="R"><rect x="160" y="0" width="160" height="320"/></clipPath>
+    <clipPath id="outer"><path d="M92 78 C120 70 140 66 160 66 C180 66 200 70 228 78 L228 156 C228 206 200 238 160 258 C120 238 92 206 92 156 Z"/></clipPath>
+    <clipPath id="field"><path d="M102 87 C126 80 143 77 160 77 C177 77 194 80 218 87 L218 156 C218 199 194 227 160 246 C126 227 102 199 102 156 Z"/></clipPath>
+    <clipPath id="chev"><path d="M114 116 L160 146 L206 116 L206 140 L160 172 L114 140 Z"/></clipPath>
+    <!-- Shield: left half gold (painted), right half grey plastic (unpainted). -->
+    <g id="shield">
+      <g clip-path="url(#L)">
+        <path d="M92 78 C120 70 140 66 160 66 C180 66 200 70 228 78 L228 156 C228 206 200 238 160 258 C120 238 92 206 92 156 Z" fill="url(#goldRim)"/>
+        <g clip-path="url(#outer)"><path d="M92 78 C120 70 140 66 160 66 C180 66 200 70 228 78 L228 156 C228 206 200 238 160 258 C120 238 92 206 92 156 Z" fill="none" stroke="url(#hlGold)" stroke-width="6"/></g>
+        <path d="M102 87 C126 80 143 77 160 77 C177 77 194 80 218 87 L218 156 C218 199 194 227 160 246 C126 227 102 199 102 156 Z" fill="url(#goldField)"/>
+        <g clip-path="url(#field)"><path d="M102 87 C126 80 143 77 160 77 C177 77 194 80 218 87 L218 156 C218 199 194 227 160 246 C126 227 102 199 102 156 Z" fill="none" stroke="url(#recess)" stroke-width="8"/></g>
+        <path d="M114 116 L160 146 L206 116 L206 140 L160 172 L114 140 Z" fill="url(#goldRim)"/>
+        <g clip-path="url(#chev)"><path d="M114 116 L160 146 L206 116 L206 140 L160 172 L114 140 Z" fill="none" stroke="url(#hlGold)" stroke-width="5" stroke-linejoin="miter"/></g>
+      </g>
+      <g clip-path="url(#R)">
+        <path d="M92 78 C120 70 140 66 160 66 C180 66 200 70 228 78 L228 156 C228 206 200 238 160 258 C120 238 92 206 92 156 Z" fill="url(#plRim)"/>
+        <g clip-path="url(#outer)"><path d="M92 78 C120 70 140 66 160 66 C180 66 200 70 228 78 L228 156 C228 206 200 238 160 258 C120 238 92 206 92 156 Z" fill="none" stroke="url(#hlPlastic)" stroke-width="4"/></g>
+        <path d="M102 87 C126 80 143 77 160 77 C177 77 194 80 218 87 L218 156 C218 199 194 227 160 246 C126 227 102 199 102 156 Z" fill="url(#plField)"/>
+        <path d="M114 116 L160 146 L206 116 L206 140 L160 172 L114 140 Z" fill="url(#plRim)"/>
+      </g>
+      <line x1="160" y1="66" x2="160" y2="258" stroke="#2A1D08" stroke-width="1.5" opacity="0.5"/>
+    </g>
+  </defs>
+  <rect x="26" y="26" width="268" height="268" rx="40" fill="none" stroke="#5A6059" stroke-width="22"/>
+  <rect x="26" y="26" width="268" height="268" rx="40" fill="none" stroke="#7E847C" stroke-width="7"/>
+  <g fill="#5A6059"><path d="M30 145 L93 152 L93 162 L30 169 Z"/><path d="M290 145 L227 152 L227 162 L290 169 Z"/></g>
+  <use href="#shield"/>
+</svg>

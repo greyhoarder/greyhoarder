@@ -4,6 +4,11 @@
 @import 'tailwindcss/utilities.css';
 
 @import '@spartan-ng/brain/hlm-tailwind-preset.css';
+@import '@fontsource/barlow-condensed/600.css';
+
+@theme {
+  --font-display: 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
+}
 /* You can add global styles to this file, and also import other style files */
 
 :root {

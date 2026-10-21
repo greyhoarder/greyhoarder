@@ -4,6 +4,7 @@ import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 import { HlmFieldImports } from '@spartan-ng/helm/field';
 import { HlmInput } from '@spartan-ng/helm/input';
+import { Logo } from '../../../shared/ui/logo/logo';
 
 interface Credentials {
   username: string;
@@ -12,7 +13,7 @@ interface Credentials {
 
 @Component({
   selector: 'app-login-page',
-  imports: [FormRoot, FormField, HlmButton, HlmCardImports, HlmFieldImports, HlmInput],
+  imports: [FormRoot, FormField, HlmButton, HlmCardImports, HlmFieldImports, HlmInput, Logo],
   templateUrl: './login-page.html',
   host: { class: 'flex min-h-dvh items-center justify-center bg-muted p-4' },
 })
