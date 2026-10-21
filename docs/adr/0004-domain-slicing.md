@@ -56,7 +56,7 @@ two domains need it, and only with the user's agreement.
 
 ### Server specifics
 
-- Each domain is one Nest module, e.g. `CatalogModule`. A module's
+- Each domain is one Nest module, e.g. `UsersModule`. A module's
   `exports` contain only what its `api/` publishes.
 - Each domain owns its persisted data. Other domains read that data only
   through the owning domain's `api/`, never by accessing its storage

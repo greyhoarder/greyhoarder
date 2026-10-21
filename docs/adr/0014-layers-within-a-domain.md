@@ -38,10 +38,10 @@ apps/server/src/domains/<domain>/
 - A **feature** is one use case as a vertical slice: its controller (the
   entry point) and the service that carries it out. Mapping between
   protocol DTOs and domain models happens in the controller.
-- A **port** is an abstract class without behavior, e.g. `BoxRepository`
+- A **port** is an abstract class without behavior, e.g. `UserRepository`
   or `PasswordHasher`. It is both the interface and the injection token.
 - **Infrastructure** contains only implementations of ports, e.g.
-  `MongoBoxRepository extends BoxRepository`, plus what they need
+  `MongoUserRepository extends UserRepository`, plus what they need
   (Mongoose schemas, mappers).
 - The **domain module** is the only place that binds a port to its
   implementation.

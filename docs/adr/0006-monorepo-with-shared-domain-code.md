@@ -34,9 +34,7 @@ greyhoarder/
 │   └── server/          ← NestJS app
 └── libs/
     └── domain/          ← @greyhoarder/domain
-        ├── catalog/
-        ├── collection/
-        └── rules/
+        └── <domain>/    ← same domains as the apps
 ```
 
 `libs/domain` holds the **shared domain models**: the types, value objects
@@ -48,7 +46,7 @@ and business rules that both apps need.
   boundary rules: one domain imports another only through that domain's
   `api/index.ts`.
 - Apps import it by package name, per domain:
-  `@greyhoarder/domain/catalog`, never by relative path.
+  `@greyhoarder/domain/<domain>`, never by relative path.
 - IDs are plain strings in shared models. Converting to and from ObjectId
   happens in the server's persistence code.
 - Mongoose schemas live in the server and are written against the shared

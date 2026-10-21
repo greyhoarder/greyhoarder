@@ -6,23 +6,22 @@ apply to the client, the server and `libs/`.
 ## Repository layout
 
 - `apps/client` is the Angular app, `apps/server` the NestJS app,
-  `libs/domain` the shared domain models (`@greyhoarder/domain`).
+  `libs/domain` the shared domain models (`@greyhoarder/domain`),
+  `libs/protocol` the API schemas (`@greyhoarder/protocol`).
 - Apps never import from each other.
 - Apps may depend on libs; libs never depend on apps.
 
-_(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md))_
+_(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
+[ADR-0015](adr/0015-api-protocol-with-shared-zod-schemas.md))_
 
 ## Domains
 
-- `catalog`: product data (boxes, kits, model types).
-- `collection`: what a user owns (boxes, models, hobby status, photos).
-- `rules`: rules data (datasheets, points, mapping of model types to
-  datasheets). Created only with the first rules feature.
 - `users`: accounts, roles, profiles, initial setup, user management.
 - `auth`: login, logout, sessions, guards.
 - Domains live in `apps/client/src/app/domains/<domain>/` and
   `apps/server/src/domains/<domain>/`, with the same name in both apps.
-- New domains are created only on explicit request.
+- New domains are created only on explicit request. A new domain and its
+  allowed dependencies are added to this guide when it is created.
 
 _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 [ADR-0007](adr/0007-local-user-accounts.md),
@@ -32,8 +31,6 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 
 - `users` depends on no other domain.
 - `auth` depends only on `users`.
-- Allowed directions: `collection → catalog`, `rules → catalog`. Nothing
-  depends on `collection` or `rules`.
 - No domain imports from `auth` to protect its endpoints; the
   authorization decorators live in `apps/server/src/shared/auth/`.
 
@@ -124,3 +121,24 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 - Mongoose schemas and documents never leave the server.
 
 _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md))_
+
+## API protocol
+
+- Request and response shapes of the REST API are Zod schemas in
+  `libs/protocol/<domain>/`.
+- Each `libs/protocol/<domain>/` exposes its schemas in `api/index.ts`,
+  published as `@greyhoarder/protocol/<domain>`; import by package name,
+  never by relative path.
+- `libs/protocol` depends only on `zod` and `@greyhoarder/domain`.
+- Name each schema `<shape>Schema` and export its inferred type as
+  `<Shape>`, e.g. `loginRequestSchema` and `LoginRequest`.
+- No ObjectId, Mongoose types or persistence-only fields in protocol
+  schemas.
+- Server: requests are validated and responses serialized through their
+  protocol schema with `nestjs-zod`; no `class-validator`.
+- Client: HTTP services use the inferred types; never declare request or
+  response types by hand.
+- Only controllers (server) and `infrastructure/` (client) import
+  `@greyhoarder/protocol`.
+
+_(derived from [ADR-0015](adr/0015-api-protocol-with-shared-zod-schemas.md))_
