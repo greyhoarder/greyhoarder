@@ -70,7 +70,12 @@ height.
   (zxcvbn with common, English and German dictionaries, the username counts
   as easy to guess) and only informs; it never blocks sending.
 - The screen is only reachable while no account exists; otherwise `/setup`
-  leads to the login.
+  leads to the login. Whether the setup is still needed comes from
+  `GET /api/auth/setup`; the form is sent with `POST /api/auth/setup`.
+- Usernames have 3 to 32 characters: letters `a–z` in either case, digits,
+  dot, underscore and hyphen. Passwords have 1 to 256 characters and no
+  other rules. Both rules live in `libs/domain/users`, so client and server
+  check the same.
 - The new account always gets the role `admin` (ADR-0007).
 
 ## Accessibility
@@ -86,8 +91,5 @@ height.
 ## Open questions
 
 - After creating the account: sign in directly, or go to the login?
-- Rules for usernames and passwords (allowed characters, lengths). They
-  belong in `libs/domain/users`, so client and server check the same.
-- How the client learns whether the setup is still needed, and whether `/`
-  leads here instead of to the login while no account exists.
+- Whether `/` leads here instead of to the login while no account exists.
 - Reference images for the light and the dark theme.
