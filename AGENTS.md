@@ -26,6 +26,10 @@ your task, and only those:
   [architecture-security.md](docs/architecture-security.md)
 - **Components, templates, styling**:
   [architecture-ui.md](docs/architecture-ui.md)
+- **Look and feel** (colors, typography, spacing, screen layout, UI text):
+  [design-system.md](docs/design-system.md)
+- **Building or changing a screen**: its spec in
+  [docs/screens/](docs/screens/README.md), if there is one
 - **Writing or changing tests**:
   [architecture-testing.md](docs/architecture-testing.md)
 
