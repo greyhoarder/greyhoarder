@@ -1,0 +1,9 @@
+# LF in the repository and in every working copy, on every OS.
+* text=auto eol=lf
+
+# Never touch binary files.
+*.ico binary
+*.png binary
+*.jpg binary
+*.woff binary
+*.woff2 binary
