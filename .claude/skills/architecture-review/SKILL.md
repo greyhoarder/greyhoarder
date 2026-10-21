@@ -14,6 +14,7 @@ description: Review code or a planned change against greyhoarder's architecture 
    - Accounts, sessions, guards, user-owned data, hosting:
      `docs/architecture-security.md`
    - Components, templates, styling: `docs/architecture-ui.md`
+   - Tests: `docs/architecture-testing.md`
 3. Check each file against the rules of those guides, in particular:
    - **Boundaries:** correct domain folder; other domains imported only via
      `<domain>/api/index.ts`; only allowed domain dependencies; `shared/`
@@ -31,6 +32,8 @@ description: Review code or a planned change against greyhoarder's architecture 
    - **Angular** ([ADR-0002](../../../docs/adr/0002-angular-as-client-framework.md)):
      standalone components, signals, `inject()`, native control flow,
      zoneless; no NgModules or constructor injection.
+   - **Testing:** Vitest only; specs named `<file>.spec.ts` next to the
+     code; mocks only via `vi`; required tests present.
 4. If `AGENTS.md` lists commands, run lint and tests for the affected
    workspaces and include failures in the report.
 5. Report in this format and do **not** change code unless asked:

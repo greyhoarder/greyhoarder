@@ -16,3 +16,4 @@ written and changed.
 | 0009 | [Sessions with express-session and Redis](0009-sessions-with-redis.md)                  | Accepted |
 | 0010 | [Authorization and data ownership](0010-authorization-and-data-ownership.md)            | Accepted |
 | 0011 | [UI components with Spartan UI and Tailwind CSS](0011-ui-components-with-spartan-and-tailwind.md) | Accepted |
+| 0012 | [Unit tests with Vitest](0012-unit-tests-with-vitest.md)                                | Accepted |

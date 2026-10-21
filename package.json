@@ -9,6 +9,7 @@
   "scripts": {
     "start": "npm run start -w @greyhoarder/client",
     "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "check:specs": "node scripts/checks/component-specs.mjs"
   }
 }

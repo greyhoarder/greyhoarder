@@ -26,6 +26,8 @@ your task, and only those:
   [architecture-security.md](docs/architecture-security.md)
 - **Components, templates, styling**:
   [architecture-ui.md](docs/architecture-ui.md)
+- **Writing or changing tests**:
+  [architecture-testing.md](docs/architecture-testing.md)
 
 If a task conflicts with these rules, stop and ask. A rule changes only
 through a new ADR.
@@ -37,6 +39,7 @@ Run from the repository root:
 - `npm start`: client dev server
 - `npm run build`: build all workspaces
 - `npm test`: run all unit tests once
+- `npm run check:specs`: list components without a spec file
 - `npm run <script> -w @greyhoarder/client`: a single workspace's script
 
 There is no lint setup yet. Never invent scripts; use only those defined in
@@ -48,6 +51,9 @@ the `package.json` files.
   changed, and report failures instead of hiding them.
 - Don't add, remove or upgrade dependencies without asking.
 - Don't commit or push unless asked.
+- Every component needs tests, but write, change or delete a test case only
+  after the user has approved that case (`write-tests` skill). Report a
+  failing test instead of changing it to pass.
 - Don't create, edit or supersede ADRs unless explicitly asked.
 - Don't change Markdown files (`AGENTS.md`, `README.md`, `docs/`, skills)
   without asking first, even when a code change makes them outdated;
