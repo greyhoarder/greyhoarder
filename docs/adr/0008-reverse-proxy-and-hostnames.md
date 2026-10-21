@@ -57,11 +57,3 @@ The server is a NestJS application (see ADR-0003).
 - The HTTP restriction and per-IP rate limiting depend on the client IP
   being correct, which makes the proxy configuration security-relevant.
 - New hostnames work without changing the app.
-
-## Derived rules
-
-- Accept plain HTTP only from configured private networks.
-- Trust forwarded headers only from configured proxy addresses.
-- Never configure or hard-code hostnames in the app.
-- Serve the web app and the API under the same origin; no CORS for
-  browser clients.

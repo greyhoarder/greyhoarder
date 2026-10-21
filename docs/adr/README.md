@@ -18,3 +18,4 @@ written and changed.
 | 0011 | [UI components with Spartan UI and Tailwind CSS](0011-ui-components-with-spartan-and-tailwind.md) | Accepted |
 | 0012 | [Unit tests with Vitest](0012-unit-tests-with-vitest.md)                                | Accepted |
 | 0013 | [Browser end-to-end tests with Playwright](0013-browser-e2e-tests-with-playwright.md)   | Accepted |
+| 0014 | [Layers within a domain](0014-layers-within-a-domain.md)                                | Proposed |

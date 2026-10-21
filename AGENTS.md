@@ -5,8 +5,9 @@ records which boxes you own, which models came out of them, and where each
 model stands in the hobby pipeline: sprue → built → primed → painted → based.
 
 The client is an Angular app that runs in the browser and is packaged for
-desktop and mobile; the backend is a NestJS API meant to run in a single
-Docker container on the user's own hardware.
+desktop and mobile; the backend is a NestJS API. Both run as a Docker
+Compose stack (server, MongoDB, Redis) on the user's own hardware, shared by
+a household with local accounts.
 
 **Current scope:** boxes, the models they contain, and per-model hobby status.
 Army lists, painting recipes and rules data come later and must not shape the
@@ -24,6 +25,8 @@ your task, and only those:
   [architecture-persistence.md](docs/architecture-persistence.md)
 - **Accounts, login, sessions, guards, user-owned data, hosting**:
   [architecture-security.md](docs/architecture-security.md)
+- **Angular code in the client**:
+  [architecture-angular.md](docs/architecture-angular.md)
 - **Components, templates, styling**:
   [architecture-ui.md](docs/architecture-ui.md)
 - **Look and feel** (colors, typography, spacing, screen layout, UI text):

@@ -41,12 +41,3 @@ Packaging for desktop and mobile is a separate decision (future ADR).
   close to the latest major to keep them small.
 - Older Angular patterns found online or in model training data must
   actively be avoided.
-
-## Derived rules
-
-- Use only standalone components, signals, `inject()`, native control flow
-  and zoneless change detection.
-- No NgModules, no `*ngIf`/`*ngFor`, no constructor injection.
-- Prefer signals and `resource` over manual RxJS subscriptions in
-  components.
-- Check current APIs via the Angular CLI MCP server instead of memory.

@@ -93,22 +93,3 @@ two domains need it, and only with the user's agreement.
 - Deciding which domain owns a concept takes effort. Border cases are
   resolved by publishing a narrow type or function through the owning
   domain's `api/`, not by sharing internals.
-
-## Derived rules
-
-- Domains live in `apps/client/src/app/domains/<domain>/` and
-  `apps/server/src/domains/<domain>/`, with the same name in both apps.
-- Other domains import only from `<domain>/api/index.ts`.
-- `api/` contains no controllers, gateways or other external entry points.
-- Code inside a domain never imports from its own `api/`.
-- Allowed directions: `collection → catalog`, `rules → catalog`. Nothing
-  depends on `collection` or `rules`.
-- `shared/` never imports from a domain. Code moves to `shared/` only when
-  two domains need it and the user agrees.
-- New domains are created only on explicit request.
-- Server: one Nest module per domain; `exports` match `api/`.
-- Server: each domain owns its persisted data; no direct access to another
-  domain's storage.
-- Server: no `forwardRef()` between domain modules.
-- Don't bypass boundaries with re-exports, relative deep imports or path
-  aliases.

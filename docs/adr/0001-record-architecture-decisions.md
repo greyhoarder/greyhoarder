@@ -21,16 +21,17 @@ Decision Record (ADR) in `docs/adr/`.
 
 - One decision per file, named `NNNN-kebab-case-title.md`, numbered
   sequentially and never renumbered.
-- Each ADR has: Status, Date, Context, Decision, Consequences, and, where
-  applicable, Derived rules.
+- Each ADR has: Status, Date, Context, Decision (with Alternatives
+  considered) and Consequences. ADRs contain no rule lists.
 - Status is one of `Proposed`, `Accepted`, `Superseded by ADR-NNNN`,
   `Deprecated`.
 - Accepted ADRs are not edited in substance. A changed decision gets a new
   ADR that supersedes the old one; the old one only gets its status updated.
 - `docs/adr/README.md` lists all ADRs with number, title and status.
 
-Binding rules live in `docs/architecture-*.md` and other docs. Each rule
-there links back to the ADR it is derived from:
+Binding rules live only in `docs/architecture-*.md` and other docs, never
+in the ADR itself, so each rule exists exactly once. Each rule section there
+links back to the ADR it is derived from:
 `_(derived from [ADR-NNNN](adr/NNNN-title.md))_`.
 
 ## Consequences
@@ -41,8 +42,3 @@ there links back to the ADR it is derived from:
   architecture changes deliberate and visible in review.
 - Writing ADRs costs time. We accept this for decisions that shape
   structure, data or boundaries, not for local implementation choices.
-
-## Derived rules
-
-- Architecture rules are changed only together with an ADR.
-- Agents do not create, edit or supersede ADRs unless explicitly asked.

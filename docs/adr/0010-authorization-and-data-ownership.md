@@ -21,8 +21,12 @@ user is known from its session (see ADR-0009).
   is never taken from request bodies, parameters or client-set headers.
 - Roles and account status are read on each request, so changes take
   effect immediately.
-- The guards and decorators live in `auth` and are published through
-  `auth/api`.
+- The decorators `@Public()`, `@Roles()` and `@CurrentUser()` only attach
+  or read request metadata and contain no logic. They live in
+  `apps/server/src/shared/auth/`, so every domain can use them, including
+  `users`, which `auth` depends on (see ADR-0007, ADR-0009). This is the
+  agreement for `shared/` required by ADR-0004.
+- The global guard that evaluates them lives in `auth`.
 
 ### Data ownership
 
@@ -42,6 +46,12 @@ There is no separate authorization domain.
 - **A separate `authz` domain or a policy library** (e.g. CASL): worthwhile
   with complex permissions, such as sharing collections between users.
   Not needed for two roles and per-user ownership.
+- **Decorators in `auth/api`**: everything about authorization in one
+  domain, but `users` needs the decorators for its own endpoints and `auth`
+  depends on `users`, which creates a cycle.
+- **Decorators in `users/api`**: no cycle, and `users` owns the roles, but
+  every domain with endpoints would depend on `users`, and `@Public()` is
+  not a `users` concept.
 - **Ownership checks in a central place**: one place for all rules, but it
   would have to know every domain and reverse the dependencies of
   ADR-0004.
@@ -53,13 +63,3 @@ There is no separate authorization domain.
   tests per domain.
 - Sharing collections between household members will require a new
   decision and likely a richer permission model.
-
-## Derived rules
-
-- Every endpoint requires a session unless marked `@Public()`.
-- Mark admin-only endpoints with `@Roles('admin')`.
-- Get the current user only through `@CurrentUser()`.
-- Read roles and account status per request, never from the session.
-- User-owned data carries `ownerId`; scope every query by it on the
-  server.
-- Ownership checks live in the owning domain.

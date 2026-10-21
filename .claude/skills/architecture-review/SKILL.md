@@ -13,6 +13,7 @@ description: Review code or a planned change against greyhoarder's architecture 
    - Schemas, queries, MongoDB: `docs/architecture-persistence.md`
    - Accounts, sessions, guards, user-owned data, hosting:
      `docs/architecture-security.md`
+   - Angular code in the client: `docs/architecture-angular.md`
    - Components, templates, styling: `docs/architecture-ui.md`
    - Tests: `docs/architecture-testing.md`
 3. Check each file against the rules of those guides, in particular:
@@ -29,9 +30,8 @@ description: Review code or a planned change against greyhoarder's architecture 
      data scoped by `ownerId`; no plain passwords or session IDs in logs.
    - **UI:** Spartan + Tailwind only; `shared/ui/` free of domain terms and
      domain imports; theme tokens instead of raw colors; light and dark theme.
-   - **Angular** ([ADR-0002](../../../docs/adr/0002-angular-as-client-framework.md)):
-     standalone components, signals, `inject()`, native control flow,
-     zoneless; no NgModules or constructor injection.
+   - **Angular:** standalone components, signals, `inject()`, native
+     control flow, zoneless; no NgModules or constructor injection.
    - **Testing:** Vitest only; specs named `<file>.spec.ts` next to the
      code; mocks only via `vi`; required tests present.
 4. If `AGENTS.md` lists commands, run lint and tests for the affected

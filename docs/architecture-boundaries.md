@@ -13,6 +13,11 @@ apply to the client, the server and `libs/`.
 _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md))_
 
 ## Domains
+
+- `catalog`: product data (boxes, kits, model types).
+- `collection`: what a user owns (boxes, models, hobby status, photos).
+- `rules`: rules data (datasheets, points, mapping of model types to
+  datasheets). Created only with the first rules feature.
 - `users`: accounts, roles, profiles, initial setup, user management.
 - `auth`: login, logout, sessions, guards.
 - Domains live in `apps/client/src/app/domains/<domain>/` and
@@ -29,7 +34,8 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 - `auth` depends only on `users`.
 - Allowed directions: `collection → catalog`, `rules → catalog`. Nothing
   depends on `collection` or `rules`.
-- Every domain may use the guards and decorators from `auth/api`.
+- No domain imports from `auth` to protect its endpoints; the
+  authorization decorators live in `apps/server/src/shared/auth/`.
 
 _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 [ADR-0007](adr/0007-local-user-accounts.md),
@@ -46,6 +52,39 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md),
   aliases.
 
 _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
+
+## Layers inside a server domain
+
+- A server domain contains only `api/`, `features/<feature>/`, `ports/`,
+  `infrastructure/`, `util/` and `<domain>.module.ts`.
+- A feature is one use case: its controller and its use case service.
+  Controllers map between protocol DTOs and domain models.
+- `ports/` holds only abstract classes without behavior; each is the
+  interface and the injection token. No string tokens.
+- `infrastructure/` holds only implementations of ports and what they need
+  (Mongoose schemas, mappers).
+- Only `<domain>.module.ts` binds ports to implementations.
+- Allowed: `features → ports`, `infrastructure → ports`; every folder may
+  use `util/` and `@greyhoarder/domain`.
+- `features` never import `infrastructure`; features never import each
+  other. Code several features need moves to `ports/` or `util/`.
+- Business rules belong in `libs/domain`, not in features.
+
+_(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
+
+## Layers inside a client domain
+
+- A client domain contains only `api/`, `features/<feature>/`, `ui/`,
+  `infrastructure/`, `util/` and `<domain>.routes.ts`.
+- `features/` holds pages, smart components and their state; `ui/` holds
+  the domain's presentational components; `infrastructure/` holds HTTP
+  services.
+- Allowed: `features → ui`, `features → infrastructure`; every folder may
+  use `util/` and `@greyhoarder/domain`.
+- `ui` never uses `infrastructure`; features never import each other.
+- No ports on the client.
+
+_(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
 
 ## Shared code
 

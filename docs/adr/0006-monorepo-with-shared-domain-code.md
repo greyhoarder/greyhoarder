@@ -82,19 +82,3 @@ and business rules that both apps need.
   by lint rules rather than convention alone.
 - One repository means one CI pipeline that builds and tests everything;
   build times grow with the project.
-
-## Derived rules
-
-- Shared code lives in `libs/`; apps never import from each other.
-- Apps may depend on libs; libs never depend on apps.
-- `libs/domain` imports nothing from Angular, NestJS, Mongoose, RxJS or
-  other frameworks.
-- Types and rules needed by both client and server belong in
-  `libs/domain`, not duplicated in the apps.
-- `libs/domain/<domain>/` uses the same domain names and boundary rules as
-  the apps.
-- Import shared models by package name (`@greyhoarder/domain/<domain>`),
-  never by relative path.
-- IDs in shared models are strings; no ObjectId outside the server's
-  persistence code.
-- Mongoose schemas and documents never leave the server.

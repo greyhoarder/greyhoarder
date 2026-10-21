@@ -74,19 +74,3 @@ domain, with cross-cutting code in `shared/` (see ADR-0004).
 - Tailwind becomes part of the client's build and of every template.
 - Spartan is younger than Material or PrimeNG; missing components are
   built in `shared/ui/` on top of `brain` primitives.
-
-## Derived rules
-
-- Use Spartan UI (`brain` + `helm`) with Tailwind; don't add another
-  component library.
-- Generate `helm` components into `apps/client/src/app/shared/ui/`; never
-  create a UI package under `libs/`.
-- `shared/ui/` contains no business logic or domain terms and imports
-  nothing from domains.
-- Presentational components with domain terms live in their domain and
-  build on `shared/ui/`.
-- Use theme tokens (CSS variables) for colors, radii, spacing and fonts;
-  no raw color values.
-- Style with Tailwind classes in templates; use component style files
-  only when Tailwind can't express it.
-- Every component works in both the light and the dark theme.

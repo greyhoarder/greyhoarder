@@ -107,25 +107,3 @@ cannot be checked by a tool, so it needs a human decision per test.
   human has agreed to.
 - The permission prompt only covers the agent's file tools; a test changed
   through the shell is caught only by the rule itself and by review.
-
-## Derived rules
-
-- Write unit tests with Vitest; no Jest, Karma or Jasmine.
-- Use the same Vitest major version in every workspace.
-- Client tests run through `ng test` with jsdom; server and libs use
-  `vitest run`.
-- The server is an ES module project.
-- Name spec files `<file>.spec.ts` and place them next to the code they
-  test.
-- Use Vitest globals and `vi` for mocks; no other mocking library.
-- Every business rule in `libs/domain` has unit tests.
-- Test components through the DOM and public API, not private members.
-- Every Angular component has a spec file, except generated `helm`
-  components.
-- `describe` names the unit in domain terms; each `it` is one sentence
-  describing one behavior, without "should" and without implementation
-  terms.
-- Separate arrange, act and assert with a blank line.
-- Write, change or delete a test case only after the user has approved that
-  case.
-- Report a failing test instead of changing it to pass.

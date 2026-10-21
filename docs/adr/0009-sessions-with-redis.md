@@ -78,18 +78,3 @@ Login, logout and sessions form a new domain, `auth`, in both apps
   support of their packaging (e.g. native cookie handling in Capacitor,
   the cookie store in Electron). If that proves insufficient, a
   token-based path is decided together with the packaging.
-
-## Derived rules
-
-- Use `express-session` with `connect-redis`; don't build a custom session
-  mechanism.
-- Never set `Domain` on the session cookie; set `Secure` by request scheme.
-- Regenerate the session on login; store only the user ID in it.
-- Keep the per-user set of session IDs in sync when creating or destroying
-  sessions.
-- Never log session IDs.
-- State-changing requests require an `Origin` equal to the request's own
-  origin.
-- Rate-limit login; give the same error for unknown user and wrong
-  password.
-- `auth` depends only on `users`.

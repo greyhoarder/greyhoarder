@@ -50,15 +50,3 @@ We use MongoDB, accessed through Mongoose via `@nestjs/mongoose`.
   responsibility and must be covered by tests.
 - Transactions require a replica set, which adds one setup step to the
   Docker deployment.
-
-## Derived rules
-
-- Store references as `<entity>Id` fields and index them.
-- Before writing a reference, check that the referenced document exists.
-- Before deleting a document, check for documents that still reference it.
-- Writes that touch several documents run in a transaction.
-- Every MongoDB collection has a Mongoose schema; no schemaless writes.
-- Reference data is never updated in place; a new version is a new
-  document.
-- Every reference-data document carries the fields that identify its
-  version.

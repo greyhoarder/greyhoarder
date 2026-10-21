@@ -57,13 +57,3 @@ management by administrators. `users` depends on no other domain.
   A second factor (e.g. TOTP) is a likely follow-up decision.
 - Login through an external identity provider can be added later as an
   additional way to sign in.
-
-## Derived rules
-
-- Never store, log or return plain passwords.
-- Hash passwords with Argon2id.
-- No endpoint creates accounts except the initial setup and admin user
-  management.
-- The initial setup is available only while no account exists.
-- `users` depends on no other domain; other domains reach it only through
-  `users/api`.

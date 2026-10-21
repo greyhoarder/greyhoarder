@@ -50,5 +50,9 @@ _(derived from [ADR-0009](adr/0009-sessions-with-redis.md))_
 - User-owned data carries `ownerId`; scope every query by it on the
   server.
 - Ownership checks live in the domain that owns the data.
+- `@Public()`, `@Roles()` and `@CurrentUser()` live in
+  `apps/server/src/shared/auth/` and contain no logic; the global guard
+  that evaluates them lives in `auth`. The role type comes from
+  `@greyhoarder/domain/users`.
 
 _(derived from [ADR-0010](adr/0010-authorization-and-data-ownership.md))_

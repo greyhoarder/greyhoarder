@@ -79,17 +79,3 @@ and API tests are not part of this decision.
   browsers installed.
 - How test data is prepared once the server exists (seeding, resetting the
   database) is decided with the integration test ADR.
-
-## Derived rules
-
-- Write browser end-to-end tests with Playwright in `apps/e2e`.
-- Run every end-to-end test in Chromium, Firefox and WebKit.
-- Find elements by `data-testid` only; never by text, role, label or CSS
-  class.
-- Name test IDs in kebab-case, starting with the screen name
-  (`login-username`).
-- Use waiting assertions; no fixed waits.
-- Keep tests independent of each other.
-- Every screen in `docs/screens/` has end-to-end tests for its main path.
-- The description and approval rules for unit tests apply to end-to-end
-  tests as well.
