@@ -7,6 +7,10 @@ import { PasswordHasher } from '../ports/password-hasher.js';
 export class Argon2PasswordHasher extends PasswordHasher {
   private readonly placeholderHash = hash('placeholder-for-unknown-users');
 
+  hash(password: string): Promise<string> {
+    return hash(password);
+  }
+
   verify(passwordHash: string, password: string): Promise<boolean> {
     return verify(passwordHash, password);
   }

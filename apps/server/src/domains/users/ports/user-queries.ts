@@ -9,4 +9,6 @@ export abstract class UserQueries {
 
   /** Matches the username regardless of case. */
   abstract findByUsername(username: string): Promise<User | undefined>;
+
+  abstract hasAny(): Promise<boolean>;
 }

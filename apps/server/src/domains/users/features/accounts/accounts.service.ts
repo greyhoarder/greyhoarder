@@ -15,4 +15,14 @@ export class AccountsService {
   findCredentials(username: string): Promise<UserCredentials | undefined> {
     return this.users.findCredentials(username);
   }
+
+  /**
+   * Creates the first account with the role `admin`. The hash is stored as
+   * given; `auth` alone knows how it was made (ADR-0007).
+   *
+   * @throws AccountsAlreadyExistError once any account exists
+   */
+  createInitialAdmin(username: string, passwordHash: string): Promise<void> {
+    return this.users.createInitialAdmin(username, passwordHash);
+  }
 }

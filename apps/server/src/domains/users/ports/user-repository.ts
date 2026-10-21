@@ -4,4 +4,12 @@ import type { UserCredentials } from './user-credentials.js';
 export abstract class UserRepository {
   /** Matches the username regardless of case. */
   abstract findCredentials(username: string): Promise<UserCredentials | undefined>;
+
+  /**
+   * Stores the first account with the role `admin`; atomic, so of two
+   * concurrent calls only one succeeds.
+   *
+   * @throws AccountsAlreadyExistError once any account exists or the setup ran before
+   */
+  abstract createInitialAdmin(username: string, passwordHash: string): Promise<void>;
 }

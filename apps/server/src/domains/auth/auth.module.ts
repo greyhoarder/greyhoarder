@@ -5,6 +5,8 @@ import { AuthenticateService } from './features/authenticate/authenticate.servic
 import { AuthenticationGuard } from './features/authenticate/guards/authentication.guard.js';
 import { SessionController } from './features/session/session.controller.js';
 import { SessionService } from './features/session/session.service.js';
+import { SetupController } from './features/setup/setup.controller.js';
+import { SetupService } from './features/setup/setup.service.js';
 import { Argon2PasswordHasher } from './infrastructure/argon2-password-hasher.js';
 import { RedisLoginAttempts } from './infrastructure/redis-login-attempts.js';
 import { RedisSessionRegistry } from './infrastructure/redis-session-registry.js';
@@ -12,12 +14,13 @@ import { LoginAttempts } from './ports/login-attempts.js';
 import { PasswordHasher } from './ports/password-hasher.js';
 import { SessionRegistry } from './ports/session-registry.js';
 
-/** Passwords, sessions (sign in, sign out) and the global authentication guard (ADR-0007, -0009, -0010). Depends only on users. */
+/** Passwords, the initial setup, sessions (sign in, sign out) and the global authentication guard (ADR-0007, -0009, -0010). Depends only on users. */
 @Module({
   imports: [UsersModule],
-  controllers: [SessionController],
+  controllers: [SessionController, SetupController],
   providers: [
     SessionService,
+    SetupService,
     AuthenticateService,
     { provide: PasswordHasher, useClass: Argon2PasswordHasher },
     { provide: SessionRegistry, useClass: RedisSessionRegistry },
