@@ -8,7 +8,7 @@ import { HlmCheckboxImports } from '@spartan-ng/helm/checkbox';
 import { HlmFieldImports } from '@spartan-ng/helm/field';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
-import { Logo } from '../../../shared/ui/logo/logo';
+import { Logo } from '../../../../shared/ui/logo/logo';
 
 interface Credentials {
   username: string;
