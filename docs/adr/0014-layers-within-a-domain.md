@@ -28,21 +28,37 @@ holding one kind of code. On the server, use cases depend on interfaces
 ```text
 apps/server/src/domains/<domain>/
 ├── api/                  ← contract for other domains (ADR-0004)
-├── features/<feature>/   ← one use case: controller + use case service
+├── features/<feature>/   ← one use case: entry point + use case service
 ├── ports/                ← abstract classes for what features need from outside
 ├── infrastructure/       ← implementations of ports: Mongoose, Redis, files, push
 ├── util/                 ← small helpers without business logic
 └── <domain>.module.ts    ← binds ports to their implementations
 ```
 
-- A **feature** is one use case as a vertical slice: its controller (the
-  entry point) and the service that carries it out. Mapping between
-  protocol DTOs and domain models happens in the controller.
+- A **feature** is one use case as a vertical slice: its entry point and
+  the service that carries it out. The entry point is usually a controller,
+  but can also be a guard (e.g. `features/authenticate/session.guard.ts`),
+  a gateway or an event listener. Mapping between protocol DTOs and domain
+  models happens in the entry point.
+- Inside a feature, NestJS file suffixes (`.controller.ts`, `.guard.ts`,
+  `.service.ts`) show what a file is. Subfolders by kind (e.g. `guards/`)
+  are used only when a feature has several files of that kind, and never
+  as features of their own.
 - A **port** is an abstract class without behavior, e.g. `UserRepository`
   or `PasswordHasher`. It is both the interface and the injection token.
 - **Infrastructure** contains only implementations of ports, e.g.
   `MongoUserRepository extends UserRepository`, plus what they need
-  (Mongoose schemas, mappers).
+  (Mongoose schemas, mappers). It is organized by port, not by technology:
+  the technology appears only in the file name, e.g.
+  `infrastructure/redis-session-registry.ts`. A port gets a subfolder only
+  when its adapter has several files, e.g.
+  `infrastructure/user-repository/` with the repository and its schema.
+  Replacing a technology then means adding a new adapter next to the old
+  one and changing the binding.
+- Connections, clients and their configuration (e.g.
+  `MongooseModule.forRoot()`, the Redis client) are platform setup. They
+  live at app level, in `AppModule` or `apps/server/src/shared/`, never in
+  a domain.
 - The **domain module** is the only place that binds a port to its
   implementation.
 - Business rules belong in `libs/domain`. Server-only business logic gets a

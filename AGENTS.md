@@ -21,6 +21,8 @@ your task, and only those:
 
 - **Any change to app or library code** (domains, folders, imports, Nest modules): 
   [architecture-boundaries.md](docs/architecture-boundaries.md)
+- **Writing or changing code**:
+  [coding-guidelines.md](docs/coding-guidelines.md)
 - **Schemas, queries, MongoDB**:
   [architecture-persistence.md](docs/architecture-persistence.md)
 - **Accounts, login, sessions, guards, user-owned data, hosting**:
@@ -36,8 +38,9 @@ your task, and only those:
 - **Writing or changing tests**:
   [architecture-testing.md](docs/architecture-testing.md)
 
-If a task conflicts with these rules, stop and ask. A rule changes only
-through a new ADR.
+If a task conflicts with these rules, stop and ask. An architecture rule
+changes only through a new ADR; the coding guidelines and the design system
+change only with the user's agreement.
 
 ## Commands
 
@@ -46,11 +49,12 @@ Run from the repository root:
 - `npm start`: client dev server
 - `npm run build`: build all workspaces
 - `npm test`: run all unit tests once
+- `npm run lint`: lint all workspaces (ESLint in the client, oxlint in the
+  server)
 - `npm run check:specs`: list components without a spec file
 - `npm run <script> -w @greyhoarder/client`: a single workspace's script
 
-There is no lint setup yet. Never invent scripts; use only those defined in
-the `package.json` files.
+Never invent scripts; use only those defined in the `package.json` files.
 
 ## Workflow
 

@@ -21,9 +21,9 @@ such as password hashes.
 - Request and response shapes of the REST API are **Zod schemas** in a new
   library, `libs/protocol` (`@greyhoarder/protocol`).
 - It is divided into the same domains as the apps. Each
-  `libs/protocol/<domain>/` exposes its schemas in `api/index.ts`,
-  published as `@greyhoarder/protocol/<domain>` through the package's
-  `exports`, like `libs/domain`.
+  `libs/protocol/<domain>/` exposes its schemas in `index.ts`, published
+  as `@greyhoarder/protocol/<domain>` through the package's `exports`,
+  like `libs/domain` (no `api/` folder, see ADR-0006).
 - `libs/protocol` may depend on `zod` and `@greyhoarder/domain`, and on
   nothing else. This is the only exception to the framework-free rule of
   ADR-0006; `libs/domain` stays free of dependencies.

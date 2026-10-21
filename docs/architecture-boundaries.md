@@ -54,12 +54,24 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 
 - A server domain contains only `api/`, `features/<feature>/`, `ports/`,
   `infrastructure/`, `util/` and `<domain>.module.ts`.
-- A feature is one use case: its controller and its use case service.
-  Controllers map between protocol DTOs and domain models.
+- A feature is one use case: its entry point (controller, guard, gateway
+  or event listener) and its use case service. Entry points map between
+  protocol DTOs and domain models.
+- Name files with NestJS suffixes (`.controller.ts`, `.guard.ts`,
+  `.service.ts`). Use a subfolder by kind (e.g. `guards/`) inside a feature
+  only when it has several files of that kind; never create a feature
+  named after a kind (`features/guards/`).
 - `ports/` holds only abstract classes without behavior; each is the
   interface and the injection token. No string tokens.
 - `infrastructure/` holds only implementations of ports and what they need
   (Mongoose schemas, mappers).
+- `infrastructure/` is organized by port; the technology appears only in
+  the file name (`<technology>-<port>.ts`, e.g.
+  `redis-session-registry.ts`). A port gets a subfolder only when its
+  adapter has several files; never group by technology (`redis/`,
+  `mongo/`) or by kind (`repositories/`).
+- Connections, clients and their configuration live at app level
+  (`AppModule`, `apps/server/src/shared/`), never in a domain.
 - Only `<domain>.module.ts` binds ports to implementations.
 - Allowed: `features → ports`, `infrastructure → ports`; every folder may
   use `util/` and `@greyhoarder/domain`.
@@ -111,9 +123,10 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
   other frameworks.
 - `libs/domain/<domain>/` uses the same domain names and boundary rules as
   the apps.
-- Each `libs/domain/<domain>/` exposes its public API in `api/index.ts`,
-  published as `@greyhoarder/domain/<domain>` through the package's
-  `exports`; everything else in it is internal.
+- Each `libs/domain/<domain>/` exposes its public API in `index.ts`
+  (no `api/` folder), published as `@greyhoarder/domain/<domain>` through
+  the package's `exports`; everything else in it is internal. Domains
+  inside the library import each other only through that `index.ts`.
 - Import shared models by package name (`@greyhoarder/domain/<domain>`),
   never by relative path.
 - IDs in shared models are strings; no ObjectId outside the server's
@@ -126,9 +139,9 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md))_
 
 - Request and response shapes of the REST API are Zod schemas in
   `libs/protocol/<domain>/`.
-- Each `libs/protocol/<domain>/` exposes its schemas in `api/index.ts`,
-  published as `@greyhoarder/protocol/<domain>`; import by package name,
-  never by relative path.
+- Each `libs/protocol/<domain>/` exposes its schemas in `index.ts` (no
+  `api/` folder), published as `@greyhoarder/protocol/<domain>`; import by
+  package name, never by relative path.
 - `libs/protocol` depends only on `zod` and `@greyhoarder/domain`.
 - Name each schema `<shape>Schema` and export its inferred type as
   `<Shape>`, e.g. `loginRequestSchema` and `LoginRequest`.
@@ -138,7 +151,7 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md))_
   protocol schema with `nestjs-zod`; no `class-validator`.
 - Client: HTTP services use the inferred types; never declare request or
   response types by hand.
-- Only controllers (server) and `infrastructure/` (client) import
-  `@greyhoarder/protocol`.
+- Only entry points in `features/` (server) and `infrastructure/` (client)
+  import `@greyhoarder/protocol`.
 
 _(derived from [ADR-0015](adr/0015-api-protocol-with-shared-zod-schemas.md))_

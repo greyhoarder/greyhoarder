@@ -42,9 +42,12 @@ and business rules that both apps need.
 
 - It is plain TypeScript with no dependency on Angular, NestJS, Mongoose,
   RxJS or any other framework.
-- It is divided into the same domains as the apps and follows the same
-  boundary rules: one domain imports another only through that domain's
-  `api/index.ts`.
+- It is divided into the same domains as the apps. Each domain has one
+  entry point, `<domain>/index.ts`, published as
+  `@greyhoarder/domain/<domain>` through the package's `exports`. One
+  domain imports another only through that entry point. Unlike the apps,
+  there is no `api/` folder: the `exports` map already keeps everything
+  else internal, and the library holds no facades.
 - Apps import it by package name, per domain:
   `@greyhoarder/domain/<domain>`, never by relative path.
 - IDs are plain strings in shared models. Converting to and from ObjectId
@@ -62,6 +65,9 @@ and business rules that both apps need.
 - **Nx workspace**: build caching and affected-only builds, but more
   tooling than the project needs now. An npm-workspaces layout can be
   migrated to Nx later without moving code.
+- **An `api/` folder per domain, as in the apps**: the same structure
+  everywhere, but it repeats what the package's `exports` already enforce
+  and adds a folder that holds nothing but one file.
 - **Sharing Mongoose schemas or documents with the client**: no duplicate
   types at all, but ties the client to the database and leaks persistence
   details into the UI.
