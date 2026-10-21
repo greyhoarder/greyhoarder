@@ -15,6 +15,10 @@ export class UserDbo implements Omit<User, 'id'> {
 
   @Prop({ type: Boolean, required: true, default: false })
   disabled: boolean;
+
+  /** Argon2id hash; left out of every query unless selected explicitly. */
+  @Prop({ type: String, required: true, select: false })
+  passwordHash: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserDbo);

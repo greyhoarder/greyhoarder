@@ -1,8 +1,7 @@
-import type { User } from '@greyhoarder/domain/users';
+import type { UserCredentials } from './user-credentials.js';
 
+/** Storage of users for the features of this domain; never published through `users/api`. */
 export abstract class UserRepository {
   /** Matches the username regardless of case. */
-  abstract findByUsername(username: string): Promise<User | undefined>;
-
-  abstract findById(id: string): Promise<User | undefined>;
+  abstract findCredentials(username: string): Promise<UserCredentials | undefined>;
 }
