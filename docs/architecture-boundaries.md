@@ -16,8 +16,11 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
 
 ## Domains
 
-- `users`: accounts, roles, profiles, initial setup, user management.
-- `auth`: login, logout, sessions, guards.
+- `users`: accounts and their storage (including password hashes), roles,
+  user management (roles, disabling, deleting).
+- `auth`: everything that works with passwords (hashing, verifying,
+  creating accounts including the initial setup, changing and resetting
+  passwords), login, logout, sessions, the global guard.
 - Domains live in `apps/client/src/app/domains/<domain>/` and
   `apps/server/src/domains/<domain>/`, with the same name in both apps.
 - New domains are created only on explicit request. A new domain and its
@@ -30,7 +33,8 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 ## Domain dependencies
 
 - `users` depends on no other domain.
-- `auth` depends only on `users`.
+- `auth` depends only on `users`. It reads and writes password hashes only
+  through `users/api`; no other domain receives a hash.
 - No domain imports from `auth` to protect its endpoints; the
   authorization decorators live in `apps/server/src/shared/auth/`.
 

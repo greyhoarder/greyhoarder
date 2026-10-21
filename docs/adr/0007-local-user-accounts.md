@@ -27,11 +27,8 @@ Code is sliced by domain (see ADR-0004); data is stored in MongoDB
 - Two roles: `admin` (manages users and instance settings) and `member`.
 - Users can change their own password. There is no email-based password
   reset; an administrator sets a new password instead.
-- Administrators can disable accounts.
-
-Accounts form a new domain, `users`, in both apps (extending the domains of
-ADR-0004). It owns accounts, roles, profiles, the initial setup and user
-management by administrators. `users` depends on no other domain.
+- Administrators can disable and delete accounts. Deleting removes the
+  account; data other domains keep for it is removed with it.
 
 ### Alternatives considered
 

@@ -11,4 +11,4 @@ below.
 | Screen | Route | Domain |
 |--------|-------|--------|
 | [Login](login.md) | `/login` | `auth` |
-| [Setup](setup.md) | `/setup` | `users` |
+| [Setup](setup.md) | `/setup` | `auth` |

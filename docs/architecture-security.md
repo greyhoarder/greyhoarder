@@ -18,9 +18,11 @@ _(derived from [ADR-0008](adr/0008-reverse-proxy-and-hostnames.md))_
 
 - Never store, log or return plain passwords.
 - Hash passwords with Argon2id.
-- No endpoint creates accounts except the initial setup and admin user
-  management.
+- Only `auth` creates accounts: through the initial setup and through
+  account creation by administrators. No other endpoint creates accounts.
 - The initial setup is available only while no account exists.
+- Only `auth` hashes and verifies passwords. `users` stores the hash and
+  returns it only through the `users/api` method meant for signing in.
 
 _(derived from [ADR-0007](adr/0007-local-user-accounts.md))_
 

@@ -1,7 +1,7 @@
 # Screen: Setup
 
 - **Route:** `/setup`
-- **Domain:** `users`
+- **Domain:** `auth`
 - **Related:** [ADR-0007](../adr/0007-local-user-accounts.md),
   [Login](login.md)
 
