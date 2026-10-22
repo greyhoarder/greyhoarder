@@ -3,6 +3,12 @@
 See [ADR-0001](0001-record-architecture-decisions.md) for how ADRs are
 written and changed.
 
+An ADR records a decision and why it was made. How the decision is applied
+(names, file layout, examples, special cases) belongs in the architecture
+guides, which are refined without a new ADR. If a change needs
+alternatives and a reason, it is a new decision and gets an ADR; otherwise
+update the guide.
+
 | #    | Title                                                                                   | Status   |
 |------|-----------------------------------------------------------------------------------------|----------|
 | 0001 | [Record architecture decisions](0001-record-architecture-decisions.md)                  | Accepted |

@@ -21,6 +21,8 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
 - `auth`: everything that works with passwords (hashing, verifying,
   creating accounts including the initial setup, changing and resetting
   passwords), login, logout, sessions, the global guard.
+- `instance`: state and settings of the instance as a whole (health, later
+  instance settings).
 - Domains live in `apps/client/src/app/domains/<domain>/` and
   `apps/server/src/domains/<domain>/`, with the same name in both apps.
 - New domains are created only on explicit request. A new domain and its
@@ -28,11 +30,13 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
 
 _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 [ADR-0007](adr/0007-local-user-accounts.md),
-[ADR-0009](adr/0009-sessions-with-redis.md))_
+[ADR-0009](adr/0009-sessions-with-redis.md),
+[ADR-0018](adr/0018-end-to-end-tests-with-an-instance-per-worker.md))_
 
 ## Domain dependencies
 
 - `users` depends on no other domain.
+- `instance` depends on no other domain.
 - `auth` depends only on `users`. It reads and writes password hashes only
   through `users/api`; no other domain receives a hash.
 - No domain imports from `auth` to protect its endpoints; the
@@ -64,6 +68,9 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
   gateway or event listener) and its service. Calls from other domains
   through `api/` are an entry point as well. Entry points map between
   protocol DTOs and domain models.
+- Entry points are the primary adapters, implementations in
+  `infrastructure/` the secondary adapters. Neither carries an `adapter`
+  suffix; the NestJS kind or the port names the role.
 - Other domains read through a read-only port named `<Entity>Queries`
   (e.g. `UserQueries`), published in `api/` and implemented by the
   repository; never add a writing method to it. Writes and access to
@@ -75,7 +82,8 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
   single file. Never create a feature named after a kind
   (`features/guards/`).
 - `ports/` holds only abstract classes without behavior; each is the
-  interface and the injection token. No string tokens.
+  interface and the injection token. No string tokens. Ports depend only
+  on `@greyhoarder/domain`.
 - `infrastructure/` holds only implementations of ports and what they need
   (Mongoose schemas, mappers).
 - `infrastructure/` is organized by port; the technology appears only in
@@ -83,8 +91,6 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
   `redis-session-registry.ts`). A port gets a subfolder only when its
   adapter has several files; never group by technology (`redis/`,
   `mongo/`) or by kind (`repositories/`).
-- Connections, clients and their configuration live at app level
-  (`AppModule`, `apps/server/src/shared/`), never in a domain.
 - Only `<domain>.module.ts` binds ports to implementations.
 - Allowed: `features → ports`, `infrastructure → ports`; every folder may
   use `util/` and `@greyhoarder/domain`.
@@ -93,6 +99,23 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 - Business rules belong in `libs/domain`, not in features.
 
 _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
+
+## App level on the server
+
+- Besides `shared/` (see below), code outside `domains/` is either the
+  composition root or platform-specific code.
+- The composition root is `main.ts`, `app.module.ts`, `config/` and
+  modules next to them that assemble the app (global pipes, serving the
+  web app).
+- `apps/server/src/platform/` holds platform-specific code: connections to
+  physical stores (MongoDB, Redis), runtime and OS adapters, and the
+  middleware bound to them (e.g. sessions).
+- Neither holds endpoints; every endpoint is an entry point in a domain.
+- Neither holds business logic, and neither imports from a domain except
+  through its `api/`.
+
+_(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
+[ADR-0017](adr/0017-server-serves-the-web-app.md))_
 
 ## Layers inside a client domain
 
@@ -187,7 +210,7 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md))_
   schemas.
 - Server: requests are validated and responses serialized through their
   protocol schema with `nestjs-zod`; no `class-validator`.
-- Client: HTTP services use the inferred types; never declare request or
+- Client: HTTP adapters use the inferred types; never declare request or
   response types by hand.
 - Only entry points in `features/` (server) and `infrastructure/` (client)
   import `@greyhoarder/protocol`.

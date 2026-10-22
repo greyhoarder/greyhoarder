@@ -7,8 +7,8 @@
 
 Client and server share domain models in `libs/domain` (see ADR-0006),
 which left open how request and response shapes are defined. Controllers
-on the server and HTTP services on the client map between these shapes and
-the domain models (see ADR-0014).
+on the server and the access to the server on the client map between
+these shapes and the domain models (see ADR-0014).
 
 Request and response shapes are not the domain models: they add
 pagination, partial views and input forms, and they change for transport
@@ -20,21 +20,18 @@ such as password hashes.
 
 - Request and response shapes of the REST API are **Zod schemas** in a new
   library, `libs/protocol` (`@greyhoarder/protocol`).
-- It is divided into the same domains as the apps. Each
-  `libs/protocol/<domain>/` exposes its schemas in `index.ts`, published
-  as `@greyhoarder/protocol/<domain>` through the package's `exports`,
-  like `libs/domain` (no `api/` folder, see ADR-0006).
+- It is divided into the same domains as the apps and published per
+  domain, like `libs/domain` (see ADR-0006).
 - `libs/protocol` may depend on `zod` and `@greyhoarder/domain`, and on
   nothing else. This is the only exception to the framework-free rule of
   ADR-0006; `libs/domain` stays free of dependencies.
-- For every shape there is a schema and a type inferred from it, e.g.
-  `loginRequestSchema` and `type LoginRequest`.
+- For every shape there is a schema and a type inferred from it.
 - The server uses `nestjs-zod`: DTOs are created from the protocol
   schemas, a global validation pipe checks every request, and every
   response is serialized through its schema, so fields the schema does not
   declare are dropped.
-- The client uses the inferred types in its HTTP services, built on
-  Angular's `HttpClient`.
+- The client uses the inferred types in its access to the server, built
+  on Angular's `HttpClient`.
 - Routes are not part of the protocol.
 
 ### Alternatives considered
@@ -61,5 +58,5 @@ such as password hashes.
 - Zod becomes a runtime dependency of both apps, and `nestjs-zod` of the
   server; both must keep up with Zod and NestJS majors.
 - OpenAPI can be generated from the schemas if external clients need it.
-- Routes are not checked by the compiler; HTTP services and controllers
-  must agree on paths by convention and end-to-end tests.
+- Routes are not checked by the compiler; client and controllers must
+  agree on paths by convention and end-to-end tests.

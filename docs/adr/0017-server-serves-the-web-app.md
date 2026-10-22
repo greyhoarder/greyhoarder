@@ -33,9 +33,8 @@ at once, each under its own origin.
   new release on the next load.
 - Session handling applies only to `/api`; requests for files of the web
   app never touch Redis.
-- Serving the web app is platform setup at app level
-  (`apps/server/src/platform/`), next to Redis and sessions, not part of a
-  domain.
+- Serving the web app is part of composing the app. It is set up at app
+  level, not in a domain.
 
 ### Alternatives considered
 

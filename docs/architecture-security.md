@@ -24,8 +24,8 @@ _(derived from [ADR-0008](adr/0008-reverse-proxy-and-hostnames.md))_
 - Serve files with a content hash in their name as immutable with a long
   cache lifetime; serve `index.html` with `no-cache`.
 - Apply session handling only to `/api`.
-- Set up static serving and the health endpoint at app level in
-  `apps/server/src/platform/`, never in a domain.
+- Set up static serving at app level next to `app.module.ts`, never in a
+  domain or in `platform/`.
 - `GET /api/health` is public and reports only whether the server is
   ready.
 

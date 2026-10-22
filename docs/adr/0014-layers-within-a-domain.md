@@ -28,73 +28,30 @@ holding one kind of code. On the server, use cases depend on interfaces
 ```text
 apps/server/src/domains/<domain>/
 ├── api/                  ← contract for other domains (ADR-0004)
-├── features/<feature>/   ← use case(s) that change together: entry point + service
+├── features/<feature>/   ← use cases with their entry points
 ├── ports/                ← abstract classes for what features need from outside
-├── infrastructure/       ← implementations of ports: Mongoose, Redis, files, push
+├── infrastructure/       ← implementations of ports
 ├── util/                 ← small helpers without business logic
 └── <domain>.module.ts    ← binds ports to their implementations
 ```
-
-- A **feature** is one use case, or a few use cases on the same resource
-  that change together (e.g. sign in, show and end the session). Use cases
-  with their own rules or dependencies are features of their own. The
-  criterion is cohesion: what changes together stays together, so a
-  domain does not fall apart into one folder per endpoint.
-- A feature is a vertical slice: its entry point and the service that
-  carries it out. The entry point is usually a controller,
-  but can also be a guard (e.g. `features/authenticate/session.guard.ts`),
-  a gateway or an event listener. The domain's `api/` is an entry point as
-  well: a feature can be entered by calls from other domains instead of a
-  controller (e.g. `features/accounts/accounts.service.ts`, published
-  through `users/api`). Mapping between protocol DTOs and domain models
-  happens in the entry point.
-- Other domains get **read access** through a read-only port, published in
-  `api/` without a service in between, e.g. `UserQueries`: reading has no
-  rules that could be bypassed. The name ends in `Queries` and says that it
-  never gets a writing method (CQS). Everything that writes, or touches
-  data protected by rules, goes through a feature.
-- Inside a feature, file suffixes (`.controller.ts`, `.service.ts`,
-  `.guard.ts`, `.dto.ts`, `.error.ts`) show what a file is. Controllers and
-  services sit directly in the feature folder. Every other kind always gets
-  a subfolder named after the kind, even for a single file: `guards/`,
-  `dtos/`, `errors/` and so on. The structure is then the same in every
-  feature and does not change when a second file of a kind arrives. Kinds
-  are never features of their own (`features/guards/`).
-- A **port** is an abstract class without behavior, e.g. `UserRepository`
-  or `PasswordHasher`. It is both the interface and the injection token.
-- **Infrastructure** contains only implementations of ports, e.g.
-  `MongoUserRepository extends UserRepository`, plus what they need
-  (Mongoose schemas, mappers). It is organized by port, not by technology:
-  the technology appears only in the file name, e.g.
-  `infrastructure/redis-session-registry.ts`. A port gets a subfolder only
-  when its adapter has several files, e.g.
-  `infrastructure/user-repository/` with the repository and its schema.
-  Replacing a technology then means adding a new adapter next to the old
-  one and changing the binding.
-- Entry points are the primary adapters, implementations in
-  `infrastructure/` the secondary adapters. Neither carries an `adapter`
-  suffix: the port or the NestJS kind already names the role. The client
-  has no ports, so its HTTP adapters carry the suffix
-  (`http-setup-adapter.ts`).
-- Connections, clients and their configuration (e.g.
-  `MongooseModule.forRoot()`, the Redis client) are platform setup. They
-  live at app level, in `AppModule` or `apps/server/src/shared/`, never in
-  a domain.
-- The **domain module** is the only place that binds a port to its
-  implementation.
-- Business rules belong in `libs/domain`. Server-only business logic gets a
-  folder of its own only when it actually exists.
-
-Dependencies inside a server domain:
 
 ```text
 features ──▶ ports ◀── infrastructure        all ──▶ util, libs/domain
 ```
 
-- `features` never import `infrastructure`.
-- Features never import each other. What several features need moves down
-  into `ports/` or `util/`.
-- `ports` contain no behavior and depend only on `libs/domain`.
+- A **feature** is a vertical slice: a use case together with its entry
+  point, such as a controller, a guard, an event listener or calls from
+  other domains through `api/`. Entry points are the primary adapters.
+- A **port** is an abstract class without behavior. It is both the
+  interface and the injection token.
+- **Infrastructure** holds the implementations of ports, the secondary
+  adapters. Replacing a technology means adding an implementation and
+  changing its binding; features stay untouched.
+- The **domain module** is the only place that binds a port to its
+  implementation.
+- Features depend on ports, never on infrastructure, and never on each
+  other.
+- Business rules belong in `libs/domain`.
 
 ### Client
 
@@ -103,14 +60,24 @@ apps/client/src/app/domains/<domain>/
 ├── api/                  ← contract for other domains (ADR-0004)
 ├── features/<feature>/   ← pages, smart components, their state
 ├── ui/                   ← presentational components of this domain (ADR-0011)
-├── infrastructure/       ← HTTP adapters: protocol DTOs ↔ domain models
+├── infrastructure/       ← access to the server
 ├── util/
 └── <domain>.routes.ts    ← entry point for the router
 ```
 
 The client has no ports: features use `infrastructure` directly and are
-tested with Angular's dependency injection. `features` may use `ui`,
-`infrastructure` and `util`; `ui` never uses `infrastructure`.
+tested with Angular's dependency injection. `ui` never uses
+`infrastructure`.
+
+### Outside the domains
+
+Code that belongs to no domain, such as the composition of the app and
+platform-specific code, lives at app level, outside `domains/`.
+
+How features are cut, how files and folders inside these layers are named,
+and where app-level code goes are rules in
+`docs/architecture-boundaries.md`. They are refined there as cases arise,
+without a new decision.
 
 ### Alternatives considered
 
@@ -140,5 +107,3 @@ tested with Angular's dependency injection. `features` may use `ui`,
   one implementation.
 - The folder rules are conventions until boundary checks are introduced in
   a later decision.
-- The existing login page moves from `domains/auth/login/` to
-  `domains/auth/features/login/`.
