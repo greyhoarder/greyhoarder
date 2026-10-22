@@ -9,6 +9,10 @@ sudo chown node:node node_modules apps/client/node_modules apps/server/node_modu
 # the repository as dubious. System config, because VS Code copies the
 # host's ~/.gitconfig only when the container has none.
 sudo git config --system --add safe.directory "$PWD"
+sudo git config --system --add safe.directory "$PWD/libs/catalog"
+
+# The community kit catalog is a submodule; a plain clone leaves it empty.
+git submodule update --init
 
 npm ci
 
