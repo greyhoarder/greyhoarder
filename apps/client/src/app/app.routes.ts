@@ -13,7 +13,10 @@ export const routes: Routes = [
         path: '',
         component: AppShell,
         canActivateChild: [signedInGuard],
-        children: [{ path: '', loadChildren: () => import('./domains/dashboard/dashboard.routes') }],
+        children: [
+          { path: '', loadChildren: () => import('./domains/dashboard/dashboard.routes') },
+          { path: '', loadChildren: () => import('./domains/hoard/hoard.routes') },
+        ],
       },
     ],
   },

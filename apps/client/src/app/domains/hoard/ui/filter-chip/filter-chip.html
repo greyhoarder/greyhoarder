@@ -1,0 +1,63 @@
+<hlm-popover align="start" sideOffset="6" (closed)="query.set('')">
+  <button
+    hlmPopoverTrigger
+    hlmBtn
+    variant="outline"
+    class="h-10 px-3.5 text-sm"
+    [class.border-dashed]="selected().size === 0"
+    [class.bg-card]="selected().size > 0"
+    [attr.data-testid]="'hoard-filter-' + label().toLowerCase()"
+  >
+    <ng-icon name="lucideCirclePlus" size="16" />
+    {{ label() }}
+    @if (selected().size > 0) {
+      <span class="mx-0.5 h-4 w-px bg-border" aria-hidden="true"></span>
+      @for (text of summary(); track text) {
+        <span hlmBadge variant="secondary" class="max-w-40 truncate font-normal">{{ text }}</span>
+      }
+    }
+  </button>
+
+  <div hlmPopoverContent class="w-72 gap-0 p-0" *hlmPopoverPortal="let ctx">
+    <div class="flex items-center gap-2 border-b px-3">
+      <ng-icon name="lucideSearch" size="16" class="text-muted-foreground" />
+      <input
+        type="search"
+        class="h-10 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        [placeholder]="label()"
+        [attr.aria-label]="'Search ' + label()"
+        [value]="query()"
+        (input)="search($event)"
+      />
+    </div>
+
+    <ul class="flex max-h-72 flex-col overflow-y-auto p-1" [attr.aria-label]="label()">
+      @for (option of visibleOptions(); track option.value) {
+        <li
+          class="flex items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          data-testid="hoard-filter-option"
+        >
+          <hlm-checkbox
+            [inputId]="idPrefix + '-' + $index"
+            [checked]="selected().has(option.value)"
+            (checkedChange)="toggle(option.value)"
+          />
+          <label class="flex-1 cursor-pointer truncate" [for]="idPrefix + '-' + $index">{{
+            option.label
+          }}</label>
+          <span class="text-xs text-muted-foreground tabular-nums">{{ option.count }}</span>
+        </li>
+      } @empty {
+        <li class="px-2 py-6 text-center text-sm text-muted-foreground">Nothing found.</li>
+      }
+    </ul>
+
+    @if (selected().size > 0) {
+      <div class="border-t p-1">
+        <button hlmBtn variant="ghost" type="button" class="h-8 w-full text-sm" (click)="clear()">
+          Clear filter
+        </button>
+      </div>
+    }
+  </div>
+</hlm-popover>

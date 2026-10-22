@@ -24,7 +24,7 @@ interface NavigationEntry {
 
 const MAIN_ENTRIES: readonly NavigationEntry[] = [
   { label: 'Dashboard', icon: 'lucideHouse', link: '/dashboard' },
-  { label: 'Hoard', icon: 'lucideBox' },
+  { label: 'Hoard', icon: 'lucideBox', link: '/hoard' },
   { label: 'Workbench', icon: 'lucideBrush' },
   { label: 'Paints', icon: 'lucideDroplet' },
   { label: 'Armies', icon: 'lucideShield' },

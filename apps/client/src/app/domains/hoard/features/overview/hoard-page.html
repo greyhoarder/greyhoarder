@@ -1,0 +1,234 @@
+<header class="flex flex-wrap items-start justify-between gap-4">
+  <div class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold">Hoard</h1>
+    <p class="text-muted-foreground" data-testid="hoard-summary">
+      {{ miniCount() }} minis from {{ boxCount() }} boxes · {{ paintedCount() }} painted
+    </p>
+  </div>
+  <!-- Adding comes with the backend; one button per way into the hoard, the primary one first. -->
+  <div class="flex flex-wrap gap-3">
+    <button
+      hlmBtn
+      type="button"
+      class="h-10 px-4 text-sm font-semibold"
+      data-testid="hoard-add-boxes"
+    >
+      <ng-icon name="lucidePlus" size="16" />
+      Add boxes
+    </button>
+    <button
+      hlmBtn
+      variant="outline"
+      type="button"
+      class="h-10 px-3.5 text-sm"
+      data-testid="hoard-add-minis"
+    >
+      <ng-icon name="lucidePlus" size="16" />
+      Add minis
+    </button>
+    <button
+      hlmBtn
+      variant="outline"
+      type="button"
+      class="h-10 px-3.5 text-sm"
+      data-testid="hoard-add-custom"
+    >
+      <ng-icon name="lucidePlus" size="16" />
+      Add custom
+    </button>
+  </div>
+</header>
+
+<hlm-tabs
+  [tab]="tab()"
+  (tabActivated)="tab.set($event === 'boxes' ? 'boxes' : 'minis')"
+  class="gap-5"
+>
+  <div class="flex flex-wrap items-end justify-between gap-3 border-b">
+    <hlm-tabs-list
+      variant="line"
+      class="h-11 gap-4 p-0 group-data-horizontal/tabs:h-11"
+      aria-label="Show"
+    >
+      <button hlmTabsTrigger="minis" class="px-1 text-base" data-testid="hoard-tab-minis">
+        Minis
+        <span
+          hlmBadge
+          variant="secondary"
+          class="font-normal text-muted-foreground"
+          data-testid="hoard-tab-minis-count"
+        >
+          @if (isNarrowed()) {
+            {{ visibleMiniCount() }} of {{ miniCount() }}
+          } @else {
+            {{ miniCount() }}
+          }
+        </span>
+      </button>
+      <button hlmTabsTrigger="boxes" class="px-1 text-base" data-testid="hoard-tab-boxes">
+        Boxes
+        <span hlmBadge variant="secondary" class="font-normal text-muted-foreground">{{
+          boxCount()
+        }}</span>
+      </button>
+    </hlm-tabs-list>
+
+    @if (tab() === 'minis') {
+      <div class="mb-1.5 flex items-center gap-2">
+        <button
+          hlmBtn
+          variant="ghost"
+          type="button"
+          class="h-9 px-3 text-sm text-muted-foreground"
+          data-testid="hoard-select"
+          [disabled]="isSelecting()"
+          (click)="startSelecting()"
+        >
+          <ng-icon name="lucideCircleCheck" size="16" />
+          Select
+        </button>
+
+        <div class="flex rounded-lg bg-muted p-0.5" role="group" aria-label="View">
+          <button
+            type="button"
+            class="flex size-8 items-center justify-center rounded-md text-muted-foreground aria-pressed:bg-card aria-pressed:text-foreground"
+            aria-label="Cards"
+            data-testid="hoard-view-cards"
+            [attr.aria-pressed]="view() === 'cards'"
+            (click)="view.set('cards')"
+          >
+            <ng-icon name="lucideRows2" size="16" />
+          </button>
+          <button
+            type="button"
+            class="flex size-8 items-center justify-center rounded-md text-muted-foreground aria-pressed:bg-card aria-pressed:text-foreground"
+            aria-label="Table"
+            data-testid="hoard-view-table"
+            [attr.aria-pressed]="view() === 'table'"
+            (click)="view.set('table')"
+          >
+            <ng-icon name="lucideList" size="16" />
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div hlmTabsContent="minis" class="flex flex-col gap-3">
+    <div class="mb-1 flex flex-wrap items-center gap-3">
+      <div hlmInputGroup class="h-10 w-full sm:w-80">
+        <div hlmInputGroupAddon>
+          <ng-icon name="lucideSearch" size="18" />
+        </div>
+        <input
+          hlmInputGroupInput
+          type="search"
+          placeholder="Search name, part or box"
+          aria-label="Search the hoard"
+          data-testid="hoard-search"
+          [value]="query()"
+          (input)="search($event)"
+        />
+      </div>
+
+      <app-filter-chip
+        label="Faction"
+        [options]="factionOptions()"
+        [selected]="factionFilter()"
+        (selectedChange)="factionFilter.set($event)"
+      />
+      <app-filter-chip
+        label="Status"
+        [options]="statusOptions()"
+        [selected]="statusFilter()"
+        (selectedChange)="statusFilter.set($event)"
+      />
+      <app-filter-chip
+        label="Box"
+        [options]="boxOptions()"
+        [selected]="boxFilter()"
+        (selectedChange)="boxFilter.set($event)"
+      />
+      @if (isFiltered()) {
+        <button
+          hlmBtn
+          variant="ghost"
+          type="button"
+          class="h-10 px-3 text-sm text-muted-foreground"
+          data-testid="hoard-filter-reset"
+          (click)="resetFilters()"
+        >
+          Reset
+          <ng-icon name="lucideX" size="16" />
+        </button>
+      }
+    </div>
+
+    @if (isSelecting()) {
+      <!-- Actions on the selection come with the backend. -->
+      <div
+        class="sticky top-0 z-10 flex items-center gap-3 rounded-xl border border-primary/60 bg-card p-2 pl-4"
+        data-testid="hoard-selection-bar"
+      >
+        <span class="flex-1 text-sm font-medium" data-testid="hoard-selection-count">
+          {{ selectedCount() }} {{ selectedCount() === 1 ? 'mini' : 'minis' }} selected
+        </span>
+        <button
+          hlmBtn
+          variant="ghost"
+          type="button"
+          class="h-9 text-sm"
+          data-testid="hoard-select-all"
+          (click)="selectAll()"
+        >
+          Select all
+        </button>
+        <button
+          hlmBtn
+          variant="secondary"
+          type="button"
+          class="h-9 text-sm"
+          data-testid="hoard-select-done"
+          (click)="finishSelecting()"
+        >
+          Done
+        </button>
+      </div>
+    }
+
+    @if (visibleRows().length === 0) {
+      <p
+        class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
+        data-testid="hoard-no-results"
+      >
+        @if (query().trim()) {
+          No minis match "{{ query() }}".
+        } @else {
+          No minis match the filters.
+        }
+      </p>
+    } @else if (view() === 'table') {
+      <app-mini-table
+        [rows]="visibleRows()"
+        [isSelectionMode]="isSelecting()"
+        [selectedIds]="selectedIds()"
+        (selectedChange)="select($event)"
+      />
+    } @else {
+      @for (row of visibleRows(); track row.id) {
+        <app-mini-card
+          [row]="row"
+          [isSelectionMode]="isSelecting()"
+          [isSelected]="selectedIds().has(row.id)"
+          (selectedChange)="select({ row, isSelected: $event })"
+        />
+      }
+    }
+  </div>
+
+  <div hlmTabsContent="boxes">
+    <p class="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
+      The list of boxes comes later.
+    </p>
+  </div>
+</hlm-tabs>
