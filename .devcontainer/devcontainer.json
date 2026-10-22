@@ -1,0 +1,28 @@
+{
+  "name": "Greyhoarder",
+  "dockerComposeFile": "compose.yaml",
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/greyhoarder",
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+  },
+  "forwardPorts": [4200, 3000],
+  "portsAttributes": {
+    "4200": { "label": "Client" },
+    "3000": { "label": "Server" }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Angular.ng-template",
+        "dbaeumer.vscode-eslint",
+        "oxc.oxc-vscode",
+        "esbenp.prettier-vscode",
+        "EditorConfig.EditorConfig",
+        "vitest.explorer",
+        "anthropic.claude-code"
+      ]
+    }
+  }
+}

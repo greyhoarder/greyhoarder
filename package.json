@@ -9,8 +9,6 @@
   "scripts": {
     "start": "npm run start -w @greyhoarder/client",
     "start:server": "npm run build -w @greyhoarder/domain -w @greyhoarder/protocol && npm run start:dev -w @greyhoarder/server",
-    "infra:up": "docker compose -f compose.dev.yaml up -d --wait",
-    "infra:down": "docker compose -f compose.dev.yaml down",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
