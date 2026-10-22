@@ -70,8 +70,9 @@ height.
   (zxcvbn with common, English and German dictionaries, the username counts
   as easy to guess) and only informs; it never blocks sending.
 - The screen is only reachable while no account exists; otherwise `/setup`
-  leads to the login. Whether the setup is still needed comes from
-  `GET /api/auth/setup`; the form is sent with `POST /api/auth/setup`.
+  leads to the login. While no account exists, every other address leads
+  here. Whether the setup is still needed comes from `GET /api/auth/setup`,
+  asked on every navigation; the form is sent with `POST /api/auth/setup`.
 - Usernames have 3 to 32 characters: letters `a–z` in either case, digits,
   dot, underscore and hyphen. Passwords have 1 to 256 characters and no
   other rules. Both rules live in `libs/domain/users`, so client and server
@@ -91,5 +92,4 @@ height.
 ## Open questions
 
 - After creating the account: sign in directly, or go to the login?
-- Whether `/` leads here instead of to the login while no account exists.
 - Reference images for the light and the dark theme.
