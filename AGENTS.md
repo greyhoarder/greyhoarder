@@ -1,15 +1,16 @@
 # AGENTS.md — greyhoarder
 
 Greyhoarder is a self-hosted collection tracker for miniature wargamers. It
-records which boxes you own, which models came out of them, and where each
-model stands in the hobby pipeline: sprue → built → primed → painted → based.
+records which boxes you own, which minis came out of them, and where each
+mini stands in the hobby pipeline: sprue → built → primed → painted → based.
+A mini is one physical miniature.
 
 The client is an Angular app that runs in the browser and is packaged for
 desktop and mobile; the backend is a NestJS API. Both run as a Docker
 Compose stack (server, MongoDB, Redis) on the user's own hardware, shared by
 a household with local accounts.
 
-**Current scope:** boxes, the models they contain, and per-model hobby status.
+**Current scope:** boxes, the minis they contain, and per-mini hobby status.
 Army lists, painting recipes and rules data come later and must not shape the
 core data model prematurely.
 
@@ -33,6 +34,8 @@ your task, and only those:
   [architecture-ui.md](docs/architecture-ui.md)
 - **Look and feel** (colors, typography, spacing, screen layout, UI text):
   [design-system.md](docs/design-system.md)
+- **Working in a domain** (its terms, rules and data): its doc in
+  [docs/domains/](docs/domains/README.md), if there is one
 - **Building or changing a screen**: its spec in
   [docs/screens/](docs/screens/README.md), if there is one
 - **Writing or changing tests**:

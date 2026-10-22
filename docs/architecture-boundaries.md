@@ -25,6 +25,8 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
   instance settings).
 - `dashboard`: the start page after signing in; for now only in the
   client.
+- `hoard`: boxes, kits, minis, groups, the vocabulary of parts and the
+  workbench of each user (see [docs/domains/hoard.md](domains/hoard.md)).
 - Domains live in `apps/client/src/app/domains/<domain>/` and
   `apps/server/src/domains/<domain>/`, with the same name in both apps.
 - New domains are created only on explicit request. A new domain and its
@@ -33,13 +35,16 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
 _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 [ADR-0007](adr/0007-local-user-accounts.md),
 [ADR-0009](adr/0009-sessions-with-redis.md),
-[ADR-0018](adr/0018-end-to-end-tests-with-an-instance-per-worker.md))_
+[ADR-0018](adr/0018-end-to-end-tests-with-an-instance-per-worker.md),
+[ADR-0019](adr/0019-hobby-data-model.md))_
 
 ## Domain dependencies
 
 - `users` depends on no other domain.
 - `instance` depends on no other domain.
-- `dashboard` depends only on `auth` (the signed-in user).
+- `dashboard` depends only on `auth` (the signed-in user) and `hoard`
+  (what it shows about the hoard).
+- `hoard` depends on no other domain.
 - `auth` depends only on `users`. It reads and writes password hashes only
   through `users/api`; no other domain receives a hash.
 - No domain imports from `auth` to protect its endpoints; the

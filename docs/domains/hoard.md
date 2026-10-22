@@ -1,0 +1,119 @@
+# Domain: hoard
+
+- **Related:** [ADR-0019](../adr/0019-hobby-data-model.md),
+  [ADR-0010](../adr/0010-authorization-and-data-ownership.md),
+  [Dashboard](../screens/dashboard.md)
+
+## Purpose
+
+The hoard is everything a user owns for the hobby: the boxes they bought,
+the minis that came out of them, and where each mini stands on its way
+from the sprue to the finished model. Every part of the hoard belongs to
+exactly one user, and users see only their own hoard.
+
+## Terms
+
+| Term | Meaning |
+|------|---------|
+| **Mini** | One physical miniature, built or still on the sprue. The only thing with a hobby status. |
+| **Box** | Something the user acquired that minis came out of: a kit, a starter set, a bundle. |
+| **Kit** | A template for what a box can become: its variants and, per variant, its slots. |
+| **Variant** | One either-or outcome of a kit, e.g. "Lootas" or "Burna Boyz". Most kits have one. |
+| **Slot** | A number of minis in a variant and what they can be built as, e.g. "9 × Boy or Boss Nob". |
+| **Name** | What a mini was built as, in the user's words ("Boss Nob", "Tankbusta Rokkiteer"). |
+| **Part** | A term from the user's vocabulary for something physically on a mini ("Big Shoota", "Power Klaw"). |
+| **Counts as** | Optional free text saying what a mini stands in for on the table. |
+| **Group** | A user's grouping of minis that belong together, e.g. a mob or a squad. |
+| **Faction** | The faction a mini belongs to, e.g. "Orks". |
+| **Status** | Where a mini stands: on the sprue, built, primed, painted, based. |
+| **Workbench** | The minis the user is currently working on. |
+
+## Rules
+
+### Minis
+
+- A mini always has a name and a faction, even on the sprue; it never
+  needs its box to be listed, found or edited.
+- The status follows the order sprue → built → primed → painted → based.
+  Any status can be set, also backwards (a mistake, a stripped mini).
+- A mini may exist without a box (bought loose, second hand, already
+  painted, 3D printed, kitbashed) and may start with any status.
+- A mini has at most one box as its origin. Further origins of a kitbash
+  go into its notes.
+- A mini belongs to at most one group.
+
+### Boxes and kits
+
+- Adding a box from a kit creates its minis: one per mini in the slots of
+  the chosen variant, or of the kit's first variant if none is chosen yet.
+  Each starts on the sprue with the first suggestion of its slot as its
+  name and the kit's faction.
+- A box without a kit has a name only; its minis are added by hand.
+- A box's variant can be changed only while all its minis are still on the
+  sprue. Changing it replaces those minis with the minis of the new
+  variant.
+- Kits only suggest. Any name and any part can be given to any mini, and a
+  box may end up with more, fewer or other minis than its kit describes.
+- Changing a kit never changes existing boxes or minis.
+- Deleting a box asks whether its minis go too. Minis that stay lose
+  their origin and remain in the hoard.
+
+### Parts
+
+- Parts describe plastic, not rules. They are never checked against
+  rules or kits.
+- Each user has their own vocabulary of parts. A term has a name and
+  any number of aliases (older names, other spellings) for search and
+  input.
+- Minis refer to terms, so renaming a term renames it on every mini.
+- A part on a mini can be marked as swappable (magnetised).
+
+### Groups
+
+- Groups are independent of boxes: one group can hold minis from several
+  boxes, and the minis of one box can be spread over several groups.
+- Deleting a group keeps its minis.
+
+### Workbench
+
+- A mini is on the workbench only because the user put it there. Built,
+  primed or painted alone does not put it there.
+- Minis are put on the workbench singly or several at once, with or
+  without a group.
+- A mini leaves the workbench when the user takes it off, or when it
+  reaches the last status (based).
+
+## Life of a mini
+
+1. The user adds a box of a kit. Its minis appear on the sprue, named
+   after their slot.
+2. While building, the user gives individual minis their names and parts
+   ("Boss Nob" with a power klaw) and sets them to built, one by one or
+   several at once.
+3. The user groups minis ("Boyz Mob, 20") and puts some of them on the
+   workbench.
+4. Status changes move them through primed, painted and based; at based
+   they leave the workbench.
+
+## Lists of minis
+
+Interfaces list minis, not boxes. Minis that are alike (same name, faction,
+status, parts and group) are shown as one row with a count ("Boy · on the
+sprue · ×9"), from which the user picks how many to act on. As soon as a
+mini differs, it gets its own row. The origin box is shown as a detail and
+can be used as a filter, never as a level to navigate through.
+
+## Not part of this domain
+
+- Rules data, datasheets, points and army lists. They may later refer to
+  minis and groups; the hoard never refers to them.
+- A shared or imported catalog of kits (see ADR-0019).
+- Spare parts and leftover sprues.
+- Painting recipes and paints.
+
+## Open questions
+
+- Whether `painted` should already take a mini off the workbench for users
+  who do not base separately.
+- Photos: how many per mini, and where files are stored.
+- Whether statuses stay a fixed list or become configurable per user.

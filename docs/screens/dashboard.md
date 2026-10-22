@@ -43,4 +43,6 @@ a section shows an empty area with a dashed border.
 
 ## Open questions
 
-- The content of the three sections.
+- The content of the three sections. "On the workbench" and "In the
+  hoard" show data of the [hoard](../domains/hoard.md); the workbench
+  holds the minis the user put there, not every mini past the sprue.
