@@ -23,6 +23,8 @@ const environmentSchema = z.object({
     .pipe(z.array(z.string().min(16)).min(1)),
   SESSION_IDLE_MINUTES: z.coerce.number().int().positive().default(7 * 24 * 60),
   SESSION_MAX_DAYS: z.coerce.number().int().positive().default(30),
+  /** The client build; without it the server serves only the API (ADR-0017). */
+  WEB_APP_DIR: z.string().min(1).optional(),
 });
 
 /** Validated configuration from environment variables; no `.env` files. */
@@ -33,6 +35,7 @@ export class AppConfig {
   readonly sessionSecrets: readonly string[];
   readonly sessionIdleSeconds: number;
   readonly sessionMaxLifetimeMs: number;
+  readonly webAppDirectory: string | undefined;
 
   constructor(environment: NodeJS.ProcessEnv, development: boolean) {
     const result = environmentSchema.safeParse(
@@ -52,5 +55,6 @@ export class AppConfig {
     this.sessionSecrets = env.SESSION_SECRETS;
     this.sessionIdleSeconds = env.SESSION_IDLE_MINUTES * 60;
     this.sessionMaxLifetimeMs = env.SESSION_MAX_DAYS * 24 * 60 * 60 * 1000;
+    this.webAppDirectory = env.WEB_APP_DIR;
   }
 }

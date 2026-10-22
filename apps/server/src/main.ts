@@ -10,7 +10,9 @@ async function bootstrap(): Promise<void> {
   const config = app.get(AppConfig);
 
   app.setGlobalPrefix('api');
+  // Files of the web app never touch Redis (ADR-0017).
   app.use(
+    '/api',
     createSessionMiddleware({
       redis: app.get<RedisClient>(REDIS_CLIENT),
       secrets: config.sessionSecrets,
