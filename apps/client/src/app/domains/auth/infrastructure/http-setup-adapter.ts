@@ -4,7 +4,7 @@ import type { SetupRequest, SetupStatusResponse } from '@greyhoarder/protocol/au
 import { firstValueFrom } from 'rxjs';
 import { AccountsAlreadyExistError } from '../util/accounts-already-exist.error';
 import { type AdministratorField, InvalidAdministratorError } from '../util/invalid-administrator.error';
-import { ServerUnreachableError } from '../util/server-unreachable.error';
+import { ServerUnreachableError } from '../../../shared/http/server-unreachable.error';
 import { hasStatus, isUnreachable } from './http-status';
 
 /** Talks to `auth/setup` on the server. */

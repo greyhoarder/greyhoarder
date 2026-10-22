@@ -4,7 +4,7 @@ import type { User } from '@greyhoarder/domain/users';
 import type { LoginRequest, SessionResponse } from '@greyhoarder/protocol/auth';
 import { firstValueFrom } from 'rxjs';
 import { InvalidCredentialsError } from '../util/invalid-credentials.error';
-import { ServerUnreachableError } from '../util/server-unreachable.error';
+import { ServerUnreachableError } from '../../../shared/http/server-unreachable.error';
 import { TooManyLoginAttemptsError } from '../util/too-many-login-attempts.error';
 import { hasStatus, isUnreachable } from './http-status';
 

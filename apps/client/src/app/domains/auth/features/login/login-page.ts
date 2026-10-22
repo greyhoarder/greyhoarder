@@ -13,7 +13,7 @@ import { Logo } from '../../../../shared/ui/logo/logo';
 import { type Credentials, HttpSessionAdapter } from '../../infrastructure/http-session-adapter';
 import { InvalidCredentialsError } from '../../util/invalid-credentials.error';
 import { SETUP_ALREADY_DONE } from '../../util/setup-already-done';
-import { ServerUnreachableError } from '../../util/server-unreachable.error';
+import { ServerUnreachableError } from '../../../../shared/http/server-unreachable.error';
 import { TooManyLoginAttemptsError } from '../../util/too-many-login-attempts.error';
 
 /** Sign-in screen, specified in docs/screens/login.md. */

@@ -21,7 +21,7 @@ import { HttpSetupAdapter } from '../../infrastructure/http-setup-adapter';
 import { PasswordStrengthMeter } from '../../ui/password-strength/password-strength';
 import { AccountsAlreadyExistError } from '../../util/accounts-already-exist.error';
 import { InvalidAdministratorError } from '../../util/invalid-administrator.error';
-import { ServerUnreachableError } from '../../util/server-unreachable.error';
+import { ServerUnreachableError } from '../../../../shared/http/server-unreachable.error';
 import { SETUP_ALREADY_DONE } from '../../util/setup-already-done';
 
 interface InitialAdministrator {
