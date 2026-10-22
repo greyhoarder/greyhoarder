@@ -99,8 +99,10 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
 - A client domain contains only `api/`, `features/<feature>/`, `ui/`,
   `infrastructure/`, `util/` and `<domain>.routes.ts`.
 - `features/` holds pages, smart components and their state; `ui/` holds
-  the domain's presentational components; `infrastructure/` holds HTTP
-  services.
+  the domain's presentational components.
+- `infrastructure/` holds one HTTP adapter per server controller, named
+  `http-<resource>-adapter.ts` (`HttpSetupAdapter`). It maps between
+  protocol DTOs and domain models; features never see DTOs.
 - Allowed: `features → ui`, `features → infrastructure`; every folder may
   use `util/` and `@greyhoarder/domain`.
 - `ui` never uses `infrastructure`; features never import each other.

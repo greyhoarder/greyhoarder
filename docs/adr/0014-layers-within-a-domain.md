@@ -71,6 +71,11 @@ apps/server/src/domains/<domain>/
   `infrastructure/user-repository/` with the repository and its schema.
   Replacing a technology then means adding a new adapter next to the old
   one and changing the binding.
+- Entry points are the primary adapters, implementations in
+  `infrastructure/` the secondary adapters. Neither carries an `adapter`
+  suffix: the port or the NestJS kind already names the role. The client
+  has no ports, so its HTTP adapters carry the suffix
+  (`http-setup-adapter.ts`).
 - Connections, clients and their configuration (e.g.
   `MongooseModule.forRoot()`, the Redis client) are platform setup. They
   live at app level, in `AppModule` or `apps/server/src/shared/`, never in
@@ -98,7 +103,7 @@ apps/client/src/app/domains/<domain>/
 ├── api/                  ← contract for other domains (ADR-0004)
 ├── features/<feature>/   ← pages, smart components, their state
 ├── ui/                   ← presentational components of this domain (ADR-0011)
-├── infrastructure/       ← HTTP services using @greyhoarder/protocol
+├── infrastructure/       ← HTTP adapters: protocol DTOs ↔ domain models
 ├── util/
 └── <domain>.routes.ts    ← entry point for the router
 ```

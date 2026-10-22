@@ -34,6 +34,9 @@ Fence**. In this project that means in particular:
 - Booleans read as a question (`isPublic`, `hasSession`); functions start
   with a verb (`findByOwner`).
 - No type prefixes or suffixes: `UserRepository`, not `IUserRepository`.
+- Implementations of external access are named
+  `<technology>-<subject>-<role>.ts`: `redis-session-registry.ts`,
+  `http-setup-adapter.ts`.
 
 ## Types
 
