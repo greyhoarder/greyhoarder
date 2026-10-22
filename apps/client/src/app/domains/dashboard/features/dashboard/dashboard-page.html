@@ -1,0 +1,12 @@
+<header>
+  <h1 class="text-3xl font-semibold" data-testid="dashboard-greeting">
+    Welcome back, {{ user()?.username }}
+  </h1>
+</header>
+
+@for (section of sections; track section.id) {
+  <section class="flex flex-col gap-4" [attr.aria-labelledby]="'dashboard-' + section.id">
+    <h2 class="text-xl font-semibold" [id]="'dashboard-' + section.id">{{ section.title }}</h2>
+    <div class="min-h-40 rounded-xl border border-dashed border-border" [attr.data-testid]="'dashboard-' + section.id"></div>
+  </section>
+}

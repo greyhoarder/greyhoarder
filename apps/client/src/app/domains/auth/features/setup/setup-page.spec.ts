@@ -1,11 +1,29 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
+import { HttpSessionAdapter } from '../../infrastructure/http-session-adapter';
+import { HttpSetupAdapter } from '../../infrastructure/http-setup-adapter';
 import { SetupPage } from './setup-page';
+
+@Component({ template: '' })
+class StubPage {}
 
 describe('Setup page', () => {
   let fixture: ComponentFixture<SetupPage>;
   let page: HTMLElement;
+  const createAdministrator = vi.fn();
+  const signIn = vi.fn();
 
   beforeEach(async () => {
+    createAdministrator.mockReset().mockResolvedValue(undefined);
+    signIn.mockReset().mockResolvedValue({ id: '1', username: 'lucas', role: 'admin' });
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{ path: '', component: StubPage }]),
+        { provide: HttpSetupAdapter, useValue: { createAdministrator } },
+        { provide: HttpSessionAdapter, useValue: { signIn } },
+      ],
+    });
     fixture = TestBed.createComponent(SetupPage);
     page = fixture.nativeElement;
     await fixture.whenStable();
@@ -87,5 +105,21 @@ describe('Setup page', () => {
     await submit();
 
     expect(document.activeElement).toBe(field('setup-username'));
+  });
+
+  it('signs the new administrator in and leads into the app', async () => {
+    await type('setup-username', 'lucas');
+    await type('setup-password', 'secret-password');
+    await type('setup-password-confirmation', 'secret-password');
+
+    await submit();
+
+    expect(createAdministrator).toHaveBeenCalledWith('lucas', 'secret-password');
+    expect(signIn).toHaveBeenCalledWith({
+      username: 'lucas',
+      password: 'secret-password',
+      keepSignedIn: false,
+    });
+    expect(TestBed.inject(Router).url).toBe('/');
   });
 });

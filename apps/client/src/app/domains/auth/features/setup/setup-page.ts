@@ -1,5 +1,13 @@
-import { afterNextRender, Component, signal } from '@angular/core';
-import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
+import { afterNextRender, Component, inject, signal } from '@angular/core';
+import {
+  form,
+  FormField,
+  FormRoot,
+  required,
+  type TreeValidationResult,
+  validate,
+} from '@angular/forms/signals';
+import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEye, lucideEyeOff } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -8,7 +16,13 @@ import { HlmFieldImports } from '@spartan-ng/helm/field';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { Logo } from '../../../../shared/ui/logo/logo';
+import { HttpSessionAdapter } from '../../infrastructure/http-session-adapter';
+import { HttpSetupAdapter } from '../../infrastructure/http-setup-adapter';
 import { PasswordStrengthMeter } from '../../ui/password-strength/password-strength';
+import { AccountsAlreadyExistError } from '../../util/accounts-already-exist.error';
+import { InvalidAdministratorError } from '../../util/invalid-administrator.error';
+import { ServerUnreachableError } from '../../util/server-unreachable.error';
+import { SETUP_ALREADY_DONE } from '../../util/setup-already-done';
 
 interface InitialAdministrator {
   username: string;
@@ -36,6 +50,10 @@ interface InitialAdministrator {
   host: { class: 'flex min-h-dvh flex-col items-center justify-center gap-8 bg-background p-4' },
 })
 export class SetupPage {
+  private readonly setup = inject(HttpSetupAdapter);
+  private readonly sessions = inject(HttpSessionAdapter);
+  private readonly router = inject(Router);
+
   protected readonly administrator = signal<InitialAdministrator>({
     username: '',
     password: '',
@@ -57,7 +75,10 @@ export class SetupPage {
     {
       submission: {
         action: async () => this.createAdministrator(),
-        onInvalid: (field) => field().errorSummary()[0]?.fieldTree().focusBoundControl(),
+        onInvalid: (field) => {
+          this.failure.set(undefined);
+          field().errorSummary()[0]?.fieldTree().focusBoundControl();
+        },
       },
     },
   );
@@ -65,8 +86,8 @@ export class SetupPage {
   protected readonly passwordVisible = signal(false);
   protected readonly passwordConfirmationVisible = signal(false);
 
-  /** Shown after a valid submit until the backend is connected. */
-  protected readonly notice = signal<string | undefined>(undefined);
+  /** Why the last attempt failed, when it concerns no single field; cleared on the next one. */
+  protected readonly failure = signal<string | undefined>(undefined);
 
   constructor() {
     afterNextRender(() => this.setupForm.username().focusBoundControl());
@@ -80,7 +101,45 @@ export class SetupPage {
     this.passwordConfirmationVisible.update((visible) => !visible);
   }
 
-  private createAdministrator(): void {
-    this.notice.set('Setting up is not connected to the server yet.');
+  private async createAdministrator(): Promise<TreeValidationResult> {
+    this.failure.set(undefined);
+    const { username, password } = this.administrator();
+    try {
+      await this.setup.createAdministrator(username, password);
+    } catch (error) {
+      return this.handleRejection(error);
+    }
+    await this.signInAs(username, password);
+    return undefined;
+  }
+
+  private async handleRejection(error: unknown): Promise<TreeValidationResult> {
+    if (error instanceof InvalidAdministratorError) {
+      const { username, password } = error.messages;
+      return [
+        ...(username ? [{ kind: 'server', message: username, fieldTree: this.setupForm.username }] : []),
+        ...(password ? [{ kind: 'server', message: password, fieldTree: this.setupForm.password }] : []),
+      ];
+    }
+    if (error instanceof AccountsAlreadyExistError) {
+      await this.router.navigateByUrl('/login', { info: SETUP_ALREADY_DONE });
+      return undefined;
+    }
+    if (error instanceof ServerUnreachableError) {
+      this.failure.set("Can't reach the server. Try again in a moment.");
+      return undefined;
+    }
+    throw error;
+  }
+
+  /** The account exists at this point; if signing in fails anyway, the login takes over. */
+  private async signInAs(username: string, password: string): Promise<void> {
+    try {
+      await this.sessions.signIn({ username, password, keepSignedIn: false });
+    } catch {
+      await this.router.navigateByUrl('/login');
+      return;
+    }
+    await this.router.navigateByUrl('/');
   }
 }

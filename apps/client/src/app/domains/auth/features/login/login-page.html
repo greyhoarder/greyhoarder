@@ -14,6 +14,7 @@
           <input
             hlmInput
             id="username"
+            data-testid="login-username"
             type="text"
             autocomplete="username"
             autocapitalize="none"
@@ -32,6 +33,7 @@
             <input
               hlmInputGroupInput
               id="password"
+              data-testid="login-password"
               autocomplete="current-password"
               [type]="passwordVisible() ? 'text' : 'password'"
               [formField]="loginForm.password"
@@ -60,21 +62,29 @@
           </label>
         </div>
 
-        <button
-          hlmBtn
-          type="submit"
-          class="mt-4 h-11 w-full text-base font-semibold"
-          [disabled]="loginForm().submitting()"
-          [attr.aria-busy]="loginForm().submitting()"
-        >
-          Sign in
-        </button>
+        <div class="mt-1 flex flex-col gap-2">
+          @if (isSetupAlreadyDone && !failure()) {
+            <p role="status" class="text-sm text-muted-foreground" data-testid="login-notice">
+              This hoard is already set up. Sign in to continue.
+            </p>
+          }
+          @if (failure(); as message) {
+            <p role="alert" class="text-sm text-destructive" data-testid="login-failure">{{ message }}</p>
+          }
 
-        @if (notice(); as message) {
-          <p role="status" class="text-sm text-muted-foreground">{{ message }}</p>
-        }
+          <button
+            hlmBtn
+            type="submit"
+            data-testid="login-submit"
+            class="h-11 w-full text-base font-semibold"
+            [disabled]="loginForm().submitting()"
+            [attr.aria-busy]="loginForm().submitting()"
+          >
+            Sign in
+          </button>
+        </div>
 
-        <p class="text-center text-sm text-muted-foreground">
+        <p class="mt-1 text-center text-sm text-muted-foreground">
           Forgot your password? Ask your administrator.
         </p>
       </div>

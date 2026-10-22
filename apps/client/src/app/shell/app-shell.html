@@ -1,0 +1,66 @@
+<ng-template #entry let-entry>
+  @if (entry.link) {
+    <a
+      [routerLink]="entry.link"
+      routerLinkActive="bg-sidebar-accent text-sidebar-accent-foreground [&_ng-icon]:text-primary"
+      ariaCurrentWhenActive="page"
+      class="flex shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-base text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    >
+      <ng-icon [name]="entry.icon" size="20" />
+      {{ entry.label }}
+    </a>
+  } @else {
+    <span
+      aria-disabled="true"
+      class="flex shrink-0 cursor-not-allowed items-center gap-3 rounded-lg px-4 py-3 text-base text-muted-foreground opacity-60"
+    >
+      <ng-icon [name]="entry.icon" size="20" />
+      {{ entry.label }}
+    </span>
+  }
+</ng-template>
+
+<aside
+  class="flex flex-col gap-4 border-b border-sidebar-border bg-sidebar p-4 text-sidebar-foreground md:sticky md:top-0 md:h-dvh md:w-72 md:shrink-0 md:gap-8 md:border-r md:border-b-0 md:p-6"
+>
+  <app-logo [size]="32" />
+
+  <nav aria-label="Main" class="flex gap-1 overflow-x-auto md:flex-1 md:flex-col md:overflow-visible">
+    @for (item of mainEntries; track item.label) {
+      <ng-container [ngTemplateOutlet]="entry" [ngTemplateOutletContext]="{ $implicit: item }" />
+    }
+    <div class="md:mt-auto">
+      <ng-container [ngTemplateOutlet]="entry" [ngTemplateOutletContext]="{ $implicit: settingsEntry }" />
+    </div>
+  </nav>
+
+  @if (user(); as signedIn) {
+    <div class="flex items-center gap-3 md:border-t md:border-sidebar-border md:pt-4">
+      <span
+        aria-hidden="true"
+        class="flex size-10 shrink-0 items-center justify-center rounded-full bg-sidebar-accent font-semibold uppercase"
+      >
+        {{ signedIn.username[0] }}
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col">
+        <span class="truncate font-medium" data-testid="shell-username">{{ signedIn.username }}</span>
+        <span class="text-sm text-muted-foreground">{{ roleLabels[signedIn.role] }}</span>
+      </div>
+      <button
+        hlmBtn
+        variant="ghost"
+        size="icon"
+        type="button"
+        aria-label="Sign out"
+        data-testid="shell-sign-out"
+        (click)="signOut()"
+      >
+        <ng-icon name="lucideLogOut" size="20" />
+      </button>
+    </div>
+  }
+</aside>
+
+<div class="min-w-0 flex-1">
+  <router-outlet />
+</div>

@@ -27,7 +27,11 @@ interface WorkerFixtures {
 interface TestFixtures {
   /** The worker's instance, reset to no accounts and no sessions before the test. */
   freshInstance: Instance;
+  /** A fresh instance with an administrator whom the page is signed in as, through the API. */
+  signedIn: Instance & { readonly username: string };
 }
+
+const ADMINISTRATOR = { username: 'mira', password: 'a long and quiet sprue' };
 
 /** The development URL with the path replaced, so tests never touch development data. */
 function withPath(url: string, path: string): string {
@@ -108,6 +112,17 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
   freshInstance: async ({ instance }, use) => {
     await instance.reset();
     await use(instance);
+  },
+  signedIn: async ({ freshInstance, page }, use) => {
+    // The page's request context shares its cookies, so the browser holds the session afterwards.
+    const headers = { Origin: freshInstance.url };
+    for (const path of ['/api/auth/setup', '/api/auth/session']) {
+      const response = await page.request.post(`${freshInstance.url}${path}`, { data: ADMINISTRATOR, headers });
+      if (!response.ok()) {
+        throw new Error(`POST ${path} answered ${response.status()} while signing in for a test.`);
+      }
+    }
+    await use({ ...freshInstance, username: ADMINISTRATOR.username });
   },
 });
 

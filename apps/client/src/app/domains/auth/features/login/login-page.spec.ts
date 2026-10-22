@@ -1,11 +1,26 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
+import { HttpSessionAdapter } from '../../infrastructure/http-session-adapter';
+import { InvalidCredentialsError } from '../../util/invalid-credentials.error';
 import LoginPage from './login-page';
+
+@Component({ template: '' })
+class StubPage {}
 
 describe('Login page', () => {
   let fixture: ComponentFixture<LoginPage>;
   let page: HTMLElement;
+  const signIn = vi.fn();
 
   beforeEach(async () => {
+    signIn.mockReset();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{ path: '', component: StubPage }]),
+        { provide: HttpSessionAdapter, useValue: { signIn } },
+      ],
+    });
     fixture = TestBed.createComponent(LoginPage);
     page = fixture.nativeElement;
     await fixture.whenStable();
@@ -83,5 +98,27 @@ describe('Login page', () => {
 
     expect(typeWhenShown).toBe('text');
     expect(field('password').type).toBe('password');
+  });
+
+  it('leads into the app after a successful sign-in', async () => {
+    signIn.mockResolvedValue({ id: '1', username: 'lucas', role: 'admin' });
+    await type('username', 'lucas');
+    await type('password', 'secret');
+
+    await click(submitButton());
+
+    expect(TestBed.inject(Router).url).toBe('/');
+  });
+
+  it('shows "Username or password is incorrect." when the server refuses the credentials', async () => {
+    signIn.mockRejectedValue(new InvalidCredentialsError());
+    await type('username', 'lucas');
+    await type('password', 'wrong');
+
+    await click(submitButton());
+
+    expect(page.querySelector('[data-testid="login-failure"]')?.textContent?.trim()).toBe(
+      'Username or password is incorrect.',
+    );
   });
 });

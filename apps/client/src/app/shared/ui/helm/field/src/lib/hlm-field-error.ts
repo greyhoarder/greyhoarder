@@ -87,8 +87,8 @@ export class HlmFieldError implements OnDestroy {
     : null;
 
   constructor() {
-    // Always takes one line, so showing an error does not shift the layout.
-    classes(() => 'text-destructive text-xs font-normal min-h-4');
+    // Takes no space without an error, so the form stays compact until one appears.
+    classes(() => 'text-destructive text-xs font-normal empty:hidden');
   }
 
   ngOnDestroy() {

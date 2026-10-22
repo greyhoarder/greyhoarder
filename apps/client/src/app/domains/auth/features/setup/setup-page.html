@@ -85,22 +85,24 @@
           </hlm-field-error>
         </div>
 
-        <button
-          hlmBtn
-          type="submit"
-          data-testid="setup-submit"
-          class="mt-4 h-11 w-full text-base font-semibold"
-          [disabled]="setupForm().submitting()"
-          [attr.aria-busy]="setupForm().submitting()"
-        >
-          Create administrator
-        </button>
+        <div class="mt-1 flex flex-col gap-2">
+          @if (failure(); as message) {
+            <p role="alert" class="text-sm text-destructive" data-testid="setup-failure">{{ message }}</p>
+          }
 
-        @if (notice(); as message) {
-          <p role="status" class="text-sm text-muted-foreground">{{ message }}</p>
-        }
+          <button
+            hlmBtn
+            type="submit"
+            data-testid="setup-submit"
+            class="h-11 w-full text-base font-semibold"
+            [disabled]="setupForm().submitting()"
+            [attr.aria-busy]="setupForm().submitting()"
+          >
+            Create administrator
+          </button>
+        </div>
 
-        <p class="text-center text-sm text-muted-foreground">
+        <p class="mt-1 text-center text-sm text-muted-foreground">
           You can add more accounts later as administrator.
         </p>
       </div>
