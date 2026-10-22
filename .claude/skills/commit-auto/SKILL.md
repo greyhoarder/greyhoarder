@@ -41,9 +41,9 @@ overview. Never commit without that confirmation, and never push.
    untracked files count as `A`. If something was already staged, say so
    below the branch line, since it ends up in the commit as well.
 5. Ask with the `AskUserQuestion` tool, options: "Commit as shown",
-   "Change message or split", "Cancel". The dialog hides the overview, so
-   the question itself names every commit with its message and files,
-   e.g. `Commit 1 "fix(server): …" (mongo-user-repository.ts M +19 −6)`.
+   "Change message or split", "Cancel". The question lists only the
+   commits, one per line with number and message, e.g.
+   `Commit 1: fix(server): …`; no files, since they are in the overview.
    Then wait.
    - "Change message or split": apply the user's change, show the updated
      overview and ask again.
