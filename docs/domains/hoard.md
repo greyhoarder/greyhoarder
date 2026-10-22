@@ -25,7 +25,6 @@ exactly one user, and users see only their own hoard.
 | **Name** | What a mini was built as, in the user's words ("Boss Nob", "Tankbusta Rokkiteer"). |
 | **Part** | A term from the user's vocabulary for something physically on a mini ("Big Shoota", "Power Klaw"). |
 | **Counts as** | Optional free text saying what a mini stands in for on the table. |
-| **Group** | A user's grouping of minis that belong together, e.g. a mob or a squad. |
 | **Faction** | An army a mini belongs to: a [catalog](catalog.md) faction ("Dark Angels") or one of the user's own factions. |
 | **Own faction** | A faction the user created, e.g. a custom successor chapter; it can be part of another faction. |
 | **Status** | Where a mini stands: on the sprue, built, primed, painted, based. |
@@ -43,7 +42,6 @@ exactly one user, and users see only their own hoard.
   painted, 3D printed, kitbashed) and may start with any status.
 - A mini has at most one box as its origin. Further origins of a kitbash
   go into its notes.
-- A mini belongs to at most one group.
 
 ### Boxes and kits
 
@@ -88,18 +86,11 @@ exactly one user, and users see only their own hoard.
   A part suggested by a catalog kit becomes a term of the user's
   vocabulary when it is first used.
 
-### Groups
-
-- Groups are independent of boxes: one group can hold minis from several
-  boxes, and the minis of one box can be spread over several groups.
-- Deleting a group keeps its minis.
-
 ### Workbench
 
 - A mini is on the workbench only because the user put it there. Built,
   primed or painted alone does not put it there.
-- Minis are put on the workbench singly or several at once, with or
-  without a group.
+- Minis are put on the workbench singly or several at once.
 - A mini leaves the workbench when the user takes it off, or when it
   reaches the last status (based).
 
@@ -110,15 +101,14 @@ exactly one user, and users see only their own hoard.
 2. While building, the user gives individual minis their names, parts
    and factions ("Boss Nob" with a power klaw; a Space Marine becomes a
    Crimson Wolf) and sets them to built, one by one or several at once.
-3. The user groups minis ("Boyz Mob, 20") and puts some of them on the
-   workbench.
+3. The user puts some of them on the workbench.
 4. Status changes move them through primed, painted and based; at based
    they leave the workbench.
 
 ## Lists of minis
 
 Interfaces list minis, not boxes. Minis that are alike (same name, factions,
-status, parts and group) are shown as one row with a count ("Boy · on the
+status and parts) are shown as one row with a count ("Boy · on the
 sprue · ×9"), from which the user picks how many to act on. As soon as a
 mini differs, it gets its own row. The origin box is shown as a detail and
 can be used as a filter, never as a level to navigate through.
@@ -138,7 +128,7 @@ Filtering by faction depends on what the list is for:
 ## Not part of this domain
 
 - Rules data, datasheets, points and army lists. They may later refer to
-  minis and groups; the hoard never refers to them.
+  minis; the hoard never refers to them.
 - The community kit catalog; it belongs to the [catalog](catalog.md)
   domain. Users' own kits stay in the hoard.
 - Spare parts and leftover sprues.
@@ -146,6 +136,7 @@ Filtering by faction depends on what the list is for:
 
 ## Open questions
 
+- Whether minis can be grouped (a mob, a squad); left out for now.
 - Whether `painted` should already take a mini off the workbench for users
   who do not base separately.
 - Photos: how many per mini, and where files are stored.

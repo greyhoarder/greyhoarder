@@ -44,8 +44,6 @@ that users do not create; no such catalog exists yet.
   they can be built as. Kits never validate; whatever the user built is
   right. For now, kits are created by users and owned like the rest of the
   hoard; they are not the product reference data of ADR-0005.
-- **Grouping is the user's.** Minis are grouped into groups (a mob, a
-  squad) independently of the boxes they came from.
 - **The workbench is a choice.** A mini is on the workbench because the
   user put it there, not because of its status.
 
@@ -87,7 +85,9 @@ and refined there without a new decision.
   term in the user's vocabulary.
 - Without validation, nothing stops impossible builds; the hoard records
   what is on the shelf, not what is legal.
-- Rules data and army lists will reference minis and groups, never the
-  other way round.
+- Rules data and army lists will reference minis, never the other way
+  round.
+- Grouping minis (a mob, a squad) is left out for now; if it comes, it is
+  a decision of its own.
 - Kits are entered by users; a shared or imported catalog needs a new
   decision.

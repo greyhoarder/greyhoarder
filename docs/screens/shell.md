@@ -43,7 +43,7 @@ Each entry has an outline icon before its label.
 | State | When | What the user sees |
 |-------|------|--------------------|
 | Current entry | Its page is open | Entry on the accent background, icon in gold |
-| Not available yet | The entry's screen does not exist | Entry dimmed, not a link (currently all but Dashboard) |
+| Not available yet | The entry's screen does not exist | Entry dimmed, not a link (currently all but Dashboard and Hoard) |
 | Signed out | Sign-out button pressed | The session ends and the user is taken to the [login](login.md) |
 
 ## Behavior

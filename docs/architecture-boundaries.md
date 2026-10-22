@@ -28,7 +28,7 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
   instance settings).
 - `dashboard`: the start page after signing in; for now only in the
   client.
-- `hoard`: boxes, kits, minis, groups, the vocabulary of parts and the
+- `hoard`: boxes, kits, minis, the vocabulary of parts and the
   workbench of each user (see [docs/domains/hoard.md](domains/hoard.md)).
 - `catalog`: the kits and factions of the community catalog, their import
   and the queries for them (see
@@ -137,15 +137,22 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 ## Layers inside a client domain
 
 - A client domain contains only `api/`, `features/<feature>/`, `ui/`,
-  `infrastructure/`, `util/` and `<domain>.routes.ts`.
+  `data/`, `infrastructure/`, `util/` and `<domain>.routes.ts`.
 - `features/` holds pages, smart components and their state; `ui/` holds
   the domain's presentational components.
-- `infrastructure/` holds one HTTP adapter per server controller, named
-  `http-<resource>-adapter.ts` (`HttpSetupAdapter`). It maps between
-  protocol DTOs and domain models; features never see DTOs.
-- Allowed: `features → ui`, `features → infrastructure`; every folder may
-  use `util/` and `@greyhoarder/domain`.
-- `ui` never uses `infrastructure`; features never import each other.
+- `data/` holds the data the client keeps locally: stores shared by
+  features of the domain (in memory or browser storage) and fixed or
+  temporary data, e.g. sample data named `sample-<subject>.ts` that stands
+  in for the server until its adapter exists.
+- `infrastructure/` holds only access to external resources: one HTTP
+  adapter per server controller, named `http-<resource>-adapter.ts`
+  (`HttpSetupAdapter`). It maps between protocol DTOs and domain models;
+  features never see DTOs.
+- Allowed: `features → ui`, `features → data`, `features → infrastructure`,
+  `data → infrastructure`; every folder may use `util/` and
+  `@greyhoarder/domain`.
+- `ui` never uses `data` or `infrastructure`; `data` never imports
+  `features` or `ui`; features never import each other.
 - No ports on the client.
 
 _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
