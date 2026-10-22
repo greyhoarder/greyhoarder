@@ -1,8 +1,8 @@
 # Architecture: security
 
-Rules for hosting, accounts, sessions and authorization. Where `users` and
-`auth` sit among the domains is covered in
-[architecture-boundaries.md](architecture-boundaries.md).
+Rules for hosting, serving the web app, accounts, sessions and
+authorization. Where `users` and `auth` sit among the domains is covered
+in [architecture-boundaries.md](architecture-boundaries.md).
 
 ## Hosting
 
@@ -13,6 +13,24 @@ Rules for hosting, accounts, sessions and authorization. Where `users` and
   browser clients.
 
 _(derived from [ADR-0008](adr/0008-reverse-proxy-and-hostnames.md))_
+
+## Serving the web app
+
+- In production, the server serves the client build; a reverse proxy only
+  terminates TLS and forwards requests.
+- Never answer a path under `/api` with the web app; unknown API paths get
+  the API's 404. Answer every other path without a matching file with
+  `index.html`.
+- Serve files with a content hash in their name as immutable with a long
+  cache lifetime; serve `index.html` with `no-cache`.
+- Apply session handling only to `/api`.
+- Set up static serving and the health endpoint at app level in
+  `apps/server/src/platform/`, never in a domain.
+- `GET /api/health` is public and reports only whether the server is
+  ready.
+
+_(derived from [ADR-0017](adr/0017-server-serves-the-web-app.md),
+[ADR-0018](adr/0018-end-to-end-tests-with-an-instance-per-worker.md))_
 
 ## Accounts
 

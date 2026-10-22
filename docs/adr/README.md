@@ -21,3 +21,5 @@ written and changed.
 | 0014 | [Layers within a domain](0014-layers-within-a-domain.md)                                | Proposed |
 | 0015 | [API protocol with shared Zod schemas](0015-api-protocol-with-shared-zod-schemas.md)    | Proposed |
 | 0016 | [In-process events between domains](0016-in-process-events-between-domains.md)          | Proposed |
+| 0017 | [Server serves the web app](0017-server-serves-the-web-app.md)                          | Proposed |
+| 0018 | [End-to-end tests with an instance per worker](0018-end-to-end-tests-with-an-instance-per-worker.md) | Proposed |

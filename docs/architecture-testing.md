@@ -61,6 +61,28 @@ _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
 
 _(derived from [ADR-0013](adr/0013-browser-e2e-tests-with-playwright.md))_
 
+## End-to-end test instances
+
+- Each Playwright worker runs its own instance: a server process from the
+  built client and server, on its own port, with its own MongoDB database
+  and its own Redis database index.
+- Start and stop a worker's instance in a worker fixture; wait for
+  `GET /api/health` before the first test.
+- Reset an instance only through the test fixture, directly against its
+  MongoDB database and Redis database. Never add reset endpoints, seed
+  endpoints or test modes to the app.
+- Create test data only through the public API, including the initial
+  setup and signing in; never write to the database from tests.
+- Tests that are not about the setup or the login start signed in through
+  the API fixture; test the setup and login screens through the UI.
+- Send the instance's origin as `Origin` with every API request from tests.
+- Prefix database names for end-to-end tests (`greyhoarder-e2e-`); never
+  point tests at a development or production database.
+- In CI, build client and server, start MongoDB as a single-node replica
+  set and Redis as containers, then run Playwright.
+
+_(derived from [ADR-0018](adr/0018-end-to-end-tests-with-an-instance-per-worker.md))_
+
 ## Approval
 
 - Write, change or delete a test case only after the user has approved that
