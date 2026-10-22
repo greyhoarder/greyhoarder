@@ -94,9 +94,11 @@ _(derived from [ADR-0011](adr/0011-ui-components-with-spartan-and-tailwind.md))_
 
 ## Motion
 
-- Short color, border and opacity transitions only; no decorative
-  animation.
-- Respect `prefers-reduced-motion`.
+- Short color, border and opacity transitions; no decorative animation.
+- The only looping animation: a button whose request is running shows
+  diagonal stripes drifting across it and a busy label ("Signing in…").
+  It stays in its color instead of fading like a disabled button.
+- Respect `prefers-reduced-motion`: the busy stripes stand still.
 
 ## Accessibility
 

@@ -40,6 +40,7 @@ height.
 | Password toggle (accessible name) | Show password / Hide password |
 | Checkbox label | Keep me signed in on this device |
 | Primary button | Sign in |
+| Primary button while busy | Signing in… |
 | Hint | Forgot your password? Ask your administrator. |
 
 ## States
@@ -48,7 +49,7 @@ height.
 |-------|------|--------------------|
 | Initial | Screen opens | Empty fields, checkbox not ticked, no errors, focus in the username field |
 | Missing input | Sent with an empty field | "Enter your username." or "Enter your password." below that field; focus moves to the first field with an error |
-| Signing in | Request is running | Button shows that it is busy and cannot be pressed again |
+| Signing in | Request is running | Button reads "Signing in…", shows the busy stripes and cannot be pressed again |
 | Wrong credentials | Unknown username or wrong password | One message for both cases: "Username or password is incorrect." |
 | Too many attempts | Login is rate-limited | A message that sign-in is paused for a moment |
 | Server not reachable | The request gets no answer | "Can't reach the server. Try again in a moment." |

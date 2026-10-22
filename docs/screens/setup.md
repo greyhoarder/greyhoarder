@@ -43,6 +43,7 @@ height.
 | Password toggles (accessible name) | Show password / Hide password |
 | Strength meter levels | Too weak / Weak / Fair / Strong |
 | Primary button | Create administrator |
+| Primary button while busy | Creating administrator… |
 | Hint | You can add more accounts later as administrator. |
 
 ## States
@@ -52,7 +53,7 @@ height.
 | Initial | Screen opens | Empty fields, no errors, focus in the username field |
 | Missing input | Sent with an empty field | A message below each empty field; focus moves to the first field with an error |
 | Passwords differ | Sent while the two passwords differ | A message below the confirmation field |
-| Creating | Request is running | Button shows that it is busy and cannot be pressed again |
+| Creating | Request is running | Button reads "Creating administrator…", shows the busy stripes and cannot be pressed again |
 | Invalid input | The server rejects username or password | The server's message below the affected field |
 | Server not reachable | The request gets no answer | "Can't reach the server. Try again in a moment." above the button |
 | Already set up | An account exists, e.g. someone else finished the setup first | The user is taken to the login with a short notice |
