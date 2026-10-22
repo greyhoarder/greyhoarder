@@ -30,3 +30,4 @@ update the guide.
 | 0017 | [Server serves the web app](0017-server-serves-the-web-app.md)                          | Proposed |
 | 0018 | [End-to-end tests with an instance per worker](0018-end-to-end-tests-with-an-instance-per-worker.md) | Proposed |
 | 0019 | [Hobby data model](0019-hobby-data-model.md)                                            | Proposed |
+| 0020 | [Community kit catalog](0020-community-kit-catalog.md)                                  | Proposed |

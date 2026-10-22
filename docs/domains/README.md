@@ -12,4 +12,5 @@ code (`libs/domain/<domain>/`), not here.
 
 | Domain | Covers |
 |--------|--------|
+| [catalog](catalog.md) | The community kit catalog: catalog kits, their versions, factions |
 | [hoard](hoard.md) | Boxes, kits, minis, groups, parts, the workbench |
