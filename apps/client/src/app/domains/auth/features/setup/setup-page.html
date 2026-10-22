@@ -98,7 +98,7 @@
             [disabled]="setupForm().submitting()"
             [attr.aria-busy]="setupForm().submitting()"
           >
-            Create administrator
+            {{ setupForm().submitting() ? 'Creating administrator…' : 'Create administrator' }}
           </button>
         </div>
 

@@ -121,4 +121,31 @@ describe('Login page', () => {
       'Username or password is incorrect.',
     );
   });
+
+  it('marks the sign-in button as busy and blocks it while the sign-in is running', async () => {
+    signIn.mockReturnValue(new Promise(() => undefined));
+    await type('username', 'lucas');
+    await type('password', 'secret');
+    const labelBefore = submitButton().textContent!.trim();
+
+    submitButton().click();
+    fixture.detectChanges();
+
+    expect(submitButton().disabled).toBe(true);
+    expect(submitButton().getAttribute('aria-busy')).toBe('true');
+    expect(submitButton().textContent!.trim()).not.toBe(labelBefore);
+  });
+
+  it('releases the sign-in button after the sign-in fails', async () => {
+    signIn.mockRejectedValue(new InvalidCredentialsError());
+    await type('username', 'lucas');
+    await type('password', 'wrong');
+    const labelBefore = submitButton().textContent!.trim();
+
+    await click(submitButton());
+
+    expect(submitButton().disabled).toBe(false);
+    expect(submitButton().getAttribute('aria-busy')).toBe('false');
+    expect(submitButton().textContent!.trim()).toBe(labelBefore);
+  });
 });

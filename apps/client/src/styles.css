@@ -16,6 +16,29 @@
 @theme {
   --font-display: 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
   --tracking-wordmark: 0.08em;
+
+  --animate-busy-stripes: busy-stripes 1s linear infinite;
+
+  @keyframes busy-stripes {
+    to {
+      background-position-x: var(--busy-stripes-tile);
+    }
+  }
+}
+
+/*
+ * Diagonal stripes in the element's own text color for a busy button.
+ * One square tile holds exactly one stripe period, so shifting it by its
+ * width loops without a seam.
+ */
+@utility bg-busy-stripes {
+  --busy-stripes-tile: calc(1.5rem * 1.41421356);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 0.75rem,
+    color-mix(in oklab, currentColor 12%, transparent) 0.75rem 1.5rem
+  );
+  background-size: var(--busy-stripes-tile) var(--busy-stripes-tile);
 }
 
 :root {

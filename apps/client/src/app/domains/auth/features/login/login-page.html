@@ -80,7 +80,7 @@
             [disabled]="loginForm().submitting()"
             [attr.aria-busy]="loginForm().submitting()"
           >
-            Sign in
+            {{ loginForm().submitting() ? 'Signing in…' : 'Sign in' }}
           </button>
         </div>
 

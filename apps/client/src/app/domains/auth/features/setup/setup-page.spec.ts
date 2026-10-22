@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { HttpSessionAdapter } from '../../infrastructure/http-session-adapter';
 import { HttpSetupAdapter } from '../../infrastructure/http-setup-adapter';
+import { ServerUnreachableError } from '../../../../shared/http/server-unreachable.error';
 import { SetupPage } from './setup-page';
 
 @Component({ template: '' })
@@ -121,5 +122,34 @@ describe('Setup page', () => {
       keepSignedIn: false,
     });
     expect(TestBed.inject(Router).url).toBe('/');
+  });
+
+  it('marks the create button as busy and blocks it while the administrator is being created', async () => {
+    createAdministrator.mockReturnValue(new Promise(() => undefined));
+    await type('setup-username', 'lucas');
+    await type('setup-password', 'secret-password');
+    await type('setup-password-confirmation', 'secret-password');
+    const labelBefore = field('setup-submit').textContent!.trim();
+
+    field('setup-submit').click();
+    fixture.detectChanges();
+
+    expect(field('setup-submit').disabled).toBe(true);
+    expect(field('setup-submit').getAttribute('aria-busy')).toBe('true');
+    expect(field('setup-submit').textContent!.trim()).not.toBe(labelBefore);
+  });
+
+  it('releases the create button after creating the administrator fails', async () => {
+    createAdministrator.mockRejectedValue(new ServerUnreachableError());
+    await type('setup-username', 'lucas');
+    await type('setup-password', 'secret-password');
+    await type('setup-password-confirmation', 'secret-password');
+    const labelBefore = field('setup-submit').textContent!.trim();
+
+    await submit();
+
+    expect(field('setup-submit').disabled).toBe(false);
+    expect(field('setup-submit').getAttribute('aria-busy')).toBe('false');
+    expect(field('setup-submit').textContent!.trim()).toBe(labelBefore);
   });
 });
