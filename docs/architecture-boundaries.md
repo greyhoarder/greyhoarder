@@ -23,6 +23,8 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
   passwords), login, logout, sessions, the global guard.
 - `instance`: state and settings of the instance as a whole (health, later
   instance settings).
+- `dashboard`: the start page after signing in; for now only in the
+  client.
 - Domains live in `apps/client/src/app/domains/<domain>/` and
   `apps/server/src/domains/<domain>/`, with the same name in both apps.
 - New domains are created only on explicit request. A new domain and its
@@ -37,6 +39,7 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 
 - `users` depends on no other domain.
 - `instance` depends on no other domain.
+- `dashboard` depends only on `auth` (the signed-in user).
 - `auth` depends only on `users`. It reads and writes password hashes only
   through `users/api`; no other domain receives a hash.
 - No domain imports from `auth` to protect its endpoints; the
@@ -132,6 +135,19 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 - No ports on the client.
 
 _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
+
+## App level on the client
+
+- Besides `shared/` (see below), code outside `domains/` is the app level:
+  `app.ts`, `app.config.ts`, `app.routes.ts` and `shell/`.
+- The app level assembles domains and uses them only through their
+  `api/`. It holds no business logic and no HTTP adapters.
+- `shell/app-shell.ts` is the layout route above every route behind the
+  login; login and setup stay outside it. Its navigation entries are a
+  fixed list in the shell.
+
+_(derived from [ADR-0004](adr/0004-domain-slicing.md),
+[ADR-0014](adr/0014-layers-within-a-domain.md))_
 
 ## Shared code
 

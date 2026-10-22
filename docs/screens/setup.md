@@ -54,8 +54,9 @@ height.
 | Passwords differ | Sent while the two passwords differ | A message below the confirmation field |
 | Creating | Request is running | Button shows that it is busy and cannot be pressed again |
 | Invalid input | The server rejects username or password | The server's message below the affected field |
+| Server not reachable | The request gets no answer | "Can't reach the server. Try again in a moment." above the button |
 | Already set up | An account exists, e.g. someone else finished the setup first | The user is taken to the login with a short notice |
-| Created | Request succeeded | See open questions |
+| Created | Request succeeded | The new administrator is signed in and taken to the [dashboard](dashboard.md) |
 
 ## Behavior
 
@@ -87,9 +88,8 @@ height.
 ## Test IDs
 
 `setup-username`, `setup-password`, `setup-password-confirmation`,
-`setup-submit` (ADR-0013).
+`setup-submit`, `setup-failure` (ADR-0013).
 
 ## Open questions
 
-- After creating the account: sign in directly, or go to the login?
 - Reference images for the light and the dark theme.

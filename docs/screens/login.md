@@ -1,7 +1,8 @@
 # Screen: Login
 
-- **Route:** `/login`; `/` leads here while signed out, once the
-  [setup](setup.md) is done
+- **Route:** `/login`; `/` and every page behind the login lead here while
+  signed out, once the [setup](setup.md) is done. Signed-in users who open
+  it are taken to the [dashboard](dashboard.md)
 - **Domain:** `auth`
 - **Related:** [ADR-0007](../adr/0007-local-user-accounts.md),
   [ADR-0009](../adr/0009-sessions-with-redis.md)
@@ -50,7 +51,9 @@ height.
 | Signing in | Request is running | Button shows that it is busy and cannot be pressed again |
 | Wrong credentials | Unknown username or wrong password | One message for both cases: "Username or password is incorrect." |
 | Too many attempts | Login is rate-limited | A message that sign-in is paused for a moment |
-| Signed in | Request succeeded | The user is taken to the app |
+| Server not reachable | The request gets no answer | "Can't reach the server. Try again in a moment." |
+| Setup already done | The [setup](setup.md) sent the user here because someone else finished it first | "This hoard is already set up. Sign in to continue." above the button |
+| Signed in | Request succeeded | The user is taken to the [dashboard](dashboard.md) |
 
 ## Behavior
 
@@ -71,7 +74,6 @@ height.
 
 ## Open questions
 
-- Where the user lands after signing in (no collection screen exists yet).
 - Exact text for "Too many attempts".
 - Whether the username stays and the password is cleared after wrong
   credentials.

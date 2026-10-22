@@ -81,6 +81,9 @@ _(derived from [ADR-0011](adr/0011-ui-components-with-spartan-and-tailwind.md))_
   full width. Secondary actions use the `outline` or `ghost` variant.
 - **Inputs:** filled with a subtle `input` border. Focus shows the gold
   `ring`. Errors appear below the field in `destructive` and mark the field.
+- **Form errors** that belong to no single field (wrong credentials, server
+  not reachable) appear in `destructive` directly above the form's primary
+  button and are announced to screen readers.
 - **Password fields** have a show/hide toggle with an accessible label.
 - **Cards** have a header with title and optional description.
 

@@ -12,3 +12,5 @@ below.
 |--------|-------|--------|
 | [Login](login.md) | `/login` | `auth` |
 | [Setup](setup.md) | `/setup` | `auth` |
+| [Dashboard](dashboard.md) | `/dashboard` | `dashboard` |
+| [Shell](shell.md) | every route behind the login | app level |
