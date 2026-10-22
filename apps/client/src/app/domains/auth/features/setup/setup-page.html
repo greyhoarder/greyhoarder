@@ -19,7 +19,7 @@
             autocomplete="username"
             autocapitalize="none"
             spellcheck="false"
-            class="h-11"
+            class="h-10"
             [formField]="setupForm.username"
           />
           <hlm-field-error>{{ setupForm.username().errors()[0]?.message }}</hlm-field-error>
@@ -27,7 +27,7 @@
 
         <div hlmField>
           <label hlmFieldLabel for="setup-password" class="text-base">Password</label>
-          <div hlmInputGroup class="h-11">
+          <div hlmInputGroup class="h-10">
             <input
               hlmInputGroupInput
               id="setup-password"
@@ -59,7 +59,7 @@
           <label hlmFieldLabel for="setup-password-confirmation" class="text-base">
             Repeat password
           </label>
-          <div hlmInputGroup class="h-11">
+          <div hlmInputGroup class="h-10">
             <input
               hlmInputGroupInput
               id="setup-password-confirmation"
@@ -94,7 +94,7 @@
             hlmBtn
             type="submit"
             data-testid="setup-submit"
-            class="h-11 w-full text-base font-semibold"
+            class="h-10 w-full text-sm font-semibold"
             [disabled]="setupForm().submitting()"
             [attr.aria-busy]="setupForm().submitting()"
           >

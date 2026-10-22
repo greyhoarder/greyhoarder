@@ -19,7 +19,7 @@
             autocomplete="username"
             autocapitalize="none"
             spellcheck="false"
-            class="h-11"
+            class="h-10"
             [formField]="loginForm.username"
           />
           <hlm-field-error validator="required">
@@ -29,7 +29,7 @@
 
         <div hlmField>
           <label hlmFieldLabel for="password" class="text-base">Password</label>
-          <div hlmInputGroup class="h-11">
+          <div hlmInputGroup class="h-10">
             <input
               hlmInputGroupInput
               id="password"
@@ -76,7 +76,7 @@
             hlmBtn
             type="submit"
             data-testid="login-submit"
-            class="h-11 w-full text-base font-semibold"
+            class="h-10 w-full text-sm font-semibold"
             [disabled]="loginForm().submitting()"
             [attr.aria-busy]="loginForm().submitting()"
           >

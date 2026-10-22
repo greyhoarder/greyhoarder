@@ -114,7 +114,20 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Keeps the scrollbar's space reserved, so the layout does not jump when a page starts or stops scrolling. */
+  html {
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Tailwind 4 no longer shows the pointer on buttons; everything clickable gets it back. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role='tab']:not(:disabled),
+  a[href],
+  label[for],
+  summary {
+    cursor: pointer;
   }
 }
