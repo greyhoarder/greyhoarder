@@ -29,7 +29,7 @@ exactly one user, and users see only their own hoard.
 | **Counts as** | Optional free text saying what a mini stands in for on the table. |
 | **Faction** | An army a mini belongs to: a [catalog](catalog.md) faction ("Dark Angels") or one of the user's own factions. |
 | **Own faction** | A faction the user created, e.g. a custom successor chapter; it can be part of another faction. |
-| **Status** | Where a mini stands: on the sprue, built, primed, painted, based. |
+| **Status** | Where a mini stands: on the sprue, built, primed, painted, done. |
 | **Workbench** | The minis the user is currently working on. |
 
 ## Rules
@@ -38,7 +38,7 @@ exactly one user, and users see only their own hoard.
 
 - A mini always has a name and at least one faction, even on the sprue;
   it never needs its box to be listed, found or edited.
-- The status follows the order sprue → built → primed → painted → based.
+- The status follows the order sprue → built → primed → painted → done.
   Any status can be set, also backwards (a mistake, a stripped mini).
 - A mini may exist without a box (bought loose, second hand, already
   painted, 3D printed, kitbashed) and may start with any status.
@@ -67,10 +67,10 @@ exactly one user, and users see only their own hoard.
   tags; renaming a tag renames it on every box.
 - A box's progress is derived from its minis, never stored: untouched
   while all of them are on the sprue, done once all of them are painted
-  (painted or based), started in between. A box without minis is
+  (painted or done), started in between. A box without minis is
   untouched. The rule lives in `libs/domain/hoard`.
 - A box's progress as a percentage counts each of its minis by its status
-  in equal steps: on the sprue 0, built 25, primed 50, painted 75, based
+  in equal steps: on the sprue 0, built 25, primed 50, painted 75, done
   100; the box gets the rounded average. A box without minis is at 0. The
   rule lives in `libs/domain/hoard` as well.
 - Deleting a box asks whether its minis go too. Minis that stay lose
@@ -106,7 +106,7 @@ exactly one user, and users see only their own hoard.
   primed or painted alone does not put it there.
 - Minis are put on the workbench singly or several at once.
 - A mini leaves the workbench when the user takes it off, or when it
-  reaches the last status (based).
+  reaches the last status (done).
 
 ## Life of a mini
 
@@ -116,7 +116,7 @@ exactly one user, and users see only their own hoard.
    and factions ("Boss Nob" with a power klaw; a Space Marine becomes a
    Crimson Wolf) and sets them to built, one by one or several at once.
 3. The user puts some of them on the workbench.
-4. Status changes move them through primed, painted and based; at based
+4. Status changes move them through primed, painted and done; once done
    they leave the workbench.
 
 ## Lists of minis

@@ -40,7 +40,7 @@ export const SAMPLE_BOXES: readonly BoxRow[] = [
     name: 'Intercessors',
     kit: { name: 'Intercessors' },
     factions: ['Dark Angels', 'Crimson Wolves'],
-    minis: { primed: 5, based: 5 },
+    minis: { primed: 5, done: 5 },
     addedOn: '2026-01-14',
     price: { amount: 55, currency: 'EUR' },
     tags: ['Second hand'],

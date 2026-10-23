@@ -11,7 +11,7 @@ interface Segment {
 
 /**
  * A bar over all minis of a box, split by status in the order of the hobby
- * pipeline, from built on the left to based on the right; minis still on the
+ * pipeline, from built on the left to done on the right; minis still on the
  * sprue are the empty background. Names the counts for a tooltip and screen readers.
  */
 @Component({
@@ -49,7 +49,7 @@ export class ProgressBar {
     }));
   });
 
-  /** E.g. "5 primed, 5 based". */
+  /** E.g. "5 primed, 5 done". */
   protected readonly description = computed(() => {
     const box = this.box();
     return PROGRESS_STATUSES.filter((status) => (box.minis[status] ?? 0) > 0)
@@ -69,5 +69,5 @@ export const STATUS_COLORS: Readonly<Record<HobbyStatus, string>> = {
   built: 'bg-muted-foreground/45',
   primed: 'bg-muted-foreground/75',
   painted: 'bg-primary/60',
-  based: 'bg-primary',
+  done: 'bg-primary',
 };

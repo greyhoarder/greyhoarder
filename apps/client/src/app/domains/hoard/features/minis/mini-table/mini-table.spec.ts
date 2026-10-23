@@ -28,7 +28,7 @@ const ROWS: MiniRow[] = [
     name: 'Captain',
     factions: ['Dark Angels'],
     parts: [],
-    status: 'based',
+    status: 'done',
     isOnWorkbench: false,
     count: 1,
   },
@@ -53,6 +53,6 @@ describe('Mini table', () => {
     await fixture.whenStable();
 
     expect(ascending).toBe('On the sprue');
-    expect(firstStatus()).toBe('Based');
+    expect(firstStatus()).toBe('Done');
   });
 });

@@ -2,7 +2,7 @@
 
 A self-hosted collection tracker for miniature wargamers. Greyhoarder records
 which boxes you own, which models came out of them, and where each model
-stands in the hobby pipeline: sprue → built → primed → painted → based.
+stands in the hobby pipeline: sprue → built → primed → painted → done.
 
 > **Status:** early design phase. The architecture is documented; there is no
 > runnable code yet.

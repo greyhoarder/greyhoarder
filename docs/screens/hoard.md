@@ -67,7 +67,7 @@ with the round check and the progress badge on its top left and a "⋮"
 button on its top right; below it the box name with the kit line under it
 and the progress percentage on the right, the progress bar with a status
 line under it in one line (a colored dot and the count for built, primed,
-painted and based, also 0), and a line with factions and date followed by
+painted and done, also 0), and a line with factions and date followed by
 the tags as small outlined badges.
 
 **Table**: the round check, Box (name, kit line below in small text), Faction, Progress
@@ -95,7 +95,7 @@ summary line.
 | Selection bar | {count} mini(s) selected · Select all · Done |
 | Row origin line (cards) | {factions} · {box or "Without box"} |
 | Workbench tag | Workbench |
-| Status badge | On the sprue / Built / Primed / Painted / Based |
+| Status badge | On the sprue / Built / Primed / Painted / Done |
 | Count | ×{count} |
 | Row check (accessible name) | Select {name} |
 | Row menu (accessible name) | More actions |
@@ -105,8 +105,8 @@ summary line.
 | Kit line | {kit name} · {article number, if any}; "No kit" for boxes without one |
 | Progress badge and word | Untouched / Started / Done |
 | Progress percentage | {n}% |
-| Progress bar (tooltip and accessible name) | Counts per status past the sprue, in pipeline order, e.g. "5 primed, 5 based" |
-| Status line (cards) | {n} built · {n} primed · {n} painted · {n} based |
+| Progress bar (tooltip and accessible name) | Counts per status past the sprue, in pipeline order, e.g. "5 primed, 5 done" |
+| Status line (cards) | {n} built · {n} primed · {n} painted · {n} done |
 | Box selection bar | {n} box(es) selected · Select all · Done |
 | Box meta line (cards) | {factions} · added {date} |
 | Date | e.g. 12 Oct 2026 |
@@ -131,7 +131,7 @@ summary line.
 
 ## Behavior
 
-- "Painted" in the summary counts painted and based minis.
+- "Painted" in the summary counts painted and done minis.
 - Status badges are grey while a mini is unpainted, a lighter grey with
   each step, and gold from painted on (design system: gold means done).
 - The search ignores case and needs no confirmation.
@@ -157,7 +157,7 @@ summary line.
 - A box's progress follows the [domain rule](../domains/hoard.md#boxes-and-kits):
   untouched, started or done, and a percentage weighted by status. The bar
   is split by status in the colors of the status badges and always in the
-  order of the pipeline (built, primed, painted, based), with small gaps
+  order of the pipeline (built, primed, painted, done), with small gaps
   between the parts. Minis on the sprue are no progress: they are the
   empty background of the bar and are not counted in the status line. The
   progress badge is grey until done and gold when done.

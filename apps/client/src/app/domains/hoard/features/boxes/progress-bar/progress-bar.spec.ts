@@ -8,7 +8,7 @@ describe('Progress bar', () => {
       id: '1',
       name: 'Intercessors',
       factions: ['Dark Angels'],
-      minis: { primed: 5, based: 5 },
+      minis: { primed: 5, done: 5 },
       addedOn: '2026-01-14',
       tags: [],
     });
@@ -19,6 +19,6 @@ describe('Progress bar', () => {
       (fixture.nativeElement as HTMLElement)
         .querySelector('[role="img"]')
         ?.getAttribute('aria-label'),
-    ).toBe('5 primed, 5 based');
+    ).toBe('5 primed, 5 done');
   });
 });

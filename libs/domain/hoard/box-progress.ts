@@ -18,7 +18,7 @@ export function boxProgress(statuses: readonly HobbyStatus[]): BoxProgress {
 
 /**
  * How far a group of minis has come, from 0 to 100: each mini counts by its
- * status, from 0 on the sprue up to 100 when based, in equal steps
+ * status, from 0 on the sprue up to 100 when done, in equal steps
  * (built 25, primed 50, painted 75). No minis count as 0.
  */
 export function progressPercent(statuses: readonly HobbyStatus[]): number {

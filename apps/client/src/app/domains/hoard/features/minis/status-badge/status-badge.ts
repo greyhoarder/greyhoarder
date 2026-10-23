@@ -15,7 +15,7 @@ import { STATUS_LABELS } from '../../../util/status-labels';
     <span
       hlmBadge
       variant="outline"
-      class="h-6 border-transparent px-2.5 text-sm font-medium data-[status=based]:bg-primary data-[status=based]:text-primary-foreground data-[status=built]:bg-muted-foreground/40 data-[status=painted]:bg-primary/60 data-[status=painted]:text-primary-foreground data-[status=primed]:bg-muted-foreground/70 data-[status=primed]:text-background data-[status=sprue]:bg-muted"
+      class="h-6 border-transparent px-2.5 text-sm font-medium data-[status=built]:bg-muted-foreground/40 data-[status=done]:bg-primary data-[status=done]:text-primary-foreground data-[status=painted]:bg-primary/60 data-[status=painted]:text-primary-foreground data-[status=primed]:bg-muted-foreground/70 data-[status=primed]:text-background data-[status=sprue]:bg-muted"
       [attr.data-status]="status()"
       data-testid="hoard-status"
     >

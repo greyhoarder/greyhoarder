@@ -2,7 +2,7 @@
 
 Greyhoarder is a self-hosted collection tracker for miniature wargamers. It
 records which boxes you own, which minis came out of them, and where each
-mini stands in the hobby pipeline: sprue → built → primed → painted → based.
+mini stands in the hobby pipeline: sprue → built → primed → painted → done.
 A mini is one physical miniature.
 
 The client is an Angular app that runs in the browser and is packaged for

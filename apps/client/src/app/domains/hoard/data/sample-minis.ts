@@ -121,7 +121,7 @@ export const SAMPLE_MINIS: readonly MiniRow[] = [
     factions: ['Crimson Wolves (Dark Angels)'],
     box: 'Intercessors',
     parts: ['Auto Bolt Rifle'],
-    status: 'based',
+    status: 'done',
     isOnWorkbench: false,
     count: 5,
   },
