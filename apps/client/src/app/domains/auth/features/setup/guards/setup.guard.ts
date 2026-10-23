@@ -1,23 +1,18 @@
 import { inject } from '@angular/core';
-import { CanActivateChildFn, Router } from '@angular/router';
-import { HttpSetupAdapter } from '../../../infrastructure/http-setup-adapter';
+import { CanActivateFn, Router } from '@angular/router';
+import { SetupStatus } from '../setup-status';
 
 /**
- * While no account exists, every address leads to the setup; afterwards the
- * setup leads to the login. Asks the server on every navigation, because
- * someone else may finish the setup in the meantime.
+ * Sends the login to the setup while no account exists. The signed-in routes need no such
+ * check: without an account nobody is signed in, so `signedInGuard` leads them here first.
  */
-export const setupGuard: CanActivateChildFn = async (_route, state) => {
+export const setupDoneGuard: CanActivateFn = async () => {
   const router = inject(Router);
-  const required = await inject(HttpSetupAdapter).isSetupRequired();
-  const firstSegment = router.parseUrl(state.url).root.children['primary']?.segments[0]?.path;
-  const isSetup = firstSegment === 'setup';
+  return (await inject(SetupStatus).isRequired()) ? router.parseUrl('/setup') : true;
+};
 
-  if (required && !isSetup) {
-    return router.parseUrl('/setup');
-  }
-  if (!required && isSetup) {
-    return router.parseUrl('/login');
-  }
-  return true;
+/** Keeps the setup open only while no account exists; afterwards it leads to the login. */
+export const setupOpenGuard: CanActivateFn = async () => {
+  const router = inject(Router);
+  return (await inject(SetupStatus).isRequired()) ? true : router.parseUrl('/login');
 };

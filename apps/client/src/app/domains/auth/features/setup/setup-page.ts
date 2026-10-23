@@ -23,6 +23,7 @@ import { AccountsAlreadyExistError } from '../../util/accounts-already-exist.err
 import { InvalidAdministratorError } from '../../util/invalid-administrator.error';
 import { ServerUnreachableError } from '../../../../shared/http/server-unreachable.error';
 import { SETUP_ALREADY_DONE } from '../../util/setup-already-done';
+import { SetupStatus } from './setup-status';
 
 interface InitialAdministrator {
   username: string;
@@ -51,6 +52,7 @@ interface InitialAdministrator {
 })
 export class SetupPage {
   private readonly setup = inject(HttpSetupAdapter);
+  private readonly setupStatus = inject(SetupStatus);
   private readonly sessions = inject(HttpSessionAdapter);
   private readonly router = inject(Router);
 
@@ -109,6 +111,7 @@ export class SetupPage {
     } catch (error) {
       return this.handleRejection(error);
     }
+    this.setupStatus.markDone();
     await this.signInAs(username, password);
     return undefined;
   }
@@ -122,6 +125,7 @@ export class SetupPage {
       ];
     }
     if (error instanceof AccountsAlreadyExistError) {
+      this.setupStatus.markDone();
       await this.router.navigateByUrl('/login', { info: SETUP_ALREADY_DONE });
       return undefined;
     }
