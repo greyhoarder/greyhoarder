@@ -18,7 +18,7 @@ import { KitCard } from './kit-card/kit-card';
   imports: [RouterLink, NgIcon, HlmButton, HlmInputGroupImports, AddStepper, KitCard],
   providers: [provideIcons({ lucideChevronLeft, lucideScanBarcode, lucideSearch })],
   templateUrl: './add-box-page.html',
-  host: { class: 'mx-auto flex w-full max-w-6xl flex-col gap-8 p-4 sm:p-8 lg:p-10' },
+  host: { class: 'flex w-full flex-col gap-8 p-4 sm:p-8 lg:p-10' },
 })
 export class AddBoxPage {
   private readonly catalogKits = inject(HttpKitsAdapter);
