@@ -20,21 +20,12 @@ export interface CatalogImport {
   readonly kits: CatalogUpdate<CatalogKit>;
 }
 
-/** Storage of the imported catalog for the features of this domain. */
+/** Storage of the imported catalog for its import; never published through `catalog/api`. */
 export abstract class CatalogRepository {
   /** `undefined` before the first import. */
   abstract findLastSnapshotHash(): Promise<string | undefined>;
 
   abstract findImported(): Promise<ImportedCatalog>;
-
-  /**
-   * The latest version of every kit that is not removed and whose name, product code or barcode
-   * contains the text, ignoring case; at most `limit`, sorted by name.
-   */
-  abstract searchKits(text: string, limit: number): Promise<CatalogKit[]>;
-
-  /** The names of the latest factions and whole game systems with these ids, by id. */
-  abstract findFactionNames(ids: readonly string[]): Promise<ReadonlyMap<string, string>>;
 
   /** Applies the whole import or nothing of it, and records its snapshot as the last one. */
   abstract applyImport(catalogImport: CatalogImport): Promise<void>;

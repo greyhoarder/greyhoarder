@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
-import { CatalogRepository } from '../../ports/catalog-repository.js';
+import { CatalogKitQueries } from '../../ports/catalog-kit-queries.js';
 
 /** Enough to choose a kit; a narrower search finds the rest. */
 const SEARCH_LIMIT = 50;
@@ -14,7 +14,7 @@ export interface KitSearchResult {
 /** Finding catalog kits to add a box from; removed kits are no longer offered (ADR-0020). */
 @Injectable()
 export class KitsService {
-  constructor(private readonly catalog: CatalogRepository) {}
+  constructor(private readonly catalog: CatalogKitQueries) {}
 
   async search(text: string): Promise<KitSearchResult> {
     const kits = await this.catalog.searchKits(text, SEARCH_LIMIT);

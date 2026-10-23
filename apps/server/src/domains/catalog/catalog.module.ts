@@ -15,6 +15,7 @@ import {
 } from './infrastructure/catalog-repository/mongo-catalog-schemas.js';
 import { MongoCatalogRepository } from './infrastructure/catalog-repository/mongo-catalog-repository.js';
 import { YamlCatalogSnapshotSource } from './infrastructure/catalog-snapshot-source/yaml-catalog-snapshot-source.js';
+import { CatalogKitQueries } from './ports/catalog-kit-queries.js';
 import { CatalogRepository } from './ports/catalog-repository.js';
 import { CatalogSnapshotSource } from './ports/catalog-snapshot-source.js';
 
@@ -33,7 +34,9 @@ import { CatalogSnapshotSource } from './ports/catalog-snapshot-source.js';
     ImportService,
     KitsService,
     { provide: CatalogSnapshotSource, useClass: YamlCatalogSnapshotSource },
-    { provide: CatalogRepository, useClass: MongoCatalogRepository },
+    MongoCatalogRepository,
+    { provide: CatalogRepository, useExisting: MongoCatalogRepository },
+    { provide: CatalogKitQueries, useExisting: MongoCatalogRepository },
   ],
 })
 export class CatalogModule {}
