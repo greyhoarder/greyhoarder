@@ -20,7 +20,7 @@ import { MinisStore } from '../../data/minis-store';
   imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIcon, HlmBadge, HlmButton],
   providers: [provideIcons({ lucideCircleCheck, lucideList, lucidePlus, lucideRows2 })],
   templateUrl: './hoard-layout.html',
-  host: { class: 'mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 sm:p-8 lg:p-10' },
+  host: { class: 'flex w-full flex-col gap-6 p-4 sm:p-8 lg:p-10' },
 })
 export class HoardLayout {
   protected readonly minis = inject(MinisStore);

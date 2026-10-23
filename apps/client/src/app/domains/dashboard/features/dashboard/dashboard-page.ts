@@ -5,7 +5,7 @@ import { CurrentSession } from '../../../auth/api';
 @Component({
   selector: 'app-dashboard-page',
   templateUrl: './dashboard-page.html',
-  host: { class: 'mx-auto flex w-full max-w-6xl flex-col gap-10 p-4 sm:p-8 lg:p-10' },
+  host: { class: 'flex w-full flex-col gap-10 p-4 sm:p-8 lg:p-10' },
 })
 export class DashboardPage {
   protected readonly user = inject(CurrentSession).user;

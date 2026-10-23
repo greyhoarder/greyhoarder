@@ -18,7 +18,7 @@ import type { BoxRow } from '../../util/box-row';
   imports: [NgIcon, HlmButton, HlmInputGroupImports, BoxCard, BoxTable, FilterChip],
   providers: [provideIcons({ lucideSearch, lucideX })],
   templateUrl: './boxes-page.html',
-  host: { class: 'flex flex-col gap-3' },
+  host: { class: '@container flex flex-col gap-3' },
 })
 export class BoxesPage {
   protected readonly store = inject(BoxesStore);

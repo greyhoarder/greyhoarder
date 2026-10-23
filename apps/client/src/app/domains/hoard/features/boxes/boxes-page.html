@@ -102,7 +102,7 @@
   />
   <p class="mt-1 text-sm text-muted-foreground" data-testid="hoard-box-summary">{{ summary() }}</p>
 } @else {
-  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  <div class="grid gap-4 @2xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-4">
     @for (box of store.visibleBoxes(); track box.id) {
       <app-box-card
         [box]="box"
