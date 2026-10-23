@@ -8,7 +8,8 @@ import { SAMPLE_BOXES } from './sample-boxes';
 /** The boxes of the hoard with the search, filters and selection of the Boxes tab. */
 @Injectable({ providedIn: 'root' })
 export class BoxesStore {
-  readonly boxes = signal<readonly BoxRow[]>(SAMPLE_BOXES).asReadonly();
+  private readonly allBoxes = signal<readonly BoxRow[]>(SAMPLE_BOXES);
+  readonly boxes = this.allBoxes.asReadonly();
 
   readonly query = signal('');
   readonly factionFilter = signal<ReadonlySet<string>>(new Set());
@@ -41,6 +42,10 @@ export class BoxesStore {
   private readonly isSelectStarted = signal(false);
   readonly selectedIds = signal<ReadonlySet<string>>(new Set());
   readonly isSelecting = computed(() => this.isSelectStarted() || this.selectedIds().size > 0);
+
+  add(boxes: readonly BoxRow[]): void {
+    this.allBoxes.update((current) => [...current, ...boxes]);
+  }
 
   resetFilters(): void {
     for (const filter of [this.factionFilter, this.progressFilter, this.tagFilter]) {

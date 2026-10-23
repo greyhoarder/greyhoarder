@@ -10,7 +10,8 @@ import { SAMPLE_MINIS } from './sample-minis';
 /** The minis of the hoard with the search, filters and selection of the Minis tab. */
 @Injectable({ providedIn: 'root' })
 export class MinisStore {
-  readonly rows = signal<readonly MiniRow[]>(SAMPLE_MINIS).asReadonly();
+  private readonly allRows = signal<readonly MiniRow[]>(SAMPLE_MINIS);
+  readonly rows = this.allRows.asReadonly();
 
   readonly query = signal('');
   readonly factionFilter = signal<ReadonlySet<string>>(new Set());
@@ -52,6 +53,10 @@ export class MinisStore {
   readonly selectedCount = computed(() =>
     countMinis(this.rows().filter((row) => this.selectedIds().has(row.id))),
   );
+
+  add(rows: readonly MiniRow[]): void {
+    this.allRows.update((current) => [...current, ...rows]);
+  }
 
   resetFilters(): void {
     for (const filter of [this.factionFilter, this.statusFilter, this.boxFilter]) {

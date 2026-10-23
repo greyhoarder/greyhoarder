@@ -10,59 +10,90 @@
   <h1 class="text-2xl font-semibold">Add to hoard</h1>
 </header>
 
-<app-add-stepper [current]="0" />
-
-<section class="flex flex-col gap-4" aria-labelledby="add-box-question">
-  <h2 id="add-box-question" class="text-lg font-semibold">Which box did you get?</h2>
-
-  <div class="flex gap-3">
-    <div hlmInputGroup class="h-10 flex-1">
-      <div hlmInputGroupAddon>
-        <ng-icon name="lucideSearch" size="18" />
-      </div>
-      <input
-        hlmInputGroupInput
-        type="search"
-        placeholder="Name, product code or barcode"
-        aria-label="Search kits"
-        data-testid="add-box-search"
-        [value]="query()"
-        (input)="search($event)"
-      />
+<div class="flex gap-3">
+  <div hlmInputGroup class="h-10 flex-1">
+    <div hlmInputGroupAddon>
+      <ng-icon name="lucideSearch" size="18" />
     </div>
-    <!-- Scanning comes with the packaged apps. -->
-    <button
-      hlmBtn
-      variant="outline"
-      type="button"
-      class="size-10"
-      aria-label="Scan barcode"
-      data-testid="add-box-scan"
-    >
-      <ng-icon name="lucideScanBarcode" size="16" />
-    </button>
+    <input
+      hlmInputGroupInput
+      type="search"
+      placeholder="Name, product code or barcode"
+      aria-label="Search kits"
+      data-testid="add-box-search"
+      [value]="query()"
+      (input)="search($event)"
+    />
   </div>
+  <!-- Scanning comes with the packaged apps. -->
+  <button
+    hlmBtn
+    variant="outline"
+    type="button"
+    class="size-10"
+    aria-label="Scan barcode"
+    data-testid="add-box-scan"
+  >
+    <ng-icon name="lucideScanBarcode" size="16" />
+  </button>
+</div>
 
-  @if (!isSearching()) {
-    <p class="py-8 text-center text-muted-foreground" data-testid="add-box-hint">
-      Search the catalog by name, product code or barcode.
-    </p>
-  } @else if (matches.error()) {
-    <p class="py-8 text-center text-destructive" role="alert" data-testid="add-box-error">
-      Can't search the catalog right now. Try again in a moment.
-    </p>
-  } @else if (kits().length > 0) {
-    <div class="flex flex-col gap-3">
-      <h3 class="text-muted-foreground">Matching kits</h3>
-      <ul class="flex flex-col gap-2">
-        @for (kit of kits(); track kit.id) {
-          <li><app-kit-card [kit]="kit" /></li>
-        }
-      </ul>
+<div role="status" class="empty:hidden">
+  @if (added(); as message) {
+    <div
+      class="flex items-center gap-3 rounded-xl border border-primary/60 bg-primary/10 px-4 py-2.5 text-sm"
+      data-testid="add-box-added"
+    >
+      <ng-icon name="lucideCircleCheck" size="18" class="shrink-0 text-primary" />
+      <span class="flex-1">{{ message }}</span>
+      <a
+        routerLink="/hoard/boxes"
+        class="font-semibold underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        data-testid="add-box-added-show"
+        >Show boxes</a
+      >
+      <button
+        hlmBtn
+        variant="ghost"
+        size="icon"
+        type="button"
+        aria-label="Dismiss"
+        data-testid="add-box-added-dismiss"
+        (click)="added.set(undefined)"
+      >
+        <ng-icon name="lucideX" size="16" />
+      </button>
     </div>
-  } @else if (matches.status() === 'resolved') {
-    <p class="py-8 text-center text-muted-foreground" data-testid="add-box-no-results">
-      No kits match "{{ query().trim() }}".
-    </p>
   }
-</section>
+</div>
+
+@if (!isSearching()) {
+  <p class="py-8 text-center text-muted-foreground" data-testid="add-box-hint">
+    Search the catalog by name, product code or barcode.
+  </p>
+} @else if (matches.error()) {
+  <p class="py-8 text-center text-destructive" role="alert" data-testid="add-box-error">
+    Can't search the catalog right now. Try again in a moment.
+  </p>
+} @else if (kits().length > 0) {
+  <div class="flex flex-col gap-3">
+    <h2 class="text-muted-foreground">Matching kits</h2>
+    <ul class="flex flex-col gap-2">
+      @for (kit of kits(); track kit.id) {
+        <li>
+          <app-kit-card
+            [kit]="kit"
+            [isOpen]="openKitId() === kit.id"
+            [ownedBoxes]="ownedBoxes(kit)"
+            (toggled)="toggle(kit)"
+            (add)="add(kit, $event)"
+          />
+        </li>
+      }
+    </ul>
+  </div>
+} @else if (matches.status() === 'resolved') {
+  <p class="py-8 text-center text-muted-foreground" data-testid="add-box-no-results">
+    No kits match "{{ query().trim() }}".
+  </p>
+}

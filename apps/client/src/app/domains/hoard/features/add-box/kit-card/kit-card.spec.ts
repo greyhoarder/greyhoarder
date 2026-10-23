@@ -9,9 +9,9 @@ describe('Kit card', () => {
       name: 'Boyz',
       manufacturer: 'Games Workshop',
       factions: ['Orks'],
-      barcodes: [],
       isDraft: true,
-      variantMinis: [11],
+      variants: [],
+      minis: 11,
     });
 
     await fixture.whenStable();

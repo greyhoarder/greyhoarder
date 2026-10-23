@@ -1,47 +1,99 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideChevronRight } from '@ng-icons/lucide';
+import { lucideBox } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { kitMeta, kitMinis } from '../../../util/kit-facts';
 import type { KitOption } from '../../../util/kit-option';
+import type { BoxChoice } from '../../../util/new-box';
+import { BoxForm } from '../box-form/box-form';
 
-/** One kit to add a box from, as a card: name, "Not checked" for drafts, meta line and minis. */
+/**
+ * One kit to add a box from: a header with its name, factions, release and minis, which opens
+ * the form to add boxes of it below.
+ */
 @Component({
   selector: 'app-kit-card',
-  imports: [NgIcon, HlmBadge],
-  providers: [provideIcons({ lucideChevronRight })],
+  imports: [NgIcon, HlmBadge, BoxForm],
+  providers: [provideIcons({ lucideBox })],
   template: `
-    <!-- Choosing a kit leads to the check step, which is not built yet. -->
     <button
       type="button"
-      class="flex w-full items-center gap-4 rounded-xl border bg-card px-5 py-4 text-left transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      class="flex w-full items-center gap-4 rounded-xl p-3 text-left transition-colors not-aria-expanded:hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:pr-5"
       data-testid="add-box-kit"
+      [attr.aria-expanded]="isOpen()"
+      [attr.aria-controls]="formId"
+      (click)="toggled.emit()"
     >
+      <!-- The catalog has no images; every kit shows the same placeholder. -->
+      <span
+        class="flex size-18 shrink-0 items-center justify-center rounded-lg bg-muted bg-busy-stripes text-muted-foreground"
+        aria-hidden="true"
+      >
+        <ng-icon name="lucideBox" size="24" />
+      </span>
       <span class="flex min-w-0 flex-1 flex-col gap-0.5">
         <span class="flex min-w-0 items-center gap-2">
-          <span class="truncate font-semibold">{{ kit().name }}</span>
+          <!-- Editions of a kit share its name; the year tells them apart. -->
+          <span class="truncate font-semibold"
+            >{{ kit().name }}
+            @if (kit().year) {
+              <span class="font-normal text-muted-foreground" data-testid="add-box-kit-year"
+                >· {{ kit().year }}</span
+              >
+            }
+          </span>
           @if (kit().isDraft) {
             <span
               hlmBadge
               variant="outline"
-              class="border-dashed border-muted-foreground/60 font-normal text-muted-foreground"
+              class="shrink-0 border-dashed border-muted-foreground/60 font-normal text-muted-foreground"
               data-testid="add-box-kit-draft"
               >Not checked</span
             >
           }
         </span>
-        <span class="truncate text-sm text-muted-foreground">{{ meta() }}</span>
+        <span class="truncate text-sm">{{ armies() }}</span>
+        <span class="truncate text-xs text-muted-foreground">{{ meta() }}</span>
+        <!-- On narrow screens the owned boxes move below, so the name keeps its room. -->
+        @if (ownedBoxes() > 0) {
+          <span class="truncate text-sm text-primary sm:hidden">{{ owned() }}</span>
+        }
       </span>
-      <span class="shrink-0 text-sm text-muted-foreground" data-testid="add-box-kit-minis">{{
-        minis()
-      }}</span>
-      <ng-icon name="lucideChevronRight" size="18" class="shrink-0 text-muted-foreground" />
+      <span class="flex shrink-0 flex-col items-end gap-0.5 text-sm">
+        <span data-testid="add-box-kit-minis">{{ minis() }}</span>
+        @if (ownedBoxes() > 0) {
+          <span class="hidden text-primary sm:inline" data-testid="add-box-kit-owned">{{
+            owned()
+          }}</span>
+        }
+      </span>
     </button>
+
+    @if (isOpen()) {
+      <app-box-form [id]="formId" [kit]="kit()" (add)="add.emit($event)" />
+    }
   `,
+  host: {
+    class: 'block rounded-xl border bg-card transition-colors',
+    '[class.border-primary]': 'isOpen()',
+  },
 })
 export class KitCard {
-  readonly kit = input.required<KitOption>();
+  private static nextId = 0;
 
+  readonly kit = input.required<KitOption>();
+  /** Only one card of the list is open at a time. */
+  readonly isOpen = input(false);
+  /** Boxes of this kit already in the hoard. */
+  readonly ownedBoxes = input(0);
+  readonly toggled = output();
+  readonly add = output<BoxChoice>();
+
+  protected readonly formId = `add-box-form-${KitCard.nextId++}`;
+  protected readonly armies = computed(() => this.kit().factions.join(' · '));
   protected readonly meta = computed(() => kitMeta(this.kit()));
   protected readonly minis = computed(() => kitMinis(this.kit()));
+  protected readonly owned = computed(() =>
+    this.ownedBoxes() === 1 ? '1 box in your hoard' : `${this.ownedBoxes()} boxes in your hoard`,
+  );
 }

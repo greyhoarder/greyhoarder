@@ -1,0 +1,90 @@
+<ul class="flex flex-col gap-2">
+  @for (kind of sprue(); track $index) {
+    <li class="flex items-baseline gap-3" data-testid="add-box-slot">
+      <span class="w-12 shrink-0 font-semibold tabular-nums" data-testid="add-box-slot-count"
+        >{{ kind.count * boxes() }}×</span
+      >
+      @if (kind.isUndecided) {
+        <span class="flex flex-col gap-0.5">
+          <span>{{ kind.name }}</span>
+          <span class="text-sm text-muted-foreground" data-testid="add-box-slot-builds"
+            >Each can become {{ kind.builds.join(' or ') }}.</span
+          >
+        </span>
+      } @else {
+        <span class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <span>{{ kind.builds.join(' or ') }}</span>
+          @for (part of kind.parts; track part) {
+            <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{
+              part
+            }}</span>
+          }
+        </span>
+      }
+    </li>
+  }
+</ul>
+
+<div class="flex flex-wrap items-center gap-2 border-t pt-4" role="group" aria-label="Tags">
+  @for (tag of tags(); track tag) {
+    <button
+      type="button"
+      class="inline-flex h-8 items-center rounded-full border px-3 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none aria-pressed:border-primary aria-pressed:bg-primary/10"
+      data-testid="add-box-tag"
+      [attr.aria-pressed]="selectedTags().has(tag)"
+      (click)="toggleTag(tag)"
+    >
+      {{ tag }}
+    </button>
+  }
+  <label class="sr-only" [for]="idPrefix + '-new-tag'">New tag</label>
+  <input
+    type="text"
+    placeholder="+ Tag"
+    class="h-8 w-28 rounded-full border border-dashed bg-transparent px-3 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
+    data-testid="add-box-new-tag"
+    [id]="idPrefix + '-new-tag'"
+    (keydown.enter)="addTag($event)"
+  />
+</div>
+
+<div class="flex flex-wrap items-center gap-3">
+  <div class="flex h-10 items-center rounded-lg border" role="group" aria-label="Boxes">
+    <button
+      hlmBtn
+      variant="ghost"
+      type="button"
+      class="size-10"
+      aria-label="One box less"
+      data-testid="add-box-less"
+      [disabled]="boxes() === 1"
+      (click)="changeBoxes(-1)"
+    >
+      <ng-icon name="lucideMinus" size="16" />
+    </button>
+    <span class="min-w-16 text-center text-sm" aria-live="polite" data-testid="add-box-count">
+      {{ boxes() === 1 ? '1 box' : boxes() + ' boxes' }}
+    </span>
+    <button
+      hlmBtn
+      variant="ghost"
+      type="button"
+      class="size-10"
+      aria-label="One box more"
+      data-testid="add-box-more"
+      (click)="changeBoxes(1)"
+    >
+      <ng-icon name="lucidePlus" size="16" />
+    </button>
+  </div>
+
+  <button
+    hlmBtn
+    type="button"
+    class="ml-auto h-10 text-sm font-semibold"
+    data-testid="add-box-submit"
+    (click)="submit()"
+  >
+    Add {{ minis() }} {{ minis() === 1 ? 'mini' : 'minis' }}
+  </button>
+</div>

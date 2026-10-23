@@ -7,12 +7,6 @@ export interface BoxKit {
   readonly sku?: string;
 }
 
-export interface Price {
-  readonly amount: number;
-  /** ISO 4217 code, e.g. "EUR". */
-  readonly currency: string;
-}
-
 /** One box in a list of boxes, with how many of its minis stand at each status. */
 export interface BoxRow {
   readonly id: string;
@@ -23,6 +17,5 @@ export interface BoxRow {
   readonly minis: Readonly<Partial<Record<HobbyStatus, number>>>;
   /** ISO date, e.g. "2026-10-12". */
   readonly addedOn: string;
-  readonly price?: Price;
   readonly tags: readonly string[];
 }
