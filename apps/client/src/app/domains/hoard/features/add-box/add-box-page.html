@@ -43,20 +43,26 @@
     </button>
   </div>
 
-  <div class="flex flex-col gap-3">
-    <h3 class="text-muted-foreground">
-      {{ isSearching() ? 'Matching kits' : 'Recently used kits' }}
-    </h3>
-    @if (kits().length > 0) {
+  @if (!isSearching()) {
+    <p class="py-8 text-center text-muted-foreground" data-testid="add-box-hint">
+      Search the catalog by name, product code or barcode.
+    </p>
+  } @else if (matches.error()) {
+    <p class="py-8 text-center text-destructive" role="alert" data-testid="add-box-error">
+      Can't search the catalog right now. Try again in a moment.
+    </p>
+  } @else if (kits().length > 0) {
+    <div class="flex flex-col gap-3">
+      <h3 class="text-muted-foreground">Matching kits</h3>
       <ul class="flex flex-col gap-2">
         @for (kit of kits(); track kit.id) {
           <li><app-kit-card [kit]="kit" /></li>
         }
       </ul>
-    } @else {
-      <p class="py-8 text-center text-muted-foreground" data-testid="add-box-no-results">
-        No kits match "{{ query().trim() }}".
-      </p>
-    }
-  </div>
+    </div>
+  } @else if (matches.status() === 'resolved') {
+    <p class="py-8 text-center text-muted-foreground" data-testid="add-box-no-results">
+      No kits match "{{ query().trim() }}".
+    </p>
+  }
 </section>

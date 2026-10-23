@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 import { MongoClient } from 'mongodb';
 import { createClient } from 'redis';
 
+/** Reference data the server imports on startup (ADR-0020). */
+const CATALOG_COLLECTIONS = new Set(['catalogSystems', 'catalogFactions', 'catalogKits', 'catalogImports']);
+
 const SERVER_ENTRY = fileURLToPath(new URL('../server/dist/main.js', import.meta.url));
 const WEB_APP_DIR = fileURLToPath(new URL('../client/dist/client/browser', import.meta.url));
 const FIRST_PORT = 3100;
@@ -92,9 +95,12 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
           url,
           reset: async () => {
             // Emptying keeps the collections and their unique indexes, which the server creates only at startup.
+            // The catalog is imported only at startup as well, and no test changes it.
             const collections = await mongo.db().collections();
             await Promise.all([
-              ...collections.map((collection) => collection.deleteMany({})),
+              ...collections
+                .filter((collection) => !CATALOG_COLLECTIONS.has(collection.collectionName))
+                .map((collection) => collection.deleteMany({})),
               redis.flushDb(),
             ]);
           },

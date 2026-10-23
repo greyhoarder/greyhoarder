@@ -20,14 +20,3 @@ export function kitMinis(kit: KitOption): string {
   }
   return `${counts.slice(0, -1).join(', ')} or ${last} ${unit}`;
 }
-
-/** The kits whose name, product code or barcode contains the query, ignoring case. */
-export function searchKits(kits: readonly KitOption[], query: string): KitOption[] {
-  const needle = query.trim().toLowerCase();
-  if (needle === '') {
-    return [...kits];
-  }
-  return kits.filter((kit) =>
-    [kit.name, kit.sku ?? '', ...kit.barcodes].some((text) => text.toLowerCase().includes(needle)),
-  );
-}

@@ -87,6 +87,32 @@ export class MongoCatalogRepository extends CatalogRepository {
     };
   }
 
+  async searchKits(text: string, limit: number): Promise<CatalogKit[]> {
+    const contains = new RegExp(escapeRegExp(text), 'i');
+    const kits = await this.kits
+      .find({
+        ...LATEST,
+        isRemoved: false,
+        $or: [{ name: contains }, { 'releases.sku': contains }, { 'releases.barcode': contains }],
+      })
+      .sort({ name: 1, kitId: 1 })
+      .limit(limit)
+      .lean()
+      .exec();
+    return kits.map(toCatalogKit);
+  }
+
+  async findFactionNames(ids: readonly string[]): Promise<ReadonlyMap<string, string>> {
+    const [systems, factions] = await Promise.all([
+      this.systems.find({ ...LATEST, systemId: { $in: ids } }).lean().exec(),
+      this.factions.find({ ...LATEST, factionId: { $in: ids } }).lean().exec(),
+    ]);
+    return new Map([
+      ...systems.map((system) => [system.systemId, system.name] as const),
+      ...factions.map((faction) => [faction.factionId, faction.name] as const),
+    ]);
+  }
+
   async applyImport(catalogImport: CatalogImport): Promise<void> {
     await this.connection.transaction(async (session) => {
       await this.applyUpdate(
@@ -128,6 +154,10 @@ export class MongoCatalogRepository extends CatalogRepository {
     await collection.model.updateMany(latestOf(update.removedIds), { isRemoved: true }, { session });
     await collection.model.updateMany(latestOf(update.restoredIds), { isRemoved: false }, { session });
   }
+}
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function versionFlags(stored: { version: number; isRemoved: boolean }): { version: number; isRemoved: boolean } {
