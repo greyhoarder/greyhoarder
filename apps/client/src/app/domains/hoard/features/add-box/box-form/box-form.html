@@ -10,6 +10,15 @@
           <span class="text-sm text-muted-foreground" data-testid="add-box-slot-builds"
             >Each can become {{ kind.builds.join(' or ') }}.</span
           >
+          @if (kind.parts.length > 0) {
+            <span class="mt-1 flex flex-wrap gap-x-3 gap-y-1.5">
+              @for (part of kind.parts; track part) {
+                <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{
+                  part
+                }}</span>
+              }
+            </span>
+          }
         </span>
       } @else {
         <span class="flex flex-wrap items-center gap-x-3 gap-y-1.5">

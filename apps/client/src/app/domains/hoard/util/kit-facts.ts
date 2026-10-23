@@ -49,13 +49,16 @@ export function sprueMinis(kit: KitOption): SprueMinis[] {
     const builds = new Set(
       kit.variants.flatMap((variant) => variant.slots.flatMap((slot) => slot.names)),
     );
+    const parts = new Set(
+      kit.variants.flatMap((variant) => variant.slots.flatMap((slot) => slot.parts)),
+    );
     return [
       {
         count: kit.minis,
-        name: kit.name,
+        name: kitName(kit),
         factions: [],
         builds: [...builds],
-        parts: [],
+        parts: [...parts],
         isUndecided: true,
       },
     ];
@@ -70,9 +73,14 @@ export function sprueMinis(kit: KitOption): SprueMinis[] {
   }));
 }
 
+/** The kit's name with every either-or outcome: "Boyz", "Lootas / Burna Boyz". */
+export function kitName(kit: KitOption): string {
+  return kit.names.join(' / ');
+}
+
 /** The name a box of the kit gets, with its edition: "Boyz (2026)". */
 export function boxKitName(kit: KitOption): string {
-  return kit.year === undefined ? kit.name : `${kit.name} (${kit.year})`;
+  return kit.year === undefined ? kitName(kit) : `${kitName(kit)} (${kit.year})`;
 }
 
 /** A box is of the kit when its name and release match: the product code if both have one, else the name. */

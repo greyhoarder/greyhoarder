@@ -6,6 +6,7 @@ import { BoxForm } from './box-form';
 const BOYZ: KitOption = {
   id: 'games-workshop/orks/boyz-2026',
   name: 'Boyz',
+  names: ['Boyz'],
   manufacturer: 'Games Workshop',
   factions: ['Orks'],
   year: 2026,
@@ -26,8 +27,9 @@ const BOYZ: KitOption = {
 };
 
 const LOOTAS_OR_BURNA_BOYZ: KitOption = {
-  id: 'games-workshop/orks/lootas-burna-boyz',
-  name: 'Lootas / Burna Boyz',
+  id: 'games-workshop/orks/lootas-2008',
+  name: 'Lootas',
+  names: ['Lootas', 'Burna Boyz'],
   manufacturer: 'Games Workshop',
   factions: ['Orks'],
   isDraft: true,
@@ -90,7 +92,7 @@ describe('Box form', () => {
     expect(rowTexts(0)).toEqual(['9×', 'Boy', 'Slugga', 'Choppa']);
   });
 
-  it('shows an either-or kit as undecided minis named after the kit', async () => {
+  it('shows an either-or kit as undecided minis named after the kit, with the parts of every variant', async () => {
     await openForm(LOOTAS_OR_BURNA_BOYZ);
 
     expect(allText('add-box-slot')).toHaveLength(1);
@@ -98,6 +100,8 @@ describe('Box form', () => {
       '5×',
       'Lootas / Burna Boyz',
       'Each can become Loota or Burna Boy.',
+      'Deffgun',
+      'Burna',
     ]);
   });
 

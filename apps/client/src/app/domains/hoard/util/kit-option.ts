@@ -23,6 +23,8 @@ export interface KitOption {
   /** For catalog kits their path in the catalog, e.g. "games-workshop/orks/boyz-2026". */
   readonly id: string;
   readonly name: string;
+  /** The kit's name and those of its other either-or variants: "Lootas", "Burna Boyz". */
+  readonly names: readonly string[];
   readonly manufacturer: string;
   readonly factions: readonly string[];
   /** The year the kit first went on sale: that of its oldest release, if known. */
@@ -48,6 +50,7 @@ export function toKitOption(kit: CatalogKit, factionNames: ReadonlyMap<string, s
   return {
     id: kit.id,
     name: kit.name,
+    names: [...new Set([kit.name, ...kit.variants.map((variant) => variant.name)])],
     manufacturer: manufacturerName(kit.manufacturer),
     factions: namesOf(kit.factionIds),
     year: kit.releases.find((release) => release.year !== undefined)?.year,

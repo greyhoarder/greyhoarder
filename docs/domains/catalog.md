@@ -76,8 +76,8 @@ repository's README. This document covers what Greyhoarder does with it.
 - Catalog kits are read-only for every user and every role.
 - Kits marked as draft are offered like any other kit, but are marked as
   not checked.
-- Every signed-in user can search the catalog kits by name, product code
-  or barcode, ignoring case. A search returns at most 50 kits, sorted by
+- Every signed-in user can search the catalog kits by name, the name of
+  any variant, product code or barcode, ignoring case. A search returns at most 50 kits, sorted by
   name; removed kits are not part of it.
 - Adding a box from a catalog kit records the kit's id and version on the
   box. From then on the box and its minis follow the rules of the

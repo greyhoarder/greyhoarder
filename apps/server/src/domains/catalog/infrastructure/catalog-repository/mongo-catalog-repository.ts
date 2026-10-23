@@ -93,7 +93,13 @@ export class MongoCatalogRepository extends CatalogRepository {
       .find({
         ...LATEST,
         isRemoved: false,
-        $or: [{ name: contains }, { 'releases.sku': contains }, { 'releases.barcode': contains }],
+        // The variants' names find either-or kits by every outcome, e.g. "Burna Boyz" finds Lootas.
+        $or: [
+          { name: contains },
+          { 'variants.name': contains },
+          { 'releases.sku': contains },
+          { 'releases.barcode': contains },
+        ],
       })
       .sort({ name: 1, kitId: 1 })
       .limit(limit)

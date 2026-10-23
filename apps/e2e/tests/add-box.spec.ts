@@ -17,6 +17,14 @@ test.describe('Add box', () => {
     await expect(page.getByTestId('add-box-kit')).toHaveCount(1);
   });
 
+  test('finds an either-or kit by the name of another variant', async ({ page, signedIn }) => {
+    await page.goto(`${signedIn.url}/hoard/add/box`);
+
+    await page.getByTestId('add-box-search').fill('Burna Boyz');
+
+    await expect(page.getByTestId('add-box-kit-name')).toContainText(['Lootas']);
+  });
+
   test('leads back to the boxes of the hoard', async ({ page, signedIn }) => {
     await page.goto(`${signedIn.url}/hoard/add/box`);
 

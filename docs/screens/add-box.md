@@ -32,11 +32,13 @@ whole header is one button that opens the card.
 - Left: a 72 × 72 image tile with rounded corners, muted with diagonal
   stripes and a box icon. The catalog has no images, so every kit shows
   this placeholder.
-- Middle, stacked: the name in semibold with the year of its first
+- Middle, stacked: the name in semibold, for an either-or kit every
+  variant's name joined with a muted "or", with the year of its first
   release after it in muted regular weight, followed by a dashed "Not
   checked" badge for draft catalog kits; the kit's factions; a smaller
   muted line with manufacturer and product code.
-- Right, stacked and right-aligned: the number of minis; if the user
+- Right, stacked and right-aligned: the number of minis; for an either-or
+  kit a small muted line with a split icon and the number of builds; if the user
   already has boxes of the kit, how many, in gold. On narrow screens that
   line moves below the middle column, so the name keeps its room.
 
@@ -51,8 +53,9 @@ border:
    minis in a fixed column:
    - for a kit with one variant, one row per slot: the suggested names,
      then the parts as small muted chips in the same row, wrapping;
-   - for an either-or kit, one row: the kit's name, and below it a muted
-     line with what each mini can become.
+   - for an either-or kit, one row: the kit's name, below it a muted
+     line with what each mini can become, and below that the parts of
+     every variant as small muted chips, each part once.
 2. A border, then the tags: the tags typed in this card as toggle chips
    (fully rounded, `h-8`; on = gold border and light gold background), and
    a small dashed input for a new tag.
@@ -71,14 +74,15 @@ border:
 | Scan button (accessible name) | Scan barcode |
 | Hint | Search the catalog by name, product code or barcode. |
 | List label | Matching kits |
-| Kit name | {name} · {year}, e.g. "Boyz · 2026"; without a known year only the name |
+| Kit name | {name} · {year}, e.g. "Boyz · 2026"; without a known year only the name. Either-or kits: {name} or {variant name} · {year}, e.g. "Lootas or Burna Boyz · 2008" |
 | Draft badge | Not checked |
 | Factions line | The kit's factions, joined with " · " |
 | Release line | {manufacturer} · {product code}, leaving out the code when the kit has none |
 | Minis | {n} minis, "1 mini"; for either-or kits with different sizes "{a} or {b} minis" |
+| Builds | {n} builds, for either-or kits only |
 | Boxes in the hoard | {n} boxes in your hoard, "1 box in your hoard" |
 | Slot row | {count × boxes}× · the suggested names joined with " or " · the parts |
-| Either-or row | {minis × boxes}× · {kit name}; below: Each can become {every suggested name of every variant, joined with " or "}. |
+| Either-or row | {minis × boxes}× · {kit name}, e.g. "Lootas / Burna Boyz"; below: Each can become {every suggested name of every variant, joined with " or "}.; then the parts as chips |
 | New tag (placeholder; accessible name) | + Tag; New tag |
 | Box stepper | − {n} boxes +, "1 box"; buttons: One box less, One box more |
 | Add button | Add {n} minis, "Add 1 mini" |
@@ -91,7 +95,7 @@ border:
 | State | When | What the user sees |
 |-------|------|--------------------|
 | Empty | The search field is empty | The hint in place of the list |
-| Searching | Text in the search field | The catalog kits whose name, product code or barcode contains the text, at most 50, sorted by name |
+| Searching | Text in the search field | The catalog kits whose name, a variant's name, product code or barcode contains the text, at most 50, sorted by name |
 | No results | The search matches no kit | The no-results message in place of the list |
 | Failed | The server does not answer the search | The search-failed message in `destructive`, announced to screen readers |
 | Open | A kit card was opened | Its form below its header; every other card is closed |
@@ -108,7 +112,10 @@ border:
   yields "1 mini".
 - Kits marked as draft in the catalog are offered like any other, marked
   as not checked ([catalog](../domains/catalog.md#using-catalog-kits)).
-- The name is the catalog's name as printed on the box. Editions of a kit
+- The name is the catalog's name as printed on the box. An either-or kit
+  is shown and named by all of its variants, "Lootas or Burna Boyz", and a
+  search for any of them finds it; boxes and minis join the names with a
+  slash, "Lootas / Burna Boyz". Editions of a kit
   share it, so the year of the kit's first release (the oldest one in the
   catalog) tells them apart: "Boyz · 2008", "Boyz · 2021", "Boyz · 2026".
 - The catalog names a manufacturer only by its folder; the screen shows it
@@ -122,7 +129,8 @@ border:
   chosen ones go onto the new boxes.
 - Boxes record no price.
 - Adding follows the [hoard](../domains/hoard.md#boxes-and-kits): one box
-  per box counted, each named after the kit with its year ("Boyz (2026)"),
+  per box counted, each named after the kit with its year ("Boyz (2026)",
+  "Lootas / Burna Boyz (2008)"),
   with the kit's factions, the chosen tags, today as the day it
   was added, and the minis its kit puts on the sprue: for a kit with one
   variant one per mini in its slots, named after the first suggestion of
@@ -150,7 +158,8 @@ border:
 ## Test IDs
 
 `add-box-back`, `add-box-search`, `add-box-scan`, `add-box-hint`,
-`add-box-kit`, `add-box-kit-year`, `add-box-kit-draft`, `add-box-kit-minis`,
+`add-box-kit`, `add-box-kit-name`, `add-box-kit-year`, `add-box-kit-draft`,
+`add-box-kit-minis`, `add-box-kit-builds`,
 `add-box-kit-owned`, `add-box-slot`, `add-box-slot-builds`, `add-box-slot-count`,
 `add-box-tag`, `add-box-new-tag`, `add-box-less`, `add-box-count`,
 `add-box-more`, `add-box-submit`,
