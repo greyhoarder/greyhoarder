@@ -12,6 +12,10 @@
     "./hoard": {
       "types": "./dist/hoard/index.d.ts",
       "default": "./dist/hoard/index.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog/index.d.ts",
+      "default": "./dist/catalog/index.js"
     }
   },
   "scripts": {

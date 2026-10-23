@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
 /** Development values; only used when the server is started with `--dev`. */
@@ -6,6 +7,9 @@ const DEVELOPMENT_DEFAULTS = {
   REDIS_URL: 'redis://127.0.0.1:6379',
   SESSION_SECRETS: 'insecure-development-secret',
 };
+
+/** The catalog submodule this release ships with (ADR-0020); the same depth from `src/` and `dist/`. */
+const CATALOG_DIRECTORY = fileURLToPath(new URL('../../../../libs/catalog/', import.meta.url));
 
 const environmentSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
@@ -36,6 +40,7 @@ export class AppConfig {
   readonly sessionIdleSeconds: number;
   readonly sessionMaxLifetimeMs: number;
   readonly webAppDirectory: string | undefined;
+  readonly catalogDirectory = CATALOG_DIRECTORY;
 
   constructor(environment: NodeJS.ProcessEnv, development: boolean) {
     const result = environmentSchema.safeParse(
