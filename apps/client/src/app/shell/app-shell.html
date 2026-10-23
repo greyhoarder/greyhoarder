@@ -3,63 +3,86 @@
     <a
       [routerLink]="entry.link"
       [attr.data-testid]="'shell-nav-' + entry.label.toLowerCase()"
+      [attr.title]="collapsed() ? entry.label : null"
       routerLinkActive="bg-sidebar-accent text-sidebar-accent-foreground [&_ng-icon]:text-primary"
       ariaCurrentWhenActive="page"
-      class="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      class="flex shrink-0 items-center gap-3 rounded-lg px-3.75 py-2 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
-      <ng-icon [name]="entry.icon" size="18" />
-      {{ entry.label }}
+      <ng-icon [name]="entry.icon" size="18" class="shrink-0" />
+      <span class="transition-opacity duration-200" [class.md:opacity-0]="collapsed()">{{ entry.label }}</span>
     </a>
   } @else {
     <span
       aria-disabled="true"
-      class="flex shrink-0 cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground opacity-60"
+      [attr.title]="collapsed() ? entry.label : null"
+      class="flex shrink-0 cursor-not-allowed items-center gap-3 rounded-lg px-3.75 py-2 text-sm whitespace-nowrap text-muted-foreground opacity-60"
     >
-      <ng-icon [name]="entry.icon" size="18" />
-      {{ entry.label }}
+      <ng-icon [name]="entry.icon" size="18" class="shrink-0" />
+      <span class="transition-opacity duration-200" [class.md:opacity-0]="collapsed()">{{ entry.label }}</span>
     </span>
   }
 </ng-template>
 
 <aside
-  class="flex flex-col gap-4 border-b border-sidebar-border bg-sidebar p-4 text-sidebar-foreground md:sticky md:top-0 md:h-dvh md:w-64 md:shrink-0 md:gap-8 md:border-r md:border-b-0 md:p-6"
+  class="flex flex-col gap-4 border-b border-sidebar-border bg-sidebar p-4 text-sidebar-foreground md:sticky md:top-0 md:h-dvh md:shrink-0 md:gap-8 md:overflow-hidden md:border-r md:border-b-0 md:py-6 md:transition-all md:duration-200 md:ease-out"
+  [class]="collapsed() ? 'md:w-20' : 'md:w-64'"
 >
-  <app-logo [size]="32" />
+  <app-logo
+    [size]="32"
+    class="shrink-0 whitespace-nowrap md:ml-2 [&_span]:transition-opacity [&_span]:duration-200"
+    [class.md:[&_span]:opacity-0]="collapsed()"
+  />
 
   <nav aria-label="Main" class="flex gap-1 overflow-x-auto md:flex-1 md:flex-col md:overflow-visible">
     @for (item of mainEntries; track item.label) {
       <ng-container [ngTemplateOutlet]="entry" [ngTemplateOutletContext]="{ $implicit: item }" />
     }
-    <div class="md:mt-auto">
+    <div class="flex gap-1 md:mt-auto md:flex-col">
       <ng-container [ngTemplateOutlet]="entry" [ngTemplateOutletContext]="{ $implicit: settingsEntry }" />
-    </div>
-  </nav>
-
-  @if (user(); as signedIn) {
-    <div class="flex items-center gap-3 md:border-t md:border-sidebar-border md:pt-4">
-      <span
-        aria-hidden="true"
-        class="flex size-10 shrink-0 items-center justify-center rounded-full bg-sidebar-accent font-semibold uppercase"
-      >
-        {{ signedIn.username[0] }}
-      </span>
-      <div class="flex min-w-0 flex-1 flex-col">
-        <span class="truncate font-medium" data-testid="shell-username">{{ signedIn.username }}</span>
-        <span class="text-sm text-muted-foreground">{{ roleLabels[signedIn.role] }}</span>
-      </div>
       <button
-        hlmBtn
-        variant="ghost"
-        size="icon"
         type="button"
         aria-label="Sign out"
         data-testid="shell-sign-out"
+        [attr.title]="collapsed() ? 'Sign out' : null"
+        class="flex shrink-0 cursor-pointer items-center gap-3 rounded-lg px-3.75 py-2 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         (click)="signOut()"
       >
-        <ng-icon name="lucideLogOut" size="18" />
+        <ng-icon name="lucideLogOut" size="18" class="shrink-0" />
+        <span class="transition-opacity duration-200" [class.md:opacity-0]="collapsed()">Sign out</span>
       </button>
     </div>
-  }
+  </nav>
+
+  <div class="flex flex-col gap-2 md:border-t md:border-sidebar-border md:pt-2">
+    <button
+      type="button"
+      class="hidden size-9 cursor-pointer items-center justify-center self-end rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:inline-flex"
+      [attr.aria-label]="collapsed() ? 'Expand navigation' : 'Collapse navigation'"
+      [attr.aria-expanded]="!collapsed()"
+      data-testid="shell-collapse"
+      (click)="collapsed.set(!collapsed())"
+    >
+      <ng-icon [name]="collapsed() ? 'lucidePanelLeftOpen' : 'lucidePanelLeftClose'" size="18" />
+    </button>
+
+    @if (user(); as signedIn) {
+      <div class="flex items-center gap-3 whitespace-nowrap">
+        <span
+          aria-hidden="true"
+          class="flex size-10 shrink-0 items-center justify-center rounded-full bg-sidebar-accent font-semibold uppercase md:ml-1"
+        >
+          {{ signedIn.username[0] }}
+        </span>
+        <div
+          class="flex min-w-0 flex-1 flex-col transition-opacity duration-200"
+          [class.md:opacity-0]="collapsed()"
+        >
+          <span class="truncate font-medium" data-testid="shell-username">{{ signedIn.username }}</span>
+          <span class="text-sm text-muted-foreground">{{ roleLabels[signedIn.role] }}</span>
+        </div>
+      </div>
+    }
+  </div>
 </aside>
 
 <div class="min-w-0 flex-1">

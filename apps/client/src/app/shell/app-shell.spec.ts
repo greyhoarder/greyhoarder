@@ -45,4 +45,24 @@ describe('Shell', () => {
     expect(signOut).toHaveBeenCalled();
     expect(TestBed.inject(Router).url).toBe('/login');
   });
+
+  it('collapses the navigation to its icons and expands it again', async () => {
+    const toggle = shell.querySelector<HTMLButtonElement>('[data-testid="shell-collapse"]');
+    const dashboard = shell.querySelector('[data-testid="shell-nav-dashboard"]');
+
+    toggle?.click();
+    await fixture.whenStable();
+    const collapsed = {
+      label: toggle?.getAttribute('aria-label'),
+      expanded: toggle?.getAttribute('aria-expanded'),
+      tooltip: dashboard?.getAttribute('title'),
+    };
+    toggle?.click();
+    await fixture.whenStable();
+
+    expect(collapsed).toEqual({ label: 'Expand navigation', expanded: 'false', tooltip: 'Dashboard' });
+    expect(toggle?.getAttribute('aria-label')).toBe('Collapse navigation');
+    expect(toggle?.getAttribute('aria-expanded')).toBe('true');
+    expect(dashboard?.hasAttribute('title')).toBe(false);
+  });
 });

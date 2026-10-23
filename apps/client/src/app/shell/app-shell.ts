@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -8,10 +8,11 @@ import {
   lucideDroplet,
   lucideHouse,
   lucideLogOut,
+  lucidePanelLeftClose,
+  lucidePanelLeftOpen,
   lucideShield,
   lucideSlidersHorizontal,
 } from '@ng-icons/lucide';
-import { HlmButton } from '@spartan-ng/helm/button';
 import { CurrentSession } from '../domains/auth/api';
 import { Logo } from '../shared/ui/logo/logo';
 
@@ -37,7 +38,7 @@ const ROLE_LABELS = { admin: 'Admin', member: 'Member' } as const;
 /** Frame of every page behind the login: navigation beside the current page. */
 @Component({
   selector: 'app-shell',
-  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, NgIcon, HlmButton, Logo],
+  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, NgIcon, Logo],
   providers: [
     provideIcons({
       lucideBox,
@@ -45,6 +46,8 @@ const ROLE_LABELS = { admin: 'Admin', member: 'Member' } as const;
       lucideDroplet,
       lucideHouse,
       lucideLogOut,
+      lucidePanelLeftClose,
+      lucidePanelLeftOpen,
       lucideShield,
       lucideSlidersHorizontal,
     }),
@@ -60,6 +63,8 @@ export class AppShell {
   protected readonly settingsEntry = SETTINGS_ENTRY;
   protected readonly roleLabels = ROLE_LABELS;
   protected readonly user = this.session.user;
+  /** On wide screens, the sidebar shows only the icons of its entries. */
+  protected readonly collapsed = signal(false);
 
   protected async signOut(): Promise<void> {
     await this.session.signOut();
