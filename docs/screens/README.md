@@ -16,3 +16,4 @@ below.
 | [Hoard](hoard.md) | `/hoard/minis`, `/hoard/boxes` | `hoard` |
 | [Add box](add-box.md) | `/hoard/add/box` | `hoard` |
 | [Shell](shell.md) | every route behind the login | app level |
+| [Navigation error](navigation-error.md) | in place of any page that fails to open | app level |

@@ -42,7 +42,7 @@ export class HttpSessionAdapter {
     await firstValueFrom(this.http.delete<void>('/api/auth/session'));
   }
 
-  /** `undefined` without a valid session. */
+  /** `undefined` without a valid session; rejects with `ServerUnreachableError` when the server does not answer. */
   async currentUser(): Promise<SessionUser | undefined> {
     try {
       const session = await firstValueFrom(this.http.get<SessionResponse>('/api/auth/session'));
@@ -51,7 +51,7 @@ export class HttpSessionAdapter {
       if (hasStatus(error, HttpStatusCode.Unauthorized)) {
         return undefined;
       }
-      throw error;
+      throw isUnreachable(error) ? new ServerUnreachableError() : error;
     }
   }
 }

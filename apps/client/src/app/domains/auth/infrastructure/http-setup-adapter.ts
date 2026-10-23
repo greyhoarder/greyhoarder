@@ -12,9 +12,14 @@ import { hasStatus, isUnreachable } from './http-status';
 export class HttpSetupAdapter {
   private readonly http = inject(HttpClient);
 
+  /** Rejects with `ServerUnreachableError` when the server does not answer. */
   async isSetupRequired(): Promise<boolean> {
-    const status = await firstValueFrom(this.http.get<SetupStatusResponse>('/api/auth/setup'));
-    return status.required;
+    try {
+      const status = await firstValueFrom(this.http.get<SetupStatusResponse>('/api/auth/setup'));
+      return status.required;
+    } catch (error) {
+      throw isUnreachable(error) ? new ServerUnreachableError() : error;
+    }
   }
 
   /**
