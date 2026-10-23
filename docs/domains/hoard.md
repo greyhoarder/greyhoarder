@@ -22,7 +22,7 @@ exactly one user, and users see only their own hoard.
 | **Tag** | A user's own label for boxes, e.g. "Gift", "Second hand", "Shelf of shame". |
 | **Progress** | How far the minis of a box have come: untouched, started or done. |
 | **Kit** | A template for what a box can become: its variants and, per variant, its slots. Either a user's own kit or a [catalog](catalog.md) kit. |
-| **Variant** | One either-or outcome of a kit, e.g. "Lootas" or "Burna Boyz". Most kits have one. |
+| **Variant** | One either-or outcome of a kit, e.g. "Lootas" or "Burna Boyz". Most kits have one. A box records none; what each mini becomes is decided when it is built. |
 | **Slot** | A number of minis in a variant and what they can be built as, e.g. "9 × Boy or Boss Nob". |
 | **Name** | What a mini was built as, in the user's words ("Boss Nob", "Tankbusta Rokkiteer"). |
 | **Part** | A term from the user's vocabulary for something physically on a mini ("Big Shoota", "Power Klaw"). |
@@ -47,22 +47,25 @@ exactly one user, and users see only their own hoard.
 
 ### Boxes and kits
 
-- Adding a box from a kit creates its minis: one per mini in the slots of
-  the chosen variant, or of the kit's first variant if none is chosen yet.
-  Each starts on the sprue with the first suggestion of its slot as its
-  name and the kit's faction (for a catalog kit, its slot's faction or
-  else the kit's first one).
+- Adding a box from a kit never asks what will be built. It creates its
+  minis on the sprue:
+  - for a kit with one variant, one per mini in its slots, named after the
+    first suggestion of its slot, with the slot's faction or else the
+    kit's first one;
+  - for an either-or kit, as many as the kit yields (for a catalog kit, its
+    `minis`), all named after the kit ("Lootas / Burna Boyz"), with the
+    kit's first faction.
+- What a mini becomes is decided when it is built, mini by mini. The names
+  of every variant of its box's kit are suggested, so one box can yield
+  two Lootas and three Burna Boyz.
 - A box from a catalog kit records the kit's id and version.
 - A box without a kit has a name only; its minis are added by hand.
-- A box's variant can be changed only while all its minis are still on the
-  sprue. Changing it replaces those minis with the minis of the new
-  variant.
 - Kits only suggest. Any name and any part can be given to any mini, and a
   box may end up with more, fewer or other minis than its kit describes.
 - Changing a kit never changes existing boxes or minis; neither does a
   new version of a catalog kit.
-- A box records the day it was added (by default the day it is entered)
-  and optionally what it cost: an amount and its currency.
+- A box records the day it was added (by default the day it is entered).
+  It records no price.
 - A box can carry any number of the user's tags. Each user has their own
   tags; renaming a tag renames it on every box.
 - A box's progress is derived from its minis, never stored: untouched
@@ -129,9 +132,8 @@ can be used as a filter, never as a level to navigate through.
 
 A separate list of boxes shows what was bought: per box its kit, factions,
 progress, how many minis are still on the sprue and how many are painted,
-when it was added and its tags. The price is optional and not shown in
-the list for now. It is an overview of
-purchases, not a way into the minis of a box.
+when it was added and its tags. It is an overview of purchases, not a
+way into the minis of a box.
 
 Filtering by faction depends on what the list is for:
 
@@ -156,7 +158,8 @@ Filtering by faction depends on what the list is for:
 
 ## Open questions
 
-- Totals of prices across several currencies.
+- How tags are stored and managed (renaming, deleting); they have no data
+  model yet.
 - Whether minis can be grouped (a mob, a squad); left out for now.
 - Whether `painted` should already take a mini off the workbench for users
   who do not base separately.
