@@ -1,0 +1,62 @@
+<header class="flex flex-col gap-2">
+  <a
+    routerLink="/hoard/boxes"
+    class="inline-flex w-fit items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    data-testid="add-box-back"
+  >
+    <ng-icon name="lucideChevronLeft" size="16" />
+    Hoard
+  </a>
+  <h1 class="text-2xl font-semibold">Add to hoard</h1>
+</header>
+
+<app-add-stepper [current]="0" />
+
+<section class="flex flex-col gap-4" aria-labelledby="add-box-question">
+  <h2 id="add-box-question" class="text-lg font-semibold">Which box did you get?</h2>
+
+  <div class="flex gap-3">
+    <div hlmInputGroup class="h-10 flex-1">
+      <div hlmInputGroupAddon>
+        <ng-icon name="lucideSearch" size="18" />
+      </div>
+      <input
+        hlmInputGroupInput
+        type="search"
+        placeholder="Name, product code or barcode"
+        aria-label="Search kits"
+        data-testid="add-box-search"
+        [value]="query()"
+        (input)="search($event)"
+      />
+    </div>
+    <!-- Scanning comes with the packaged apps. -->
+    <button
+      hlmBtn
+      variant="outline"
+      type="button"
+      class="size-10"
+      aria-label="Scan barcode"
+      data-testid="add-box-scan"
+    >
+      <ng-icon name="lucideScanBarcode" size="16" />
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <h3 class="text-muted-foreground">
+      {{ isSearching() ? 'Matching kits' : 'Recently used kits' }}
+    </h3>
+    @if (kits().length > 0) {
+      <ul class="flex flex-col gap-2">
+        @for (kit of kits(); track kit.id) {
+          <li><app-kit-card [kit]="kit" /></li>
+        }
+      </ul>
+    } @else {
+      <p class="py-8 text-center text-muted-foreground" data-testid="add-box-no-results">
+        No kits match "{{ query().trim() }}".
+      </p>
+    }
+  </div>
+</section>

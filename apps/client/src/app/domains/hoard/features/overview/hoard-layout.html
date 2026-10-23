@@ -6,17 +6,17 @@
       {{ minis.paintedCount() }} painted
     </p>
   </div>
-  <!-- Adding comes with the backend; one button per way into the hoard, the primary one first. -->
+  <!-- One button per way into the hoard, the primary one first; minis and custom come later. -->
   <div class="flex flex-wrap gap-3">
-    <button
+    <a
       hlmBtn
-      type="button"
+      routerLink="/hoard/add/box"
       class="h-10 px-4 text-sm font-semibold"
       data-testid="hoard-add-boxes"
     >
       <ng-icon name="lucidePlus" size="16" />
       Add boxes
-    </button>
+    </a>
     <button
       hlmBtn
       variant="outline"

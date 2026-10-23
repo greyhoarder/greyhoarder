@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 
 export default [
   {
+    path: 'hoard/add/box',
+    title: 'Add box · Greyhoarder',
+    loadComponent: async () => (await import('./features/add-box/add-box-page')).AddBoxPage,
+  },
+  {
     path: 'hoard',
     title: 'Hoard · Greyhoarder',
     loadComponent: async () => (await import('./features/overview/hoard-layout')).HoardLayout,
