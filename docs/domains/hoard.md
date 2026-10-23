@@ -19,6 +19,8 @@ exactly one user, and users see only their own hoard.
 |------|---------|
 | **Mini** | One physical miniature, built or still on the sprue. The only thing with a hobby status. |
 | **Box** | Something the user acquired that minis came out of: a kit, a starter set, a bundle. |
+| **Tag** | A user's own label for boxes, e.g. "Gift", "Second hand", "Shelf of shame". |
+| **Progress** | How far the minis of a box have come: untouched, started or done. |
 | **Kit** | A template for what a box can become: its variants and, per variant, its slots. Either a user's own kit or a [catalog](catalog.md) kit. |
 | **Variant** | One either-or outcome of a kit, e.g. "Lootas" or "Burna Boyz". Most kits have one. |
 | **Slot** | A number of minis in a variant and what they can be built as, e.g. "9 × Boy or Boss Nob". |
@@ -59,6 +61,18 @@ exactly one user, and users see only their own hoard.
   box may end up with more, fewer or other minis than its kit describes.
 - Changing a kit never changes existing boxes or minis; neither does a
   new version of a catalog kit.
+- A box records the day it was added (by default the day it is entered)
+  and optionally what it cost: an amount and its currency.
+- A box can carry any number of the user's tags. Each user has their own
+  tags; renaming a tag renames it on every box.
+- A box's progress is derived from its minis, never stored: untouched
+  while all of them are on the sprue, done once all of them are painted
+  (painted or based), started in between. A box without minis is
+  untouched. The rule lives in `libs/domain/hoard`.
+- A box's progress as a percentage counts each of its minis by its status
+  in equal steps: on the sprue 0, built 25, primed 50, painted 75, based
+  100; the box gets the rounded average. A box without minis is at 0. The
+  rule lives in `libs/domain/hoard` as well.
 - Deleting a box asks whether its minis go too. Minis that stay lose
   their origin and remain in the hoard.
 
@@ -107,11 +121,17 @@ exactly one user, and users see only their own hoard.
 
 ## Lists of minis
 
-Interfaces list minis, not boxes. Minis that are alike (same name, factions,
+Interfaces list minis, not boxes, wherever the hobby is concerned. Minis that are alike (same name, factions,
 status and parts) are shown as one row with a count ("Boy · on the
 sprue · ×9"), from which the user picks how many to act on. As soon as a
 mini differs, it gets its own row. The origin box is shown as a detail and
 can be used as a filter, never as a level to navigate through.
+
+A separate list of boxes shows what was bought: per box its kit, factions,
+progress, how many minis are still on the sprue and how many are painted,
+when it was added and its tags. The price is optional and not shown in
+the list for now. It is an overview of
+purchases, not a way into the minis of a box.
 
 Filtering by faction depends on what the list is for:
 
@@ -136,6 +156,7 @@ Filtering by faction depends on what the list is for:
 
 ## Open questions
 
+- Totals of prices across several currencies.
 - Whether minis can be grouped (a mob, a squad); left out for now.
 - Whether `painted` should already take a mini off the workbench for users
   who do not base separately.

@@ -138,8 +138,12 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 
 - A client domain contains only `api/`, `features/<feature>/`, `ui/`,
   `data/`, `infrastructure/`, `util/` and `<domain>.routes.ts`.
-- `features/` holds pages, smart components and their state; `ui/` holds
-  the domain's presentational components.
+- `features/` holds pages, smart components and their state, and the
+  presentational components only that feature uses, each in a folder of
+  its own (`features/boxes/box-card/`).
+- `ui/` holds the presentational components that at least two features of
+  the domain share. A component moves there when a second feature needs
+  it, never in advance.
 - `data/` holds the data the client keeps locally: stores shared by
   features of the domain (in memory or browser storage) and fixed or
   temporary data, e.g. sample data named `sample-<subject>.ts` that stands

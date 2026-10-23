@@ -1,15 +1,17 @@
 # Screen: Hoard
 
-- **Route:** `/hoard`
+- **Route:** `/hoard/minis` and `/hoard/boxes`, one per tab; `/hoard` leads
+  to `/hoard/minis`
 - **Domain:** `hoard`
 - **Related:** [Domain: hoard](../domains/hoard.md),
   [ADR-0019](../adr/0019-hobby-data-model.md), [Shell](shell.md)
 
 ## Purpose
 
-The overview of everything a user owns: every mini with its status, found
-by name, part or box. It lists minis, not boxes; alike minis share a
-row (see [Lists of minis](../domains/hoard.md#lists-of-minis)).
+The overview of everything a user owns. The Minis tab shows every mini
+with its status, found by name, part or box; alike minis share a row (see
+[Lists of minis](../domains/hoard.md#lists-of-minis)). The Boxes tab shows
+what was bought: each box with its progress, date and tags.
 
 ## Layout
 
@@ -20,9 +22,12 @@ from top to bottom:
    into the hoard: "Add boxes" (primary), "Add minis" and "Add custom"
    (outline).
 2. Tab bar over the full width with a bottom border: the tabs "Minis" and
-   "Boxes" with their counts as badges, the active one underlined in gold;
-   on the right, for the Minis tab, the "Select" button (ghost) and the
-   view switch with "Cards" and "Table".
+   "Boxes" as links to their routes, with their counts as badges, the
+   active one underlined in gold; switching tabs keeps search, filters and
+   selection of both tabs, and the browser's back button returns to the
+   previous tab;
+   on the right the "Select" button (ghost) for the open tab and the view
+   switch with "Cards" and "Table", which applies to both tabs.
 3. Filter row: the search field, the filter chips "Faction", "Status" and
    "Box", then "Reset" while a filter is active. Inactive chips
    have a dashed border, active ones a solid border on the card surface.
@@ -46,6 +51,30 @@ Box, Status (badge), Count and the "⋮" button. Every column header
 except check and menu sorts the table; the current column shows an arrow
 for its direction, the others a faint up-down sign. The table scrolls
 sideways on narrow screens.
+
+### Boxes tab
+
+The same tab bar; below it a filter row with "Search boxes" and the filter
+chips "Faction", "Progress" and "Tag" (plus "Reset"), then, while
+selecting, a selection bar ("{n} box(es) selected", "Select all", "Done"),
+then the boxes as cards or as a table. Boxes are selected like minis: a
+round check on the photo's top left corner (cards) or at the start of the
+line (table).
+
+**Cards**: a grid, three columns on wide screens, two on medium ones, one
+on narrow ones; newest box first. A card holds a striped photo placeholder
+with the round check and the progress badge on its top left and a "⋮"
+button on its top right; below it the box name with the kit line under it
+and the progress percentage on the right, the progress bar with a status
+line under it in one line (a colored dot and the count for built, primed,
+painted and based, also 0), and a line with factions and date followed by
+the tags as small outlined badges.
+
+**Table**: the round check, Box (name, kit line below in small text), Faction, Progress
+(bar with the percentage on its right), On the sprue, Painted ("{n} of
+{all}"), Added and the "⋮" button. Sorted by Added, newest first; every
+header except the menu sorts it like the minis table. Below the table a
+summary line.
 
 ## Content
 
@@ -71,7 +100,19 @@ sideways on narrow screens.
 | Row check (accessible name) | Select {name} |
 | Row menu (accessible name) | More actions |
 | No results | No minis match "{query}". — without a search: No minis match the filters. |
-| Boxes tab (for now) | The list of boxes comes later. |
+| Box search placeholder | Search boxes |
+| Box filter chips | Faction · Progress · Tag |
+| Kit line | {kit name} · {article number, if any}; "No kit" for boxes without one |
+| Progress badge and word | Untouched / Started / Done |
+| Progress percentage | {n}% |
+| Progress bar (tooltip and accessible name) | Counts per status past the sprue, in pipeline order, e.g. "5 primed, 5 based" |
+| Status line (cards) | {n} built · {n} primed · {n} painted · {n} based |
+| Box selection bar | {n} box(es) selected · Select all · Done |
+| Box meta line (cards) | {factions} · added {date} |
+| Date | e.g. 12 Oct 2026 |
+| Box table headers | Box · Faction · Progress · On the sprue · Painted · Added |
+| Box summary (table) | {n} boxes · {n} minis still on the sprue |
+| No boxes found | No boxes match "{query}". — without a search: No boxes match the filters. |
 
 ## States
 
@@ -85,7 +126,8 @@ sideways on narrow screens.
 | Not selecting | Initially, or after "Done" | No checks, except on the row under the pointer or with keyboard focus; no selection bar |
 | Selecting | "Select" pressed, or a row's check ticked | Every row shows its check; the selection bar appears; "Select" is disabled |
 | Selected | A row is selected | Its check is filled gold; a card gets a gold border, a table line a faint gold background |
-| Boxes | The "Boxes" tab is active | For now, the placeholder text |
+| Boxes | The "Boxes" tab is active | The boxes as cards or table, depending on the view switch |
+| Boxes filtered | Search text or ticked values on the Boxes tab | Only matching boxes; the table's summary counts what is shown |
 
 ## Behavior
 
@@ -112,7 +154,18 @@ sideways on narrow screens.
 - "Select all" selects every row that is currently shown. "Done", and
   later every action on the selection, ends the mode and clears the
   selection.
-- Until the hoard comes from the server, the screen shows placeholder rows.
+- A box's progress follows the [domain rule](../domains/hoard.md#boxes-and-kits):
+  untouched, started or done, and a percentage weighted by status. The bar
+  is split by status in the colors of the status badges and always in the
+  order of the pipeline (built, primed, painted, based), with small gaps
+  between the parts. Minis on the sprue are no progress: they are the
+  empty background of the bar and are not counted in the status line. The
+  progress badge is grey until done and gold when done.
+- The box search looks at the box name, the kit name, the article number
+  and the tags. Progress values are ticked like statuses; a box matches a
+  tag filter when it carries any of the ticked tags.
+- Until the hoard comes from the server, the screen shows placeholder rows
+  and boxes.
   The add buttons have no function yet.
 
 ## Accessibility
@@ -132,7 +185,14 @@ sideways on narrow screens.
 `hoard-table`, `hoard-sort-<column>`, `hoard-row`, `hoard-row-check`,
 `hoard-row-menu`, `hoard-status`, `hoard-selection-bar`,
 `hoard-selection-count`, `hoard-select-all`, `hoard-select-done`,
-`hoard-no-results` (ADR-0013).
+`hoard-no-results`, `hoard-box-search`, `hoard-box-filter-faction`,
+`hoard-box-filter-progress`, `hoard-box-filter-tag`,
+`hoard-box-filter-option`, `hoard-box-filter-reset`, `hoard-box`,
+`hoard-box-progress`, `hoard-box-percent`, `hoard-box-statuses`,
+`hoard-box-menu`, `hoard-box-selection-bar`, `hoard-box-selection-count`,
+`hoard-box-select-all`, `hoard-box-select-done`, `hoard-box-table`,
+`hoard-box-sort-<column>`, `hoard-box-summary`, `hoard-box-no-results`
+(ADR-0013).
 
 ## Open questions
 
@@ -146,7 +206,8 @@ sideways on narrow screens.
   picks.
 - What the row menu ("⋮") offers.
 - Starting selection mode with a long press on touch screens.
-- What the "Boxes" tab shows.
+- What acting on selected boxes offers; what the box menu offers.
+- Whether the box list should count "x of y" on its tab like the minis.
 - Photos in place of the placeholder.
 - Whether sorting by faction should follow the hierarchy of factions
   instead of the alphabet.

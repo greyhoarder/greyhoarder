@@ -59,7 +59,7 @@ features ──▶ ports ◀── infrastructure        all ──▶ util, lib
 apps/client/src/app/domains/<domain>/
 ├── api/                  ← contract for other domains (ADR-0004)
 ├── features/<feature>/   ← pages, smart components, their state
-├── ui/                   ← presentational components of this domain (ADR-0011)
+├── ui/                   ← presentational components shared by its features (ADR-0011)
 ├── data/                 ← data held locally: stores, fixed and sample data
 ├── infrastructure/       ← access to external resources (the server)
 ├── util/
@@ -70,6 +70,10 @@ apps/client/src/app/domains/<domain>/
 features ──▶ data ──▶ infrastructure        features ──▶ ui, infrastructure        all ──▶ util, libs/domain
 ```
 
+- A **feature** holds its pages and smart components and the
+  presentational components only it uses; **ui** holds those that several
+  features of the domain share. Keeping single-use components in their
+  feature lets a feature be read, changed or removed as a whole.
 - **Data** is what the client holds locally: stores with state that
   several features of the domain share (in memory or browser storage), and
   fixed or temporary data, such as sample data that stands in for the

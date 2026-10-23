@@ -13,5 +13,5 @@ below.
 | [Login](login.md) | `/login` | `auth` |
 | [Setup](setup.md) | `/setup` | `auth` |
 | [Dashboard](dashboard.md) | `/dashboard` | `dashboard` |
-| [Hoard](hoard.md) | `/hoard` | `hoard` |
+| [Hoard](hoard.md) | `/hoard/minis`, `/hoard/boxes` | `hoard` |
 | [Shell](shell.md) | every route behind the login | app level |
