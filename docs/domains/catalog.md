@@ -38,8 +38,13 @@ repository's README. This document covers what Greyhoarder does with it.
 - The catalog repository is the git submodule `libs/catalog/` of this
   repository. The commit it points to is the catalog of the release.
 - On every start, the server reads the files into a snapshot and checks
-  every file and every reference against the format Greyhoarder knows; on
-  a mismatch it does not start. Ranges are not part of the snapshot.
+  every file and every reference against the format Greyhoarder knows.
+  Ranges are not part of the snapshot.
+- A file or an entry that does not match the format, or refers to a kit,
+  faction or group that is not in the snapshot, is left out with a
+  warning in the log; the server still starts. A left-out entry keeps its
+  last imported version and is not marked as removed. When a system's file
+  is left out, all its factions keep theirs.
 - The server imports the snapshot when it differs from the one imported
   last. Importing the same snapshot again changes nothing.
 - An import either completes or leaves the previous catalog untouched.
@@ -71,6 +76,9 @@ repository's README. This document covers what Greyhoarder does with it.
 - Catalog kits are read-only for every user and every role.
 - Kits marked as draft are offered like any other kit, but are marked as
   not checked.
+- Every signed-in user can search the catalog kits by name, product code
+  or barcode, ignoring case. A search returns at most 50 kits, sorted by
+  name; removed kits are not part of it.
 - Adding a box from a catalog kit records the kit's id and version on the
   box. From then on the box and its minis follow the rules of the
   [hoard](hoard.md); a new kit version never changes them.

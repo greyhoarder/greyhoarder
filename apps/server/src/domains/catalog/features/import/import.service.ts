@@ -23,16 +23,23 @@ export class ImportService implements OnApplicationBootstrap {
       return;
     }
     const imported = await this.catalog.findImported();
-    const kits = planCatalogUpdate(imported.kits, snapshot.kits);
+    const { skipped } = snapshot;
+    // The factions of a system whose file was left out are unknown, so they all keep their version.
+    const skippedSystemIds = new Set(skipped.systemIds);
+    const keptFactionIds = [
+      ...skipped.factionIds,
+      ...imported.factions.filter(({ entry }) => skippedSystemIds.has(entry.systemId)).map(({ entry }) => entry.id),
+    ];
+    const kits = planCatalogUpdate(imported.kits, snapshot.kits, skipped.kitIds);
     await this.catalog.applyImport({
       snapshotHash: snapshot.hash,
-      systems: planCatalogUpdate(imported.systems, snapshot.systems),
-      factions: planCatalogUpdate(imported.factions, snapshot.factions),
+      systems: planCatalogUpdate(imported.systems, snapshot.systems, skipped.systemIds),
+      factions: planCatalogUpdate(imported.factions, snapshot.factions, keptFactionIds),
       kits,
     });
     this.logger.log(
       `Imported catalog ${snapshot.hash.slice(0, 12)}: ${kits.versions.length} new kit versions, ` +
-        `${kits.removedIds.length} removed, ${kits.restoredIds.length} restored.`,
+        `${kits.removedIds.length} removed, ${kits.restoredIds.length} restored, ${skipped.kitIds.length} left out.`,
     );
   }
 }

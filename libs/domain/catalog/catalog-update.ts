@@ -18,15 +18,17 @@ export interface CatalogUpdate<T extends { readonly id: string }> {
 /**
  * Compares the latest imported versions with a snapshot (ADR-0020): an
  * entry gets a new version only when its content changed, and one missing
- * from the snapshot is marked as removed, never deleted. The same snapshot
- * twice yields an empty update.
+ * from the snapshot is marked as removed, never deleted, unless it is one of
+ * `keptIds` (left out of the snapshot for a format problem). The same
+ * snapshot twice yields an empty update.
  */
 export function planCatalogUpdate<T extends { readonly id: string }>(
   latest: readonly VersionedEntry<T>[],
   snapshot: readonly T[],
+  keptIds: readonly string[] = [],
 ): CatalogUpdate<T> {
   const latestById = new Map(latest.map((current) => [current.entry.id, current]));
-  const snapshotIds = new Set(snapshot.map((entry) => entry.id));
+  const snapshotIds = new Set([...snapshot.map((entry) => entry.id), ...keptIds]);
   const versions: { entry: T; version: number }[] = [];
   const restoredIds: string[] = [];
 

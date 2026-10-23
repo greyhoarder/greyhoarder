@@ -17,6 +17,7 @@ function kit(id: string, minis = 10): CatalogKit {
 }
 
 const NOTHING_IMPORTED: ImportedCatalog = { systems: [], factions: [], kits: [] };
+const NOTHING_SKIPPED: CatalogSnapshot['skipped'] = { systemIds: [], factionIds: [], kitIds: [] };
 
 describe('Catalog import', () => {
   function importWhere(snapshot: CatalogSnapshot, imported: ImportedCatalog, lastHash?: string) {
@@ -26,6 +27,8 @@ describe('Catalog import', () => {
       {
         findLastSnapshotHash: () => Promise.resolve(lastHash),
         findImported: () => Promise.resolve(imported),
+        searchKits: () => Promise.resolve([]),
+        findFactionNames: () => Promise.resolve(new Map()),
         applyImport,
       },
     );
@@ -37,7 +40,7 @@ describe('Catalog import', () => {
     const faction = { id: 'warhammer-40000/orks', systemId: 'warhammer-40000', name: 'Orks' };
     const boyz = kit('games-workshop/orks/boyz');
     const { service, applyImport } = importWhere(
-      { hash: 'first', systems: [system], factions: [faction], kits: [boyz] },
+      { hash: 'first', systems: [system], factions: [faction], kits: [boyz], skipped: NOTHING_SKIPPED },
       NOTHING_IMPORTED,
     );
 
@@ -54,7 +57,7 @@ describe('Catalog import', () => {
   it('imports nothing when the catalog has not changed since the last import', async () => {
     const boyz = kit('games-workshop/orks/boyz');
     const { service, applyImport } = importWhere(
-      { hash: 'same', systems: [], factions: [], kits: [boyz] },
+      { hash: 'same', systems: [], factions: [], kits: [boyz], skipped: NOTHING_SKIPPED },
       { ...NOTHING_IMPORTED, kits: [{ entry: boyz, version: 1, isRemoved: false }] },
       'same',
     );
@@ -68,7 +71,7 @@ describe('Catalog import', () => {
     const intercessors = kit('games-workshop/space-marines/intercessors');
     const changedBoyz = kit('games-workshop/orks/boyz', 11);
     const { service, applyImport } = importWhere(
-      { hash: 'second', systems: [], factions: [], kits: [changedBoyz, intercessors] },
+      { hash: 'second', systems: [], factions: [], kits: [changedBoyz, intercessors], skipped: NOTHING_SKIPPED },
       {
         ...NOTHING_IMPORTED,
         kits: [
@@ -86,5 +89,50 @@ describe('Catalog import', () => {
       removedIds: [],
       restoredIds: [],
     });
+  });
+
+  it('does not mark a kit as removed while its file is broken', async () => {
+    const boyz = kit('games-workshop/orks/boyz');
+    const { service, applyImport } = importWhere(
+      {
+        hash: 'broken',
+        systems: [],
+        factions: [],
+        kits: [],
+        skipped: { ...NOTHING_SKIPPED, kitIds: [boyz.id] },
+      },
+      { ...NOTHING_IMPORTED, kits: [{ entry: boyz, version: 1, isRemoved: false }] },
+      'first',
+    );
+
+    await service.importSnapshot();
+
+    expect(applyImport.mock.calls[0]?.[0].kits.removedIds).toEqual([]);
+  });
+
+  it('does not mark the factions of a system as removed while its file is broken', async () => {
+    const system = { id: 'warhammer-40000', name: 'Warhammer 40,000', groups: [] };
+    const orks = { id: 'warhammer-40000/orks', systemId: 'warhammer-40000', name: 'Orks' };
+    const { service, applyImport } = importWhere(
+      {
+        hash: 'broken',
+        systems: [],
+        factions: [],
+        kits: [],
+        skipped: { ...NOTHING_SKIPPED, systemIds: [system.id] },
+      },
+      {
+        ...NOTHING_IMPORTED,
+        systems: [{ entry: system, version: 1, isRemoved: false }],
+        factions: [{ entry: orks, version: 1, isRemoved: false }],
+      },
+      'first',
+    );
+
+    await service.importSnapshot();
+
+    const { systems, factions } = applyImport.mock.calls[0]?.[0] ?? {};
+    expect(systems?.removedIds).toEqual([]);
+    expect(factions?.removedIds).toEqual([]);
   });
 });

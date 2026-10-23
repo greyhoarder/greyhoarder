@@ -39,9 +39,12 @@ So far an instance needs no outside service to run.
     release. Instances never download it themselves.
 - **It is imported on startup.** On every start, the server reads the
   catalog's files into one snapshot and checks them against the format
-  this release of Greyhoarder knows; a file that does not match stops the
-  start. When the snapshot differs from the one it imported last, the
-  server imports it.
+  this release of Greyhoarder knows. When the snapshot differs from the
+  one it imported last, the server imports it.
+  - A file or an entry that does not match the format, or refers to
+    something not in the snapshot, is left out with a warning in the log;
+    the server still starts. A left-out entry keeps its last imported
+    version instead of being marked as removed.
   - The import is idempotent.
   - A kit whose content changed gets a new version, and the old one stays.
   - Unchanged kits are left as they are.
@@ -79,10 +82,13 @@ So far an instance needs no outside service to run.
   a registry account. A submodule pins a commit without either.
 - **Turning the files into a snapshot during the build**: the server
   would need no YAML parser, and a broken catalog would fail the build
-  instead of the start. But it adds a build step besides the server's own
-  that every way of building and starting the server has to run, and
-  checking at startup catches the same errors in CI, where the end-to-end
-  tests start the server.
+  instead of showing up at startup. But it adds a build step besides the
+  server's own that every way of building and starting the server has to
+  run.
+- **Refusing to start on a broken catalog**: no broken entry could ever
+  reach the database. But one wrong kit file would take down every
+  instance of a release, and the household could not use the app at all
+  until the next release.
 - **Reading the snapshot at runtime, without a database**: no import would
   be needed. But every query would scan the whole snapshot, and a box could
   not refer to a kit version that has changed since.
@@ -100,10 +106,11 @@ So far an instance needs no outside service to run.
     bot can propose it.
   - Catalog changes reach users only through Greyhoarder releases.
 - **Starting:**
-  - The server does not start with a catalog commit that does not match
-    the format Greyhoarder knows. A format change in the catalog therefore
-    needs a matching change in Greyhoarder before that commit can be
-    pinned; CI catches it when the end-to-end tests start the server.
+  - A catalog commit that does not match the format Greyhoarder knows
+    still starts; the entries that don't match are missing, and only the
+    log's warnings show it. A format change in the catalog therefore needs
+    a matching change in Greyhoarder before that commit can be pinned,
+    and the warnings must be checked when the submodule moves.
   - The server needs the submodule's files at runtime: locally, in CI, in
     the dev container and in the server image.
   - The server reads and checks every file on each start, and needs a YAML
