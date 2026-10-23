@@ -113,7 +113,8 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
   use `util/` and `@greyhoarder/domain`.
 - `features` never import `infrastructure`; features never import each
   other. Code several features need moves to `ports/` or `util/`.
-- Business rules belong in `libs/domain`, not in features.
+- Business rules that both apps need belong in `libs/domain`, not in
+  features.
 
 _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
 

@@ -76,6 +76,13 @@ Fence**. In this project that means in particular:
 
 ## Modules and comments
 
+- One exported class, interface or type per file, and the file is named
+  after it (`catalog-kit-queries.ts` holds `CatalogKitQueries`). Types that
+  exist only as part of it may stay in its file: the parameter and result
+  types of a port or service, the parts of a domain model (`KitSlot` in
+  `catalog-kit.ts`), nested Mongoose sub-schemas. A protocol file holds
+  the request and response of one endpoint. Functions are not affected;
+  generated code (`shared/ui/helm/`) is exempt.
 - Named exports only; no default exports, no `export *`.
 - Barrel files exist only as `api/index.ts` in the apps and as
   `<domain>/index.ts` in `libs/`.
