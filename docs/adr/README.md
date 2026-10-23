@@ -33,3 +33,4 @@ update the guide.
 | 0020 | [Community kit catalog](0020-community-kit-catalog.md)                                  | Proposed |
 | 0021 | [An end-to-end test for every route](0021-an-end-to-end-test-for-every-route.md)        | Proposed |
 | 0022 | [Self-updating instances](0022-self-updating-instances.md)                              | Proposed |
+| 0023 | [Startup sequence and migrations](0023-startup-sequence-and-migrations.md)              | Proposed |
