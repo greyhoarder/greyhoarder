@@ -61,6 +61,21 @@ _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
 
 _(derived from [ADR-0013](adr/0013-browser-e2e-tests-with-playwright.md))_
 
+## End-to-end test for every route
+
+- Every route that loads a component of its own, nested routes included,
+  has at least one end-to-end test that reaches it and checks that its
+  component is rendered.
+- Prefer reaching the route the way a user would, through a link or button,
+  over opening its address directly.
+- Check the rendering through an element of the page's own component, by
+  its `data-testid`; the address alone does not count.
+- One test may cover several routes it passes through; the main path of a
+  screen still needs its own tests.
+- Adding a route includes adding this test.
+
+_(derived from [ADR-0021](adr/0021-an-end-to-end-test-for-every-route.md))_
+
 ## End-to-end test instances
 
 - Each Playwright worker runs its own instance: a server process from the
