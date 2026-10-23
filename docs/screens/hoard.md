@@ -166,7 +166,8 @@ summary line.
   tag filter when it carries any of the ticked tags.
 - Until the hoard comes from the server, the screen shows placeholder rows
   and boxes.
-  The add buttons have no function yet.
+  "Add boxes" opens [Add box](add-box.md); "Add minis" and "Add custom"
+  have no function yet.
 
 ## Accessibility
 

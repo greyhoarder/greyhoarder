@@ -79,6 +79,10 @@ _(derived from [ADR-0011](adr/0011-ui-components-with-spartan-and-tailwind.md))_
   there instead of overriding it at each use.
 - **Buttons:** one primary (gold, filled) action per view; in forms it is
   full width. Secondary actions use the `outline` or `ghost` variant.
+- **Control size:** inputs, search fields, buttons and filter chips are
+  `h-10` with `text-sm` text; icon-only buttons next to them are `size-10`.
+  Small buttons inside a bar or a card may be smaller; a screen spec names
+  any other exception.
 - **Inputs:** filled with a subtle `input` border. Focus shows the gold
   `ring`. Errors appear below the field in `destructive` and mark the field.
 - **Form errors** that belong to no single field (wrong credentials, server
