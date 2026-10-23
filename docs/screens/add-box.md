@@ -13,9 +13,8 @@ check what it contains, done. Only the first step is built so far.
 
 ## Layout
 
-Inside the [shell](shell.md), one centered content column (`max-w-6xl`, as
-wide as the hoard),
-from top to bottom:
+Inside the [shell](shell.md), one content column over the full width beside
+the sidebar, as wide as the hoard, from top to bottom:
 
 1. A back link "Hoard" with a left chevron, leading to the Boxes tab of
    the hoard; below it the title.

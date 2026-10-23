@@ -15,8 +15,8 @@ what was bought: each box with its progress, date and tags.
 
 ## Layout
 
-Inside the [shell](shell.md), one centered content column (`max-w-6xl`),
-from top to bottom:
+Inside the [shell](shell.md), one content column over the full width beside
+the sidebar, from top to bottom:
 
 1. Header: title and summary on the left; on the right one button per way
    into the hoard: "Add boxes" (primary), "Add minis" and "Add custom"
@@ -61,8 +61,9 @@ then the boxes as cards or as a table. Boxes are selected like minis: a
 round check on the photo's top left corner (cards) or at the start of the
 line (table).
 
-**Cards**: a grid, three columns on wide screens, two on medium ones, one
-on narrow ones; newest box first. A card holds a striped photo placeholder
+**Cards**: a grid whose columns follow the width of the content, so it
+changes when the sidebar collapses: four columns from 1280 px, three from
+1024 px, two from 672 px, one below; newest box first. A card holds a striped photo placeholder
 with the round check and the progress badge on its top left and a "⋮"
 button on its top right; below it the box name with the kit line under it
 and the progress percentage on the right, the progress bar with a status

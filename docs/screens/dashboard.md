@@ -11,8 +11,8 @@ out the areas that will give an overview of their hoard.
 
 ## Layout
 
-Inside the [shell](shell.md), one centered content column (`max-w-6xl`) on
-the `background`, from top to bottom:
+Inside the [shell](shell.md), one content column over the full width beside
+the sidebar, on the `background`, from top to bottom:
 
 1. The greeting as the page heading.
 2. The section "Activity".
