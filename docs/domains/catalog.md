@@ -21,7 +21,7 @@ repository's README. This document covers what Greyhoarder does with it.
 | Term | Meaning |
 |------|---------|
 | **Catalog** | The kits and factions of the catalog repository, as of the commit a release ships. |
-| **Snapshot** | The catalog turned into one file during the build, shipped in the server image. |
+| **Snapshot** | The catalog as the server reads it from the submodule's files on startup, with a hash over its content. |
 | **Catalog kit** | A kit from the catalog. Its id is its path in the catalog repository, e.g. `games-workshop/orks/boyz-2026`. |
 | **Kit version** | One state of a catalog kit. A kit gets a new version whenever its content changes. |
 | **Game system** | A game that armies belong to, e.g. Warhammer 40,000. |
@@ -37,10 +37,11 @@ repository's README. This document covers what Greyhoarder does with it.
 
 - The catalog repository is the git submodule `libs/catalog/` of this
   repository. The commit it points to is the catalog of the release.
-- The build checks every file against the format Greyhoarder knows and
-  fails on a mismatch. Ranges are not part of the snapshot.
-- The server imports the snapshot on startup when it differs from the one
-  imported last. Importing the same snapshot again changes nothing.
+- On every start, the server reads the files into a snapshot and checks
+  every file and every reference against the format Greyhoarder knows; on
+  a mismatch it does not start. Ranges are not part of the snapshot.
+- The server imports the snapshot when it differs from the one imported
+  last. Importing the same snapshot again changes nothing.
 - An import either completes or leaves the previous catalog untouched.
 
 ### Versions

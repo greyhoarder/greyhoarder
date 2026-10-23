@@ -32,14 +32,16 @@ So far an instance needs no outside service to run.
   whole instance and read-only for every user. They are maintained only in
   the catalog repository.
 - **It ships with the release.** The catalog repository is a git
-  submodule of the Greyhoarder repository, pinned to one commit.
-  - The build checks the catalog's files against the format this release
-    of Greyhoarder knows. It turns them into one snapshot that ships in the
-    server image.
+  submodule of the Greyhoarder repository, pinned to one commit. Its YAML
+  files ship with the server as they are; there is no separate build
+  step.
   - A new catalog version reaches instances with the next Greyhoarder
     release. Instances never download it themselves.
-- **It is imported on startup.** When the server starts with a snapshot
-  other than the one it imported last, it imports it.
+- **It is imported on startup.** On every start, the server reads the
+  catalog's files into one snapshot and checks them against the format
+  this release of Greyhoarder knows; a file that does not match stops the
+  start. When the snapshot differs from the one it imported last, the
+  server imports it.
   - The import is idempotent.
   - A kit whose content changed gets a new version, and the old one stays.
   - Unchanged kits are left as they are.
@@ -75,6 +77,12 @@ So far an instance needs no outside service to run.
 - **The catalog as an npm package**: it would be versioned like any other
   dependency, but a data repository would need a publishing pipeline and
   a registry account. A submodule pins a commit without either.
+- **Turning the files into a snapshot during the build**: the server
+  would need no YAML parser, and a broken catalog would fail the build
+  instead of the start. But it adds a build step besides the server's own
+  that every way of building and starting the server has to run, and
+  checking at startup catches the same errors in CI, where the end-to-end
+  tests start the server.
 - **Reading the snapshot at runtime, without a database**: no import would
   be needed. But every query would scan the whole snapshot, and a box could
   not refer to a kit version that has changed since.
@@ -91,14 +99,15 @@ So far an instance needs no outside service to run.
   - Moving the submodule to a newer commit is an ordinary commit, and a
     bot can propose it.
   - Catalog changes reach users only through Greyhoarder releases.
-- **Building:**
-  - The build fails on a catalog commit that does not match the format
-    Greyhoarder knows. A format change in the catalog therefore needs a
-    matching change in Greyhoarder before that commit can be pinned.
-  - Every build needs the submodule checked out: locally, in CI and in the
-    dev container.
-  - Turning YAML into the snapshot needs a YAML parser as a build
-    dependency.
+- **Starting:**
+  - The server does not start with a catalog commit that does not match
+    the format Greyhoarder knows. A format change in the catalog therefore
+    needs a matching change in Greyhoarder before that commit can be
+    pinned; CI catches it when the end-to-end tests start the server.
+  - The server needs the submodule's files at runtime: locally, in CI, in
+    the dev container and in the server image.
+  - The server reads and checks every file on each start, and needs a YAML
+    parser as a runtime dependency.
 - **Domains:**
   - `catalog` depends on no other domain.
   - `hoard` reads from `catalog` and may no longer be free of
