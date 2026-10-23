@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HoardPage } from './hoard-page';
+import { MinisPage } from './minis-page';
 
-describe('Hoard page', () => {
-  let fixture: ComponentFixture<HoardPage>;
+describe('Minis page', () => {
+  let fixture: ComponentFixture<MinisPage>;
   let page: HTMLElement;
 
   beforeEach(async () => {
-    fixture = TestBed.createComponent(HoardPage);
+    fixture = TestBed.createComponent(MinisPage);
     page = fixture.nativeElement;
     await fixture.whenStable();
   });
@@ -23,15 +23,10 @@ describe('Hoard page', () => {
     await fixture.whenStable();
   };
 
-  it('sums up the minis, boxes and painted minis of the hoard', () => {
-    expect(textOf('hoard-summary')).toBe('46 minis from 5 boxes · 9 painted');
-  });
-
-  it('shows only the rows with a matching part while searching and counts them on the tab', async () => {
+  it('shows only the rows with a matching part while searching', async () => {
     await search('klaw');
 
     expect(byTestId('hoard-row')).toHaveLength(1);
-    expect(textOf('hoard-tab-minis-count')).toBe('1 of 46');
   });
 
   it('says that nothing matches when the search finds no minis', async () => {

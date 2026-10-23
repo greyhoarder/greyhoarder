@@ -12,3 +12,8 @@ export interface MiniRow {
   readonly isOnWorkbench: boolean;
   readonly count: number;
 }
+
+/** How many minis the rows stand for. */
+export function countMinis(rows: readonly MiniRow[]): number {
+  return rows.reduce((sum, row) => sum + row.count, 0);
+}

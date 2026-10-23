@@ -1,0 +1,115 @@
+<div class="mb-1 flex flex-wrap items-center gap-3">
+  <div hlmInputGroup class="h-10 w-full sm:w-80">
+    <div hlmInputGroupAddon>
+      <ng-icon name="lucideSearch" size="18" />
+    </div>
+    <input
+      hlmInputGroupInput
+      type="search"
+      placeholder="Search boxes"
+      aria-label="Search the boxes"
+      data-testid="hoard-box-search"
+      [value]="store.query()"
+      (input)="search($event)"
+    />
+  </div>
+
+  <app-filter-chip
+    label="Faction"
+    testIdPrefix="hoard-box-filter"
+    [options]="factionOptions()"
+    [selected]="store.factionFilter()"
+    (selectedChange)="store.factionFilter.set($event)"
+  />
+  <app-filter-chip
+    label="Progress"
+    testIdPrefix="hoard-box-filter"
+    [options]="progressOptions()"
+    [selected]="store.progressFilter()"
+    (selectedChange)="store.progressFilter.set($event)"
+  />
+  <app-filter-chip
+    label="Tag"
+    testIdPrefix="hoard-box-filter"
+    [options]="tagOptions()"
+    [selected]="store.tagFilter()"
+    (selectedChange)="store.tagFilter.set($event)"
+  />
+  @if (store.isFiltered()) {
+    <button
+      hlmBtn
+      variant="ghost"
+      type="button"
+      class="h-10 px-3 text-sm text-muted-foreground"
+      data-testid="hoard-box-filter-reset"
+      (click)="store.resetFilters()"
+    >
+      Reset
+      <ng-icon name="lucideX" size="16" />
+    </button>
+  }
+</div>
+
+@if (store.isSelecting()) {
+  <!-- Actions on the selection come with the backend. -->
+  <div
+    class="sticky top-0 z-10 flex items-center gap-3 rounded-xl border border-primary/60 bg-card p-2 pl-4"
+    data-testid="hoard-box-selection-bar"
+  >
+    <span class="flex-1 text-sm font-medium" data-testid="hoard-box-selection-count">
+      {{ store.selectedIds().size }} {{ store.selectedIds().size === 1 ? 'box' : 'boxes' }} selected
+    </span>
+    <button
+      hlmBtn
+      variant="ghost"
+      type="button"
+      class="h-9 text-sm"
+      data-testid="hoard-box-select-all"
+      (click)="store.selectAll()"
+    >
+      Select all
+    </button>
+    <button
+      hlmBtn
+      variant="secondary"
+      type="button"
+      class="h-9 text-sm"
+      data-testid="hoard-box-select-done"
+      (click)="store.finishSelecting()"
+    >
+      Done
+    </button>
+  </div>
+}
+
+@if (store.visibleBoxes().length === 0) {
+  <p
+    class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
+    data-testid="hoard-box-no-results"
+  >
+    @if (store.query().trim()) {
+      No boxes match "{{ store.query() }}".
+    } @else {
+      No boxes match the filters.
+    }
+  </p>
+} @else if (view.mode() === 'table') {
+  <app-box-table
+    [boxes]="store.visibleBoxes()"
+    [isSelectionMode]="store.isSelecting()"
+    [selectedIds]="store.selectedIds()"
+    (selectedChange)="select($event)"
+  />
+  <p class="mt-1 text-sm text-muted-foreground" data-testid="hoard-box-summary">{{ summary() }}</p>
+} @else {
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    @for (box of store.visibleBoxes(); track box.id) {
+      <app-box-card
+        [box]="box"
+        [isSelectionMode]="store.isSelecting()"
+        [isSelected]="store.selectedIds().has(box.id)"
+        (selectedChange)="select({ box, isSelected: $event })"
+      />
+    }
+  </div>
+}

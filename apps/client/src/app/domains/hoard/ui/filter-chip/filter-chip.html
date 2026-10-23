@@ -6,14 +6,14 @@
     class="h-10 px-3.5 text-sm"
     [class.border-dashed]="selected().size === 0"
     [class.bg-card]="selected().size > 0"
-    [attr.data-testid]="'hoard-filter-' + label().toLowerCase()"
+    [attr.data-testid]="testIdPrefix() + '-' + label().toLowerCase()"
   >
     <ng-icon name="lucideCirclePlus" size="16" />
     {{ label() }}
     @if (selected().size > 0) {
       <span class="mx-0.5 h-4 w-px bg-border" aria-hidden="true"></span>
       @for (text of summary(); track text) {
-        <span hlmBadge variant="secondary" class="max-w-40 truncate font-normal">{{ text }}</span>
+        <span hlmBadge variant="secondary" class="rounded-md font-normal">{{ text }}</span>
       }
     }
   </button>
@@ -35,7 +35,7 @@
       @for (option of visibleOptions(); track option.value) {
         <li
           class="flex items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
-          data-testid="hoard-filter-option"
+          [attr.data-testid]="testIdPrefix() + '-option'"
         >
           <hlm-checkbox
             [inputId]="idPrefix + '-' + $index"

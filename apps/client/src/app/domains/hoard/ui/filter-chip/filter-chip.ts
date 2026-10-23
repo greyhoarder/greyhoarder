@@ -29,6 +29,8 @@ export class FilterChip {
   protected readonly idPrefix = `filter-chip-${FilterChip.nextId++}`;
 
   readonly label = input.required<string>();
+  /** Test IDs are `<prefix>-<label>`; lists of minis and of boxes each have their own. */
+  readonly testIdPrefix = input('hoard-filter');
   readonly options = input.required<readonly FilterOption[]>();
   readonly selected = input<ReadonlySet<string>>(new Set());
   readonly selectedChange = output<ReadonlySet<string>>();

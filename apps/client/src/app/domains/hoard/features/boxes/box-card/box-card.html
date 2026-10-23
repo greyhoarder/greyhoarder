@@ -1,0 +1,67 @@
+<div class="relative h-36 bg-muted bg-busy-stripes text-muted-foreground">
+  <!-- Photos come later; until then every box shows the same placeholder. -->
+  <app-row-check
+    class="absolute top-3.5 left-3"
+    [label]="'Select ' + box().name"
+    [isSelected]="isSelected()"
+    [isVisible]="isSelectionMode()"
+    (selectedChange)="selectedChange.emit($event)"
+  />
+  <app-progress-badge class="absolute top-3.5 left-11" [progress]="progress()" />
+  <!-- The menu of the box comes with editing. -->
+  <button
+    hlmBtn
+    variant="secondary"
+    size="icon"
+    type="button"
+    class="absolute top-3 right-3 bg-background/80 text-foreground"
+    aria-label="More actions"
+    data-testid="hoard-box-menu"
+    (click)="$event.stopPropagation()"
+  >
+    <ng-icon name="lucideEllipsisVertical" size="16" />
+  </button>
+</div>
+
+<div class="flex flex-1 flex-col gap-3 p-4">
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex min-w-0 flex-col gap-0.5">
+      <span class="truncate font-semibold">{{ box().name }}</span>
+      <span class="truncate text-sm text-muted-foreground">{{ kitLine() }}</span>
+    </div>
+    <span class="text-lg font-semibold tabular-nums" data-testid="hoard-box-percent">
+      {{ percent() }}<span class="text-sm text-muted-foreground">%</span>
+    </span>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <app-progress-bar [box]="box()" />
+    <ul
+      class="flex flex-wrap gap-x-2 gap-y-1 text-xs text-muted-foreground"
+      data-testid="hoard-box-statuses"
+    >
+      @for (entry of statusCounts(); track entry.status) {
+        <li class="flex items-center gap-1">
+          <span
+            class="size-2 rounded-full"
+            [class]="statusColor[entry.status]"
+            aria-hidden="true"
+          ></span>
+          <span
+            ><span class="font-medium text-foreground tabular-nums">{{ entry.count }}</span>
+            {{ entry.label }}</span
+          >
+        </li>
+      }
+    </ul>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+    <span>{{ meta() }}</span>
+    @for (tag of box().tags; track tag) {
+      <span hlmBadge variant="outline" class="rounded-md font-normal text-muted-foreground">{{
+        tag
+      }}</span>
+    }
+  </div>
+</div>

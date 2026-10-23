@@ -9,9 +9,9 @@ import {
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTableImports } from '@spartan-ng/helm/table';
-import type { MiniRow } from '../../util/mini-row';
-import { type MiniSortOrder, type SortDirection, sortRows } from '../../util/mini-sort';
-import { RowCheck } from '../row-check/row-check';
+import type { MiniRow } from '../../../util/mini-row';
+import { type MiniSortOrder, type SortDirection, sortRows } from '../../../util/mini-sort';
+import { RowCheck } from '../../../ui/row-check/row-check';
 import { StatusBadge } from '../status-badge/status-badge';
 
 interface Column {

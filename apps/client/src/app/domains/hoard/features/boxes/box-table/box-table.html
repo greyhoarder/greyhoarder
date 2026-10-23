@@ -1,0 +1,82 @@
+<div hlmTableContainer>
+  <table hlmTable data-testid="hoard-box-table">
+    <thead hlmTHead>
+      <tr hlmTr>
+        <th hlmTh class="w-10"><span class="sr-only">Selection</span></th>
+        @for (column of columns; track column.order) {
+          <th hlmTh [attr.aria-sort]="ariaSort(column)" [class.text-right]="column.isNumeric">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 rounded-md py-1 font-medium hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              [class.text-foreground]="column.order === sortOrder()"
+              [attr.data-testid]="'hoard-box-sort-' + column.order"
+              (click)="sortBy(column.order)"
+            >
+              {{ column.label }}
+              @if (column.order !== sortOrder()) {
+                <ng-icon name="lucideChevronsUpDown" size="14" class="opacity-50" />
+              } @else if (sortDirection() === 'ascending') {
+                <ng-icon name="lucideArrowUp" size="14" />
+              } @else {
+                <ng-icon name="lucideArrowDown" size="14" />
+              }
+            </button>
+          </th>
+        }
+        <th hlmTh class="w-10"><span class="sr-only">Menu</span></th>
+      </tr>
+    </thead>
+    <tbody hlmTBody>
+      @for (box of sortedBoxes(); track box.id) {
+        <tr
+          hlmTr
+          class="group"
+          data-testid="hoard-box"
+          [class.bg-primary/5]="selectedIds().has(box.id)"
+          [class.cursor-pointer]="isSelectionMode()"
+          (click)="onRowClick(box)"
+        >
+          <td hlmTd>
+            <app-row-check
+              [label]="'Select ' + box.name"
+              [isSelected]="selectedIds().has(box.id)"
+              [isVisible]="isSelectionMode()"
+              (selectedChange)="select(box, $event)"
+            />
+          </td>
+          <td hlmTd class="max-w-56">
+            <div class="truncate font-medium">{{ box.name }}</div>
+            <div class="truncate text-xs text-muted-foreground">{{ kitLine(box) }}</div>
+          </td>
+          <td hlmTd class="max-w-48 truncate">{{ box.factions.join(', ') }}</td>
+          <td hlmTd class="w-52">
+            <div class="flex items-center gap-3">
+              <app-progress-bar class="flex-1" [box]="box" />
+              <span class="w-10 text-right text-sm tabular-nums" data-testid="hoard-box-percent"
+                >{{ percentOf(box) }}%</span
+              >
+            </div>
+          </td>
+          <td hlmTd class="text-right tabular-nums">{{ sprueCount(box) }}</td>
+          <td hlmTd class="text-right tabular-nums">{{ paintedText(box) }}</td>
+          <td hlmTd class="text-muted-foreground">{{ formatDate(box.addedOn) }}</td>
+          <td hlmTd>
+            <!-- The menu of the box comes with editing. -->
+            <button
+              hlmBtn
+              variant="ghost"
+              size="icon"
+              type="button"
+              class="text-muted-foreground"
+              aria-label="More actions"
+              data-testid="hoard-box-menu"
+              (click)="$event.stopPropagation()"
+            >
+              <ng-icon name="lucideEllipsisVertical" size="16" />
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

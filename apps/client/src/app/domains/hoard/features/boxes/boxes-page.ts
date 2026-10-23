@@ -1,0 +1,68 @@
+import { Component, computed, inject } from '@angular/core';
+import { boxProgresses } from '@greyhoarder/domain/hoard';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideSearch, lucideX } from '@ng-icons/lucide';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
+import { BoxesStore } from '../../data/boxes-store';
+import { HoardView } from '../../data/hoard-view';
+import { BoxCard } from './box-card/box-card';
+import { type BoxSelection, BoxTable } from './box-table/box-table';
+import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
+import { PROGRESS_LABELS, progressOf, sprueCount } from '../../util/box-facts';
+import type { BoxRow } from '../../util/box-row';
+
+/** The Boxes tab of the hoard: search, filters, selection and the boxes as cards or table. */
+@Component({
+  selector: 'app-boxes-page',
+  imports: [NgIcon, HlmButton, HlmInputGroupImports, BoxCard, BoxTable, FilterChip],
+  providers: [provideIcons({ lucideSearch, lucideX })],
+  templateUrl: './boxes-page.html',
+  host: { class: 'flex flex-col gap-3' },
+})
+export class BoxesPage {
+  protected readonly store = inject(BoxesStore);
+  protected readonly view = inject(HoardView);
+
+  protected readonly factionOptions = computed(() =>
+    optionsOf(this.store.boxes(), (box) => box.factions),
+  );
+  protected readonly progressOptions = computed<FilterOption[]>(() =>
+    boxProgresses.map((progress) => ({
+      value: progress,
+      label: PROGRESS_LABELS[progress],
+      count: this.store.boxes().filter((box) => progressOf(box) === progress).length,
+    })),
+  );
+  protected readonly tagOptions = computed(() => optionsOf(this.store.boxes(), (box) => box.tags));
+
+  /** E.g. "6 boxes · 26 minis still on the sprue". */
+  protected readonly summary = computed(() => {
+    const boxes = this.store.visibleBoxes();
+    const sprue = boxes.reduce((sum, box) => sum + sprueCount(box), 0);
+    return `${boxes.length} ${boxes.length === 1 ? 'box' : 'boxes'} · ${sprue} minis still on the sprue`;
+  });
+
+  protected select({ box, isSelected }: BoxSelection): void {
+    this.store.select(box.id, isSelected);
+  }
+
+  protected search(event: Event): void {
+    if (event.target instanceof HTMLInputElement) {
+      this.store.query.set(event.target.value);
+    }
+  }
+}
+
+/** The values of the boxes, sorted, each with how many boxes have it. */
+function optionsOf(
+  boxes: readonly BoxRow[],
+  valuesOf: (box: BoxRow) => readonly string[],
+): FilterOption[] {
+  const values = [...new Set(boxes.flatMap(valuesOf))].sort((a, b) => a.localeCompare(b));
+  return values.map((value) => ({
+    value,
+    label: value,
+    count: boxes.filter((box) => valuesOf(box).includes(value)).length,
+  }));
+}
