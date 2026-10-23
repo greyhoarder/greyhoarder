@@ -32,3 +32,4 @@ update the guide.
 | 0019 | [Hobby data model](0019-hobby-data-model.md)                                            | Proposed |
 | 0020 | [Community kit catalog](0020-community-kit-catalog.md)                                  | Proposed |
 | 0021 | [An end-to-end test for every route](0021-an-end-to-end-test-for-every-route.md)        | Proposed |
+| 0022 | [Self-updating instances](0022-self-updating-instances.md)                              | Proposed |
