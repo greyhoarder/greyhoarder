@@ -20,9 +20,9 @@ description: Review code or a planned change against greyhoarder's architecture 
    - **Boundaries:** correct domain folder; other domains imported only via
      `<domain>/api/index.ts`; only allowed domain dependencies; `shared/`
      imports no domain; `libs/domain` is framework-free and imported by
-     package name; `model/` is framework-free and holds what only one app
+     package name; `models/` is framework-free and holds what only one app
      needs, `libs/domain` only what both need; business rules only in
-     `model/` or `libs/domain`; one Nest module per domain, no
+     `models/` or `libs/domain`; one Nest module per domain, no
      `forwardRef()`.
    - **Persistence:** every collection has a schema owned by one domain; no
      queries or `$lookup` into other domains' collections; references

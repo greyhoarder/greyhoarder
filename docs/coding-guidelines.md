@@ -18,7 +18,7 @@ Fence**. In this project that means in particular:
   exist yet.
 - DRY by the rule of three: extract on the third occurrence. Two copies of
   a business rule are always one too many; it belongs in the domain's
-  `model/`, or in `libs/domain` when both apps need it.
+  `models/`, or in `libs/domain` when both apps need it.
 - A function either orchestrates or does detail work, never both.
 - Don't remove or rewrite code you don't understand; ask why it is there.
 - Change only what the task requires. Report problems you notice in
@@ -80,7 +80,7 @@ Fence**. In this project that means in particular:
 - One exported class, interface or type per file, and the file is named
   after it (`catalog-kit-queries.ts` holds `CatalogKitQueries`). Types that
   exist only as part of it may stay in its file: the parameter and result
-  types of a service (those of a port live in `model/`), the parts of a domain model (`KitSlot` in
+  types of a service (those of a port live in `models/`), the parts of a domain model (`KitSlot` in
   `catalog-kit.ts`), nested Mongoose sub-schemas. A protocol file holds
   the request and response of one endpoint. Functions are not affected;
   generated code (`shared/ui/helm/`) is exempt.

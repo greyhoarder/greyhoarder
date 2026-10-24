@@ -28,17 +28,17 @@ database, and storage must be replaceable without touching them.
 
 Inside each domain, code is split into a small, fixed set of folders, each
 holding one kind of code. Both apps give the domain's own model a folder,
-`model/`. On the server, use cases depend on interfaces (**ports**), and the
+`models/`. On the server, use cases depend on interfaces (**ports**), and the
 code that talks to the outside world implements them (ports and adapters).
 
 ### Model
 
-- `model/` holds the types, value objects and business rules of the domain
+- `models/` holds the types, value objects and business rules of the domain
   that only this app needs. It is plain TypeScript, free of frameworks like
   `libs/domain`, and depends on nothing in the domain except `util/`.
 - Model that both apps need lives in `libs/domain` instead. A part of
-  `model/` moves there once the other app needs it as well, not before.
-- Business rules live in `model/` or `libs/domain`, never in use cases,
+  `models/` moves there once the other app needs it as well, not before.
+- Business rules live in `models/` or `libs/domain`, never in use cases,
   entry points, stores or components.
 
 ### Server
@@ -47,7 +47,7 @@ code that talks to the outside world implements them (ports and adapters).
 apps/server/src/domains/<domain>/
 ├── api/                  ← contract for other domains (ADR-0004)
 ├── features/<feature>/   ← use cases with their entry points
-├── model/                ← model only the server needs
+├── models/               ← model only the server needs
 ├── ports/                ← abstract classes for what features need from outside
 ├── infrastructure/       ← implementations of ports
 ├── util/                 ← small helpers without business logic
@@ -56,7 +56,7 @@ apps/server/src/domains/<domain>/
 
 ```text
 features ──▶ ports ◀── infrastructure
-    └──────▶ model ◀───────┘            ports ──▶ model        all ──▶ util, libs/domain
+    └──────▶ models ◀──────┘             ports ──▶ models       all ──▶ util, libs/domain
 ```
 
 - A **feature** is a vertical slice: a use case together with its entry
@@ -64,7 +64,7 @@ features ──▶ ports ◀── infrastructure
   other domains through `api/`. Entry points are the primary adapters.
 - A **port** is an abstract class without behavior. It is both the
   interface and the injection token. The types in its signatures come from
-  `model/` or `libs/domain`, so a port holds nothing but itself.
+  `models/` or `libs/domain`, so a port holds nothing but itself.
 - **Infrastructure** holds the implementations of ports, the secondary
   adapters. Replacing a technology means adding an implementation and
   changing its binding; features stay untouched.
@@ -81,14 +81,14 @@ apps/client/src/app/domains/<domain>/
 ├── features/<feature>/   ← pages, smart components, their state
 ├── ui/                   ← presentational components shared by its features (ADR-0011)
 ├── data/                 ← data held locally: stores, fixed and sample data
-├── model/                ← model only the client needs
+├── models/               ← model only the client needs
 ├── infrastructure/       ← access to external resources (the server)
 ├── util/
 └── <domain>.routes.ts    ← entry point for the router
 ```
 
 ```text
-features ──▶ data ──▶ infrastructure        features ──▶ ui, infrastructure        all ──▶ model, util, libs/domain
+features ──▶ data ──▶ infrastructure        features ──▶ ui, infrastructure        all ──▶ models, util, libs/domain
 ```
 
 - A **feature** holds its pages and smart components and the
@@ -131,7 +131,7 @@ without a new decision.
   scattered across three trees.
 - **A `core/` folder per domain**: one place for the inside, but without a
   criterion for what belongs there it collects services, interfaces,
-  events and modules alike. `model/` has that criterion: types and rules,
+  events and modules alike. `models/` has that criterion: types and rules,
   free of frameworks.
 - **`application/` plus `adapters/primary` and `adapters/secondary`**:
   textbook hexagonal naming, but splits every use case into a use case
@@ -172,11 +172,11 @@ without a new decision.
   without a database.
 - Each port costs an abstract class and a binding, even when there is only
   one implementation.
-- A type that becomes shared later moves from `model/` to `libs/domain`;
+- A type that becomes shared later moves from `models/` to `libs/domain`;
   imports change, the type does not.
 - Shared client state and sample data have one place per domain; sample
   data is easy to find and remove once the server delivers.
 - Existing code that holds model in `libs/domain`, `ports/` or `util/`
-  although only one app needs it moves to `model/`.
+  although only one app needs it moves to `models/`.
 - The folder rules are conventions until boundary checks are introduced in
   a later decision.

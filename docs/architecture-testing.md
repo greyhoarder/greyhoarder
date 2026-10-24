@@ -39,7 +39,7 @@ _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
 
 - Every Angular component has a spec file, except generated `helm`
   components in `shared/ui/helm/`.
-- Every business rule in `libs/domain` and in a domain's `model/` has unit
+- Every business rule in `libs/domain` and in a domain's `models/` has unit
   tests.
 - Component and service logic in the client.
 - Server logic in services and guards.

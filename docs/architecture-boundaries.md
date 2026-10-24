@@ -77,7 +77,7 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 
 ## Layers inside a server domain
 
-- A server domain contains only `api/`, `features/<feature>/`, `model/`,
+- A server domain contains only `api/`, `features/<feature>/`, `models/`,
   `ports/`, `infrastructure/`, `util/` and `<domain>.module.ts`.
 - A feature is one use case or a few use cases on the same resource that
   change together; use cases with their own rules or dependencies are
@@ -98,13 +98,13 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
   subfolder named after it (`guards/`, `dtos/`, `errors/`), even for a
   single file. Never create a feature named after a kind
   (`features/guards/`).
-- `model/` holds the types, value objects and business rules of the domain
+- `models/` holds the types, value objects and business rules of the domain
   that only the server needs (e.g. `UserCredentials`, the state of a
   catalog import). It imports nothing from NestJS, Mongoose, RxJS or other
   frameworks, and nothing from the domain except `util/`.
 - `ports/` holds only abstract classes without behavior; each is the
   interface and the injection token. No string tokens. Ports depend only
-  on `model/` and `@greyhoarder/domain`; the types in their signatures
+  on `models/` and `@greyhoarder/domain`; the types in their signatures
   live there, not in `ports/`.
 - `infrastructure/` holds only implementations of ports and what they need
   (Mongoose schemas, mappers).
@@ -113,15 +113,18 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
   `redis-session-registry.ts`). A port gets a subfolder only when its
   adapter has several files; never group by technology (`redis/`,
   `mongo/`) or by kind (`repositories/`).
+- An adapter's schemas (Mongoose schemas, Zod schemas of the files it
+  reads) go into a subfolder `schemas/` of its port's folder, even for a
+  single file; it is the only folder by kind inside `infrastructure/`.
 - Only `<domain>.module.ts` binds ports to implementations.
 - `util/` holds small helpers without business logic.
-- Allowed: `features → ports`, `features → model`,
-  `infrastructure → ports`, `infrastructure → model`, `ports → model`;
+- Allowed: `features → ports`, `features → models`,
+  `infrastructure → ports`, `infrastructure → models`, `ports → models`;
   every folder may use `util/` and `@greyhoarder/domain`.
 - `features` never import `infrastructure`; features never import each
-  other. Code several features need moves to `model/`, `ports/` or
+  other. Code several features need moves to `models/`, `ports/` or
   `util/`.
-- Business rules belong in `model/`, or in `libs/domain` when both apps
+- Business rules belong in `models/`, or in `libs/domain` when both apps
   need them; never in features or `infrastructure/`.
 
 _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
@@ -146,7 +149,7 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 ## Layers inside a client domain
 
 - A client domain contains only `api/`, `features/<feature>/`, `ui/`,
-  `data/`, `model/`, `infrastructure/`, `util/` and `<domain>.routes.ts`.
+  `data/`, `models/`, `infrastructure/`, `util/` and `<domain>.routes.ts`.
 - `features/` holds pages, smart components and their state, and the
   presentational components only that feature uses, each in a folder of
   its own (`features/boxes/box-card/`).
@@ -157,7 +160,7 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
   features of the domain (in memory or browser storage) and fixed or
   temporary data, e.g. sample data named `sample-<subject>.ts` that stands
   in for the server until its adapter exists.
-- `model/` holds the types, value objects and business rules of the domain
+- `models/` holds the types, value objects and business rules of the domain
   that only the client needs: what stores hold and features and
   components show (e.g. `BoxRow`, `MiniRow`) and the facts derived from
   them. It imports nothing from Angular, RxJS or other frameworks, and
@@ -165,14 +168,14 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 - `infrastructure/` holds only access to external resources: one HTTP
   adapter per server controller, named `http-<resource>-adapter.ts`
   (`HttpSetupAdapter`). It maps between protocol DTOs and domain models
-  (`model/` or `@greyhoarder/domain`); features never see DTOs.
+  (`models/` or `@greyhoarder/domain`); features never see DTOs.
 - `util/` holds small helpers without business logic.
 - Allowed: `features → ui`, `features → data`, `features → infrastructure`,
-  `data → infrastructure`; every folder may use `model/`, `util/` and
+  `data → infrastructure`; every folder may use `models/`, `util/` and
   `@greyhoarder/domain`.
 - `ui` never uses `data` or `infrastructure`; `data` never imports
   `features` or `ui`; features never import each other.
-- Business rules belong in `model/`, or in `libs/domain` when both apps
+- Business rules belong in `models/`, or in `libs/domain` when both apps
   need them; never in components, stores or `infrastructure/`.
 - No ports on the client.
 
@@ -238,7 +241,7 @@ _(derived from [ADR-0016](adr/0016-in-process-events-between-domains.md))_
 
 - Types and rules needed by both client and server belong in
   `libs/domain`, not duplicated in the apps.
-- Types and rules only one app needs belong in that app's `model/`, not in
+- Types and rules only one app needs belong in that app's `models/`, not in
   `libs/domain`. They move to `libs/domain` once the other app needs them,
   not in advance.
 - `libs/domain` imports nothing from Angular, NestJS, Mongoose, RxJS or
