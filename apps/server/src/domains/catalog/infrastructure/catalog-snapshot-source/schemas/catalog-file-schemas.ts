@@ -28,7 +28,7 @@ export const kitFileSchema = z.strictObject({
       }),
     )
     .default([]),
-  minis: z.number().int().nonnegative(),
+  minis: z.number().int().positive(),
   draft: z.boolean().default(false),
   supersedes: z.string().min(1).optional(),
   contains: z.array(z.strictObject({ kit: z.string().min(1), count: z.number().int().positive() })).default([]),
