@@ -1,7 +1,7 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { matchesBoxFilter, matchesBoxSearch } from '../util/box-filter';
-import type { BoxRow } from '../util/box-row';
-import { sortBoxes } from '../util/box-sort';
+import { matchesBoxFilter, matchesBoxSearch } from '../models/box-filter';
+import type { BoxRow } from '../models/box-row';
+import { sortBoxes } from '../models/box-sort';
 import { toggled } from '../util/selection';
 import { SAMPLE_BOXES } from './sample-boxes';
 

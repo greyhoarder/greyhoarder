@@ -3,7 +3,7 @@ export const hobbyStatuses = ['sprue', 'built', 'primed', 'painted', 'done'] as 
 
 export type HobbyStatus = (typeof hobbyStatuses)[number];
 
-/** A done mini is painted as well, so both count as painted for the hoard's tally. */
-export function isPainted(status: HobbyStatus): boolean {
-  return hobbyStatuses.indexOf(status) >= hobbyStatuses.indexOf('painted');
+/** A mini has reached a status once it is at that status or a later one, so a done mini is painted as well. */
+export function hasReached(status: HobbyStatus, step: HobbyStatus): boolean {
+  return hobbyStatuses.indexOf(status) >= hobbyStatuses.indexOf(step);
 }

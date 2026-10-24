@@ -1,4 +1,4 @@
-import type { HobbyStatus } from '@greyhoarder/domain/hoard';
+import type { HobbyStatus } from './hobby-status';
 
 /** Alike minis (same name, factions, status and parts) bundled into one row of a list. */
 export interface MiniRow {

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import type { MiniRow } from '../../../util/mini-row';
+import type { MiniRow } from '../../../models/mini-row';
 import { MiniTable } from './mini-table';
 
 const ROWS: MiniRow[] = [

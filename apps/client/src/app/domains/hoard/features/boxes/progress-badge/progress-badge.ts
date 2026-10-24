@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
-import type { BoxProgress } from '@greyhoarder/domain/hoard';
+import type { BoxProgress } from '../../../models/box-progress';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import { PROGRESS_LABELS } from '../../../util/box-facts';
+import { PROGRESS_LABELS } from '../../../models/box-labels';
 
 /**
  * How far a box has come, as a badge in the colors of the status badge:

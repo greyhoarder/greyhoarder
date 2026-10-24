@@ -1,8 +1,8 @@
 import { Component, computed, input } from '@angular/core';
-import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
-import { miniCount } from '../../../util/box-facts';
-import type { BoxRow } from '../../../util/box-row';
-import { STATUS_SHORT_LABELS } from '../../../util/status-labels';
+import { type HobbyStatus, hobbyStatuses } from '../../../models/hobby-status';
+import { miniCount } from '../../../models/box-row';
+import type { BoxRow } from '../../../models/box-row';
+import { STATUS_SHORT_LABELS } from '../../../models/status-labels';
 
 interface Segment {
   readonly status: HobbyStatus;

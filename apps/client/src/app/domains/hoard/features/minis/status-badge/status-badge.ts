@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
-import type { HobbyStatus } from '@greyhoarder/domain/hoard';
+import type { HobbyStatus } from '../../../models/hobby-status';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import { STATUS_LABELS } from '../../../util/status-labels';
+import { STATUS_LABELS } from '../../../models/status-labels';
 
 /**
  * The hobby status of a mini as a badge: grey while unpainted, lighter with

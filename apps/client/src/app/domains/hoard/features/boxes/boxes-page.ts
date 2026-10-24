@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { boxProgresses } from '@greyhoarder/domain/hoard';
+import { boxProgresses } from '../../models/box-progress';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -9,8 +9,9 @@ import { HoardView } from '../../data/hoard-view';
 import { BoxCard } from './box-card/box-card';
 import { type BoxSelection, BoxTable } from './box-table/box-table';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
-import { PROGRESS_LABELS, progressOf, sprueCount } from '../../util/box-facts';
-import type { BoxRow } from '../../util/box-row';
+import { PROGRESS_LABELS } from '../../models/box-labels';
+import { progressOf, sprueCount } from '../../models/box-row';
+import type { BoxRow } from '../../models/box-row';
 
 /** The Boxes tab of the hoard: search, filters, selection and the boxes as cards or table. */
 @Component({

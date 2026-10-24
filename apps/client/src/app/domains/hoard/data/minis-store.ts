@@ -1,9 +1,9 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { isPainted } from '@greyhoarder/domain/hoard';
-import { matchesFilter } from '../util/mini-filter';
-import { countMinis, type MiniRow } from '../util/mini-row';
-import { matchesSearch } from '../util/mini-search';
-import { sortRows } from '../util/mini-sort';
+import { hasReached } from '../models/hobby-status';
+import { matchesFilter } from '../models/mini-filter';
+import { countMinis, type MiniRow } from '../models/mini-row';
+import { matchesSearch } from '../models/mini-search';
+import { sortRows } from '../models/mini-sort';
 import { toggled } from '../util/selection';
 import { SAMPLE_MINIS } from './sample-minis';
 
@@ -43,7 +43,7 @@ export class MinisStore {
   readonly miniCount = computed(() => countMinis(this.rows()));
   readonly visibleMiniCount = computed(() => countMinis(this.visibleRows()));
   readonly paintedCount = computed(() =>
-    countMinis(this.rows().filter((row) => isPainted(row.status))),
+    countMinis(this.rows().filter((row) => hasReached(row.status, 'painted'))),
   );
 
   /** "Select" was pressed; selecting a row by its check starts the mode as well. */

@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { hobbyStatuses } from '@greyhoarder/domain/hoard';
+import { hobbyStatuses } from '../../models/hobby-status';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -9,9 +9,9 @@ import { MinisStore } from '../../data/minis-store';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
 import { MiniCard } from './mini-card/mini-card';
 import { MiniTable, type RowSelection } from './mini-table/mini-table';
-import { NONE } from '../../util/mini-filter';
-import { countMinis, type MiniRow } from '../../util/mini-row';
-import { STATUS_LABELS } from '../../util/status-labels';
+import { NONE } from '../../models/mini-filter';
+import { countMinis, type MiniRow } from '../../models/mini-row';
+import { STATUS_LABELS } from '../../models/status-labels';
 
 /** The Minis tab of the hoard: search, filters, selection and the minis as cards or table. */
 @Component({

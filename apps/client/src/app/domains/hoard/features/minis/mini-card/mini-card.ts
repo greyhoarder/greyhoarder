@@ -3,7 +3,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEllipsisVertical } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
-import type { MiniRow } from '../../../util/mini-row';
+import type { MiniRow } from '../../../models/mini-row';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { StatusBadge } from '../status-badge/status-badge';
 

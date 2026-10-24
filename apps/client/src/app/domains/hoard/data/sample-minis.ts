@@ -1,4 +1,4 @@
-import type { MiniRow } from '../util/mini-row';
+import type { MiniRow } from '../models/mini-row';
 
 /**
  * Placeholder rows after the reference design until the hoard comes from the

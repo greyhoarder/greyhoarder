@@ -1,11 +1,10 @@
-import { hobbyStatuses } from '@greyhoarder/domain/hoard';
+import { hobbyStatuses } from './hobby-status';
+import type { SortDirection } from '../util/sort-direction';
 import type { MiniRow } from './mini-row';
 
 export const miniSortOrders = ['name', 'army', 'box', 'status', 'count'] as const;
 
 export type MiniSortOrder = (typeof miniSortOrders)[number];
-
-export type SortDirection = 'ascending' | 'descending';
 
 /** Rows without a box sort after those with one. */
 const byOptionalText = (a: string | undefined, b: string | undefined): number =>

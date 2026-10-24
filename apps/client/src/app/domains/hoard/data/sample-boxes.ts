@@ -1,4 +1,4 @@
-import type { BoxRow } from '../util/box-row';
+import type { BoxRow } from '../models/box-row';
 
 /**
  * Placeholder boxes after the reference design until the hoard comes from the

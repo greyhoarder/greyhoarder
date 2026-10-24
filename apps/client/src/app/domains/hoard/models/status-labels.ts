@@ -1,4 +1,4 @@
-import type { HobbyStatus } from '@greyhoarder/domain/hoard';
+import type { HobbyStatus } from './hobby-status';
 
 export const STATUS_LABELS: Readonly<Record<HobbyStatus, string>> = {
   sprue: 'On the sprue',

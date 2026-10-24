@@ -8,17 +8,12 @@ import {
 } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTableImports } from '@spartan-ng/helm/table';
-import {
-  formatDate,
-  kitLine,
-  miniCount,
-  paintedCount,
-  percentOf,
-  sprueCount,
-} from '../../../util/box-facts';
-import type { BoxRow } from '../../../util/box-row';
-import { type BoxSortOrder, sortBoxes } from '../../../util/box-sort';
-import type { SortDirection } from '../../../util/mini-sort';
+import { kitLine } from '../../../models/box-labels';
+import { miniCount, paintedCount, percentOf, sprueCount } from '../../../models/box-row';
+import { formatDate } from '../../../util/format-date';
+import type { BoxRow } from '../../../models/box-row';
+import { type BoxSortOrder, sortBoxes } from '../../../models/box-sort';
+import type { SortDirection } from '../../../util/sort-direction';
 import { ProgressBar } from '../progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
 

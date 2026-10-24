@@ -1,7 +1,7 @@
-import { boxProgresses } from '@greyhoarder/domain/hoard';
-import { paintedCount, progressOf, sprueCount } from './box-facts';
+import { boxProgresses } from './box-progress';
+import { paintedCount, progressOf, sprueCount } from './box-row';
 import type { BoxRow } from './box-row';
-import type { SortDirection } from './mini-sort';
+import type { SortDirection } from '../util/sort-direction';
 
 export const boxSortOrders = ['name', 'faction', 'progress', 'sprue', 'painted', 'added'] as const;
 
