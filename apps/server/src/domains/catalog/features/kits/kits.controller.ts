@@ -13,6 +13,10 @@ export class KitsController {
   @ZodSerializerDto(kitSearchResponseSchema)
   async search(@Query() query: KitSearchRequestDto): Promise<KitSearchResponse> {
     const result = await this.kits.search(query.search);
-    return { kits: result.kits, factionNames: Object.fromEntries(result.factionNames) };
+    return {
+      kits: result.kits,
+      containedKits: result.containedKits,
+      factionNames: Object.fromEntries(result.factionNames),
+    };
   }
 }

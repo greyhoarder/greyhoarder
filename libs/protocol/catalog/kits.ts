@@ -46,7 +46,9 @@ export type KitSearchRequest = z.infer<typeof kitSearchRequestSchema>;
 
 export const kitSearchResponseSchema = z.object({
   kits: z.array(catalogKitSchema).readonly(),
-  /** The names of the factions and whole game systems the kits are listed for, by id. */
+  /** Every kit the found kits contain, also within contained bundles. */
+  containedKits: z.array(catalogKitSchema).readonly(),
+  /** The names of the factions and whole game systems the kits and their slots are listed for, by id. */
   factionNames: z.record(z.string(), z.string()),
 });
 

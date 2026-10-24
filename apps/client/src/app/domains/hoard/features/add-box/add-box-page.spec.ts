@@ -52,6 +52,7 @@ describe('Add box page', () => {
   it('shows the catalog kits found for the search', async () => {
     search.mockResolvedValue({
       kits: [catalogKit('games-workshop/orks/boyz-2021'), catalogKit('games-workshop/orks/boyz-2026')],
+      containedKits: new Map(),
       factionNames: new Map([['warhammer-40000/orks', 'Orks']]),
     });
 
@@ -61,7 +62,7 @@ describe('Add box page', () => {
   });
 
   it('says that no kit matches when the catalog finds none', async () => {
-    search.mockResolvedValue({ kits: [], factionNames: new Map() });
+    search.mockResolvedValue({ kits: [], containedKits: new Map(), factionNames: new Map() });
 
     await searchFor('grots');
 

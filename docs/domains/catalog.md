@@ -40,9 +40,9 @@ repository's README. This document covers what Greyhoarder does with it.
 - On every start, the server reads the files into a snapshot and checks
   every file and every reference against the format Greyhoarder knows.
   Ranges are not part of the snapshot.
-- A file or an entry that does not match the format, or refers to a kit,
-  faction or group that is not in the snapshot, is left out with a
-  warning in the log; the server still starts. A left-out entry keeps its
+- A file or an entry that does not match the format, refers to a kit,
+  faction or group that is not in the snapshot, or contains itself, also
+  through other kits, is left out with a warning in the log; the server still starts. A left-out entry keeps its
   last imported version and is not marked as removed. When a system's file
   is left out, all its factions keep theirs.
 - The server imports the snapshot when it differs from the one imported

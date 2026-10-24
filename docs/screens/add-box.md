@@ -55,7 +55,9 @@ border:
      then the parts as small muted chips in the same row, wrapping;
    - for an either-or kit, one row: the kit's name, below it a muted
      line with what each mini can become, and below that the parts of
-     every variant as small muted chips, each part once.
+     every variant as small muted chips, each part once;
+   - for a bundle, after its own rows, the rows of every kit in it; a kit
+     that comes twice shows twice the minis.
 2. A border, then the tags: the tags typed in this card as toggle chips
    (fully rounded, `h-8`; on = gold border and light gold background), and
    a small dashed input for a new tag.
@@ -136,7 +138,8 @@ border:
   variant one per mini in its slots, named after the first suggestion of
   its slot, with the slot's faction or else the kit's first one; for an
   either-or kit as many as the kit yields, named after the kit, with the
-  kit's first faction.
+  kit's first faction; for a bundle also the minis of every kit in it, as
+  if that kit's box were added on its own.
 - After adding, the card closes and the status bar appears; "Show boxes"
   leads to the Boxes tab of the hoard, the cross hides the bar. The bar is
   announced to screen readers.
@@ -174,8 +177,6 @@ border:
 - Whether the empty search shows recently used kits once boxes are
   stored, and what counts as recently used: kits of the latest boxes, or
   also kits looked at.
-- Minis of the kits a bundle contains: only the minis of its own slots
-  are created so far, while the add button counts all of them.
 - How building a mini suggests the names of every variant of its box's
   kit.
 - Offering the user's existing tags once tags have a data model.

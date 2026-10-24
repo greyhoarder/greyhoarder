@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import type { KitOption } from '../../../util/kit-option';
-import type { BoxChoice } from '../../../util/new-box';
+import type { Kit } from '../../../models/kit';
+import type { BoxesToAdd } from '../../../models/boxes-to-add';
 import { BoxForm } from './box-form';
 
-const BOYZ: KitOption = {
+const BOYZ: Kit = {
   id: 'games-workshop/orks/boyz-2026',
   name: 'Boyz',
   names: ['Boyz'],
-  manufacturer: 'Games Workshop',
-  factions: ['Orks'],
+  manufacturer: 'games-workshop',
+  factionIds: ['warhammer-40000/orks'],
   year: 2026,
   sku: '50-80',
   isDraft: true,
@@ -16,42 +16,44 @@ const BOYZ: KitOption = {
     {
       name: 'Boyz',
       slots: [
-        { count: 9, names: ['Boy'], parts: ['Slugga', 'Choppa'], factions: [] },
-        { count: 1, names: ['Nob'], parts: ['Power Klaw'], factions: [] },
-        { count: 1, names: ['Ammo Runt'], parts: [], factions: [] },
+        { count: 9, names: ['Boy'], parts: ['Slugga', 'Choppa'], factionIds: [] },
+        { count: 1, names: ['Nob'], parts: ['Power Klaw'], factionIds: [] },
+        { count: 1, names: ['Ammo Runt'], parts: [], factionIds: [] },
       ],
       minis: 11,
     },
   ],
   minis: 11,
+  contains: [],
 };
 
-const LOOTAS_OR_BURNA_BOYZ: KitOption = {
+const LOOTAS_OR_BURNA_BOYZ: Kit = {
   id: 'games-workshop/orks/lootas-2008',
   name: 'Lootas',
   names: ['Lootas', 'Burna Boyz'],
-  manufacturer: 'Games Workshop',
-  factions: ['Orks'],
+  manufacturer: 'games-workshop',
+  factionIds: ['warhammer-40000/orks'],
   isDraft: true,
   variants: [
     {
       name: 'Lootas',
-      slots: [{ count: 5, names: ['Loota'], parts: ['Deffgun'], factions: [] }],
+      slots: [{ count: 5, names: ['Loota'], parts: ['Deffgun'], factionIds: [] }],
       minis: 5,
     },
     {
       name: 'Burna Boyz',
-      slots: [{ count: 5, names: ['Burna Boy'], parts: ['Burna'], factions: [] }],
+      slots: [{ count: 5, names: ['Burna Boy'], parts: ['Burna'], factionIds: [] }],
       minis: 5,
     },
   ],
   minis: 5,
+  contains: [],
 };
 
 describe('Box form', () => {
   let fixture: ComponentFixture<BoxForm>;
 
-  async function openForm(kit: KitOption): Promise<void> {
+  async function openForm(kit: Kit): Promise<void> {
     fixture = TestBed.createComponent(BoxForm);
     fixture.componentRef.setInput('kit', kit);
     await fixture.whenStable();
@@ -132,7 +134,7 @@ describe('Box form', () => {
 
   it('hands over the number of boxes and the selected tags when adding', async () => {
     await openForm(BOYZ);
-    const added: BoxChoice[] = [];
+    const added: BoxesToAdd[] = [];
     fixture.componentInstance.add.subscribe((choice) => added.push(choice));
     await click('add-box-more');
     await typeTag('Birthday');

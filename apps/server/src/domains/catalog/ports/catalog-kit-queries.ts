@@ -8,6 +8,9 @@ export abstract class CatalogKitQueries {
    */
   abstract searchKits(text: string, limit: number): Promise<CatalogKit[]>;
 
+  /** The latest version of the kits with these ids, removed ones included. */
+  abstract findKits(ids: readonly string[]): Promise<CatalogKit[]>;
+
   /** The names of the latest factions and whole game systems with these ids, by id. */
   abstract findFactionNames(ids: readonly string[]): Promise<ReadonlyMap<string, string>>;
 }

@@ -2,9 +2,9 @@ import { Component, computed, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBox, lucideSplit } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import { kitMeta, kitMinis } from '../../../util/kit-facts';
-import type { KitOption } from '../../../util/kit-option';
-import type { BoxChoice } from '../../../util/new-box';
+import { factionNamesOf, kitMeta, kitMinis } from '../../../models/kit-labels';
+import type { Kit } from '../../../models/kit';
+import type { BoxesToAdd } from '../../../models/boxes-to-add';
 import { BoxForm } from '../box-form/box-form';
 
 /**
@@ -95,16 +95,18 @@ import { BoxForm } from '../box-form/box-form';
 export class KitCard {
   private static nextId = 0;
 
-  readonly kit = input.required<KitOption>();
+  readonly kit = input.required<Kit>();
+  /** The names of the kit's factions, by id. */
+  readonly factionNames = input.required<ReadonlyMap<string, string>>();
   /** Only one card of the list is open at a time. */
   readonly isOpen = input(false);
   /** Boxes of this kit already in the hoard. */
   readonly ownedBoxes = input(0);
   readonly toggled = output();
-  readonly add = output<BoxChoice>();
+  readonly add = output<BoxesToAdd>();
 
   protected readonly formId = `add-box-form-${KitCard.nextId++}`;
-  protected readonly armies = computed(() => this.kit().factions.join(' · '));
+  protected readonly armies = computed(() => factionNamesOf(this.kit().factionIds, this.factionNames()).join(' · '));
   protected readonly meta = computed(() => kitMeta(this.kit()));
   protected readonly minis = computed(() => kitMinis(this.kit()));
   protected readonly owned = computed(() =>

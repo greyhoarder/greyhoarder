@@ -2,9 +2,9 @@ import { Component, computed, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMinus, lucidePlus } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
-import { sprueMinis } from '../../../util/kit-facts';
-import type { KitOption } from '../../../util/kit-option';
-import type { BoxChoice } from '../../../util/new-box';
+import { type BoxesToAdd, MIN_BOXES, parseBoxesToAdd } from '../../../models/boxes-to-add';
+import { sprueMinis } from '../../../models/sprue-minis';
+import type { Kit } from '../../../models/kit';
 
 /**
  * What to add of a kit: the minis it puts on the sprue, tags and how many boxes. A new form
@@ -20,12 +20,12 @@ import type { BoxChoice } from '../../../util/new-box';
 export class BoxForm {
   private static nextId = 0;
 
-  readonly kit = input.required<KitOption>();
-  readonly add = output<BoxChoice>();
+  readonly kit = input.required<Kit>();
+  readonly add = output<BoxesToAdd>();
 
   protected readonly idPrefix = `box-form-${BoxForm.nextId++}`;
 
-  protected readonly boxes = signal(1);
+  protected readonly boxes = signal(MIN_BOXES);
   /** Typed by the user; tags have no data model of their own yet. */
   protected readonly tags = signal<readonly string[]>([]);
   protected readonly selectedTags = signal<ReadonlySet<string>>(new Set());
@@ -34,7 +34,7 @@ export class BoxForm {
   protected readonly minis = computed(() => this.kit().minis * this.boxes());
 
   protected changeBoxes(by: number): void {
-    this.boxes.update((count) => Math.max(1, count + by));
+    this.boxes.update((count) => Math.max(MIN_BOXES, count + by));
   }
 
   protected toggleTag(tag: string): void {
@@ -63,9 +63,11 @@ export class BoxForm {
   }
 
   protected submit(): void {
-    this.add.emit({
-      boxes: this.boxes(),
-      tags: this.tags().filter((tag) => this.selectedTags().has(tag)),
-    });
+    this.add.emit(
+      parseBoxesToAdd({
+        boxes: this.boxes(),
+        tags: this.tags().filter((tag) => this.selectedTags().has(tag)),
+      }),
+    );
   }
 }

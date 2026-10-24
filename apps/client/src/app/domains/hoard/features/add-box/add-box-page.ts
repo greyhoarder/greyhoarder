@@ -13,9 +13,12 @@ import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HttpKitsAdapter } from '../../../catalog/api';
 import { BoxesStore } from '../../data/boxes-store';
 import { MinisStore } from '../../data/minis-store';
-import { boxKitName, isBoxOfKit, minisLabel } from '../../util/kit-facts';
-import { type KitOption, toKitOption } from '../../util/kit-option';
-import { type BoxChoice, newBoxes, today } from '../../util/new-box';
+import { isBoxOfKit } from '../../models/box-row';
+import { boxKitName } from '../../models/kit';
+import { minisLabel } from '../../models/kit-labels';
+import { type Kit, toKit } from '../../models/kit';
+import type { BoxesToAdd } from '../../models/boxes-to-add';
+import { newBoxes, today } from '../../models/new-box';
 import { KitCard } from './kit-card/kit-card';
 
 /**
@@ -48,15 +51,19 @@ export class AddBoxPage {
     loader: ({ params }) => this.catalogKits.search(params),
   });
 
-  protected readonly kits = computed<KitOption[]>(() => {
+  protected readonly kits = computed<Kit[]>(() => {
     if (!this.matches.hasValue()) {
       return [];
     }
-    const { kits, factionNames } = this.matches.value();
-    return kits.map((kit) => toKitOption(kit, factionNames));
+    const { kits, containedKits } = this.matches.value();
+    return kits.map((kit) => toKit(kit, containedKits));
   });
 
-  protected ownedBoxes(kit: KitOption): number {
+  protected readonly factionNames = computed<ReadonlyMap<string, string>>(() =>
+    this.matches.hasValue() ? this.matches.value().factionNames : new Map(),
+  );
+
+  protected ownedBoxes(kit: Kit): number {
     return this.boxesStore.boxes().filter((box) => isBoxOfKit(box, kit)).length;
   }
 
@@ -66,12 +73,16 @@ export class AddBoxPage {
     }
   }
 
-  protected toggle(kit: KitOption): void {
+  protected toggle(kit: Kit): void {
     this.openKitId.update((id) => (id === kit.id ? undefined : kit.id));
   }
 
-  protected add(kit: KitOption, choice: BoxChoice): void {
-    const { boxes, minis } = newBoxes(kit, choice, today(), () => crypto.randomUUID());
+  protected add(kit: Kit, boxesToAdd: BoxesToAdd): void {
+    const { boxes, minis } = newBoxes(kit, boxesToAdd, {
+      addedOn: today(),
+      newId: () => crypto.randomUUID(),
+      factionNames: this.factionNames(),
+    });
     this.boxesStore.add(boxes);
     this.minisStore.add(minis);
     const count = minis.reduce((sum, row) => sum + row.count, 0);

@@ -54,12 +54,18 @@ exactly one user, and users see only their own hoard.
     kit's first one;
   - for an either-or kit, as many as the kit yields (for a catalog kit, its
     `minis`), all named after the kit ("Lootas / Burna Boyz"), with the
-    kit's first faction.
+    kit's first faction;
+  - for a bundle, also the minis of every kit in it, created as if that
+    kit's box were added on its own. A bundle with two boxes of Lootas
+    gets their minis twice.
 - What a mini becomes is decided when it is built, mini by mini. The names
   of every variant of its box's kit are suggested, so one box can yield
   two Lootas and three Burna Boyz.
 - A box from a catalog kit records the kit's id and version.
-- A box without a kit has a name only; its minis are added by hand.
+- A box without a kit is created with a name and at least one mini,
+  added by hand.
+- A box always has at least one mini. Deleting its last mini warns that
+  the box is deleted with it.
 - Kits only suggest. Any name and any part can be given to any mini, and a
   box may end up with more, fewer or other minis than its kit describes.
 - Changing a kit never changes existing boxes or minis; neither does a
@@ -70,12 +76,12 @@ exactly one user, and users see only their own hoard.
   tags; renaming a tag renames it on every box.
 - A box's progress is derived from its minis, never stored: untouched
   while all of them are on the sprue, done once all of them are painted
-  (painted or done), started in between. A box without minis is
-  untouched. The rule lives in `libs/domain/hoard`.
+  (painted or done), started in between. The rule lives in the client's
+  `hoard/models/`.
 - A box's progress as a percentage counts each of its minis by its status
   in equal steps: on the sprue 0, built 25, primed 50, painted 75, done
-  100; the box gets the rounded average. A box without minis is at 0. The
-  rule lives in `libs/domain/hoard` as well.
+  100; the box gets the rounded average. The rule lives in the client's
+  `hoard/models/` as well.
 - Deleting a box asks whether its minis go too. Minis that stay lose
   their origin and remain in the hoard.
 

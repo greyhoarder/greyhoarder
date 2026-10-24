@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import type { CatalogKit, CatalogUpdate } from '@greyhoarder/domain/catalog';
+import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import type { ClientSession, Connection, Model } from 'mongoose';
+import type { CatalogImport } from '../../models/catalog-import.js';
+import type { CatalogUpdate } from '../../models/catalog-update.js';
+import type { ImportedCatalog } from '../../models/imported-catalog.js';
 import type { CatalogKitQueries } from '../../ports/catalog-kit-queries.js';
-import { type CatalogImport, CatalogRepository, type ImportedCatalog } from '../../ports/catalog-repository.js';
+import { CatalogRepository } from '../../ports/catalog-repository.js';
 import { toCatalogFaction, toCatalogKit, toGameSystem, toVersionedEntry } from './mongo-catalog-mappers.js';
-import { CatalogFactionDbo, CatalogImportDbo, CatalogKitDbo, GameSystemDbo } from './mongo-catalog-schemas.js';
+import { CatalogFactionDbo } from './schemas/mongo-catalog-faction-schema.js';
+import { CatalogImportDbo } from './schemas/mongo-catalog-import-schema.js';
+import { CatalogKitDbo } from './schemas/mongo-catalog-kit-schema.js';
+import { GameSystemDbo } from './schemas/mongo-game-system-schema.js';
 
 const LATEST = { isLatest: true } as const;
 
@@ -77,6 +83,11 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       .limit(limit)
       .lean()
       .exec();
+    return kits.map(toCatalogKit);
+  }
+
+  async findKits(ids: readonly string[]): Promise<CatalogKit[]> {
+    const kits = await this.kits.find({ ...LATEST, kitId: { $in: ids } }).lean().exec();
     return kits.map(toCatalogKit);
   }
 
