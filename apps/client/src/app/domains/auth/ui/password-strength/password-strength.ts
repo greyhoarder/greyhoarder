@@ -1,5 +1,6 @@
 import { Component, computed, input, resource } from '@angular/core';
-import { loadPasswordStrengthRater, type PasswordStrength } from '../../util/password-strength';
+import type { PasswordStrength } from '../../models/password-strength';
+import { loadPasswordStrengthRater } from '../../util/password-strength-rater';
 
 interface StrengthLevel {
   readonly value: number;

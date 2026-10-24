@@ -1,12 +1,8 @@
 import type { ZxcvbnFactory } from '@zxcvbn-ts/core';
-
-export type PasswordStrength = 'too-weak' | 'weak' | 'fair' | 'strong';
+import { type PasswordStrength, toPasswordStrength } from '../models/password-strength';
 
 /** Rates a password; `userInputs` (e.g. the username) count as easy to guess. */
 export type PasswordStrengthRater = (password: string, userInputs: readonly string[]) => PasswordStrength;
-
-/** zxcvbn scores 0–4; the two lowest are both "too weak" for this app. */
-const STRENGTH_BY_SCORE: readonly PasswordStrength[] = ['too-weak', 'too-weak', 'weak', 'fair', 'strong'];
 
 let rater: Promise<PasswordStrengthRater> | undefined;
 
@@ -23,8 +19,7 @@ export function loadPasswordStrengthRater(): Promise<PasswordStrengthRater> {
 
 async function createRater(): Promise<PasswordStrengthRater> {
   const estimator = await createEstimator();
-  return (password, userInputs) =>
-    STRENGTH_BY_SCORE[estimator.check(password, [...userInputs]).score] ?? 'too-weak';
+  return (password, userInputs) => toPasswordStrength(estimator.check(password, [...userInputs]).score);
 }
 
 async function createEstimator(): Promise<ZxcvbnFactory> {
