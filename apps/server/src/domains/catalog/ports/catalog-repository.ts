@@ -1,24 +1,5 @@
-import type {
-  CatalogFaction,
-  CatalogKit,
-  CatalogUpdate,
-  GameSystem,
-  VersionedEntry,
-} from '@greyhoarder/domain/catalog';
-
-/** The latest version of every entry imported so far, removed ones included. */
-export interface ImportedCatalog {
-  readonly systems: readonly VersionedEntry<GameSystem>[];
-  readonly factions: readonly VersionedEntry<CatalogFaction>[];
-  readonly kits: readonly VersionedEntry<CatalogKit>[];
-}
-
-export interface CatalogImport {
-  readonly snapshotHash: string;
-  readonly systems: CatalogUpdate<GameSystem>;
-  readonly factions: CatalogUpdate<CatalogFaction>;
-  readonly kits: CatalogUpdate<CatalogKit>;
-}
+import type { CatalogImport } from '../models/catalog-import.js';
+import type { ImportedCatalog } from '../models/imported-catalog.js';
 
 /** Storage of the imported catalog for its import; never published through `catalog/api`. */
 export abstract class CatalogRepository {

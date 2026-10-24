@@ -1,5 +1,7 @@
-import type { CatalogKit, CatalogSnapshot } from '@greyhoarder/domain/catalog';
-import type { CatalogImport, ImportedCatalog } from '../../ports/catalog-repository.js';
+import type { CatalogKit } from '@greyhoarder/domain/catalog';
+import type { CatalogImport } from '../../models/catalog-import.js';
+import type { CatalogSnapshot } from '../../models/catalog-snapshot.js';
+import type { ImportedCatalog } from '../../models/imported-catalog.js';
 import { ImportService } from './import.service.js';
 
 function kit(id: string, minis = 10): CatalogKit {
@@ -27,8 +29,6 @@ describe('Catalog import', () => {
       {
         findLastSnapshotHash: () => Promise.resolve(lastHash),
         findImported: () => Promise.resolve(imported),
-        searchKits: () => Promise.resolve([]),
-        findFactionNames: () => Promise.resolve(new Map()),
         applyImport,
       },
     );

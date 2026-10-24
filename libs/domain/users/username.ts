@@ -1,8 +1,3 @@
-/** Usernames are unique regardless of case and surrounding spaces. */
-export function toUsernameKey(username: string): string {
-  return username.trim().toLowerCase();
-}
-
 export const USERNAME_MIN_LENGTH = 3;
 export const USERNAME_MAX_LENGTH = 32;
 

@@ -1,4 +1,4 @@
-import type { CatalogSnapshot } from '@greyhoarder/domain/catalog';
+import type { CatalogSnapshot } from '../models/catalog-snapshot.js';
 
 /** The catalog that ships with this release. */
 export abstract class CatalogSnapshotSource {

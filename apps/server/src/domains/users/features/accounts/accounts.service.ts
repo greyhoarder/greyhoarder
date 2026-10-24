@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { UserCredentials } from '../../ports/user-credentials.js';
+import type { UserCredentials } from '../../models/user-credentials.js';
 import { UserRepository } from '../../ports/user-repository.js';
 
 /**

@@ -3,11 +3,11 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import type { User } from '@greyhoarder/domain/users';
 import { type ClientSession, type Connection, type Model, mongo, type Types } from 'mongoose';
 import type { UserQueries } from '../../ports/user-queries.js';
-import type { UserCredentials } from '../../ports/user-credentials.js';
+import type { UserCredentials } from '../../models/user-credentials.js';
 import { UserRepository } from '../../ports/user-repository.js';
 import { AccountsAlreadyExistError } from '../../util/accounts-already-exist.error.js';
-import { INITIAL_ADMIN_MARKER_ID, InitialAdminMarkerDbo } from './mongo-initial-admin-marker-schema.js';
-import { CASE_INSENSITIVE, UserDbo } from './mongo-user-schema.js';
+import { INITIAL_ADMIN_MARKER_ID, InitialAdminMarkerDbo } from './schemas/mongo-initial-admin-marker-schema.js';
+import { CASE_INSENSITIVE, UserDbo } from './schemas/mongo-user-schema.js';
 
 const DUPLICATE_KEY = 11000;
 

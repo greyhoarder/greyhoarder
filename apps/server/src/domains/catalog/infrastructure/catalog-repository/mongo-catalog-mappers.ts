@@ -1,5 +1,10 @@
-import type { CatalogFaction, CatalogKit, GameSystem, VersionedEntry } from '@greyhoarder/domain/catalog';
-import type { CatalogFactionDbo, CatalogKitDbo, GameSystemDbo } from './mongo-catalog-schemas.js';
+import type { CatalogKit } from '@greyhoarder/domain/catalog';
+import type { CatalogFaction } from '../../models/catalog-faction.js';
+import type { GameSystem } from '../../models/game-system.js';
+import type { VersionedEntry } from '../../models/versioned-entry.js';
+import type { CatalogFactionDbo } from './schemas/mongo-catalog-faction-schema.js';
+import type { CatalogKitDbo } from './schemas/mongo-catalog-kit-schema.js';
+import type { GameSystemDbo } from './schemas/mongo-game-system-schema.js';
 
 // The mappers copy only the fields of the domain models, so `_id`, flags and timestamps stay in the adapter.
 

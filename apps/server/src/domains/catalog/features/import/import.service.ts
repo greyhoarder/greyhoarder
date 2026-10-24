@@ -1,5 +1,5 @@
 import { Injectable, Logger, type OnApplicationBootstrap } from '@nestjs/common';
-import { planCatalogUpdate } from '@greyhoarder/domain/catalog';
+import { planCatalogUpdate } from '../../models/catalog-update.js';
 import { CatalogRepository } from '../../ports/catalog-repository.js';
 import { CatalogSnapshotSource } from '../../ports/catalog-snapshot-source.js';
 

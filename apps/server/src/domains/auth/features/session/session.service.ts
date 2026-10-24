@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { toUsernameKey, type User } from '@greyhoarder/domain/users';
-import { AccountsService } from '../../../users/api/index.js';
+import type { User } from '@greyhoarder/domain/users';
+import { AccountsService, toUsernameKey } from '../../../users/api/index.js';
 import { LoginAttempts } from '../../ports/login-attempts.js';
 import { PasswordHasher } from '../../ports/password-hasher.js';
 import { SessionRegistry } from '../../ports/session-registry.js';

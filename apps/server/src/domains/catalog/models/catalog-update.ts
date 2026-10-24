@@ -1,9 +1,4 @@
-/** The latest version of a catalog entry as imported so far. */
-export interface VersionedEntry<T extends { readonly id: string }> {
-  readonly entry: T;
-  readonly version: number;
-  readonly isRemoved: boolean;
-}
+import type { VersionedEntry } from './versioned-entry.js';
 
 /** What an import changes for one kind of catalog entry. */
 export interface CatalogUpdate<T extends { readonly id: string }> {

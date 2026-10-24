@@ -2,12 +2,15 @@ import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import type { CatalogFaction, CatalogKit, CatalogSnapshot, GameSystem } from '@greyhoarder/domain/catalog';
+import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import { parse } from 'yaml';
 import { z } from 'zod';
 import { AppConfig } from '../../../../config/app-config.js';
+import type { CatalogFaction } from '../../models/catalog-faction.js';
+import { type CatalogSnapshot, withResolvedReferences } from '../../models/catalog-snapshot.js';
+import type { GameSystem } from '../../models/game-system.js';
 import { CatalogSnapshotSource } from '../../ports/catalog-snapshot-source.js';
-import { kitFileSchema, systemFileSchema } from './catalog-file-schemas.js';
+import { kitFileSchema, systemFileSchema } from './schemas/catalog-file-schemas.js';
 
 /**
  * Reads the YAML files of the catalog submodule; ranges are left out (ADR-0020). Files and
@@ -23,23 +26,19 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
 
   async load(): Promise<CatalogSnapshot> {
     const [read, readKits] = await Promise.all([this.readSystems(), this.readKits()]);
-    const { systems } = read;
-    const groupIds = new Set(systems.flatMap((system) => system.groups.map((group) => `${system.id}/${group.id}`)));
-    const factions = this.keepConsistent(read.factions, (faction, factionIds) =>
-      factionProblem(faction, groupIds, factionIds),
-    );
-    const systemIds = new Set(systems.map((system) => system.id));
-    const factionIds = new Set(factions.kept.map((faction) => faction.id));
-    const kits = this.keepConsistent(readKits.kits, (kit, kitIds) => kitProblem(kit, systemIds, factionIds, kitIds));
-    const content = { systems, factions: factions.kept, kits: kits.kept };
+    const resolved = withResolvedReferences({ systems: read.systems, factions: read.factions, kits: readKits.kits });
+    for (const { id, problem } of [...resolved.leftOutFactions, ...resolved.leftOutKits]) {
+      this.logger.warn(`Left out ${id} of the catalog: ${problem}`);
+    }
+    const content = { systems: read.systems, factions: resolved.factions, kits: resolved.kits };
     const hash = createHash('sha256').update(JSON.stringify(content)).digest('hex');
     return {
       hash,
       ...content,
       skipped: {
         systemIds: read.skippedSystemIds,
-        factionIds: factions.skippedIds,
-        kitIds: [...readKits.skippedIds, ...kits.skippedIds],
+        factionIds: resolved.leftOutFactions.map(({ id }) => id),
+        kitIds: [...readKits.skippedIds, ...resolved.leftOutKits.map(({ id }) => id)],
       },
     };
   }
@@ -122,33 +121,6 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
     }
     return result.data;
   }
-
-  /**
-   * Leaves out every entry with a problem, until the rest only refer to each other: an entry may
-   * refer to one that was left out itself.
-   */
-  private keepConsistent<T extends { readonly id: string }>(
-    entries: readonly T[],
-    problemOf: (entry: T, keptIds: ReadonlySet<string>) => string | undefined,
-  ): { kept: T[]; skippedIds: string[] } {
-    let kept = [...entries];
-    const skippedIds: string[] = [];
-    for (;;) {
-      const keptIds = new Set(kept.map((entry) => entry.id));
-      const next = kept.filter((entry) => {
-        const problem = problemOf(entry, keptIds);
-        if (problem !== undefined) {
-          this.logger.warn(`Left out ${entry.id} of the catalog: ${problem}`);
-          skippedIds.push(entry.id);
-        }
-        return problem === undefined;
-      });
-      if (next.length === kept.length) {
-        return { kept, skippedIds };
-      }
-      kept = next;
-    }
-  }
 }
 
 /** Sorted, so the same files always give the same hash. */
@@ -163,37 +135,4 @@ async function yamlFiles(directory: string): Promise<string[]> {
 /** The path below `directory` without the extension, with forward slashes. */
 function idOf(directory: string, file: string): string {
   return relative(directory, file).slice(0, -'.yaml'.length).split(sep).join('/');
-}
-
-// Every reference must point into the catalog, so the rest of the server can trust it.
-
-function factionProblem(
-  faction: CatalogFaction,
-  groupIds: ReadonlySet<string>,
-  factionIds: ReadonlySet<string>,
-): string | undefined {
-  if (faction.groupId !== undefined && !groupIds.has(`${faction.systemId}/${faction.groupId}`)) {
-    return `unknown group ${faction.groupId}`;
-  }
-  if (faction.partOfId !== undefined && !factionIds.has(faction.partOfId)) {
-    return `unknown partOf ${faction.partOfId}`;
-  }
-  return undefined;
-}
-
-function kitProblem(
-  kit: CatalogKit,
-  systemIds: ReadonlySet<string>,
-  factionIds: ReadonlySet<string>,
-  kitIds: ReadonlySet<string>,
-): string | undefined {
-  const slotFactionIds = kit.variants.flatMap((variant) => variant.slots.flatMap((slot) => slot.factionIds));
-  const unknownFaction = [...kit.factionIds, ...slotFactionIds].find((id) => !factionIds.has(id) && !systemIds.has(id));
-  if (unknownFaction !== undefined) {
-    return `unknown faction ${unknownFaction}`;
-  }
-  const unknownKit = [kit.supersedesId, ...kit.contains.map((contained) => contained.kitId)].find(
-    (id) => id !== undefined && !kitIds.has(id),
-  );
-  return unknownKit === undefined ? undefined : `unknown kit ${unknownKit}`;
 }
