@@ -8,7 +8,8 @@ depend on each other is covered in
 
 Domain docs describe the current model, not a decision record: they are
 updated in place when the model changes. Field names and types live in
-code (`libs/domain/<domain>/`), not here.
+code (`libs/domain/<domain>/` and the domain's `model/` in each app), not
+here.
 
 | Domain | Covers |
 |--------|--------|
