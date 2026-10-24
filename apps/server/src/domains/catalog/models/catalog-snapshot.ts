@@ -20,16 +20,17 @@ export interface CatalogSnapshot {
   };
 }
 
-/** An entry the snapshot leaves out, and why. */
+/** An entry the snapshot leaves out or corrects, and why. */
 interface LeftOut {
   readonly id: string;
   readonly problem: string;
 }
 
 /**
- * Keeps the factions and kits whose references point into the catalog, so the rest of the server
- * can trust them; an entry that refers to one that was left out is left out as well, and so is a
- * kit that contains itself, also through other kits.
+ * Keeps the kits whose references point into the catalog, so the rest of the server can trust
+ * them; a kit that refers to one that was left out is left out as well, and so is a kit that
+ * contains itself, also through other kits. Factions always stay, and so do kits whose
+ * predecessor is unknown: they only lose the unknown reference, so a typo never hides them.
  */
 export function withResolvedReferences(read: {
   readonly systems: readonly GameSystem[];
@@ -38,16 +39,46 @@ export function withResolvedReferences(read: {
 }): {
   factions: CatalogFaction[];
   kits: CatalogKit[];
-  leftOutFactions: LeftOut[];
   leftOutKits: LeftOut[];
+  /** Factions kept without their unknown group or parent faction. */
+  correctedFactions: LeftOut[];
+  /** Kits kept without their unknown predecessor. */
+  correctedKits: LeftOut[];
 } {
   const groupIds = new Set(read.systems.flatMap((system) => system.groups.map((group) => `${system.id}/${group.id}`)));
   const systemIds = new Set(read.systems.map((system) => system.id));
-  const factions = keepResolved(read.factions, (faction, factionIds) => factionProblem(faction, groupIds, factionIds));
-  const factionIds = new Set(factions.kept.map((faction) => faction.id));
+  const factionIds = new Set(read.factions.map((faction) => faction.id));
+  const correctedFactions: LeftOut[] = [];
+  const factions = read.factions.map((faction) => {
+    const isGroupKnown = faction.groupId === undefined || groupIds.has(`${faction.systemId}/${faction.groupId}`);
+    const isParentKnown = faction.partOfId === undefined || factionIds.has(faction.partOfId);
+    if (!isGroupKnown) {
+      correctedFactions.push({ id: faction.id, problem: `unknown group ${faction.groupId}` });
+    }
+    if (!isParentKnown) {
+      correctedFactions.push({ id: faction.id, problem: `unknown partOf ${faction.partOfId}` });
+    }
+    return {
+      ...faction,
+      groupId: isGroupKnown ? faction.groupId : undefined,
+      partOfId: isParentKnown ? faction.partOfId : undefined,
+    };
+  });
   const kitsById = new Map(read.kits.map((kit) => [kit.id, kit]));
   const kits = keepResolved(read.kits, (kit, kitIds) => kitProblem(kit, { systemIds, factionIds, kitIds, kitsById }));
-  return { factions: factions.kept, kits: kits.kept, leftOutFactions: factions.leftOut, leftOutKits: kits.leftOut };
+  const keptKitIds = new Set(kits.kept.map((kit) => kit.id));
+  const correctedKits = kits.kept
+    .filter((kit) => kit.supersedesId !== undefined && !keptKitIds.has(kit.supersedesId))
+    .map((kit) => ({ id: kit.id, problem: `unknown predecessor ${kit.supersedesId}` }));
+  return {
+    factions,
+    kits: kits.kept.map((kit) =>
+      kit.supersedesId === undefined || keptKitIds.has(kit.supersedesId) ? kit : { ...kit, supersedesId: undefined },
+    ),
+    leftOutKits: kits.leftOut,
+    correctedFactions,
+    correctedKits,
+  };
 }
 
 /** Leaves out every entry with a problem, until the rest only refer to each other. */
@@ -73,20 +104,6 @@ function keepResolved<T extends { readonly id: string }>(
   }
 }
 
-function factionProblem(
-  faction: CatalogFaction,
-  groupIds: ReadonlySet<string>,
-  factionIds: ReadonlySet<string>,
-): string | undefined {
-  if (faction.groupId !== undefined && !groupIds.has(`${faction.systemId}/${faction.groupId}`)) {
-    return `unknown group ${faction.groupId}`;
-  }
-  if (faction.partOfId !== undefined && !factionIds.has(faction.partOfId)) {
-    return `unknown partOf ${faction.partOfId}`;
-  }
-  return undefined;
-}
-
 function kitProblem(
   kit: CatalogKit,
   catalog: {
@@ -102,7 +119,7 @@ function kitProblem(
   if (unknownFaction !== undefined) {
     return `unknown faction ${unknownFaction}`;
   }
-  const unknownKit = [kit.supersedesId, ...kit.contains.map((contained) => contained.kitId)].find(
+  const unknownKit = kit.contains.map((contained) => contained.kitId).find(
     (id) => id !== undefined && !kitIds.has(id),
   );
   if (unknownKit !== undefined) {

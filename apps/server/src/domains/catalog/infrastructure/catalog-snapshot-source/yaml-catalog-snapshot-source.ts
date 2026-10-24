@@ -27,8 +27,11 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
   async load(): Promise<CatalogSnapshot> {
     const [read, readKits] = await Promise.all([this.readSystems(), this.readKits()]);
     const resolved = withResolvedReferences({ systems: read.systems, factions: read.factions, kits: readKits.kits });
-    for (const { id, problem } of [...resolved.leftOutFactions, ...resolved.leftOutKits]) {
+    for (const { id, problem } of resolved.leftOutKits) {
       this.logger.warn(`Left out ${id} of the catalog: ${problem}`);
+    }
+    for (const { id, problem } of [...resolved.correctedFactions, ...resolved.correctedKits]) {
+      this.logger.warn(`Kept ${id} of the catalog without a reference: ${problem}`);
     }
     const content = { systems: read.systems, factions: resolved.factions, kits: resolved.kits };
     const hash = createHash('sha256').update(JSON.stringify(content)).digest('hex');
@@ -37,7 +40,7 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
       ...content,
       skipped: {
         systemIds: read.skippedSystemIds,
-        factionIds: resolved.leftOutFactions.map(({ id }) => id),
+        factionIds: [],
         kitIds: [...readKits.skippedIds, ...resolved.leftOutKits.map(({ id }) => id)],
       },
     };

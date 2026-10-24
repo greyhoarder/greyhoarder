@@ -42,7 +42,10 @@ repository's README. This document covers what Greyhoarder does with it.
   Ranges are not part of the snapshot.
 - A file or an entry that does not match the format, refers to a kit,
   faction or group that is not in the snapshot, or contains itself, also
-  through other kits, is left out with a warning in the log; the server still starts. A left-out entry keeps its
+  through other kits, is left out with a warning in the log. A faction
+  whose group or parent faction, or a kit whose predecessor
+  (`supersedes`), is not in the snapshot stays and only loses that
+  reference, with a warning; the server still starts. A left-out entry keeps its
   last imported version and is not marked as removed. When a system's file
   is left out, all its factions keep theirs.
 - The server imports the snapshot when it differs from the one imported
@@ -67,7 +70,8 @@ repository's README. This document covers what Greyhoarder does with it.
   to Blood Angels. This includes users' own factions that are part of a
   catalog faction (see [hoard](hoard.md)).
 - A kit listed for a whole game system is offered to every faction of that
-  system.
+  system. This is only for minis that belong to every faction; terrain and
+  accessories are not listed this way.
 - The first faction of a kit is the army it is mainly sold for.
 - Groups only sort factions for display.
 
@@ -106,3 +110,5 @@ repository's README. This document covers what Greyhoarder does with it.
 - Whether a catalog kit can be copied into a user's kit to change it.
 - Whether an instance may later also fetch newer catalogs itself
   (ADR-0020 leaves room for it).
+- How terrain and accessories are categorised, so they are not offered as
+  minis of a faction, e.g. a kind of kit beside miniatures.
