@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
+import type { VersionedEntry } from '../../models/versioned-entry.js';
 import { CatalogKitQueries } from '../../ports/catalog-kit-queries.js';
 
 /** Enough to choose a kit; a narrower search finds the rest. */
 const SEARCH_LIMIT = 50;
 
 export interface KitSearchResult {
-  readonly kits: readonly CatalogKit[];
+  /** With their versions, which boxes added from them record. */
+  readonly kits: readonly VersionedEntry<CatalogKit>[];
   /** Every kit the found kits contain, also within contained bundles, so their minis can be added. */
-  readonly containedKits: readonly CatalogKit[];
+  readonly containedKits: readonly VersionedEntry<CatalogKit>[];
   /** The names of the factions and whole game systems the kits and their slots are listed for, by id. */
   readonly factionNames: ReadonlyMap<string, string>;
 }
@@ -21,15 +23,17 @@ export class KitsService {
   async search(text: string): Promise<KitSearchResult> {
     const kits = await this.catalog.searchKits(text, SEARCH_LIMIT);
     const containedKits = await this.findContainedKits(kits);
-    const factionIds = [...new Set([...kits, ...containedKits].flatMap(factionIdsOf))];
+    const factionIds = [...new Set([...kits, ...containedKits].flatMap(({ entry }) => factionIdsOf(entry)))];
     const factionNames = await this.catalog.findFactionNames(factionIds);
     return { kits, containedKits, factionNames };
   }
 
   /** A contained kit that is no longer offered still belongs to the bundles that contain it. */
-  private async findContainedKits(kits: readonly CatalogKit[]): Promise<CatalogKit[]> {
-    const knownIds = new Set(kits.map((kit) => kit.id));
-    const containedKits: CatalogKit[] = [];
+  private async findContainedKits(
+    kits: readonly VersionedEntry<CatalogKit>[],
+  ): Promise<VersionedEntry<CatalogKit>[]> {
+    const knownIds = new Set(kits.map(({ entry }) => entry.id));
+    const containedKits: VersionedEntry<CatalogKit>[] = [];
     let ids = unknownContainedIds(kits, knownIds);
     while (ids.length > 0) {
       const found = await this.catalog.findKits(ids);
@@ -41,8 +45,11 @@ export class KitsService {
   }
 }
 
-function unknownContainedIds(kits: readonly CatalogKit[], knownIds: ReadonlySet<string>): string[] {
-  return [...new Set(kits.flatMap((kit) => kit.contains.map((contained) => contained.kitId)))].filter(
+function unknownContainedIds(
+  kits: readonly VersionedEntry<CatalogKit>[],
+  knownIds: ReadonlySet<string>,
+): string[] {
+  return [...new Set(kits.flatMap(({ entry }) => entry.contains.map((contained) => contained.kitId)))].filter(
     (id) => !knownIds.has(id),
   );
 }

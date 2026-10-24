@@ -1,8 +1,11 @@
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import { toKit } from './kit';
 
-function catalogKit(kit: Partial<CatalogKit> & Pick<CatalogKit, 'id' | 'name'>): CatalogKit {
+function catalogKit(
+  kit: Partial<CatalogKit> & Pick<CatalogKit, 'id' | 'name'>,
+): CatalogKit & { readonly version: number } {
   return {
+    version: 1,
     manufacturer: 'games-workshop',
     factionIds: ['warhammer-40000/orks'],
     releases: [],

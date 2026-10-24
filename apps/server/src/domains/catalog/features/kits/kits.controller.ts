@@ -14,8 +14,8 @@ export class KitsController {
   async search(@Query() query: KitSearchRequestDto): Promise<KitSearchResponse> {
     const result = await this.kits.search(query.search);
     return {
-      kits: result.kits,
-      containedKits: result.containedKits,
+      kits: result.kits.map(({ entry, version }) => ({ ...entry, version })),
+      containedKits: result.containedKits.map(({ entry, version }) => ({ ...entry, version })),
       factionNames: Object.fromEntries(result.factionNames),
     };
   }

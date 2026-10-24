@@ -23,8 +23,9 @@ const containedKitSchema = z.object({
   count: z.number().int(),
 });
 
-/** A catalog kit as `CatalogKit` describes it. */
+/** A catalog kit as `CatalogKit` describes it, with the version a box added from it records. */
 const catalogKitSchema = z.object({
+  version: z.number().int(),
   id: z.string(),
   manufacturer: z.string(),
   name: z.string(),

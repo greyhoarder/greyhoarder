@@ -28,6 +28,8 @@ export interface BundledKit {
 export interface Kit {
   /** For catalog kits their path in the catalog, e.g. "games-workshop/orks/boyz-2026". */
   readonly id: string;
+  /** Which version of the kit a box added from it is made from. */
+  readonly version: number;
   readonly name: string;
   /** The kit's name and those of its other either-or variants: "Lootas", "Burna Boyz". */
   readonly names: readonly string[];
@@ -50,7 +52,10 @@ export interface Kit {
 }
 
 /** A catalog kit as the hoard knows it; contained kits the catalog does not know are left out. */
-export function toKit(kit: CatalogKit, containedKits: ReadonlyMap<string, CatalogKit>): Kit {
+export function toKit(
+  kit: CatalogKit & { readonly version: number },
+  containedKits: ReadonlyMap<string, CatalogKit & { readonly version: number }>,
+): Kit {
   // `minis` counts the first variant together with the contained kits, which every variant shares.
   const slotMinis = (variant: CatalogKit['variants'][number]) =>
     variant.slots.reduce((sum, slot) => sum + slot.count, 0);
@@ -58,6 +63,7 @@ export function toKit(kit: CatalogKit, containedKits: ReadonlyMap<string, Catalo
   const contained = firstVariant ? kit.minis - slotMinis(firstVariant) : 0;
   return {
     id: kit.id,
+    version: kit.version,
     name: kit.name,
     names: [...new Set([kit.name, ...kit.variants.map((variant) => variant.name)])],
     manufacturer: kit.manufacturer,

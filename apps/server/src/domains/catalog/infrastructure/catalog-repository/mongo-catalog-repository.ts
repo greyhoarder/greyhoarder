@@ -5,6 +5,7 @@ import type { ClientSession, Connection, Model } from 'mongoose';
 import type { CatalogImport } from '../../models/catalog-import.js';
 import type { CatalogUpdate } from '../../models/catalog-update.js';
 import type { ImportedCatalog } from '../../models/imported-catalog.js';
+import type { VersionedEntry } from '../../models/versioned-entry.js';
 import type { CatalogKitQueries } from '../../ports/catalog-kit-queries.js';
 import { CatalogRepository } from '../../ports/catalog-repository.js';
 import { toCatalogFaction, toCatalogKit, toGameSystem, toVersionedEntry } from './mongo-catalog-mappers.js';
@@ -65,7 +66,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
     });
   }
 
-  async searchKits(text: string, limit: number): Promise<CatalogKit[]> {
+  async searchKits(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]> {
     const contains = new RegExp(escapeRegExp(text), 'i');
     const kits = await this.kits
       .find({
@@ -83,12 +84,12 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       .limit(limit)
       .lean()
       .exec();
-    return kits.map(toCatalogKit);
+    return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
-  async findKits(ids: readonly string[]): Promise<CatalogKit[]> {
+  async findKits(ids: readonly string[]): Promise<VersionedEntry<CatalogKit>[]> {
     const kits = await this.kits.find({ ...LATEST, kitId: { $in: ids } }).lean().exec();
-    return kits.map(toCatalogKit);
+    return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
   async findFactionNames(ids: readonly string[]): Promise<ReadonlyMap<string, string>> {
