@@ -1,6 +1,8 @@
-import { type BoxProgress, boxProgress, progressPercent } from './box-progress';
-import { hasReached, type HobbyStatus, hobbyStatuses } from './hobby-status';
-import { boxKitName, type Kit } from './kit';
+import { type BoxProgress, boxProgress, progressPercent } from '../models/box-progress';
+import type { Box } from '../models/box';
+import { hasReached, type HobbyStatus, hobbyStatuses } from '../models/hobby-status';
+import type { Mini } from '../models/mini';
+import { factionNamesOf } from '../util/kit-labels';
 
 export interface BoxKit {
   /** The kit's name with its edition, e.g. "Boyz (2026)". */
@@ -22,6 +24,32 @@ export interface BoxRow {
   readonly tags: readonly string[];
 }
 
+/** One row per box, counting the minis that came out of it; factions without a known name are left out. */
+export function toBoxRows(
+  boxes: readonly Box[],
+  minis: readonly Mini[],
+  factionNames: ReadonlyMap<string, string>,
+): BoxRow[] {
+  const counts = new Map<string, Partial<Record<HobbyStatus, number>>>();
+  for (const mini of minis) {
+    if (mini.boxId === undefined) {
+      continue;
+    }
+    const count = counts.get(mini.boxId) ?? {};
+    count[mini.status] = (count[mini.status] ?? 0) + 1;
+    counts.set(mini.boxId, count);
+  }
+  return boxes.map((box) => ({
+    id: box.id,
+    name: box.name,
+    kit: box.kit && { name: box.kit.name, sku: box.kit.sku },
+    factions: factionNamesOf(box.factionIds, factionNames),
+    minis: counts.get(box.id) ?? {},
+    addedOn: box.addedOn,
+    tags: box.tags,
+  }));
+}
+
 export function miniCount(box: BoxRow): number {
   return hobbyStatuses.reduce((sum, status) => sum + (box.minis[status] ?? 0), 0);
 }
@@ -31,7 +59,9 @@ export function sprueCount(box: BoxRow): number {
 }
 
 export function paintedCount(box: BoxRow): number {
-  return hobbyStatuses.filter((status) => hasReached(status, 'painted')).reduce((sum, status) => sum + (box.minis[status] ?? 0), 0);
+  return hobbyStatuses
+    .filter((status) => hasReached(status, 'painted'))
+    .reduce((sum, status) => sum + (box.minis[status] ?? 0), 0);
 }
 
 export function progressOf(box: BoxRow): BoxProgress {
@@ -46,15 +76,4 @@ export function percentOf(box: BoxRow): number {
 /** One status per mini of the box. */
 function statusesOf(box: BoxRow): HobbyStatus[] {
   return hobbyStatuses.flatMap((status) => Array<HobbyStatus>(box.minis[status] ?? 0).fill(status));
-}
-
-/** A box is of the kit when its name and release match: the product code if both have one, else the name. */
-export function isBoxOfKit(box: BoxRow, kit: Kit): boolean {
-  if (!box.kit) {
-    return false;
-  }
-  if (box.kit.sku !== undefined && kit.sku !== undefined) {
-    return box.kit.sku === kit.sku;
-  }
-  return box.kit.name === boxKitName(kit);
 }

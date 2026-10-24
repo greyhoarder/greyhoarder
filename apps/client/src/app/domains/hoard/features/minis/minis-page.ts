@@ -5,13 +5,13 @@ import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HoardView } from '../../data/hoard-view';
-import { MinisStore } from '../../data/minis-store';
+import { MinisList } from '../../data/minis-list';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
 import { MiniCard } from './mini-card/mini-card';
 import { MiniTable, type RowSelection } from './mini-table/mini-table';
-import { NONE } from '../../models/mini-filter';
-import { countMinis, type MiniRow } from '../../models/mini-row';
-import { STATUS_LABELS } from '../../models/status-labels';
+import { NONE } from '../../data/mini-filter';
+import { countMinis, type MiniRow } from '../../data/mini-row';
+import { STATUS_LABELS } from '../../util/status-labels';
 
 /** The Minis tab of the hoard: search, filters, selection and the minis as cards or table. */
 @Component({
@@ -22,7 +22,7 @@ import { STATUS_LABELS } from '../../models/status-labels';
   host: { class: 'flex flex-col gap-3' },
 })
 export class MinisPage {
-  protected readonly store = inject(MinisStore);
+  protected readonly store = inject(MinisList);
   protected readonly view = inject(HoardView);
 
   protected readonly factionOptions = computed(() =>

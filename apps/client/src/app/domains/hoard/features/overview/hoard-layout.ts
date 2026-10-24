@@ -6,9 +6,9 @@ import { lucideCircleCheck, lucideList, lucidePlus, lucideRows2 } from '@ng-icon
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { filter, map } from 'rxjs';
-import { BoxesStore } from '../../data/boxes-store';
+import { BoxesList } from '../../data/boxes-list';
 import { HoardView } from '../../data/hoard-view';
-import { MinisStore } from '../../data/minis-store';
+import { MinisList } from '../../data/minis-list';
 
 /**
  * The frame of the hoard: summary, add buttons, the tabs Minis and Boxes as
@@ -23,8 +23,8 @@ import { MinisStore } from '../../data/minis-store';
   host: { class: 'flex w-full flex-col gap-6 p-4 sm:p-8 lg:p-10' },
 })
 export class HoardLayout {
-  protected readonly minis = inject(MinisStore);
-  protected readonly boxes = inject(BoxesStore);
+  protected readonly minis = inject(MinisList);
+  protected readonly boxes = inject(BoxesList);
   protected readonly view = inject(HoardView);
   private readonly router = inject(Router);
 

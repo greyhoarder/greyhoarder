@@ -1,4 +1,4 @@
-import { hobbyStatuses } from './hobby-status';
+import { hobbyStatuses } from '../models/hobby-status';
 import type { SortDirection } from '../util/sort-direction';
 import type { MiniRow } from './mini-row';
 

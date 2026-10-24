@@ -1,4 +1,4 @@
-import { boxProgresses } from './box-progress';
+import { boxProgresses } from '../models/box-progress';
 import { paintedCount, progressOf, sprueCount } from './box-row';
 import type { BoxRow } from './box-row';
 import type { SortDirection } from '../util/sort-direction';

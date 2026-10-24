@@ -3,6 +3,7 @@ import type { Kit } from './kit';
 
 const BOYZ: Kit = {
   id: 'games-workshop/orks/boyz-2021',
+  version: 1,
   name: 'Boyz',
   names: ['Boyz'],
   manufacturer: 'games-workshop',
@@ -24,6 +25,7 @@ const BOYZ: Kit = {
 
 const LOOTAS_OR_BURNA_BOYZ: Kit = {
   id: 'games-workshop/orks/lootas-2008',
+  version: 1,
   name: 'Lootas',
   names: ['Lootas', 'Burna Boyz'],
   manufacturer: 'games-workshop',
@@ -39,6 +41,7 @@ const LOOTAS_OR_BURNA_BOYZ: Kit = {
 
 const BATTLEFORCE: Kit = {
   id: 'games-workshop/orks/battleforce-2024',
+  version: 1,
   name: 'Battleforce',
   names: ['Battleforce'],
   manufacturer: 'games-workshop',
@@ -54,6 +57,7 @@ const BATTLEFORCE: Kit = {
 
 const INTERCESSORS: Kit = {
   id: 'games-workshop/space-marines/intercessors-2020',
+  version: 1,
   name: 'Intercessors',
   names: ['Intercessors'],
   manufacturer: 'games-workshop',
@@ -66,6 +70,7 @@ const INTERCESSORS: Kit = {
 
 const TERMAGANTS: Kit = {
   id: 'games-workshop/tyranids/termagants-2023',
+  version: 1,
   name: 'Termagants',
   names: ['Termagants'],
   manufacturer: 'games-workshop',
@@ -78,6 +83,7 @@ const TERMAGANTS: Kit = {
 
 const STARTER_SET: Kit = {
   id: 'games-workshop/warhammer-40000/starter-set-2023',
+  version: 1,
   name: 'Starter Set',
   names: ['Starter Set'],
   manufacturer: 'games-workshop',

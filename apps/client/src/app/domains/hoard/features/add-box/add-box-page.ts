@@ -12,13 +12,14 @@ import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HttpKitsAdapter } from '../../../catalog/api';
 import { BoxesStore } from '../../data/boxes-store';
+import { FactionNamesStore } from '../../data/faction-names-store';
 import { MinisStore } from '../../data/minis-store';
-import { isBoxOfKit } from '../../models/box-row';
-import { boxKitName } from '../../models/kit';
-import { minisLabel } from '../../models/kit-labels';
-import { type Kit, toKit } from '../../models/kit';
+import { isFromKit } from '../../models/box';
 import type { BoxesToAdd } from '../../models/boxes-to-add';
-import { newBoxes, today } from '../../models/new-box';
+import { boxKitName, type Kit, toKit } from '../../models/kit';
+import { newBoxes } from '../../models/new-box';
+import { minisLabel } from '../../util/kit-labels';
+import { today } from '../../util/today';
 import { KitCard } from './kit-card/kit-card';
 
 /**
@@ -38,6 +39,7 @@ export class AddBoxPage {
   private readonly catalogKits = inject(HttpKitsAdapter);
   private readonly boxesStore = inject(BoxesStore);
   private readonly minisStore = inject(MinisStore);
+  private readonly factionNamesStore = inject(FactionNamesStore);
 
   protected readonly query = signal('');
   protected readonly isSearching = computed(() => this.query().trim() !== '');
@@ -64,7 +66,7 @@ export class AddBoxPage {
   );
 
   protected ownedBoxes(kit: Kit): number {
-    return this.boxesStore.boxes().filter((box) => isBoxOfKit(box, kit)).length;
+    return this.boxesStore.boxes().filter((box) => isFromKit(box, kit)).length;
   }
 
   protected search(event: Event): void {
@@ -81,11 +83,11 @@ export class AddBoxPage {
     const { boxes, minis } = newBoxes(kit, boxesToAdd, {
       addedOn: today(),
       newId: () => crypto.randomUUID(),
-      factionNames: this.factionNames(),
     });
+    this.factionNamesStore.add(this.factionNames());
     this.boxesStore.add(boxes);
     this.minisStore.add(minis);
-    const count = minis.reduce((sum, row) => sum + row.count, 0);
+    const count = minis.length;
     const boxCount = boxes.length === 1 ? '1 box' : `${boxes.length} boxes`;
     this.added.set(`Added ${boxCount} of ${boxKitName(kit)} with ${minisLabel(count)} to your hoard.`);
     this.openKitId.set(undefined);

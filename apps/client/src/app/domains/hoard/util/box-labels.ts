@@ -1,5 +1,4 @@
-import type { BoxProgress } from './box-progress';
-import type { BoxRow } from './box-row';
+import type { BoxProgress } from '../models/box-progress';
 
 export const PROGRESS_LABELS: Readonly<Record<BoxProgress, string>> = {
   untouched: 'Untouched',
@@ -8,7 +7,7 @@ export const PROGRESS_LABELS: Readonly<Record<BoxProgress, string>> = {
 };
 
 /** E.g. "Boyz (2026) · 50-80"; "No kit" for boxes without one. */
-export function kitLine(box: BoxRow): string {
+export function kitLine(box: { readonly kit?: { readonly name: string; readonly sku?: string } }): string {
   if (!box.kit) {
     return 'No kit';
   }

@@ -1,5 +1,4 @@
-import { progressOf } from './box-row';
-import type { BoxRow } from './box-row';
+import { type BoxRow, progressOf } from './box-row';
 
 /** An empty set filters nothing; within one chip any value matches, across chips all must. */
 export interface BoxFilter {

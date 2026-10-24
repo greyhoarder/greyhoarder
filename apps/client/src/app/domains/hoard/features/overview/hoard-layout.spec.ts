@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { MinisStore } from '../../data/minis-store';
+import { MinisList } from '../../data/minis-list';
 import { HoardLayout } from './hoard-layout';
 
 describe('Hoard layout', () => {
@@ -23,7 +23,7 @@ describe('Hoard layout', () => {
   });
 
   it('counts the shown minis on the tab while a search narrows the list', async () => {
-    TestBed.inject(MinisStore).query.set('klaw');
+    TestBed.inject(MinisList).query.set('klaw');
 
     await fixture.whenStable();
 

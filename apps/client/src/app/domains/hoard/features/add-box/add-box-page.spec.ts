@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import type { CatalogKit } from '@greyhoarder/domain/catalog';
-import { HttpKitsAdapter, type KitSearchResult } from '../../../catalog/api';
+import { HttpKitsAdapter, type KitSearchResult, type VersionedCatalogKit } from '../../../catalog/api';
 import { AddBoxPage } from './add-box-page';
 
-function catalogKit(id: string): CatalogKit {
+function catalogKit(id: string): VersionedCatalogKit {
   return {
     id,
+    version: 1,
     manufacturer: 'games-workshop',
     name: 'Boyz',
     factionIds: ['warhammer-40000/orks'],

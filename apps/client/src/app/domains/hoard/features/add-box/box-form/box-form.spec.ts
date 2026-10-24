@@ -5,6 +5,7 @@ import { BoxForm } from './box-form';
 
 const BOYZ: Kit = {
   id: 'games-workshop/orks/boyz-2026',
+  version: 1,
   name: 'Boyz',
   names: ['Boyz'],
   manufacturer: 'games-workshop',
@@ -29,6 +30,7 @@ const BOYZ: Kit = {
 
 const LOOTAS_OR_BURNA_BOYZ: Kit = {
   id: 'games-workshop/orks/lootas-2008',
+  version: 1,
   name: 'Lootas',
   names: ['Lootas', 'Burna Boyz'],
   manufacturer: 'games-workshop',

@@ -143,8 +143,8 @@ border:
 - After adding, the card closes and the status bar appears; "Show boxes"
   leads to the Boxes tab of the hoard, the cross hides the bar. The bar is
   announced to screen readers.
-- A box counts as one of a kit when its name and release match: the
-  product code when both have one, otherwise the name with its year.
+- A box counts as one of a kit when it was added from that kit, whichever
+  version of it.
 - Boxes and minis are kept in the client only for now; they are gone after
   a reload.
 - Scanning has no function yet.

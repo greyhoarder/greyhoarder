@@ -159,12 +159,14 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 - `data/` holds the data the client keeps locally: stores shared by
   features of the domain (in memory or browser storage) and fixed or
   temporary data, e.g. sample data named `sample-<subject>.ts` that stands
-  in for the server until its adapter exists.
+  in for the server until its adapter exists. State that several features
+  share about a list (search, filters, selection) lives here too, together
+  with the rows derived from the models for it (e.g. `BoxRow`, `MiniRow`).
 - `models/` holds the types, value objects and business rules of the domain
-  that only the client needs: what stores hold and features and
-  components show (e.g. `BoxRow`, `MiniRow`) and the facts derived from
-  them. It imports nothing from Angular, RxJS or other frameworks, and
-  nothing from the domain except `util/`.
+  that only the client needs: what the domain is (e.g. `Box`, `Mini`,
+  `Kit`) and the rules that follow from it, not how screens show it. It
+  imports nothing from Angular, RxJS or other frameworks, and nothing from
+  the domain except `util/`.
 - `infrastructure/` holds only access to external resources: one HTTP
   adapter per server controller, named `http-<resource>-adapter.ts`
   (`HttpSetupAdapter`). It maps between protocol DTOs and domain models

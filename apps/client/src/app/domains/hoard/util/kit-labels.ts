@@ -1,4 +1,4 @@
-import type { Kit } from './kit';
+import type { Kit } from '../models/kit';
 
 /** E.g. "Games Workshop · 50-80"; the year goes with the name. */
 export function kitMeta(kit: Kit): string {

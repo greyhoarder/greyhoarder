@@ -99,9 +99,11 @@ features ──▶ data ──▶ infrastructure        features ──▶ ui, i
   several features of the domain share (in memory or browser storage), and
   fixed or temporary data, such as sample data that stands in for the
   server while a screen is built before its backend.
-- The **model** is what stores hold and features and components show: the
-  client's types for the domain and the facts derived from them. Stores
-  keep state, the model knows what it means.
+- The **model** is what the domain is, the client's types for it and the
+  rules that follow from it. Stores hold the model; what lists and
+  components show is derived from it, in `data` where several features
+  share it, otherwise in the feature. The model changes slowly, what is
+  shown of it often.
 - **Infrastructure** is only the access to external resources, so local
   state never hides behind something that looks like an adapter. It maps
   responses into the model.

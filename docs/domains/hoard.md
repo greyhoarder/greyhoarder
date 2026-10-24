@@ -36,7 +36,7 @@ exactly one user, and users see only their own hoard.
 
 ### Minis
 
-- A mini always has a name and at least one faction, even on the sprue;
+- A mini always has a name, even on the sprue; its factions are optional;
   it never needs its box to be listed, found or edited.
 - The status follows the order sprue → built → primed → painted → done.
   Any status can be set, also backwards (a mistake, a stripped mini).
@@ -131,7 +131,7 @@ exactly one user, and users see only their own hoard.
 ## Lists of minis
 
 Interfaces list minis, not boxes, wherever the hobby is concerned. Minis that are alike (same name, factions,
-status and parts) are shown as one row with a count ("Boy · on the
+status, parts and box, and all on the workbench or all off it) are shown as one row with a count ("Boy · on the
 sprue · ×9"), from which the user picks how many to act on. As soon as a
 mini differs, it gets its own row. The origin box is shown as a detail and
 can be used as a filter, never as a level to navigate through.

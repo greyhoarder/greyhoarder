@@ -4,14 +4,14 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
-import { BoxesStore } from '../../data/boxes-store';
+import { BoxesList } from '../../data/boxes-list';
 import { HoardView } from '../../data/hoard-view';
 import { BoxCard } from './box-card/box-card';
 import { type BoxSelection, BoxTable } from './box-table/box-table';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
-import { PROGRESS_LABELS } from '../../models/box-labels';
-import { progressOf, sprueCount } from '../../models/box-row';
-import type { BoxRow } from '../../models/box-row';
+import { PROGRESS_LABELS } from '../../util/box-labels';
+import { progressOf, sprueCount } from '../../data/box-row';
+import type { BoxRow } from '../../data/box-row';
 
 /** The Boxes tab of the hoard: search, filters, selection and the boxes as cards or table. */
 @Component({
@@ -22,7 +22,7 @@ import type { BoxRow } from '../../models/box-row';
   host: { class: '@container flex flex-col gap-3' },
 })
 export class BoxesPage {
-  protected readonly store = inject(BoxesStore);
+  protected readonly store = inject(BoxesList);
   protected readonly view = inject(HoardView);
 
   protected readonly factionOptions = computed(() =>
