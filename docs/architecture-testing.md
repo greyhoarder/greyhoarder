@@ -1,8 +1,8 @@
 # Architecture: testing
 
-Rules for unit tests in the client, the server and `libs/`, and for browser
-end-to-end tests in `apps/e2e`. Integration and API tests are not covered
-yet. To write or change tests, follow the `write-tests` skill.
+Rules for unit tests in the client, the server and `libs/`, for browser
+end-to-end tests in `apps/e2e` and for architecture tests in
+`apps/architecture`. Integration and API tests are not covered yet. To write or change tests, follow the `write-tests` skill.
 
 ## Framework and setup
 
@@ -98,6 +98,30 @@ _(derived from [ADR-0021](adr/0021-an-end-to-end-test-for-every-route.md))_
   set and Redis as containers, then run Playwright.
 
 _(derived from [ADR-0018](adr/0018-end-to-end-tests-with-an-instance-per-worker.md))_
+
+## Architecture tests
+
+- Dependencies between domains, layers, the app level and `shared/` are
+  checked by Sheriff (`sheriff.config.ts` in each app, run by
+  `npm run lint`); see [architecture-boundaries.md](architecture-boundaries.md).
+- Everything else a tool can check (imports of packages, names, content,
+  cycles) is tested with ArchUnitTS in `apps/architecture`: one spec file
+  each for the client, the server and the libraries, run by `npm test`.
+- Each Sheriff rule and each test names the guide section it checks.
+  Changing a rule includes changing its check in the same change.
+- No exceptions lists: a violation is fixed, or the rule is clarified in the
+  guide first; never weaken a check to make it pass.
+- Each suite runs with the folder it checks as its working directory and
+  that folder's build tsconfig, so spec files are not checked.
+- Each suite has a test that the files it reads are not empty; otherwise a
+  wrong working directory lets every content rule pass silently.
+- Read imports of packages from the file content, not from the resolved
+  dependency graph; the graph skips packages that do not resolve, such as
+  unbuilt workspace libraries.
+- The description and approval rules above apply to architecture tests as
+  well.
+
+_(derived from [ADR-0024](adr/0024-architecture-tests-with-sheriff-and-archunitts.md))_
 
 ## Approval
 

@@ -10,7 +10,7 @@
     "start:dev": "nest start --watch -- --dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "oxlint --type-aware src/",
+    "lint": "oxlint --type-aware src/ && sheriff verify",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
@@ -37,6 +37,7 @@
     "@nestjs/cli": "^12.0.0",
     "@nestjs/schematics": "^12.0.0",
     "@nestjs/testing": "^12.0.1",
+    "@softarc/sheriff-core": "^0.20.0",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.19.0",
     "@types/node": "^24.0.0",

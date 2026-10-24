@@ -3,6 +3,13 @@
 Rules for the repository layout, domains, public APIs and shared code. They
 apply to the client, the server and `libs/`.
 
+Sheriff checks the dependencies between domains, layers, the app level and
+`shared/` (`sheriff.config.ts` in each app, run by `npm run lint`); the lists
+of allowed dependencies in its configs follow this guide. Other rules a tool
+can check are architecture tests in `apps/architecture` (see
+[architecture-testing.md](architecture-testing.md)). A rule and its check
+change together.
+
 ## Repository layout
 
 - `apps/client` is the Angular app, `apps/server` the NestJS app,
@@ -37,6 +44,8 @@ _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
   `apps/server/src/domains/<domain>/`, with the same name in both apps.
 - New domains are created only on explicit request. A new domain and its
   allowed dependencies are added to this guide when it is created.
+- The files inside a domain never import each other in a cycle; this
+  applies to the domains in `libs/` as well.
 
 _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 [ADR-0007](adr/0007-local-user-accounts.md),
@@ -66,7 +75,9 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 
 ## Public API
 
-- Other domains import only from `<domain>/api/index.ts`.
+- Other domains import only from `<domain>/api/index.ts`. Every layer may
+  do so except `models/`, `ports/` and `api/`; `api/` never re-exports
+  another domain.
 - `api/` contains re-exports and narrow types or facades for other domains.
   No controllers, gateways or other external entry points.
 - Code inside a domain never imports from its own `api/`.
@@ -100,8 +111,9 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
   (`features/guards/`).
 - `models/` holds the types, value objects and business rules of the domain
   that only the server needs (e.g. `UserCredentials`, the state of a
-  catalog import). It imports nothing from NestJS, Mongoose, RxJS or other
-  frameworks, and nothing from the domain except `util/`.
+  catalog import). It is the innermost layer: it imports nothing from
+  NestJS, Mongoose, RxJS or other frameworks and nothing from its own
+  domain, only `@greyhoarder/domain`.
 - `ports/` holds only abstract classes without behavior; each is the
   interface and the injection token. No string tokens. Ports depend only
   on `models/` and `@greyhoarder/domain`; the types in their signatures
@@ -119,8 +131,9 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 - Only `<domain>.module.ts` binds ports to implementations.
 - `util/` holds small helpers without business logic.
 - Allowed: `features → ports`, `features → models`,
-  `infrastructure → ports`, `infrastructure → models`, `ports → models`;
-  every folder may use `util/` and `@greyhoarder/domain`.
+  `infrastructure → ports`, `infrastructure → models`, `ports → models`,
+  `util → models`; every folder except `models/` and `ports/` may use
+  `util/`, and every folder may use `@greyhoarder/domain`.
 - `features` never import `infrastructure`; features never import each
   other. Code several features need moves to `models/`, `ports/` or
   `util/`.
@@ -141,7 +154,11 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
   middleware bound to them (e.g. sessions).
 - Neither holds endpoints; every endpoint is an entry point in a domain.
 - Neither holds business logic, and neither imports from a domain except
-  through its `api/`.
+  through its `api/` or its `<domain>.module.ts`.
+- Inside a domain, `features/`, `infrastructure/` and `<domain>.module.ts`
+  may use `config/`; only `infrastructure/` and `<domain>.module.ts` may use
+  `platform/`. `shared/` uses neither.
+- `platform/` may use `config/`.
 
 _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 [ADR-0017](adr/0017-server-serves-the-web-app.md))_
@@ -164,17 +181,17 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
   with the rows derived from the models for it (e.g. `BoxRow`, `MiniRow`).
 - `models/` holds the types, value objects and business rules of the domain
   that only the client needs: what the domain is (e.g. `Box`, `Mini`,
-  `Kit`) and the rules that follow from it, not how screens show it. It
-  imports nothing from Angular, RxJS or other frameworks, and nothing from
-  the domain except `util/`.
+  `Kit`) and the rules that follow from it, not how screens show it. It is
+  the innermost layer: it imports nothing from Angular, RxJS or other
+  frameworks and nothing from its own domain, only `@greyhoarder/domain`.
 - `infrastructure/` holds only access to external resources: one HTTP
   adapter per server controller, named `http-<resource>-adapter.ts`
   (`HttpSetupAdapter`). It maps between protocol DTOs and domain models
   (`models/` or `@greyhoarder/domain`); features never see DTOs.
 - `util/` holds small helpers without business logic.
 - Allowed: `features → ui`, `features → data`, `features → infrastructure`,
-  `data → infrastructure`; every folder may use `models/`, `util/` and
-  `@greyhoarder/domain`.
+  `data → infrastructure`; every folder may use `models/` and
+  `@greyhoarder/domain`, and every folder except `models/` may use `util/`.
 - `ui` never uses `data` or `infrastructure`; `data` never imports
   `features` or `ui`; features never import each other.
 - Business rules belong in `models/`, or in `libs/domain` when both apps
@@ -188,7 +205,8 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
 - Besides `shared/` (see below), code outside `domains/` is the app level:
   `app.ts`, `app.config.ts`, `app.routes.ts` and `shell/`.
 - The app level assembles domains and uses them only through their
-  `api/`. It holds no business logic and no HTTP adapters.
+  `api/` and, to load their routes lazily, their `<domain>.routes.ts`. It
+  holds no business logic and no HTTP adapters.
 - `shell/app-shell.ts` is the layout route above every route behind the
   login; login and setup stay outside it. Its navigation entries are a
   fixed list in the shell.
@@ -201,6 +219,7 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md),
 - Cross-cutting code without business logic lives in
   `apps/client/src/app/shared/` and `apps/server/src/shared/`.
 - `shared/` never imports from a domain.
+- Every layer of a domain may use `shared/` except `models/` and `ports/`.
 - Code moves to `shared/` only when two domains need it and the user
   agrees.
 
@@ -209,8 +228,9 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 ## Server modules and data ownership
 
 - One Nest module per domain; its `exports` match its `api/`.
-- No `forwardRef()` between domain modules. A domain that must react to
-  something in a domain it may not depend on listens to an event instead.
+- No `forwardRef()`, neither between domain modules nor between
+  providers. A domain that must react to something in a domain it may not
+  depend on listens to an event instead.
 - Each domain owns its persisted data. Other domains read it only through
   the owning domain's `api/`, never through its storage.
 

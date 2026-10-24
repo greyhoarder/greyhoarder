@@ -16,14 +16,17 @@ description: Review code or a planned change against greyhoarder's architecture 
    - Angular code in the client: `docs/architecture-angular.md`
    - Components, templates, styling: `docs/architecture-ui.md`
    - Tests: `docs/architecture-testing.md`
-3. Check each file against the rules of those guides, in particular:
-   - **Boundaries:** correct domain folder; other domains imported only via
-     `<domain>/api/index.ts`; only allowed domain dependencies; `shared/`
-     imports no domain; `libs/domain` is framework-free and imported by
-     package name; `models/` is framework-free and holds what only one app
-     needs, `libs/domain` only what both need; business rules only in
-     `models/` or `libs/domain`; one Nest module per domain, no
-     `forwardRef()`.
+3. Run `npm run lint` and `npm test` first and include their failures in
+   the report. Sheriff (`sheriff.config.ts` in each app) checks the
+   dependencies between domains, layers, the app level and `shared/`; the
+   architecture tests in `apps/architecture` check the other rules a tool
+   can check (see "Architecture tests" in `docs/architecture-testing.md`).
+   Don't repeat what they check; review what they cannot, such as whether
+   something is a business rule or where a type belongs.
+4. Check each file against the rules of those guides, in particular:
+   - **Boundaries:** correct domain folder; `models/` holds what only one
+     app needs, `libs/domain` only what both need; business rules only in
+     `models/` or `libs/domain`; one Nest module per domain.
    - **Persistence:** every collection has a schema owned by one domain; no
      queries or `$lookup` into other domains' collections; references
      checked and indexed; multi-document writes in a transaction; reference
@@ -37,8 +40,6 @@ description: Review code or a planned change against greyhoarder's architecture 
      control flow, zoneless; no NgModules or constructor injection.
    - **Testing:** Vitest only; specs named `<file>.spec.ts` next to the
      code; mocks only via `vi`; required tests present.
-4. If `AGENTS.md` lists commands, run lint and tests for the affected
-   workspaces and include failures in the report.
 5. Report in this format and do **not** change code unless asked:
 
 ```

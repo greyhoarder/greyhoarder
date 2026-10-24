@@ -20,7 +20,7 @@ Binding architecture rules live in `docs/`, the reasoning behind them in
 [docs/adr/](docs/adr/README.md). Before changing code, read the guides that match
 your task, and only those:
 
-- **Any change to app or library code** (domains, folders, imports, Nest modules): 
+- **Any change to app or library code** (domains, folders, imports, Nest modules):
   [architecture-boundaries.md](docs/architecture-boundaries.md)
 - **Writing or changing code**:
   [coding-guidelines.md](docs/coding-guidelines.md)
@@ -53,7 +53,7 @@ Run from the repository root:
 - `npm run build`: build all workspaces
 - `npm test`: run all unit tests once
 - `npm run lint`: lint all workspaces (ESLint in the client, oxlint in the
-  server)
+  server, Sheriff for module boundaries in both)
 - `npm run check:specs`: list components without a spec file
 - `npm run <script> -w @greyhoarder/client`: a single workspace's script
 
