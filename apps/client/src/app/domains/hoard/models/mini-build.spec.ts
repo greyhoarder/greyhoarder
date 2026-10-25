@@ -1,5 +1,5 @@
 import type { Kit, KitSlot, Mini } from '@greyhoarder/domain/hoard';
-import { buildStatus, buildSuggestions, preselectedParts } from './mini-build';
+import { buildSuggestions, preselectedParts } from './mini-build';
 
 const slot = (count: number, names: string[], parts: string[]): KitSlot => ({
   count,
@@ -33,6 +33,26 @@ const LOOTAS: Kit = {
   contains: [],
 };
 
+const BOYZ: Kit = {
+  ...LOOTAS,
+  id: 'games-workshop/orks/boyz',
+  name: 'Boyz',
+  names: ['Boyz'],
+  variants: [{ name: 'Boyz', slots: [slot(9, ['Boy'], ['Slugga', 'Choppa'])], minis: 9 }],
+  minis: 9,
+};
+
+/** A Trukk of its own and a box of Boyz in it. */
+const BATTLEFORCE: Kit = {
+  ...LOOTAS,
+  id: 'games-workshop/orks/battleforce',
+  name: 'Battleforce',
+  names: ['Battleforce'],
+  variants: [{ name: 'Battleforce', slots: [slot(1, ['Trukk'], ['Big Shoota'])], minis: 10 }],
+  minis: 10,
+  contains: [{ kit: BOYZ, count: 1 }],
+};
+
 const mini = (id: string, overrides: Partial<Mini>): Mini => ({
   id,
   name: 'Lootas / Burna Boyz',
@@ -49,10 +69,25 @@ const leftOf = (minis: readonly Mini[], name: string) =>
   buildSuggestions(LOOTAS, minis).find((suggestion) => suggestion.name === name)?.left;
 
 describe('Build suggestions', () => {
-  it("suggests every name of every variant of the kit once, in the kit's order", () => {
-    const suggestions = buildSuggestions(LOOTAS, []);
+  const namesFor = (kit: Kit, sprueName: string) =>
+    buildSuggestions(kit, [], sprueName).map((suggestion) => suggestion.name);
 
-    expect(suggestions.map((suggestion) => suggestion.name)).toEqual(['Loota', 'Spanner', 'Burna Boy']);
+  it("suggests what the minis' slot can be built as", () => {
+    const names = namesFor(LOOTAS, 'Lootas / Burna Boyz');
+
+    expect(names).toEqual(['Loota', 'Burna Boy']);
+  });
+
+  it('suggests a mini of a bundle only the names of its own slot', () => {
+    const names = namesFor(BATTLEFORCE, 'Boy');
+
+    expect(names).toEqual(['Boy']);
+  });
+
+  it('suggests every name of the kit when it put no minis of the sprue name on the sprue', () => {
+    const names = namesFor(LOOTAS, 'Tankbusta');
+
+    expect(names).toEqual(['Loota', 'Spanner', 'Burna Boy']);
   });
 
   it('counts how many minis the kit provides for a name, in the variant that provides the most', () => {
@@ -108,19 +143,5 @@ describe('Preselected parts', () => {
     const parts = preselectedParts([], LOOTAS, 'Spanner');
 
     expect(parts).toEqual([]);
-  });
-});
-
-describe('Build status', () => {
-  it('builds minis as built when no later status was chosen', () => {
-    const status = buildStatus('sprue');
-
-    expect(status).toBe('built');
-  });
-
-  it('keeps a later status chosen on the sprue', () => {
-    const status = buildStatus('primed');
-
-    expect(status).toBe('primed');
   });
 });

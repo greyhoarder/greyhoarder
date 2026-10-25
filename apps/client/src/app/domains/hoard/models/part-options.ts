@@ -1,5 +1,5 @@
 import { findPart, type Kit, type Part, partKey } from '@greyhoarder/domain/hoard';
-import { slotsOf } from './kit-slots';
+import { sprueOffer } from './kit-slots';
 
 /** A part the picker offers: one of the vocabulary, or a catalog part not yet in it. */
 export interface PartOption {
@@ -23,7 +23,8 @@ export interface PartOptions {
 export const RANGE_LIMIT = 20;
 
 /**
- * What the part picker offers for a filter text (docs/screens/mini.md): the kit's parts first, then
+ * What the part picker offers for a filter text (docs/screens/mini.md): the parts the kit offers for
+ * the minis' sprue name first, then
  * the rest of the vocabulary by name, and while filtering the parts of the range not offered above;
  * never the parts the minis already carry. A part matches when its name or an alias contains the
  * text, ignoring case.
@@ -32,6 +33,8 @@ export function partOptions(
   parts: {
     /** The kit of the minis' box; left out when they have none. */
     readonly kit?: Kit;
+    /** Offers the kit's parts for minis with this sprue name only. */
+    readonly sprueName?: string;
     readonly vocabulary: readonly Part[];
     readonly range: readonly string[];
     readonly carried: readonly string[];
@@ -58,7 +61,7 @@ export function partOptions(
     return alias === undefined ? undefined : { ...part, alias };
   };
 
-  const kitParts = parts.kit ? [...new Set(slotsOf(parts.kit).flatMap((slot) => slot.parts))] : [];
+  const kitParts = parts.kit ? sprueOffer(parts.kit, parts.sprueName).parts : [];
   const kitOptions = kitParts.map(asOption);
   const fromKit = kitOptions
     .filter((part) => !isCarried(part.name))

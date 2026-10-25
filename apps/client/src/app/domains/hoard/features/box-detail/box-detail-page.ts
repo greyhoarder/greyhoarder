@@ -26,15 +26,18 @@ import { PartsStore } from '../../data/parts-store';
 import { ProgressBadge } from '../../ui/progress-badge/progress-badge';
 import { ProgressBar, STATUS_COLORS } from '../../ui/progress-bar/progress-bar';
 import { kitLine } from '../../util/box-labels';
+import { eitherOrText } from '../../util/either-or';
 import { formatDate } from '../../util/format-date';
 import { STATUS_LABELS } from '../../util/status-labels';
 import { BoxKitCard } from './box-kit-card/box-kit-card';
 import { BoxMiniCard } from './box-mini-card/box-mini-card';
+import { EitherOrName } from '../../ui/either-or-name/either-or-name';
 
 /** Everything about one box of the hoard; specified in docs/screens/box.md. */
 @Component({
   selector: 'app-box-detail-page',
   imports: [
+    EitherOrName,
     RouterLink,
     NgIcon,
     HlmBadge,
@@ -172,7 +175,7 @@ export class BoxDetailPage {
     effect(() => {
       const box = this.box();
       if (box) {
-        this.title.setTitle(`${box.name} · Greyhoarder`);
+        this.title.setTitle(`${eitherOrText(box.name)} · Greyhoarder`);
       }
     });
   }

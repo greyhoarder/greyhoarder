@@ -42,7 +42,9 @@
     </span>
     <div class="flex min-w-0 flex-1 basis-64 flex-col gap-1.5">
       <div class="flex flex-wrap items-center gap-3">
-        <h1 class="text-2xl font-semibold" data-testid="box-name">{{ box.name }}</h1>
+        <h1 class="text-2xl font-semibold" data-testid="box-name">
+          <app-either-or-name [name]="box.name" />
+        </h1>
         @if (progress(); as progress) {
           <app-progress-badge [progress]="progress" data-testid="box-progress-badge" />
         }
@@ -138,23 +140,19 @@
     </div>
   </header>
 
-  <section
-    class="flex flex-col gap-4 rounded-xl border bg-card p-5"
-    aria-labelledby="box-progress-heading"
-  >
+  <section class="flex flex-col gap-3" aria-labelledby="box-progress-heading">
     <div class="flex items-baseline justify-between gap-4">
-      <h2 class="font-semibold" id="box-progress-heading">Progress</h2>
+      <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="box-progress-heading">
+        Progress
+      </h2>
       <span class="text-lg font-semibold tabular-nums" data-testid="box-percent">
         {{ percent() }}<span class="text-sm text-muted-foreground">%</span>
       </span>
     </div>
     <app-progress-bar [box]="box" data-testid="box-progress" />
-    <ul class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+    <ul class="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3 lg:grid-cols-5">
       @for (entry of statuses(); track entry.status) {
-        <li
-          class="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2"
-          data-testid="box-status"
-        >
+        <li class="flex items-center gap-2" data-testid="box-status">
           <span
             class="size-2.5 rounded-full"
             [class]="statusColor[entry.status]"

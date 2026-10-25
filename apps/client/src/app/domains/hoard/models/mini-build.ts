@@ -1,11 +1,5 @@
-import {
-  hasReached,
-  type HobbyStatus,
-  type Kit,
-  type Mini,
-  type MiniPart,
-} from '@greyhoarder/domain/hoard';
-import { slotsOf } from './kit-slots';
+import { type Kit, type Mini, type MiniPart } from '@greyhoarder/domain/hoard';
+import { slotsOf, sprueOffer } from './kit-slots';
 
 // Building minis that were on the sprue (docs/screens/mini.md).
 
@@ -16,18 +10,23 @@ export interface BuildSuggestion {
 }
 
 /**
- * Every name the slots of all variants of the kit suggest, kits in it included, each once in the
- * kit's order. A name is left as often as the kit provides it (in the variant that provides the
- * most) minus the minis of the box that used it up: those built as it, and those built under a
- * name of the user's own that had it on the sprue.
+ * What minis with the sprue name can be built as: the names their slot suggests, each once in the
+ * kit's order; without a slot of that sprue name, every name the kit suggests, kits in it included.
+ * A name is left as often as the kit provides it (in the variant that provides the most) minus the
+ * minis of the box that used it up: those built as it, and those built under a name of the user's
+ * own that had it on the sprue.
  */
-export function buildSuggestions(kit: Kit, minisOfBox: readonly Mini[]): BuildSuggestion[] {
-  const names = [...new Set(slotsOf(kit).flatMap((slot) => slot.names))];
-  return names.map((name) => {
+export function buildSuggestions(
+  kit: Kit,
+  minisOfBox: readonly Mini[],
+  sprueName?: string,
+): BuildSuggestion[] {
+  const allNames = [...new Set(slotsOf(kit).flatMap((slot) => slot.names))];
+  return sprueOffer(kit, sprueName).names.map((name) => {
     const usedUp = minisOfBox.filter(
       (mini) =>
         mini.status !== 'sprue' &&
-        (mini.name === name || (!names.includes(mini.name) && mini.sprueName === name)),
+        (mini.name === name || (!allNames.includes(mini.name) && mini.sprueName === name)),
     ).length;
     return { name, left: Math.max(0, provided(kit, name) - usedUp) };
   });
@@ -47,14 +46,14 @@ export function preselectedParts(
   if (latest) {
     return latest.parts;
   }
-  const slots = kit ? slotsOf(kit).filter((slot) => slot.names.includes(name)) : [];
-  const parts = [...new Set(slots.flatMap((slot) => slot.parts))];
+  const parts = kit ? kitParts(kit, name) : [];
   return parts.length === 1 ? parts : [];
 }
 
-/** The status built minis get: the one chosen on the sprue, but at least built. */
-export function buildStatus(chosen: HobbyStatus): HobbyStatus {
-  return hasReached(chosen, 'built') ? chosen : 'built';
+/** The parts the kit's slots for a name offer, each once in the kit's order. */
+export function kitParts(kit: Kit, name: string): string[] {
+  const slots = slotsOf(kit).filter((slot) => slot.names.includes(name));
+  return [...new Set(slots.flatMap((slot) => slot.parts))];
 }
 
 /** How many minis a box of the kit provides for a name: in the variant that provides the most, plus the kits in it. */

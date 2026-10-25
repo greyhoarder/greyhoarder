@@ -8,7 +8,7 @@ const VOCABULARY: Part[] = [
   POWER_KLAW,
 ];
 
-/** A kit whose slots offer Deffgun and Big Shoota. */
+/** A kit whose Loota slot offers Deffgun and whose Spanner slot offers Big Shoota. */
 const KIT: Kit = {
   id: 'games-workshop/orks/lootas-2008',
   version: 1,
@@ -32,16 +32,16 @@ const KIT: Kit = {
 };
 
 const optionsFor = (filter: string, carried: readonly string[] = [], range: readonly string[] = []) =>
-  partOptions({ kit: KIT, vocabulary: VOCABULARY, range, carried }, filter);
+  partOptions({ kit: KIT, sprueName: 'Loota', vocabulary: VOCABULARY, range, carried }, filter);
 
 const names = (options: readonly { readonly name: string }[]) => options.map((option) => option.name);
 
 describe('Part options', () => {
-  it("offers the kit's parts first, then the rest of the vocabulary by name", () => {
+  it("offers the parts the kit gives the minis' slot first, then the rest of the vocabulary by name", () => {
     const options = optionsFor('');
 
     expect([names(options.fromKit), names(options.fromVocabulary)]).toEqual([
-      ['Deffgun', 'Big Shoota'],
+      ['Deffgun'],
       ['Power Klaw', 'Trophy Rack'],
     ]);
   });
@@ -49,7 +49,7 @@ describe('Part options', () => {
   it('leaves out the parts the minis already carry', () => {
     const options = optionsFor('', ['Deffgun', 'Power Klaw']);
 
-    expect([names(options.fromKit), names(options.fromVocabulary)]).toEqual([['Big Shoota'], ['Trophy Rack']]);
+    expect([names(options.fromKit), names(options.fromVocabulary)]).toEqual([[], ['Trophy Rack']]);
   });
 
   it('names the alias a part matched through', () => {

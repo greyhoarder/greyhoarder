@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import type { Box, HobbyStatus, Mini, Part } from '@greyhoarder/domain/hoard';
+import type { Box, Mini, Part } from '@greyhoarder/domain/hoard';
 import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
@@ -64,6 +64,9 @@ const BUILT = ['m1', 'm2'].map((id) =>
   mini(id, { name: 'Loota', status: 'built', parts: [{ partId: 'deffgun', isSwappable: false }] }),
 );
 
+/** Three Lootas of the same box, built; one Loota is left in the box. */
+const THREE_LOOTAS = ['m5', 'm6', 'm7'].map((id) => mini(id, { name: 'Loota', status: 'built' }));
+
 describe('Mini page', () => {
   let fixture: ComponentFixture<MiniDetailPage>;
   let update: ReturnType<typeof vi.fn>;
@@ -114,18 +117,13 @@ describe('Mini page', () => {
   const textsOf = (testId: string): string[] =>
     all(testId).map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '');
   const nameTile = (name: string) =>
-    all('mini-build-as').find((tile) => tile.querySelector('.font-semibold')?.textContent?.trim() === name);
-  const partNames = () => all('mini-part').map((part) => part.querySelector('.font-semibold')?.textContent?.trim());
+    all('mini-build-as').find(
+      (tile) => tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim() === name,
+    );
+  const partNames = () => textsOf('mini-part-name');
 
   async function click(element: HTMLElement | undefined): Promise<void> {
     element?.click();
-    await fixture.whenStable();
-  }
-
-  async function filterParts(text: string): Promise<void> {
-    const field = all('mini-part-filter')[0] as HTMLInputElement;
-    field.value = text;
-    field.dispatchEvent(new Event('input'));
     await fixture.whenStable();
   }
 
@@ -136,7 +134,7 @@ describe('Mini page', () => {
 
     await click(nameTile('Loota'));
 
-    expect([before, textsOf('mini-name')]).toEqual([['Lootas / Burna Boyz'], ['Loota']]);
+    expect([before, textsOf('mini-name')]).toEqual([['Lootas or Burna Boyz'], ['Loota']]);
   });
 
   it('names the browser tab after the minis', async () => {
@@ -144,54 +142,51 @@ describe('Mini page', () => {
 
     await fixture.whenStable();
 
-    expect(TestBed.inject(Title).getTitle()).toBe('Lootas / Burna Boyz · Greyhoarder');
+    expect(TestBed.inject(Title).getTitle()).toBe('Lootas or Burna Boyz · Greyhoarder');
   });
 
-  it('shows the factions of the minis and leads to the box they came from', async () => {
+  it('shows the factions of the minis', async () => {
     showMini('m1');
 
     await fixture.whenStable();
 
     expect(textsOf('mini-faction')).toEqual(['Orks']);
-    expect(all('mini-origin')[0]?.getAttribute('href')).toBe('/hoard/boxes/b1');
   });
 
-  it('shows a tile for every status and marks the current one', async () => {
-    showMini('m1');
+  it('shows how far the minis are', async () => {
+    showMini('m1', () => Promise.resolve(BUILT));
 
     await fixture.whenStable();
 
-    const tiles = all('mini-status');
-    expect(tiles.map((tile) => tile.textContent?.trim())).toEqual(['On the sprue', 'Built', 'Primed', 'Painted', 'Done']);
-    expect(tiles.map((tile) => tile.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false', 'false', 'false']);
+    expect(textsOf('mini-percent')).toEqual(['25%']);
+    expect(textsOf('mini-status-badge')).toEqual(['Built']);
   });
 
-  it('offers every name the kit suggests with how many are left in the box', async () => {
+  it('shows a tile for every name suggested for the minis with how many are left in the box', async () => {
     showMini('m1');
 
     await fixture.whenStable();
 
     const tiles = all('mini-build-as').map((tile) => [
-      tile.querySelector('.font-semibold')?.textContent?.trim(),
+      tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim(),
       tile.querySelector('[data-testid="mini-name-left"]')?.textContent?.trim(),
     ]);
     expect(tiles).toEqual([
       ['Loota', '4 left in this box'],
-      ['Spanner', '1 left in this box'],
       ['Burna Boy', '4 left in this box'],
     ]);
   });
 
   it('warns when more minis are to be built than are left for the chosen name', async () => {
-    showMini('m1');
+    showMini('m1', () => Promise.resolve([...ON_THE_SPRUE, ...THREE_LOOTAS]));
     await fixture.whenStable();
-    await click(nameTile('Spanner'));
+    await click(nameTile('Loota'));
 
     await click(all('mini-build-more')[0]);
 
-    const hint = nameTile('Spanner')?.querySelector('[data-testid="mini-name-left"]');
-    expect(hint?.textContent?.trim()).toBe('Only 1 left in this box');
-    expect(hint?.classList.contains('text-destructive')).toBe(true);
+    const hint = nameTile('Loota')?.querySelector('[data-testid="mini-name-left"]');
+    expect(hint?.getAttribute('data-warning')).toBe('true');
+    expect(hint?.textContent).toContain('1');
   });
 
   it('preselects the parts for the chosen name', async () => {
@@ -214,31 +209,35 @@ describe('Mini page', () => {
     expect(partNames()).toEqual([]);
   });
 
-  it('adds a part from the picker and empties the filter', async () => {
+  it("adds a part chosen in the picker to the minis' parts", async () => {
     showMini('m1');
     await fixture.whenStable();
     await click(all('mini-add-part')[0]);
-    await filterParts('big');
 
-    await click(all('mini-part-option').find((option) => option.textContent?.includes('Big Shoota')));
+    await click(all('mini-part-option').find((option) => option.textContent?.includes('Deffgun')));
 
-    expect(partNames()).toEqual(['Big Shoota']);
-    expect((all('mini-part-filter')[0] as HTMLInputElement).value).toBe('');
+    expect(partNames()).toEqual(['Deffgun']);
   });
 
-  it('tells screen readers whether the picker is open and whether a part is swappable', async () => {
+  it('tells screen readers whether the part picker is open', async () => {
+    showMini('m1');
+    await fixture.whenStable();
+    const addPart = all('mini-add-part')[0];
+    const closed = addPart?.getAttribute('aria-expanded');
+
+    await click(addPart);
+
+    expect([closed, addPart?.getAttribute('aria-expanded')]).toEqual(['false', 'true']);
+  });
+
+  it('tells screen readers whether a part is swappable', async () => {
     showMini('m1');
     await fixture.whenStable();
     await click(nameTile('Loota'));
-    const addPart = all('mini-add-part')[0];
-    const closed = addPart?.getAttribute('aria-expanded');
-    await click(addPart);
-    const swappable = all('mini-part-swappable')[0];
-    const glued = swappable?.getAttribute('aria-pressed');
+    const glued = all('mini-part-swappable')[0]?.getAttribute('aria-pressed');
 
-    await click(swappable);
+    await click(all('mini-part-swappable')[0]);
 
-    expect([closed, addPart?.getAttribute('aria-expanded')]).toEqual(['false', 'true']);
     expect([glued, all('mini-part-swappable')[0]?.getAttribute('aria-pressed')]).toEqual(['false', 'true']);
   });
 
@@ -283,22 +282,22 @@ describe('Mini page', () => {
     showMini('m1', () => Promise.resolve(BUILT));
     await fixture.whenStable();
 
-    await click(all('mini-status')[2]);
+    await click(all('mini-workbench')[0]);
 
-    expect(update).toHaveBeenCalledWith(['m1', 'm2'], { status: 'primed' satisfies HobbyStatus });
+    expect(update).toHaveBeenCalledWith(['m1', 'm2'], { isOnWorkbench: true });
   });
 
   it('shows what the server stored after a change without loading the hoard again', async () => {
     showMini(
       'm1',
       () => Promise.resolve(BUILT),
-      () => Promise.resolve(BUILT.map((stored) => ({ ...stored, status: 'primed' as const }))),
+      () => Promise.resolve(BUILT.map((stored) => ({ ...stored, isOnWorkbench: true }))),
     );
     await fixture.whenStable();
 
-    await click(all('mini-status')[2]);
+    await click(all('mini-workbench')[0]);
 
-    expect(textsOf('mini-status-badge')).toEqual(['Primed']);
+    expect(all('mini-workbench')[0]?.getAttribute('aria-pressed')).toBe('true');
     expect(list).toHaveBeenCalledOnce();
   });
 
@@ -310,7 +309,7 @@ describe('Mini page', () => {
     );
     await fixture.whenStable();
 
-    await click(all('mini-status')[2]);
+    await click(all('mini-workbench')[0]);
 
     expect(all('mini-save-error')).toHaveLength(1);
   });

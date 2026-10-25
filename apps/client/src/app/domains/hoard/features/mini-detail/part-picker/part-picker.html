@@ -1,0 +1,103 @@
+<!-- Unfolds by its rows, so its height needs no measuring. -->
+<div
+  id="mini-part-picker"
+  data-part-picker
+  [attr.data-open]="isOpen()"
+  [attr.aria-hidden]="!isOpen()"
+  [inert]="!isOpen()"
+>
+  <!-- Room for the focus rings, which the clipping would cut off. -->
+  <div class="-mx-1 min-h-0 overflow-hidden px-1 pb-1">
+    <div class="mt-2 flex flex-col gap-4 border-t pt-4">
+      <label
+        class="flex h-10 w-full max-w-md items-center gap-2 rounded-lg border border-input px-3 focus-within:ring-2 focus-within:ring-ring"
+      >
+        <ng-icon name="lucideSearch" size="16" class="text-muted-foreground" />
+        <input
+          type="search"
+          class="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          placeholder="Filter, or type a new part"
+          aria-label="Filter parts"
+          data-testid="mini-part-filter"
+          [value]="filter()"
+          (input)="typeFilter($event)"
+        />
+      </label>
+      @if (options().fromKit.length > 0) {
+        <div class="flex flex-col gap-2" data-testid="mini-part-group" data-group="kit">
+          <span class="text-xs text-muted-foreground" data-testid="mini-part-group-name"
+            >From the kit · {{ boxName() }}</span
+          >
+          <div class="flex flex-wrap gap-2">
+            @for (option of options().fromKit; track option.name) {
+              <ng-container *ngTemplateOutlet="chip; context: { $implicit: option }" />
+            }
+          </div>
+        </div>
+      }
+      @if (options().fromVocabulary.length > 0) {
+        <div class="flex flex-col gap-2" data-testid="mini-part-group" data-group="vocabulary">
+          <span class="text-xs text-muted-foreground" data-testid="mini-part-group-name"
+            >Your parts</span
+          >
+          <div class="flex flex-wrap gap-2">
+            @for (option of options().fromVocabulary; track option.name) {
+              <ng-container *ngTemplateOutlet="chip; context: { $implicit: option }" />
+            }
+          </div>
+        </div>
+      }
+      @if (options().fromRange.length > 0) {
+        <div class="flex flex-col gap-2" data-testid="mini-part-group" data-group="range">
+          <span class="text-xs text-muted-foreground" data-testid="mini-part-group-name"
+            >{{ rangeName() }} range</span
+          >
+          <div class="flex flex-wrap gap-2">
+            @for (option of options().fromRange; track option.name) {
+              <ng-container *ngTemplateOutlet="chip; context: { $implicit: option }" />
+            }
+          </div>
+        </div>
+      }
+      @if (options().create; as create) {
+        <div
+          class="flex flex-col gap-2 border-t pt-4"
+          data-testid="mini-part-group"
+          data-group="create"
+        >
+          <span class="text-xs text-muted-foreground" data-testid="mini-part-group-name"
+            >New part</span
+          >
+          <div class="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              class="inline-flex h-8 items-center gap-1.5 rounded-full border border-dashed border-muted-foreground bg-muted px-3 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              data-testid="mini-part-create"
+              (click)="add(create)"
+            >
+              <ng-icon name="lucidePlus" size="14" />
+              Create “{{ create }}”
+            </button>
+            <span class="text-sm text-muted-foreground"
+              >Becomes a part of your own, usable on every mini.</span
+            >
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<ng-template #chip let-option>
+  <button
+    type="button"
+    class="inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    data-testid="mini-part-option"
+    (click)="add(option)"
+  >
+    + {{ option.name }}
+    @if (option.alias) {
+      <span class="text-muted-foreground">also {{ option.alias }}</span>
+    }
+  </button>
+</ng-template>

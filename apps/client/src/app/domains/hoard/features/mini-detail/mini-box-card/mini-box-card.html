@@ -1,0 +1,47 @@
+<span class="text-xs text-muted-foreground">From the box</span>
+
+<div class="flex flex-col gap-3">
+  <a
+    [routerLink]="['/hoard/boxes', box().id]"
+    class="flex items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    data-testid="mini-origin"
+  >
+    <!-- Photos come later; until then every box shows the same placeholder. -->
+    <span class="size-12 shrink-0 rounded-lg bg-muted bg-busy-stripes" aria-hidden="true"></span>
+    <span class="flex min-w-0 flex-1 flex-col">
+      <span class="font-semibold">
+        <app-either-or-name [name]="title()" />
+        @if (kit()?.year; as year) {
+          <span class="font-normal text-muted-foreground">· {{ year }}</span>
+        }
+      </span>
+      @if (meta()) {
+        <span class="text-sm text-muted-foreground">{{ meta() }}</span>
+      }
+    </span>
+    <ng-icon name="lucideChevronRight" size="16" class="text-muted-foreground" />
+  </a>
+  <span class="text-sm text-muted-foreground" data-testid="mini-box-added">{{ added() }}</span>
+</div>
+
+@if (suggestedParts().length > 0) {
+  <div class="flex flex-col gap-3 border-t pt-4">
+    <span class="text-sm text-muted-foreground">The kit suggests for a {{ name() }}</span>
+    <ul class="flex flex-wrap gap-x-2 gap-y-1.5" aria-label="Suggested parts">
+      @for (part of suggestedParts(); track part) {
+        <li
+          class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+          data-testid="mini-box-part"
+        >
+          {{ part }}
+        </li>
+      }
+    </ul>
+  </div>
+}
+
+@if (kit()) {
+  <p class="border-t pt-4 text-sm text-muted-foreground">
+    Kits only suggest. What you add here counts.
+  </p>
+}
