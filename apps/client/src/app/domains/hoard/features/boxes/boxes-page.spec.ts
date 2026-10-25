@@ -34,7 +34,7 @@ describe('Boxes page', () => {
         },
         {
           provide: HttpMinisAdapter,
-          useValue: { list: vi.fn(async () => ({ minis: MINIS, factionNames: new Map() })) },
+          useValue: { list: vi.fn(async () => ({ minis: MINIS, factionNames: new Map(), systemNames: new Map() })) },
         },
       ],
     });

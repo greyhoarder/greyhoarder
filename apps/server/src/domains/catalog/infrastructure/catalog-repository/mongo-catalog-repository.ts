@@ -103,6 +103,19 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
     ]);
   }
 
+  async findSystemNames(factionIds: readonly string[]): Promise<ReadonlyMap<string, string>> {
+    const factions = await this.factions.find({ ...LATEST, factionId: { $in: factionIds } }).lean().exec();
+    const systemIds = [...new Set(factions.map((faction) => faction.systemId))];
+    const systems = await this.systems.find({ ...LATEST, systemId: { $in: systemIds } }).lean().exec();
+    const systemNames = new Map(systems.map((system) => [system.systemId, system.name] as const));
+    return new Map(
+      factions.flatMap((faction) => {
+        const name = systemNames.get(faction.systemId);
+        return name === undefined ? [] : [[faction.factionId, name] as const];
+      }),
+    );
+  }
+
   /** The previous latest version stays as it is; only its flags move to the new one. */
   private async applyUpdate<T extends { readonly id: string }, D>(
     collection: VersionedCollection<D>,

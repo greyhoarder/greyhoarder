@@ -49,7 +49,7 @@ describe('Hoard layout', () => {
         },
         {
           provide: HttpMinisAdapter,
-          useValue: { list: vi.fn(() => answer({ minis: hoard?.minis ?? [], factionNames })) },
+          useValue: { list: vi.fn(() => answer({ minis: hoard?.minis ?? [], factionNames, systemNames: new Map() })) },
         },
       ],
     });

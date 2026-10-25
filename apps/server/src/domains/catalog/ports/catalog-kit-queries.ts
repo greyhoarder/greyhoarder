@@ -14,4 +14,7 @@ export abstract class CatalogKitQueries {
 
   /** The names of the latest factions and whole game systems with these ids, by id. */
   abstract findFactionNames(ids: readonly string[]): Promise<ReadonlyMap<string, string>>;
+
+  /** The names of the game systems of the latest factions with these ids, by faction id. */
+  abstract findSystemNames(factionIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
 }

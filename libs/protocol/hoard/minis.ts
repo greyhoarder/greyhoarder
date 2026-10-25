@@ -17,6 +17,8 @@ export const minisResponseSchema = z.object({
   minis: z.array(miniSchema).readonly(),
   /** The names of the catalog factions the minis refer to, by id. */
   factionNames: z.record(z.string(), z.string()),
+  /** The names of the game systems of those factions, by faction id. */
+  systemNames: z.record(z.string(), z.string()),
 });
 
 export type MinisResponse = z.infer<typeof minisResponseSchema>;

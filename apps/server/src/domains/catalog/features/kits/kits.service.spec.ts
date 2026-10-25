@@ -30,6 +30,7 @@ function fakeQueries(kits: { found: readonly CatalogKit[]; catalog: readonly Cat
     searchKits: () => Promise.resolve(kits.found.map(latest)),
     findKits: (ids) => Promise.resolve(kits.catalog.filter((entry) => ids.includes(entry.id)).map(latest)),
     findFactionNames: () => Promise.resolve(new Map()),
+    findSystemNames: () => Promise.resolve(new Map()),
   };
 }
 

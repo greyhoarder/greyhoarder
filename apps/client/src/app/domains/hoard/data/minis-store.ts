@@ -11,8 +11,9 @@ export class MinisStore {
 
   private readonly loaded = resource({
     loader: async () => {
-      const { minis, factionNames } = await this.adapter.list();
+      const { minis, factionNames, systemNames } = await this.adapter.list();
       this.factionNames.add(factionNames);
+      this.factionNames.addSystemNames(systemNames);
       return minis;
     },
   });

@@ -9,12 +9,18 @@ import { firstValueFrom } from 'rxjs';
 export class HttpMinisAdapter {
   private readonly http = inject(HttpClient);
 
-  /** Every mini of the signed-in user, with the names of the factions they refer to. */
+  /** Every mini of the signed-in user, with the names of the factions they refer to and of their game systems. */
   async list(): Promise<{
     readonly minis: readonly Mini[];
     readonly factionNames: ReadonlyMap<string, string>;
+    /** By faction id. */
+    readonly systemNames: ReadonlyMap<string, string>;
   }> {
     const response = await firstValueFrom(this.http.get<MinisResponse>('/api/hoard/minis'));
-    return { minis: response.minis, factionNames: new Map(Object.entries(response.factionNames)) };
+    return {
+      minis: response.minis,
+      factionNames: new Map(Object.entries(response.factionNames)),
+      systemNames: new Map(Object.entries(response.systemNames)),
+    };
   }
 }

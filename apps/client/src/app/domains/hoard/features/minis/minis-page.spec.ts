@@ -35,7 +35,7 @@ describe('Minis page', () => {
         },
         {
           provide: HttpMinisAdapter,
-          useValue: { list: vi.fn(async () => ({ minis: await loadMinis(), factionNames: new Map() })) },
+          useValue: { list: vi.fn(async () => ({ minis: await loadMinis(), factionNames: new Map(), systemNames: new Map() })) },
         },
       ],
     });
