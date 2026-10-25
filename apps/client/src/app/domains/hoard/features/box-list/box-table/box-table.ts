@@ -16,6 +16,7 @@ import { type BoxSortOrder, sortBoxes } from '../../../data/box-sort';
 import type { SortDirection } from '../../../util/sort-direction';
 import { ProgressBar } from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
+import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 
 export interface BoxSelection {
   readonly box: BoxRow;
@@ -40,7 +41,7 @@ const COLUMNS: readonly Column[] = [
 /** The boxes as a table, sorted by clicking a column header; starts with the newest. */
 @Component({
   selector: 'app-box-table',
-  imports: [NgIcon, HlmButton, HlmTableImports, ProgressBar, RowCheck],
+  imports: [EitherOrName, NgIcon, HlmButton, HlmTableImports, ProgressBar, RowCheck],
   providers: [
     provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical }),
   ],

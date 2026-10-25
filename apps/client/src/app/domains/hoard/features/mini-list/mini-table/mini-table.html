@@ -50,7 +50,7 @@
                 type="button"
                 class="truncate rounded-sm text-left font-medium focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               >
-                {{ row.name }}
+                <app-either-or-name [name]="row.name" />
               </button>
               @if (row.isOnWorkbench) {
                 <span hlmBadge variant="secondary" class="text-muted-foreground">Workbench</span>

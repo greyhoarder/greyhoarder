@@ -13,7 +13,9 @@
 
   <span class="flex min-w-0 flex-1 flex-col gap-0.5">
     <span class="flex min-w-0 items-center gap-2">
-      <span class="truncate font-semibold" [id]="nameId()">{{ row().name }}</span>
+      <span class="truncate font-semibold" [id]="nameId()">
+        <app-either-or-name [name]="row().name" />
+      </span>
       @if (row().isOnWorkbench) {
         <span hlmBadge variant="secondary" class="text-muted-foreground">Workbench</span>
       }

@@ -14,6 +14,7 @@ import { type MiniSortOrder, sortRows } from '../../../data/mini-sort';
 import type { SortDirection } from '../../../util/sort-direction';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { StatusBadge } from '../../../ui/status-badge/status-badge';
+import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 
 interface Column {
   readonly order: MiniSortOrder;
@@ -37,7 +38,7 @@ export interface RowSelection {
 /** The minis as a table, sorted by clicking a column header; starts sorted by faction. */
 @Component({
   selector: 'app-mini-table',
-  imports: [NgIcon, HlmBadge, HlmButton, HlmTableImports, RowCheck, StatusBadge],
+  imports: [EitherOrName, NgIcon, HlmBadge, HlmButton, HlmTableImports, RowCheck, StatusBadge],
   providers: [
     provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical }),
   ],

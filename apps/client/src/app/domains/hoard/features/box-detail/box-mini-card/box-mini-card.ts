@@ -6,6 +6,7 @@ import { HlmButton } from '@spartan-ng/helm/button';
 import type { MiniRow } from '../../../data/mini-row';
 import { minisLabel } from '../../../util/kit-labels';
 import { StatusBadge } from '../../../ui/status-badge/status-badge';
+import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 
 /**
  * One row of alike minis of a box as a card, like on the Minis tab but without the box, since
@@ -13,7 +14,7 @@ import { StatusBadge } from '../../../ui/status-badge/status-badge';
  */
 @Component({
   selector: 'app-box-mini-card',
-  imports: [NgIcon, HlmBadge, HlmButton, StatusBadge],
+  imports: [EitherOrName, NgIcon, HlmBadge, HlmButton, StatusBadge],
   providers: [provideIcons({ lucideEllipsisVertical })],
   templateUrl: './box-mini-card.html',
   host: {

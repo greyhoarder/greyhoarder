@@ -7,6 +7,8 @@ import type { MiniRow } from '../../../data/mini-row';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { minisLabel } from '../../../util/kit-labels';
 import { StatusBadge } from '../../../ui/status-badge/status-badge';
+import { eitherOrText } from '../../../util/either-or';
+import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 
 /**
  * One row of alike minis as a card: what they are, where they come from, their status
@@ -15,7 +17,7 @@ import { StatusBadge } from '../../../ui/status-badge/status-badge';
  */
 @Component({
   selector: 'app-mini-card',
-  imports: [NgIcon, HlmBadge, HlmButton, RowCheck, StatusBadge],
+  imports: [EitherOrName, NgIcon, HlmBadge, HlmButton, RowCheck, StatusBadge],
   providers: [provideIcons({ lucideEllipsisVertical })],
   templateUrl: './mini-card.html',
   host: {
@@ -41,7 +43,7 @@ export class MiniCard {
   /** Factions and box, e.g. "Orks · Boyz (2026)". */
   protected readonly origin = computed(() => {
     const { factions, box } = this.row();
-    return [factions.join(', '), box ?? 'Without box'].join(' · ');
+    return [factions.join(', '), box === undefined ? 'Without box' : eitherOrText(box)].join(' · ');
   });
 
   protected readonly parts = computed(() => this.row().parts.join(', '));

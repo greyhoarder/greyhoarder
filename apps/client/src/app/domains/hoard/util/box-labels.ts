@@ -1,5 +1,6 @@
 import type { Box } from '@greyhoarder/domain/hoard';
 import type { BoxProgress } from '../models/box-progress';
+import { eitherOrText } from './either-or';
 import { formatDate } from './format-date';
 
 export const PROGRESS_LABELS: Readonly<Record<BoxProgress, string>> = {
@@ -14,7 +15,7 @@ export function kitLine(box: { readonly kit?: { readonly name: string; readonly 
     return 'No kit';
   }
   const { name, sku } = box.kit;
-  return sku ? `${name} · ${sku}` : name;
+  return sku ? `${eitherOrText(name)} · ${sku}` : eitherOrText(name);
 }
 
 /**
@@ -24,6 +25,9 @@ export function kitLine(box: { readonly kit?: { readonly name: string; readonly 
 export function distinctBoxNames(boxes: readonly Box[]): Map<string, string> {
   const namesake = (box: Box) => boxes.some((other) => other.id !== box.id && other.name === box.name);
   return new Map(
-    boxes.map((box) => [box.id, namesake(box) ? `${box.name} · ${formatDate(box.addedOn)}` : box.name]),
+    boxes.map((box) => {
+      const name = eitherOrText(box.name);
+      return [box.id, namesake(box) ? `${name} · ${formatDate(box.addedOn)}` : name];
+    }),
   );
 }
