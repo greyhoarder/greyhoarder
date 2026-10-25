@@ -52,12 +52,12 @@ describe('Login page', () => {
     expect(document.activeElement).toBe(field('username'));
   });
 
-  it('shows no error messages before the form is sent', () => {
+  it('says no error before the form is sent', () => {
     expect(errorTextOf('username')).toBe('');
     expect(errorTextOf('password')).toBe('');
   });
 
-  it('shows username missing message when form is sent without a username', async () => {
+  it('says that the username is missing when the form is sent without one', async () => {
     await type('password', 'secret');
 
     await click(submitButton());
@@ -65,7 +65,7 @@ describe('Login page', () => {
     expect(errorTextOf('username')).not.toBe('');
   });
 
-  it('shows password missing message when form is sent without a password', async () => {
+  it('says that the password is missing when the form is sent without one', async () => {
     await type('username', 'lucas');
 
     await click(submitButton());
@@ -110,7 +110,7 @@ describe('Login page', () => {
     expect(TestBed.inject(Router).url).toBe('/');
   });
 
-  it('shows "Username or password is incorrect." when the server refuses the credentials', async () => {
+  it('says "Username or password is incorrect." when the server refuses the credentials', async () => {
     signIn.mockRejectedValue(new InvalidCredentialsError());
     await type('username', 'lucas');
     await type('password', 'wrong');

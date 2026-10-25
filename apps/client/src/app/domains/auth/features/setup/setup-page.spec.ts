@@ -57,13 +57,13 @@ describe('Setup page', () => {
     expect(document.activeElement).toBe(field('setup-username'));
   });
 
-  it('shows no error messages before the form is sent', () => {
+  it('says no error before the form is sent', () => {
     expect(errorTextOf('setup-username')).toBe('');
     expect(errorTextOf('setup-password')).toBe('');
     expect(errorTextOf('setup-password-confirmation')).toBe('');
   });
 
-  it('shows a username missing message when the form is sent without a username', async () => {
+  it('says that the username is missing when the form is sent without one', async () => {
     await type('setup-password', 'secret-password');
     await type('setup-password-confirmation', 'secret-password');
 
@@ -72,7 +72,7 @@ describe('Setup page', () => {
     expect(errorTextOf('setup-username')).not.toBe('');
   });
 
-  it('shows a password missing message when the form is sent without a password', async () => {
+  it('says that the password is missing when the form is sent without one', async () => {
     await type('setup-username', 'lucas');
 
     await submit();
@@ -80,7 +80,7 @@ describe('Setup page', () => {
     expect(errorTextOf('setup-password')).not.toBe('');
   });
 
-  it('shows a mismatch message when the repeated password differs', async () => {
+  it('says that the passwords do not match when the repeated one differs', async () => {
     await type('setup-username', 'lucas');
     await type('setup-password', 'secret-password');
     await type('setup-password-confirmation', 'other-password');

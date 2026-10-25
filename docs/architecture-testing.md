@@ -1,8 +1,8 @@
 # Architecture: testing
 
 Rules for unit tests in the client, the server and `libs/`, for browser
-end-to-end tests in `apps/e2e` and for architecture tests in
-`apps/architecture`. Integration and API tests are not covered yet. To write or change tests, follow the `write-tests` skill.
+end-to-end tests in `tests/e2e` and for architecture tests in
+`tests/architecture`. Integration and API tests are not covered yet. To write or change tests, follow the `write-tests` skill.
 
 ## Framework and setup
 
@@ -30,7 +30,14 @@ _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
 - Each `it` is one sentence describing one behavior as the user or caller
   sees it, without "should" and without implementation terms (signals,
   selectors, method or class names).
-- Good: `it('shows "Enter your username." when the form is sent without a username')`.
+- Start with the same verb for the same kind of check:
+  - `says …` for text the user reads: messages, errors, hints, empty
+    states (`says that …`, `says "<text>" when …`);
+  - `shows …` for visible content and elements: rows, cards,
+    placeholders, images;
+  - `tells screen readers …` for what only screen readers announce;
+  - `names …` for a value put into words (a status, a progress).
+- Good: `it('says "Enter your username." when the form is sent without a username')`.
   Bad: `it('should set username error')`.
 
 _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
@@ -48,7 +55,7 @@ _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
 
 ## End-to-end tests
 
-- Write browser end-to-end tests with Playwright in `apps/e2e`.
+- Write browser end-to-end tests with Playwright in `tests/e2e`.
 - Run every end-to-end test in Chromium, Firefox and WebKit.
 - Find elements by `data-testid` only; never by text, role, label or CSS
   class.
@@ -105,7 +112,7 @@ _(derived from [ADR-0018](adr/0018-end-to-end-tests-with-an-instance-per-worker.
   checked by Sheriff (`sheriff.config.ts` in each app, run by
   `npm run lint`); see [architecture-boundaries.md](architecture-boundaries.md).
 - Everything else a tool can check (imports of packages, names, content,
-  cycles) is tested with ArchUnitTS in `apps/architecture`: one spec file
+  cycles) is tested with ArchUnitTS in `tests/architecture`: one spec file
   each for the client, the server and the libraries, run by `npm test`.
 - Each Sheriff rule and each test names the guide section it checks.
   Changing a rule includes changing its check in the same change.
