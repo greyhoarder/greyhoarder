@@ -5,6 +5,10 @@ services:
   workspace:
     image: mcr.microsoft.com/devcontainers/javascript-node:24-bookworm
     command: sleep infinity
+    # Published on the host, so the client is reachable at http://<host>:4200
+    # without VS Code forwarding (e.g. a dev LXC). The API goes through its proxy.
+    ports:
+      - '4200:4200'
     environment:
       # Override the development defaults, which point to 127.0.0.1.
       MONGODB_URI: mongodb://mongo:27017/greyhoarder?directConnection=true

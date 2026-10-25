@@ -55,7 +55,7 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "host": "127.0.0.1",
+            "host": "0.0.0.0",
             "proxyConfig": "proxy.conf.json",
             "poll": 1000,
             "prebundle": {
