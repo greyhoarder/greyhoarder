@@ -61,9 +61,13 @@ exactly one user, and users see only their own hoard.
   - for a bundle, also the minis of every kit in it, created as if that
     kit's box were added on its own. A bundle with two boxes of Lootas
     gets their minis twice.
-- What a mini becomes is decided when it is built, mini by mini. The names
-  of every variant of its box's kit are suggested, so one box can yield
-  two Lootas and three Burna Boyz.
+- What a mini becomes is decided when it is built, mini by mini. It is
+  offered what the slots it was put on the sprue from can be built as,
+  together with their parts: the undecided minis of an either-or kit the
+  names of every variant, so one box can yield two Lootas and three Burna
+  Boyz; a Boy of a bundle only what the Boy slot offers, not the names
+  and parts of the other kits in it. Kits only suggest; any name and
+  part can still be given.
 - A mini keeps the name it got on the sprue as its sprue name, which never
   changes. A suggestion is used up by the minis of the box built as it,
   and by those built under a name of the user's own that had it on the
@@ -183,3 +187,12 @@ Filtering by faction depends on what the list is for:
 - Photos: how many per mini, and where files are stored.
 - Whether statuses stay a fixed list or become configurable per user.
 - What happens to minis when an own faction they use is deleted.
+- The data model will change later for names of either-or kits: boxes,
+  minis and sprue names store them joined with " / " ("Lootas / Burna
+  Boyz"), which the screens show with "or" but search, and every other
+  use of the stored text, sees with " / ". How they are stored instead is
+  open.
+- The data model will change soon for minis on the sprue: they will be
+  handled apart from built minis instead of as minis with the status
+  `sprue`. How they are stored and how building turns them into minis is
+  open.

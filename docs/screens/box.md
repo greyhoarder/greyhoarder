@@ -27,11 +27,13 @@ the sidebar, as wide as the hoard, from top to bottom:
    - right: "Take from the sprue" (primary), "Edit box" (outline) and the
      "⋮" button (outline, `size-10`) for the box menu. On narrow screens
      the buttons move below the middle column.
-3. The progress card, on the card surface: the heading "Progress" with the
-   percentage on its right; the progress bar; below it one tile per
-   status in pipeline order (on the sprue, built, primed, painted, done),
-   each with a colored dot, the status and its count, also 0. The tiles
-   share the width in one row and wrap on narrow screens.
+3. The progress, without a card: the label "Progress" in small
+   `muted-foreground` text with the percentage on its right; the progress
+   bar; below it a legend with one entry per status in pipeline order (on
+   the sprue, built, primed, painted, done), each with a colored dot, the
+   status in `muted-foreground` and its count, also 0, at the entry's
+   right end. The entries have no surface of their own; they share the
+   width in one row and wrap on narrow screens.
 4. Two columns: the minis (wide) and the kit card (narrow) beside it. When
    the content is narrower than about 720 px, the kit card moves below the
    minis.
@@ -75,7 +77,7 @@ differ from the factions of the box. Alike minis share a row as in every
 | Box menu | Show minis in hoard · Add a mini to this box · Delete box… |
 | Progress heading | Progress |
 | Progress percentage | {n}% |
-| Status tiles | On the sprue / Built / Primed / Painted / Done, each with its count |
+| Status legend | On the sprue / Built / Primed / Painted / Done, each with its count |
 | Minis heading | Minis {count} |
 | Hoard link | Show in hoard |
 | Mini row | as on the Minis tab: {name}, Workbench, {parts}, status badge, ×{count} |
@@ -96,7 +98,7 @@ differ from the factions of the box. Alike minis share a row as in every
 
 | State | When | What the user sees |
 |-------|------|--------------------|
-| Loading | The box is loaded | The back link; skeletons in the shape of the header, the progress card and three mini cards |
+| Loading | The box is loaded | The back link; skeletons in the shape of the header, the progress and three mini cards |
 | Box | The box is loaded | Header, progress, minis and, for boxes from a kit, the kit card |
 | Without kit | The box was not added from a kit | "No kit" as the kit line; no kit card, the minis take the full width |
 | All on the sprue | Every mini of the box is on the sprue | The progress badge "Untouched", 0%, an empty bar |
@@ -112,15 +114,16 @@ differ from the factions of the box. Alike minis share a row as in every
   table line and outside selection mode, opens this screen. The back link
   and the browser's back button return to the Boxes tab with its search,
   filters and view as they were.
-- Progress, badge, percentage, bar and tiles follow the
+- Progress, badge, percentage, bar and legend follow the
   [domain rule](../domains/hoard.md#boxes-and-kits) and the progress bar of
   the [hoard](hoard.md#behavior): derived from the minis, never stored,
   minis on the sprue are the empty background of the bar.
 - The minis are sorted by status, from done back to on the sprue, then by
   name.
+- Either-or names show a muted "or" as on the [hoard](hoard.md#behavior).
 - A click on a mini opens [Mini](mini.md) for its row, as a click on a row
   of the Minis tab does. After a change, the minis, the progress and the
-  tiles show the new state.
+  legend show the new state.
 - The row menu offers the same as on the Minis tab.
 - "Show in hoard" and "Show minis in hoard" lead to the Minis tab of the
   hoard with this box ticked in the "Box" filter.

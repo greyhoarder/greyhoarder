@@ -143,6 +143,11 @@ summary line.
 - Status badges are grey while a mini is unpainted, a lighter grey with
   each step, and gold from painted on (design system: gold means done).
 - The search ignores case and needs no confirmation.
+- Names of either-or kits, and of the boxes and minis made from them, show
+  their outcomes apart by a muted "or" ("Lootas or Burna Boyz") on cards,
+  in tables and in titles; in plain text, such as the kit line, a filter
+  value or the browser tab, the "or" is plain. The stored names keep
+  " / " ([domain](../domains/hoard.md#boxes-and-kits)).
 - The "Box" filter tells boxes apart, not names: boxes with the same name
   are separate values, each followed by the day it was added, e.g.
   "Boyz (2026) · 12 Oct 2026".
@@ -229,3 +234,8 @@ summary line.
 - Whether sorting by faction should follow the hierarchy of factions
   instead of the alphabet.
 - Whether the chosen view should be remembered.
+- Known issue: the search looks at the stored names, which join the
+  outcomes of either-or kits with " / ". Typing what the screen shows,
+  "Lootas or Burna Boyz", finds nothing; "Lootas" or "Burna" does. The
+  data model will change later to keep these names without " / " (see
+  [domain](../domains/hoard.md#open-questions)).
