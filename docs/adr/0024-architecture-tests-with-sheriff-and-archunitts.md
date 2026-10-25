@@ -68,8 +68,8 @@ same runs as lint and tests:
   app's `lint` script runs `sheriff verify`, so `npm run lint` fails on a
   violation. Sheriff runs as the CLI only, the same way in both apps.
 - **ArchUnitTS checks everything else a tool can check** (kinds 2 to 5).
-  The tests live in a workspace of their own, `apps/architecture`, beside
-  `apps/e2e`, with one spec file for the client, one for the server and one
+  The tests live in a workspace of their own, `tests/architecture`, beside
+  `tests/e2e`, with one spec file for the client, one for the server and one
   for the libraries. They run with Vitest (ADR-0012) as part of `npm test`.
   Each suite runs with the folder it checks as its working directory.
 - **Architecture tests are tests.** ADR-0012 applies: descriptions state
@@ -119,7 +119,7 @@ same runs as lint and tests:
   adapter fails `npm run lint` or `npm test` before review, the same way
   every time. The promises in ADR-0004 and ADR-0006 become true.
 - New development dependencies: `@softarc/sheriff-core` in both apps, and
-  `archunit` and Vitest in `apps/architecture`. Both tools are young
+  `archunit` and Vitest in `tests/architecture`. Both tools are young
   (Sheriff before 1.0, ArchUnitTS with a small team of maintainers). The
   configs and tests are small, so either can be replaced if it is
   abandoned.

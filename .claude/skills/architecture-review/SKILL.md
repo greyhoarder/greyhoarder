@@ -19,7 +19,7 @@ description: Review code or a planned change against greyhoarder's architecture 
 3. Run `npm run lint` and `npm test` first and include their failures in
    the report. Sheriff (`sheriff.config.ts` in each app) checks the
    dependencies between domains, layers, the app level and `shared/`; the
-   architecture tests in `apps/architecture` check the other rules a tool
+   architecture tests in `tests/architecture` check the other rules a tool
    can check (see "Architecture tests" in `docs/architecture-testing.md`).
    Don't repeat what they check; review what they cannot, such as whether
    something is a business rule or where a type belongs.

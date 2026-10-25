@@ -78,7 +78,7 @@ replica set (see ADR-0005), Redis holds sessions and login attempts.
   is limited by the Redis databases available (16 by default).
 - End-to-end tests run against a build, not against `ng serve`; a change
   needs a rebuild before the tests see it.
-- `apps/e2e` needs a MongoDB driver and a Redis client to reset instances.
+- `tests/e2e` needs a MongoDB driver and a Redis client to reset instances.
 - The server gets a health endpoint, which deployments can use as well.
 - Integration tests of the server against MongoDB and Redis are still
   open and are decided separately.

@@ -6,7 +6,7 @@ apply to the client, the server and `libs/`.
 Sheriff checks the dependencies between domains, layers, the app level and
 `shared/` (`sheriff.config.ts` in each app, run by `npm run lint`); the lists
 of allowed dependencies in its configs follow this guide. Other rules a tool
-can check are architecture tests in `apps/architecture` (see
+can check are architecture tests in `tests/architecture` (see
 [architecture-testing.md](architecture-testing.md)). A rule and its check
 change together.
 
@@ -17,12 +17,18 @@ change together.
   `libs/protocol` the API schemas (`@greyhoarder/protocol`),
   `libs/catalog` the community kit catalog as a git submodule (data only,
   no package).
+- `apps/` holds only what is shipped. Test suites that check the apps from
+  outside are workspaces of their own in `tests/`: `tests/e2e` and
+  `tests/architecture`.
 - Apps never import from each other.
 - Apps may depend on libs; libs never depend on apps.
+- Nothing in `apps/` or `libs/` depends on `tests/`.
 
 _(derived from [ADR-0006](adr/0006-monorepo-with-shared-domain-code.md),
 [ADR-0015](adr/0015-api-protocol-with-shared-zod-schemas.md),
-[ADR-0020](adr/0020-community-kit-catalog.md))_
+[ADR-0020](adr/0020-community-kit-catalog.md),
+[ADR-0013](adr/0013-browser-e2e-tests-with-playwright.md),
+[ADR-0024](adr/0024-architecture-tests-with-sheriff-and-archunitts.md))_
 
 ## Domains
 

@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { domainsIn, FRAMEWORKS, importsAny, importsOnlyInside, PROTOCOL } from './imports.js';
 
-const CLIENT_DIR = fileURLToPath(new URL('../client', import.meta.url));
+const CLIENT_DIR = fileURLToPath(new URL('../../apps/client', import.meta.url));
 // The build config, so spec files are not checked (ADR-0024).
 const TSCONFIG = resolve(CLIENT_DIR, 'tsconfig.app.json');
 const DOMAINS = domainsIn(resolve(CLIENT_DIR, 'src/app/domains'));

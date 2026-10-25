@@ -4,7 +4,8 @@
   "license": "AGPL-3.0-only",
   "workspaces": [
     "libs/*",
-    "apps/*"
+    "apps/*",
+    "tests/*"
   ],
   "scripts": {
     "start": "npm run start -w @greyhoarder/client",

@@ -25,7 +25,7 @@ and API tests are not part of this decision.
 
 - **Playwright** (`@playwright/test`) is the framework for browser
   end-to-end tests.
-- The tests live in their own workspace, `apps/e2e` (`@greyhoarder/e2e`),
+- The tests live in their own workspace, `tests/e2e` (`@greyhoarder/e2e`),
   with their own Playwright configuration. They belong to no domain and test
   the app from the outside, as a user would.
 - Every test runs in **Chromium, Firefox and WebKit**.

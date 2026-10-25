@@ -17,7 +17,7 @@ git submodule update --init
 npm ci
 
 # Browsers must match the installed Playwright version, so they come only
-# once a workspace (apps/e2e) depends on Playwright.
+# once a workspace (tests/e2e) depends on Playwright.
 if [ -x node_modules/.bin/playwright ]; then
   npx playwright install --with-deps
 fi

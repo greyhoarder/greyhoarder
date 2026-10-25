@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { domainsIn, FRAMEWORKS, importsAny, importsOnlyInside, PROTOCOL } from './imports.js';
 
-const SERVER_DIR = fileURLToPath(new URL('../server', import.meta.url));
+const SERVER_DIR = fileURLToPath(new URL('../../apps/server', import.meta.url));
 // The build config, so spec files are not checked (ADR-0024).
 const TSCONFIG = resolve(SERVER_DIR, 'tsconfig.build.json');
 const DOMAINS = domainsIn(resolve(SERVER_DIR, 'src/domains'));

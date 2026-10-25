@@ -11,8 +11,8 @@ import { createClient } from 'redis';
 /** Reference data the server imports on startup (ADR-0020). */
 const CATALOG_COLLECTIONS = new Set(['catalogSystems', 'catalogFactions', 'catalogKits', 'catalogImports']);
 
-const SERVER_ENTRY = fileURLToPath(new URL('../server/dist/main.js', import.meta.url));
-const WEB_APP_DIR = fileURLToPath(new URL('../client/dist/client/browser', import.meta.url));
+const SERVER_ENTRY = fileURLToPath(new URL('../../apps/server/dist/main.js', import.meta.url));
+const WEB_APP_DIR = fileURLToPath(new URL('../../apps/client/dist/client/browser', import.meta.url));
 const FIRST_PORT = 3100;
 const STARTUP_TIMEOUT_MS = 30_000;
 
