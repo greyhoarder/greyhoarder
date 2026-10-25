@@ -1,4 +1,4 @@
-import { parseTags } from './tag';
+import { parseTags } from './tag.js';
 
 describe('Tags', () => {
   it('keeps each tag once, without surrounding spaces, and drops empty ones', () => {

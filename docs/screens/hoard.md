@@ -100,6 +100,7 @@ summary line.
 | Count | ×{count} |
 | Row check (accessible name) | Select {name} |
 | Row menu (accessible name) | More actions |
+| No minis yet | No minis yet. Add a box and its minis appear here. |
 | No results | No minis match "{query}". — without a search: No minis match the filters. |
 | Box search placeholder | Search boxes |
 | Box filter chips | Faction · Progress · Tag |
@@ -113,12 +114,17 @@ summary line.
 | Date | e.g. 12 Oct 2026 |
 | Box table headers | Box · Faction · Progress · On the sprue · Painted · Added |
 | Box summary (table) | {n} boxes · {n} minis still on the sprue |
+| No boxes yet | No boxes yet. Add your first box to start your hoard. |
 | No boxes found | No boxes match "{query}". — without a search: No boxes match the filters. |
+| Load failed | Can't load your hoard right now. Try again in a moment. |
 
 ## States
 
 | State | When | What the user sees |
 |-------|------|--------------------|
+| Loading | The hoard is loaded for the first time | Skeletons in the shape of what comes: a line in place of the summary, three placeholder cards in place of the list |
+| Load failed | The server does not answer | The load-failed message in `destructive` below the header, announced to screen readers; no list |
+| Empty | The hoard has no minis (Minis tab) or no boxes (Boxes tab) | The no-minis-yet or no-boxes-yet message in place of the list |
 | List | The hoard has minis | Cards, sorted by army |
 | Table | "Table" in the view switch | The same rows as a table, at first sorted by faction |
 | Searching | Text in the search field | Only rows whose name, a part or the box contains the text; the tab counts what is shown |
@@ -193,8 +199,9 @@ summary line.
 `hoard-box-progress`, `hoard-box-percent`, `hoard-box-statuses`,
 `hoard-box-menu`, `hoard-box-selection-bar`, `hoard-box-selection-count`,
 `hoard-box-select-all`, `hoard-box-select-done`, `hoard-box-table`,
-`hoard-box-sort-<column>`, `hoard-box-summary`, `hoard-box-no-results`
-(ADR-0013).
+`hoard-box-sort-<column>`, `hoard-box-summary`, `hoard-box-no-results`,
+`hoard-loading`, `hoard-box-loading`, `hoard-empty`, `hoard-box-empty`,
+`hoard-error` (ADR-0013).
 
 ## Open questions
 

@@ -3,7 +3,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBox, lucideSplit } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { factionNamesOf, kitMeta, kitMinis } from '../../../util/kit-labels';
-import type { Kit } from '../../../models/kit';
+import type { Kit } from '@greyhoarder/domain/hoard';
 import type { BoxesToAdd } from '../../../models/boxes-to-add';
 import { BoxForm } from '../box-form/box-form';
 

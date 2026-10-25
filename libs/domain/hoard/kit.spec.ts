@@ -1,5 +1,5 @@
-import type { CatalogKit } from '@greyhoarder/domain/catalog';
-import { toKit } from './kit';
+import type { CatalogKit } from '../catalog/index.js';
+import { toKit } from './kit.js';
 
 function catalogKit(
   kit: Partial<CatalogKit> & Pick<CatalogKit, 'id' | 'name'>,

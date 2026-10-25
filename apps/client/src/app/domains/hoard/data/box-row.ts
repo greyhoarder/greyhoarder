@@ -1,7 +1,5 @@
 import { type BoxProgress, boxProgress, progressPercent } from '../models/box-progress';
-import type { Box } from '../models/box';
-import { hasReached, type HobbyStatus, hobbyStatuses } from '../models/hobby-status';
-import type { Mini } from '../models/mini';
+import { type Box, hasReached, type HobbyStatus, hobbyStatuses, type Mini } from '@greyhoarder/domain/hoard';
 import { factionNamesOf } from '../util/kit-labels';
 
 export interface BoxKit {

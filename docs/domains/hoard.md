@@ -53,8 +53,11 @@ exactly one user, and users see only their own hoard.
     first suggestion of its slot, with the slot's faction or else the
     kit's first one;
   - for an either-or kit, as many as the kit yields (for a catalog kit, its
-    `minis`), all named after the kit ("Lootas / Burna Boyz"), with the
-    kit's first faction;
+    `minis`), named after the kit ("Lootas / Burna Boyz"), with the kit's
+    first faction; except the minis of a slot that all of its variants
+    have alike (same count, suggestions, parts and factions), which are
+    created as for a kit with one variant (the Spanner of Lootas and
+    Burna Boyz);
   - for a bundle, also the minis of every kit in it, created as if that
     kit's box were added on its own. A bundle with two boxes of Lootas
     gets their minis twice.

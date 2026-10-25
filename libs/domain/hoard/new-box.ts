@@ -1,9 +1,11 @@
-import type { Box } from './box';
-import type { BoxesToAdd } from './boxes-to-add';
-import { EmptyBoxError } from './empty-box.error';
-import { boxKitName, type Kit } from './kit';
-import { type Mini, parseMini } from './mini';
-import { sprueMinis } from './sprue-minis';
+import type { Box } from './box.js';
+import { EmptyBoxError } from './errors/empty-box.error.js';
+import { boxKitName, type Kit } from './kit.js';
+import { type Mini, parseMini } from './mini.js';
+import { sprueMinis } from './sprue-minis.js';
+
+/** Adding always adds at least one box. */
+export const MIN_BOXES = 1;
 
 /**
  * One box per box counted, each with one mini on the sprue per mini its kit yields
@@ -13,7 +15,7 @@ import { sprueMinis } from './sprue-minis';
  */
 export function newBoxes(
   kit: Kit,
-  boxesToAdd: BoxesToAdd,
+  boxesToAdd: { readonly boxes: number; readonly tags: readonly string[] },
   context: { readonly addedOn: string; readonly newId: () => string },
 ): { boxes: Box[]; minis: Mini[] } {
   const { addedOn, newId } = context;

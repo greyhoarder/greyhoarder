@@ -1,5 +1,5 @@
 import { boxProgress, progressPercent } from './box-progress';
-import { EmptyBoxError } from './empty-box.error';
+import { EmptyBoxError } from '@greyhoarder/domain/hoard';
 
 describe('Box progress', () => {
   it('calls a box untouched while all of its minis are on the sprue', () => {

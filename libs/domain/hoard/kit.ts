@@ -1,4 +1,4 @@
-import type { CatalogKit } from '@greyhoarder/domain/catalog';
+import type { CatalogKit } from '../catalog/index.js';
 
 /** A slot of a kit's variant: how many minis, what they can be built as, which parts come with them. */
 export interface KitSlot {

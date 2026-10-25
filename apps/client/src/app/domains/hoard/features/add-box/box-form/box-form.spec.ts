@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import type { Kit } from '../../../models/kit';
+import type { Kit } from '@greyhoarder/domain/hoard';
 import type { BoxesToAdd } from '../../../models/boxes-to-add';
 import { BoxForm } from './box-form';
 

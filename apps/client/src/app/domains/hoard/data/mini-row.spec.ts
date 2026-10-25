@@ -1,5 +1,4 @@
-import type { Box } from '../models/box';
-import type { Mini } from '../models/mini';
+import type { Box, Mini } from '@greyhoarder/domain/hoard';
 import { toMiniRows } from './mini-row';
 
 const ORKS = 'warhammer-40000/orks';

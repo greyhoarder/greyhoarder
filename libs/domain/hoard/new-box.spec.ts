@@ -1,6 +1,6 @@
-import { EmptyBoxError } from './empty-box.error';
-import type { Kit } from './kit';
-import { newBoxes } from './new-box';
+import { EmptyBoxError } from './errors/empty-box.error.js';
+import type { Kit } from './kit.js';
+import { newBoxes } from './new-box.js';
 
 const KIT_WITHOUT_SLOTS: Kit = {
   id: 'games-workshop/orks/broken-2024',
@@ -41,6 +41,36 @@ const BOYZ: Kit = {
   contains: [],
 };
 
+const LOOTAS_OR_BURNA_BOYZ: Kit = {
+  id: 'games-workshop/orks/lootas-2008',
+  version: 1,
+  name: 'Lootas',
+  names: ['Lootas', 'Burna Boyz'],
+  manufacturer: 'games-workshop',
+  factionIds: [ORKS],
+  isDraft: false,
+  variants: [
+    {
+      name: 'Lootas',
+      slots: [
+        { count: 4, names: ['Loota'], parts: [], factionIds: [] },
+        { count: 1, names: ['Spanner'], parts: [], factionIds: [] },
+      ],
+      minis: 5,
+    },
+    {
+      name: 'Burna Boyz',
+      slots: [
+        { count: 4, names: ['Burna Boy'], parts: [], factionIds: [] },
+        { count: 1, names: ['Spanner'], parts: [], factionIds: [] },
+      ],
+      minis: 5,
+    },
+  ],
+  minis: 5,
+  contains: [],
+};
+
 function addBoyz(boxes: number) {
   let id = 0;
   return newBoxes(BOYZ, { boxes, tags: [] }, { addedOn: '2026-10-24', newId: () => `${++id}` });
@@ -77,5 +107,21 @@ describe('New boxes', () => {
     const factionsByName = new Map(minis.map((mini) => [mini.name, mini.factionIds]));
 
     expect(Object.fromEntries(factionsByName)).toEqual({ Boy: [ORKS], Nob: [GROTS] });
+  });
+
+  it('names the minis of a slot that every variant of an either-or kit has after that slot', () => {
+    const { minis } = newBoxes(
+      LOOTAS_OR_BURNA_BOYZ,
+      { boxes: 1, tags: [] },
+      { addedOn: '2026-10-24', newId: () => 'id' },
+    );
+
+    expect(minis.map((mini) => mini.name)).toEqual([
+      'Lootas / Burna Boyz',
+      'Lootas / Burna Boyz',
+      'Lootas / Burna Boyz',
+      'Lootas / Burna Boyz',
+      'Spanner',
+    ]);
   });
 });

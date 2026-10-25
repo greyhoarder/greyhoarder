@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { hasReached } from '../models/hobby-status';
+import { hasReached } from '@greyhoarder/domain/hoard';
 import { toggled } from '../util/selection';
 import { BoxesStore } from './boxes-store';
 import { FactionNamesStore } from './faction-names-store';
@@ -22,6 +22,9 @@ export class MinisList {
   readonly rows = computed(() =>
     toMiniRows(this.minisStore.minis(), this.boxesStore.boxes(), this.factionNames.names()),
   );
+
+  readonly isLoading = computed(() => this.minisStore.isLoading() || this.boxesStore.isLoading());
+  readonly hasFailed = computed(() => this.minisStore.hasFailed() || this.boxesStore.hasFailed());
 
   readonly query = signal('');
   readonly factionFilter = signal<ReadonlySet<string>>(new Set());

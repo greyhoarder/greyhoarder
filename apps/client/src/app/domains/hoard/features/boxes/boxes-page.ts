@@ -4,6 +4,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
+import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { BoxesList } from '../../data/boxes-list';
 import { HoardView } from '../../data/hoard-view';
 import { BoxCard } from './box-card/box-card';
@@ -16,7 +17,7 @@ import type { BoxRow } from '../../data/box-row';
 /** The Boxes tab of the hoard: search, filters, selection and the boxes as cards or table. */
 @Component({
   selector: 'app-boxes-page',
-  imports: [NgIcon, HlmButton, HlmInputGroupImports, BoxCard, BoxTable, FilterChip],
+  imports: [NgIcon, HlmButton, HlmInputGroupImports, HlmSkeleton, BoxCard, BoxTable, FilterChip],
   providers: [provideIcons({ lucideSearch, lucideX })],
   templateUrl: './boxes-page.html',
   host: { class: '@container flex flex-col gap-3' },

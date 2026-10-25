@@ -1,5 +1,5 @@
-import { InvalidMiniError } from './invalid-mini.error';
-import { type Mini, parseMini } from './mini';
+import { InvalidMiniError } from './errors/invalid-mini.error.js';
+import { type Mini, parseMini } from './mini.js';
 
 function boy(mini: Partial<Mini> = {}): Mini {
   return {

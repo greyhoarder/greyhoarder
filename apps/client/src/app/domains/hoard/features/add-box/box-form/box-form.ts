@@ -2,9 +2,8 @@ import { Component, computed, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMinus, lucidePlus } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
-import { type BoxesToAdd, MIN_BOXES, parseBoxesToAdd } from '../../../models/boxes-to-add';
-import { sprueMinis } from '../../../models/sprue-minis';
-import type { Kit } from '../../../models/kit';
+import { type Kit, MIN_BOXES, sprueMinis } from '@greyhoarder/domain/hoard';
+import { type BoxesToAdd, parseBoxesToAdd } from '../../../models/boxes-to-add';
 
 /**
  * What to add of a kit: the minis it puts on the sprue, tags and how many boxes. A new form

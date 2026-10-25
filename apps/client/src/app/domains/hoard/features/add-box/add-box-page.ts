@@ -11,13 +11,12 @@ import {
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HttpKitsAdapter } from '../../../catalog/api';
+import { boxKitName, type Kit, toKit } from '@greyhoarder/domain/hoard';
 import { BoxesStore } from '../../data/boxes-store';
-import { FactionNamesStore } from '../../data/faction-names-store';
 import { MinisStore } from '../../data/minis-store';
+import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { isFromKit } from '../../models/box';
 import type { BoxesToAdd } from '../../models/boxes-to-add';
-import { boxKitName, type Kit, toKit } from '../../models/kit';
-import { newBoxes } from '../../models/new-box';
 import { minisLabel } from '../../util/kit-labels';
 import { today } from '../../util/today';
 import { KitCard } from './kit-card/kit-card';
@@ -37,15 +36,16 @@ import { KitCard } from './kit-card/kit-card';
 })
 export class AddBoxPage {
   private readonly catalogKits = inject(HttpKitsAdapter);
+  private readonly boxesAdapter = inject(HttpBoxesAdapter);
   private readonly boxesStore = inject(BoxesStore);
   private readonly minisStore = inject(MinisStore);
-  private readonly factionNamesStore = inject(FactionNamesStore);
 
   protected readonly query = signal('');
   protected readonly isSearching = computed(() => this.query().trim() !== '');
   protected readonly openKitId = signal<string | undefined>(undefined);
   /** What was added last, for the status bar. */
   protected readonly added = signal<string | undefined>(undefined);
+  protected readonly hasAddFailed = signal(false);
 
   /** Idle while the search is empty; a newer search replaces the answer of an older one. */
   protected readonly matches = resource({
@@ -79,14 +79,21 @@ export class AddBoxPage {
     this.openKitId.update((id) => (id === kit.id ? undefined : kit.id));
   }
 
-  protected add(kit: Kit, boxesToAdd: BoxesToAdd): void {
-    const { boxes, minis } = newBoxes(kit, boxesToAdd, {
-      addedOn: today(),
-      newId: () => crypto.randomUUID(),
-    });
-    this.factionNamesStore.add(this.factionNames());
-    this.boxesStore.add(boxes);
-    this.minisStore.add(minis);
+  /** The server creates the boxes and their minis; the stores then fetch the hoard again. */
+  protected async add(kit: Kit, boxesToAdd: BoxesToAdd): Promise<void> {
+    this.added.set(undefined);
+    this.hasAddFailed.set(false);
+    let addedBoxes;
+    try {
+      addedBoxes = await this.boxesAdapter.add(kit.id, boxesToAdd, today());
+    } catch {
+      // The open card keeps what the user chose, so they can try again.
+      this.hasAddFailed.set(true);
+      return;
+    }
+    const { boxes, minis } = addedBoxes;
+    this.boxesStore.reload();
+    this.minisStore.reload();
     const count = minis.length;
     const boxCount = boxes.length === 1 ? '1 box' : `${boxes.length} boxes`;
     this.added.set(`Added ${boxCount} of ${boxKitName(kit)} with ${minisLabel(count)} to your hoard.`);

@@ -53,9 +53,11 @@ border:
    minis in a fixed column:
    - for a kit with one variant, one row per slot: the suggested names,
      then the parts as small muted chips in the same row, wrapping;
-   - for an either-or kit, one row: the kit's name, below it a muted
-     line with what each mini can become, and below that the parts of
-     every variant as small muted chips, each part once;
+   - for an either-or kit, one row for the minis that differ between its
+     variants: the kit's name, below it a muted line with what each mini
+     can become, and below that their parts as small muted chips, each
+     part once; then one row per slot that every variant has alike, as
+     for a kit with one variant;
    - for a bundle, after its own rows, the rows of every kit in it; a kit
      that comes twice shows twice the minis.
 2. A border, then the tags: the tags typed in this card as toggle chips
@@ -84,13 +86,14 @@ border:
 | Builds | {n} builds, for either-or kits only |
 | Boxes in the hoard | {n} boxes in your hoard, "1 box in your hoard" |
 | Slot row | {count × boxes}× · the suggested names joined with " or " · the parts |
-| Either-or row | {minis × boxes}× · {kit name}, e.g. "Lootas / Burna Boyz"; below: Each can become {every suggested name of every variant, joined with " or "}.; then the parts as chips |
+| Either-or row | {undecided minis × boxes}× · {kit name}, e.g. "Lootas / Burna Boyz"; below: Each can become {every suggested name of the slots that differ between the variants, joined with " or "}.; then their parts as chips |
 | New tag (placeholder; accessible name) | + Tag; New tag |
 | Box stepper | − {n} boxes +, "1 box"; buttons: One box less, One box more |
 | Add button | Add {n} minis, "Add 1 mini" |
 | Status bar | Added {n} boxes of {box name} with {m} minis to your hoard. · Show boxes · Dismiss (accessible name) |
 | No results | No kits match "{query}". |
 | Search failed | Can't search the catalog right now. Try again in a moment. |
+| Add failed | Can't add the boxes right now. Try again in a moment. |
 
 ## States
 
@@ -102,6 +105,7 @@ border:
 | Failed | The server does not answer the search | The search-failed message in `destructive`, announced to screen readers |
 | Open | A kit card was opened | Its form below its header; every other card is closed |
 | Added | Boxes were added | The status bar below the search; all cards closed |
+| Add failed | The server does not add the boxes | The add-failed message in `destructive` below the search, announced to screen readers; the card stays open with what was chosen |
 
 ## Behavior
 
@@ -138,15 +142,16 @@ border:
   variant one per mini in its slots, named after the first suggestion of
   its slot, with the slot's faction or else the kit's first one; for an
   either-or kit as many as the kit yields, named after the kit, with the
-  kit's first faction; for a bundle also the minis of every kit in it, as
+  kit's first faction, except the minis of a slot every variant has alike,
+  which are added as for a kit with one variant; for a bundle also the minis of every kit in it, as
   if that kit's box were added on its own.
 - After adding, the card closes and the status bar appears; "Show boxes"
   leads to the Boxes tab of the hoard, the cross hides the bar. The bar is
   announced to screen readers.
 - A box counts as one of a kit when it was added from that kit, whichever
   version of it.
-- Boxes and minis are kept in the client only for now; they are gone after
-  a reload.
+- The server adds the boxes and their minis; the hoard is loaded again
+  afterwards.
 - Scanning has no function yet.
 
 ## Accessibility
@@ -167,7 +172,7 @@ border:
 `add-box-tag`, `add-box-new-tag`, `add-box-less`, `add-box-count`,
 `add-box-more`, `add-box-submit`,
 `add-box-added`, `add-box-added-show`, `add-box-added-dismiss`,
-`add-box-no-results`, `add-box-error` (ADR-0013).
+`add-box-no-results`, `add-box-error`, `add-box-add-error` (ADR-0013).
 
 ## Open questions
 

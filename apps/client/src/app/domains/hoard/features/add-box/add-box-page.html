@@ -38,6 +38,12 @@
   </button>
 </div>
 
+@if (hasAddFailed()) {
+  <p class="text-sm text-destructive" role="alert" data-testid="add-box-add-error">
+    Can't add the boxes right now. Try again in a moment.
+  </p>
+}
+
 <div role="status" class="empty:hidden">
   @if (added(); as message) {
     <div

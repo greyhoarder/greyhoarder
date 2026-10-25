@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { HttpKitsAdapter, type KitSearchResult, type VersionedCatalogKit } from '../../../catalog/api';
+import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
+import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { AddBoxPage } from './add-box-page';
 
 function catalogKit(id: string): VersionedCatalogKit {
@@ -21,11 +23,27 @@ function catalogKit(id: string): VersionedCatalogKit {
 describe('Add box page', () => {
   let fixture: ComponentFixture<AddBoxPage>;
   let search: ReturnType<typeof vi.fn<(text: string) => Promise<KitSearchResult>>>;
+  let addBoxes: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     search = vi.fn<(text: string) => Promise<KitSearchResult>>();
+    addBoxes = vi.fn();
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), { provide: HttpKitsAdapter, useValue: { search } }],
+      providers: [
+        provideRouter([]),
+        { provide: HttpKitsAdapter, useValue: { search } },
+        {
+          provide: HttpBoxesAdapter,
+          useValue: {
+            list: vi.fn(async () => ({ boxes: [], factionNames: new Map() })),
+            add: addBoxes,
+          },
+        },
+        {
+          provide: HttpMinisAdapter,
+          useValue: { list: vi.fn(async () => ({ minis: [], factionNames: new Map() })) },
+        },
+      ],
     });
     fixture = TestBed.createComponent(AddBoxPage);
     await fixture.whenStable();
@@ -44,7 +62,7 @@ describe('Add box page', () => {
     await fixture.whenStable();
   }
 
-  it('asks for a name, product code or barcode while the search is empty', () => {
+  it('says to search by name, product code or barcode while the search is empty', () => {
     expect(byTestId('add-box-hint')).not.toBeNull();
     expect(kits()).toHaveLength(0);
   });
@@ -75,5 +93,30 @@ describe('Add box page', () => {
     await searchFor('boyz');
 
     expect(byTestId('add-box-error')).not.toBeNull();
+  });
+
+  it("says that the boxes can't be added when the server does not answer", async () => {
+    search.mockResolvedValue({
+      kits: [
+        {
+          ...catalogKit('games-workshop/orks/boyz-2026'),
+          variants: [
+            { name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: [], factionIds: [] }] },
+          ],
+        },
+      ],
+      containedKits: new Map(),
+      factionNames: new Map(),
+    });
+    addBoxes.mockRejectedValue(new Error('offline'));
+    await searchFor('boyz');
+    (byTestId('add-box-kit') as HTMLElement).click();
+    await fixture.whenStable();
+
+    (byTestId('add-box-submit') as HTMLElement).click();
+    await fixture.whenStable();
+
+    expect(byTestId('add-box-add-error')).not.toBeNull();
+    expect(byTestId('add-box-submit')).not.toBeNull();
   });
 });

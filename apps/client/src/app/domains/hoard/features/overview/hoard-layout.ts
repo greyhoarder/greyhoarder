@@ -5,6 +5,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleCheck, lucideList, lucidePlus, lucideRows2 } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { filter, map } from 'rxjs';
 import { BoxesList } from '../../data/boxes-list';
 import { HoardView } from '../../data/hoard-view';
@@ -17,7 +18,7 @@ import { MinisList } from '../../data/minis-list';
  */
 @Component({
   selector: 'app-hoard-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIcon, HlmBadge, HlmButton],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIcon, HlmBadge, HlmButton, HlmSkeleton],
   providers: [provideIcons({ lucideCircleCheck, lucideList, lucidePlus, lucideRows2 })],
   templateUrl: './hoard-layout.html',
   host: { class: 'flex w-full flex-col gap-6 p-4 sm:p-8 lg:p-10' },

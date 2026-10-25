@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { type HobbyStatus, hobbyStatuses } from '../../../models/hobby-status';
+import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { miniCount } from '../../../data/box-row';
 import type { BoxRow } from '../../../data/box-row';
 import { STATUS_SHORT_LABELS } from '../../../util/status-labels';

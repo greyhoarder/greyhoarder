@@ -32,5 +32,6 @@ import { CatalogSnapshotSource } from './ports/catalog-snapshot-source.js';
     { provide: CatalogRepository, useExisting: MongoCatalogRepository },
     { provide: CatalogKitQueries, useExisting: MongoCatalogRepository },
   ],
+  exports: [CatalogKitQueries],
 })
 export class CatalogModule {}

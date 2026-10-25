@@ -1,5 +1,5 @@
-import type { HobbyStatus } from './hobby-status';
-import { InvalidMiniError } from './invalid-mini.error';
+import type { HobbyStatus } from './hobby-status.js';
+import { InvalidMiniError } from './errors/invalid-mini.error.js';
 
 /** One physical miniature, built or still on the sprue (docs/domains/hoard.md). */
 export interface Mini {

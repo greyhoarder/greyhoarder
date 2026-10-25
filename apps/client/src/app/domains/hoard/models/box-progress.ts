@@ -1,5 +1,4 @@
-import { EmptyBoxError } from './empty-box.error';
-import { hasReached, type HobbyStatus, hobbyStatuses } from './hobby-status';
+import { EmptyBoxError, hasReached, type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
 
 /** How far the minis of a box have come, derived from their statuses. */
 export const boxProgresses = ['untouched', 'started', 'done'] as const;

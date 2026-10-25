@@ -1,4 +1,4 @@
-import type { Kit } from '../models/kit';
+import type { Kit } from '@greyhoarder/domain/hoard';
 
 /** E.g. "Games Workshop · 50-80"; the year goes with the name. */
 export function kitMeta(kit: Kit): string {

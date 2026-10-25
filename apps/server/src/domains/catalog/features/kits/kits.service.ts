@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import type { VersionedEntry } from '../../models/versioned-entry.js';
 import { CatalogKitQueries } from '../../ports/catalog-kit-queries.js';
+import { findContainedKits } from '../../util/contained-kits.js';
 
 /** Enough to choose a kit; a narrower search finds the rest. */
 const SEARCH_LIMIT = 50;
@@ -22,36 +23,11 @@ export class KitsService {
 
   async search(text: string): Promise<KitSearchResult> {
     const kits = await this.catalog.searchKits(text, SEARCH_LIMIT);
-    const containedKits = await this.findContainedKits(kits);
+    const containedKits = await findContainedKits(kits, (ids) => this.catalog.findKits(ids));
     const factionIds = [...new Set([...kits, ...containedKits].flatMap(({ entry }) => factionIdsOf(entry)))];
     const factionNames = await this.catalog.findFactionNames(factionIds);
     return { kits, containedKits, factionNames };
   }
-
-  /** A contained kit that is no longer offered still belongs to the bundles that contain it. */
-  private async findContainedKits(
-    kits: readonly VersionedEntry<CatalogKit>[],
-  ): Promise<VersionedEntry<CatalogKit>[]> {
-    const knownIds = new Set(kits.map(({ entry }) => entry.id));
-    const containedKits: VersionedEntry<CatalogKit>[] = [];
-    let ids = unknownContainedIds(kits, knownIds);
-    while (ids.length > 0) {
-      const found = await this.catalog.findKits(ids);
-      ids.forEach((id) => knownIds.add(id));
-      containedKits.push(...found);
-      ids = unknownContainedIds(found, knownIds);
-    }
-    return containedKits;
-  }
-}
-
-function unknownContainedIds(
-  kits: readonly VersionedEntry<CatalogKit>[],
-  knownIds: ReadonlySet<string>,
-): string[] {
-  return [...new Set(kits.flatMap(({ entry }) => entry.contains.map((contained) => contained.kitId)))].filter(
-    (id) => !knownIds.has(id),
-  );
 }
 
 function factionIdsOf(kit: CatalogKit): string[] {

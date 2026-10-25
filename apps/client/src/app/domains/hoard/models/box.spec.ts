@@ -1,5 +1,5 @@
-import { type Box, isFromKit } from './box';
-import type { Kit } from './kit';
+import type { Box, Kit } from '@greyhoarder/domain/hoard';
+import { isFromKit } from './box';
 
 const BOYZ_2026: Kit = {
   id: 'games-workshop/orks/boyz-2026',

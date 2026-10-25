@@ -21,6 +21,9 @@ export class BoxesList {
     toBoxRows(this.boxesStore.boxes(), this.minisStore.minis(), this.factionNames.names()),
   );
 
+  readonly isLoading = computed(() => this.boxesStore.isLoading() || this.minisStore.isLoading());
+  readonly hasFailed = computed(() => this.boxesStore.hasFailed() || this.minisStore.hasFailed());
+
   readonly query = signal('');
   readonly factionFilter = signal<ReadonlySet<string>>(new Set());
   readonly progressFilter = signal<ReadonlySet<string>>(new Set());

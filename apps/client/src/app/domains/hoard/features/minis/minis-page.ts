@@ -1,9 +1,10 @@
 import { Component, computed, inject } from '@angular/core';
-import { hobbyStatuses } from '../../models/hobby-status';
+import { hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
+import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { HoardView } from '../../data/hoard-view';
 import { MinisList } from '../../data/minis-list';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
@@ -16,7 +17,7 @@ import { STATUS_LABELS } from '../../util/status-labels';
 /** The Minis tab of the hoard: search, filters, selection and the minis as cards or table. */
 @Component({
   selector: 'app-minis-page',
-  imports: [NgIcon, HlmButton, HlmInputGroupImports, FilterChip, MiniCard, MiniTable],
+  imports: [NgIcon, HlmButton, HlmInputGroupImports, HlmSkeleton, FilterChip, MiniCard, MiniTable],
   providers: [provideIcons({ lucideSearch, lucideX })],
   templateUrl: './minis-page.html',
   host: { class: 'flex flex-col gap-3' },

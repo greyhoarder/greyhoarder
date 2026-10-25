@@ -1,5 +1,5 @@
-import { sprueMinis } from './sprue-minis';
-import type { Kit } from './kit';
+import { sprueMinis } from './sprue-minis.js';
+import type { Kit } from './kit.js';
 
 const BOYZ: Kit = {
   id: 'games-workshop/orks/boyz-2021',
@@ -37,6 +37,28 @@ const LOOTAS_OR_BURNA_BOYZ: Kit = {
   ],
   minis: 5,
   contains: [],
+};
+
+const LOOTAS_OR_BURNA_BOYZ_WITH_SPANNER: Kit = {
+  ...LOOTAS_OR_BURNA_BOYZ,
+  variants: [
+    {
+      name: 'Lootas',
+      slots: [
+        { count: 4, names: ['Loota'], parts: ['Deffgun'], factionIds: [] },
+        { count: 1, names: ['Spanner'], parts: ['Big Shoota'], factionIds: [] },
+      ],
+      minis: 5,
+    },
+    {
+      name: 'Burna Boyz',
+      slots: [
+        { count: 4, names: ['Burna Boy'], parts: ['Burna'], factionIds: [] },
+        { count: 1, names: ['Spanner'], parts: ['Big Shoota'], factionIds: [] },
+      ],
+      minis: 5,
+    },
+  ],
 };
 
 const BATTLEFORCE: Kit = {
@@ -114,6 +136,15 @@ describe('Sprue minis', () => {
     expect(rows.map((row) => `${row.name}: ${row.factionIds.join()}`)).toEqual([
       'Intercessor: warhammer-40000/space-marines',
       'Termagant: warhammer-40000/tyranids',
+    ]);
+  });
+
+  it('puts a slot that every variant of an either-or kit has into a row of its own', () => {
+    const rows = sprueMinis(LOOTAS_OR_BURNA_BOYZ_WITH_SPANNER);
+
+    expect(rows.map((row) => `${row.count}× ${row.name}`)).toEqual([
+      '4× Lootas / Burna Boyz',
+      '1× Spanner',
     ]);
   });
 });

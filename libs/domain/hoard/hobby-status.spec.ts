@@ -1,4 +1,4 @@
-import { hasReached, hobbyStatuses } from './hobby-status';
+import { hasReached, hobbyStatuses } from './hobby-status.js';
 
 describe('Hobby status', () => {
   it('lists the statuses in the order of the hobby pipeline', () => {

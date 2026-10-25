@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import type { HobbyStatus } from '../../../models/hobby-status';
+import type { HobbyStatus } from '@greyhoarder/domain/hoard';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { STATUS_LABELS } from '../../../util/status-labels';
 

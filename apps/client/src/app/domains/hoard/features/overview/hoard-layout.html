@@ -1,10 +1,14 @@
 <header class="flex flex-wrap items-start justify-between gap-4">
   <div class="flex flex-col gap-1">
     <h1 class="text-2xl font-semibold">Hoard</h1>
-    <p class="text-muted-foreground" data-testid="hoard-summary">
-      {{ minis.miniCount() }} minis from {{ boxes.boxes().length }} boxes ·
-      {{ minis.paintedCount() }} painted
-    </p>
+    @if (minis.isLoading()) {
+      <hlm-skeleton class="h-5 w-56" />
+    } @else {
+      <p class="text-muted-foreground" data-testid="hoard-summary">
+        {{ minis.miniCount() }} minis from {{ boxes.boxes().length }} boxes ·
+        {{ minis.paintedCount() }} painted
+      </p>
+    }
   </div>
   <!-- One button per way into the hoard, the primary one first; minis and custom come later. -->
   <div class="flex flex-wrap gap-3">
@@ -39,6 +43,12 @@
     </button>
   </div>
 </header>
+
+@if (minis.hasFailed()) {
+  <p class="text-destructive" role="alert" data-testid="hoard-error">
+    Can't load your hoard right now. Try again in a moment.
+  </p>
+}
 
 <div class="flex flex-wrap items-end justify-between gap-3 border-b">
   <nav class="-mb-px flex h-11 gap-4" aria-label="Hoard">

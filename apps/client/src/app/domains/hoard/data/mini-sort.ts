@@ -1,4 +1,4 @@
-import { hobbyStatuses } from '../models/hobby-status';
+import { hobbyStatuses } from '@greyhoarder/domain/hoard';
 import type { SortDirection } from '../util/sort-direction';
 import type { MiniRow } from './mini-row';
 

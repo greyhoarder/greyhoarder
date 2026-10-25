@@ -1,6 +1,4 @@
-import type { Box } from '../models/box';
-import type { HobbyStatus } from '../models/hobby-status';
-import type { Mini } from '../models/mini';
+import type { Box, HobbyStatus, Mini } from '@greyhoarder/domain/hoard';
 import { factionNamesOf } from '../util/kit-labels';
 
 /** Alike minis (same name, factions, status and parts) bundled into one row of a list. */
