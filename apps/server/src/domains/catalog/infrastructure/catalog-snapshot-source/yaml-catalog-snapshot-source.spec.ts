@@ -63,6 +63,17 @@ describe('Catalog files', () => {
     expect(snapshot.skipped.kitIds).toEqual(['games-workshop/orks/boyz']);
   });
 
+  it('loads a kit with a field it does not know', async () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    await writeCatalog('name: Boyz\naliases: [Ork Boyz]\nfactions: [warhammer-40000/orks]\nminis: 10\n');
+
+    const snapshot = await loadCatalog();
+
+    expect(snapshot.kits.map((kit) => kit.id)).toEqual(['games-workshop/orks/boyz']);
+    expect(snapshot.skipped.kitIds).toEqual([]);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
   it('leaves out a kit that refers to an unknown faction', async () => {
     await writeCatalog('name: Boyz\nfactions: [warhammer-40000/grots]\nminis: 10\n');
 
