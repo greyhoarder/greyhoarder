@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { boxProgresses } from '../../models/box-progress';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
@@ -25,6 +26,7 @@ import type { BoxRow } from '../../data/box-row';
 export class BoxesPage {
   protected readonly store = inject(BoxesList);
   protected readonly view = inject(HoardView);
+  private readonly router = inject(Router);
 
   protected readonly factionOptions = computed(() =>
     optionsOf(this.store.boxes(), (box) => box.factions),
@@ -47,6 +49,10 @@ export class BoxesPage {
 
   protected select({ box, isSelected }: BoxSelection): void {
     this.store.select(box.id, isSelected);
+  }
+
+  protected open(box: BoxRow): void {
+    void this.router.navigate(['/hoard/boxes', box.id]);
   }
 
   protected search(event: Event): void {

@@ -1,8 +1,11 @@
 import { Component, computed, input } from '@angular/core';
 import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
-import { miniCount } from '../../../data/box-row';
-import type { BoxRow } from '../../../data/box-row';
-import { STATUS_SHORT_LABELS } from '../../../util/status-labels';
+import { STATUS_SHORT_LABELS } from '../../util/status-labels';
+
+/** How many minis of a box stand at each status. */
+interface StatusCounts {
+  readonly minis: Readonly<Partial<Record<HobbyStatus, number>>>;
+}
 
 interface Segment {
   readonly status: HobbyStatus;
@@ -36,13 +39,13 @@ interface Segment {
   host: { class: 'block' },
 })
 export class ProgressBar {
-  readonly box = input.required<BoxRow>();
+  readonly box = input.required<StatusCounts>();
 
   protected readonly statusColor = STATUS_COLORS;
 
   protected readonly segments = computed<Segment[]>(() => {
     const box = this.box();
-    const total = miniCount(box);
+    const total = hobbyStatuses.reduce((sum, status) => sum + (box.minis[status] ?? 0), 0);
     return PROGRESS_STATUSES.filter((status) => (box.minis[status] ?? 0) > 0).map((status) => ({
       status,
       share: ((box.minis[status] ?? 0) / total) * 100,

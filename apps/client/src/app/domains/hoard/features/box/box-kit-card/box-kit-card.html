@@ -1,0 +1,55 @@
+<div class="flex flex-col gap-1">
+  <span class="text-xs text-muted-foreground">Added from the kit</span>
+  <div class="flex flex-wrap items-center gap-2">
+    <!-- Editions of a kit share its name; the year tells them apart. -->
+    <span class="font-semibold"
+      >@for (name of kit().names; track name) {
+        @if (!$first) {
+          <span class="font-normal text-muted-foreground">or</span>
+        }
+        {{ name }}
+      }
+      @if (kit().year) {
+        <span class="font-normal text-muted-foreground">· {{ kit().year }}</span>
+      }
+    </span>
+    @if (kit().isDraft) {
+      <span
+        hlmBadge
+        variant="outline"
+        class="border-dashed border-muted-foreground/60 font-normal text-muted-foreground"
+        data-testid="box-kit-draft"
+        >Not checked</span
+      >
+    }
+  </div>
+  <span class="text-sm text-muted-foreground">{{ meta() }}</span>
+</div>
+
+<div class="flex flex-col gap-3 border-t pt-4">
+  <span class="text-xs text-muted-foreground">The kit suggests</span>
+  <ul class="flex flex-col gap-3">
+    @for (slot of slots(); track $index) {
+      <li class="flex items-baseline gap-3" data-testid="box-kit-slot">
+        <span class="w-8 shrink-0 font-semibold tabular-nums">{{ slot.count }}×</span>
+        <span class="flex min-w-0 flex-col gap-1">
+          <span>{{ slot.isUndecided ? slot.name : slot.builds.join(' or ') }}</span>
+          @if (slot.isUndecided) {
+            <span class="text-sm text-muted-foreground">Each can become {{ slot.builds.join(' or ') }}.</span>
+          }
+          @if (slot.parts.length > 0) {
+            <span class="flex flex-wrap gap-x-2 gap-y-1.5">
+              @for (part of slot.parts; track part) {
+                <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{ part }}</span>
+              }
+            </span>
+          }
+        </span>
+      </li>
+    }
+  </ul>
+</div>
+
+<p class="border-t pt-4 text-sm text-muted-foreground">
+  Kits only suggest. Changing the kit never changes this box.
+</p>

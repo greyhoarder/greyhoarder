@@ -12,6 +12,9 @@ export abstract class CatalogKitQueries {
   /** The latest version of the kits with these ids, removed ones included. */
   abstract findKits(ids: readonly string[]): Promise<VersionedEntry<CatalogKit>[]>;
 
+  /** This version of the kit, also when the kit was removed later; undefined if there is none. */
+  abstract findKitVersion(id: string, version: number): Promise<VersionedEntry<CatalogKit> | undefined>;
+
   /** The names of the latest factions and whole game systems with these ids, by id. */
   abstract findFactionNames(ids: readonly string[]): Promise<ReadonlyMap<string, string>>;
 

@@ -7,6 +7,11 @@ export default [
     loadComponent: async () => (await import('./features/add-box/add-box-page')).AddBoxPage,
   },
   {
+    path: 'hoard/boxes/:id',
+    title: 'Box · Greyhoarder',
+    loadComponent: async () => (await import('./features/box/box-page')).BoxPage,
+  },
+  {
     path: 'hoard',
     title: 'Hoard · Greyhoarder',
     loadComponent: async () => (await import('./features/overview/hoard-layout')).HoardLayout,

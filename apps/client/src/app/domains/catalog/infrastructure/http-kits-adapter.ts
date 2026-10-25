@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import type { KitSearchRequest, KitSearchResponse } from '@greyhoarder/protocol/catalog';
+import type { KitSearchRequest, KitSearchResponse, KitVersionRequest } from '@greyhoarder/protocol/catalog';
 import { firstValueFrom } from 'rxjs';
 import type { KitSearchResult } from '../models/kit-search-result';
 
@@ -12,6 +12,16 @@ export class HttpKitsAdapter {
   /** The kits whose name, product code or barcode contains the text, ignoring case. */
   async search(text: string): Promise<KitSearchResult> {
     const params: KitSearchRequest = { search: text };
+    return this.list(params);
+  }
+
+  /** This version of the kit, e.g. the one a box was added from; no kit when there is no such version. */
+  async find(id: string, version: number): Promise<KitSearchResult> {
+    const params: KitVersionRequest = { id, version };
+    return this.list(params);
+  }
+
+  private async list(params: KitSearchRequest | KitVersionRequest): Promise<KitSearchResult> {
     const response = await firstValueFrom(
       this.http.get<KitSearchResponse>('/api/catalog/kits', { params }),
     );

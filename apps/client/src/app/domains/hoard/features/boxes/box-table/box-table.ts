@@ -14,7 +14,7 @@ import { formatDate } from '../../../util/format-date';
 import type { BoxRow } from '../../../data/box-row';
 import { type BoxSortOrder, sortBoxes } from '../../../data/box-sort';
 import type { SortDirection } from '../../../util/sort-direction';
-import { ProgressBar } from '../progress-bar/progress-bar';
+import { ProgressBar } from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
 
 export interface BoxSelection {
@@ -53,6 +53,8 @@ export class BoxTable {
   readonly isSelectionMode = input(false);
   readonly selectedIds = input<ReadonlySet<string>>(new Set());
   readonly selectedChange = output<BoxSelection>();
+  /** Outside selection mode a click on a line opens its box. */
+  readonly opened = output<BoxRow>();
 
   protected readonly columns = COLUMNS;
   protected readonly sortOrder = signal<BoxSortOrder>('added');
@@ -90,10 +92,11 @@ export class BoxTable {
     this.selectedChange.emit({ box, isSelected });
   }
 
-  /** Outside selection mode a click will open the box for editing, once that exists. */
   protected onRowClick(box: BoxRow): void {
     if (this.isSelectionMode()) {
       this.select(box, !this.selectedIds().has(box.id));
+    } else {
+      this.opened.emit(box);
     }
   }
 }

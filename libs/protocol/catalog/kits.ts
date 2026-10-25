@@ -45,6 +45,19 @@ export const kitSearchRequestSchema = z.object({
 
 export type KitSearchRequest = z.infer<typeof kitSearchRequestSchema>;
 
+/** One version of a kit, e.g. the one a box was added from; answered like a search. */
+export const kitVersionRequestSchema = z.object({
+  id: z.string().min(1),
+  version: z.coerce.number().int().positive(),
+});
+
+export type KitVersionRequest = z.infer<typeof kitVersionRequestSchema>;
+
+/** Either a search or one version of a kit. */
+export const kitsRequestSchema = z.union([kitSearchRequestSchema, kitVersionRequestSchema]);
+
+export type KitsRequest = z.infer<typeof kitsRequestSchema>;
+
 export const kitSearchResponseSchema = z.object({
   kits: z.array(catalogKitSchema).readonly(),
   /** Every kit the found kits contain, also within contained bundles. */

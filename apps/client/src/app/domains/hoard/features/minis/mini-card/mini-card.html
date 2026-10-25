@@ -29,7 +29,7 @@
   <app-status-badge [status]="row().status" />
   <span
     class="text-base font-semibold sm:w-12 sm:text-right"
-    [attr.aria-label]="row().count + ' minis'"
+    [attr.aria-label]="minisLabel(row().count)"
   >
     ×{{ row().count }}
   </span>

@@ -1,0 +1,51 @@
+<!-- Opening a mini for editing comes later. -->
+<button
+  type="button"
+  class="flex min-w-0 flex-1 items-center gap-4 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+  [attr.aria-labelledby]="nameId()"
+  [attr.aria-describedby]="detailsId()"
+ 
+>
+  <!-- Photos come later; until then every row shows the same placeholder. -->
+  <span
+    aria-hidden="true"
+    class="size-12 shrink-0 rounded-lg bg-muted bg-busy-stripes text-muted-foreground sm:size-14"
+  ></span>
+
+  <span class="flex min-w-0 flex-1 flex-col gap-0.5">
+    <span class="flex min-w-0 items-center gap-2">
+      <span class="truncate font-semibold" [id]="nameId()">{{ row().name }}</span>
+      @if (row().isOnWorkbench) {
+        <span hlmBadge variant="secondary" class="text-muted-foreground">Workbench</span>
+      }
+    </span>
+    <!-- Always present, so rows without parts are as tall as the others. -->
+    <span class="min-h-5 truncate text-sm text-muted-foreground">{{
+      details()
+    }}</span>
+  </span>
+
+  <span class="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-6" [id]="detailsId()">
+    <app-status-badge [status]="row().status" />
+    <span
+      class="text-base font-semibold sm:w-12 sm:text-right"
+      [attr.aria-label]="minisLabel(row().count)"
+     
+    >
+      ×{{ row().count }}
+    </span>
+  </span>
+</button>
+
+<!-- The menu of the row comes with editing. -->
+<button
+  hlmBtn
+  variant="ghost"
+  size="icon"
+  type="button"
+  class="shrink-0 text-muted-foreground"
+  aria-label="More actions"
+  data-testid="box-mini-menu"
+>
+  <ng-icon name="lucideEllipsisVertical" size="16" />
+</button>

@@ -141,8 +141,11 @@ can be used as a filter, never as a level to navigate through.
 
 A separate list of boxes shows what was bought: per box its kit, factions,
 progress, how many minis are still on the sprue and how many are painted,
-when it was added and its tags. It is an overview of purchases, not a
-way into the minis of a box.
+when it was added and its tags. It is an overview of purchases. A box can
+be opened to see what it was added from, how far its minis have come and
+the minis themselves, listed like every list of minis and edited the same
+way as in the hoard. The lists of minis are still never browsed box by
+box.
 
 Filtering by faction depends on what the list is for:
 

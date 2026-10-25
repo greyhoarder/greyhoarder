@@ -8,8 +8,8 @@ import { percentOf, progressOf } from '../../../data/box-row';
 import { formatDate } from '../../../util/format-date';
 import type { BoxRow } from '../../../data/box-row';
 import { STATUS_SHORT_LABELS } from '../../../util/status-labels';
-import { ProgressBadge } from '../progress-badge/progress-badge';
-import { PROGRESS_STATUSES, ProgressBar, STATUS_COLORS } from '../progress-bar/progress-bar';
+import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
+import { PROGRESS_STATUSES, ProgressBar, STATUS_COLORS } from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
 
 /** One box as a card: photo, kit, how far its minis have come, factions, date and tags. */
@@ -19,9 +19,9 @@ import { RowCheck } from '../../../ui/row-check/row-check';
   providers: [provideIcons({ lucideEllipsisVertical })],
   templateUrl: './box-card.html',
   host: {
-    class: 'group flex flex-col overflow-hidden rounded-xl border bg-card transition-colors',
+    class:
+      'group flex cursor-pointer flex-col overflow-hidden rounded-xl border bg-card transition-colors',
     '[class.border-primary/60]': 'isSelected()',
-    '[class.cursor-pointer]': 'isSelectionMode()',
     '[attr.data-testid]': '"hoard-box"',
     '(click)': 'onCardClick()',
   },
@@ -32,6 +32,8 @@ export class BoxCard {
   readonly isSelectionMode = input(false);
   readonly isSelected = input(false);
   readonly selectedChange = output<boolean>();
+  /** Outside selection mode a click opens the box. */
+  readonly opened = output();
 
   protected readonly progress = computed(() => progressOf(this.box()));
   protected readonly kitLine = computed(() => kitLine(this.box()));
@@ -50,10 +52,11 @@ export class BoxCard {
     () => `${this.box().factions.join(', ')} · added ${formatDate(this.box().addedOn)}`,
   );
 
-  /** Outside selection mode a click will open the box for editing, once that exists. */
   protected onCardClick(): void {
     if (this.isSelectionMode()) {
       this.selectedChange.emit(!this.isSelected());
+    } else {
+      this.opened.emit();
     }
   }
 }

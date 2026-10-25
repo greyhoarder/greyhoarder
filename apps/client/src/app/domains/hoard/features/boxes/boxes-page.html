@@ -123,6 +123,7 @@
     [isSelectionMode]="store.isSelecting()"
     [selectedIds]="store.selectedIds()"
     (selectedChange)="select($event)"
+    (opened)="open($event)"
   />
   <p class="mt-1 text-sm text-muted-foreground" data-testid="hoard-box-summary">{{ summary() }}</p>
 } @else {
@@ -133,6 +134,7 @@
         [isSelectionMode]="store.isSelecting()"
         [isSelected]="store.selectedIds().has(box.id)"
         (selectedChange)="select({ box, isSelected: $event })"
+        (opened)="open(box)"
       />
     }
   </div>

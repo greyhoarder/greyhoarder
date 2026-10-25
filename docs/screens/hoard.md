@@ -4,7 +4,8 @@
   to `/hoard/minis`
 - **Domain:** `hoard`
 - **Related:** [Domain: hoard](../domains/hoard.md),
-  [ADR-0019](../adr/0019-hobby-data-model.md), [Shell](shell.md)
+  [ADR-0019](../adr/0019-hobby-data-model.md), [Shell](shell.md),
+  [Box](box.md)
 
 ## Purpose
 
@@ -142,6 +143,9 @@ summary line.
 - Status badges are grey while a mini is unpainted, a lighter grey with
   each step, and gold from painted on (design system: gold means done).
 - The search ignores case and needs no confirmation.
+- The "Box" filter tells boxes apart, not names: boxes with the same name
+  are separate values, each followed by the day it was added, e.g.
+  "Boyz (2026) · 12 Oct 2026".
 - Filter chips work like faceted filters: a chip opens a list of the values
   in the hoard with how many minis have each, searchable by typing. Ticked
   values of one chip are alternatives (any matches); different chips must
@@ -157,7 +161,8 @@ summary line.
   screens.
 - In selection mode a click anywhere on a row selects or deselects it.
   Outside it, a click on a row will open the row for editing (not built
-  yet).
+  yet), and a click on a box opens [Box](box.md). Returning from there
+  keeps the Boxes tab's search, filters and view.
 - "Select all" selects every row that is currently shown. "Done", and
   later every action on the selection, ends the mode and clears the
   selection.
@@ -179,10 +184,13 @@ summary line.
 ## Accessibility
 
 - Each checkbox is named after its row ("Select Boy").
-- The count is announced as "{count} minis".
+- The count is announced as "{count} minis", "1 mini".
 - Sortable table headers are buttons, and the current column carries
   `aria-sort`.
 - The view switch marks the current view with `aria-pressed`.
+- The name of each box, on its card and in its table line, is a button:
+  it opens the box, or selects it in selection mode, so boxes open by
+  keyboard as well.
 
 ## Test IDs
 

@@ -5,7 +5,8 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
 import type { MiniRow } from '../../../data/mini-row';
 import { RowCheck } from '../../../ui/row-check/row-check';
-import { StatusBadge } from '../status-badge/status-badge';
+import { minisLabel } from '../../../util/kit-labels';
+import { StatusBadge } from '../../../ui/status-badge/status-badge';
 
 /**
  * One row of alike minis as a card: what they are, where they come from, their status
@@ -27,6 +28,9 @@ import { StatusBadge } from '../status-badge/status-badge';
 })
 export class MiniCard {
   readonly row = input.required<MiniRow>();
+
+  /** "1 mini" or "{n} minis", for screen readers. */
+  protected readonly minisLabel = minisLabel;
   /** In selection mode every check shows, and clicking the row selects it. */
   readonly isSelectionMode = input(false);
   readonly isSelected = input(false);

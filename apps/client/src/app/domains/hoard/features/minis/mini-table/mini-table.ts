@@ -13,7 +13,7 @@ import type { MiniRow } from '../../../data/mini-row';
 import { type MiniSortOrder, sortRows } from '../../../data/mini-sort';
 import type { SortDirection } from '../../../util/sort-direction';
 import { RowCheck } from '../../../ui/row-check/row-check';
-import { StatusBadge } from '../status-badge/status-badge';
+import { StatusBadge } from '../../../ui/status-badge/status-badge';
 
 interface Column {
   readonly order: MiniSortOrder;

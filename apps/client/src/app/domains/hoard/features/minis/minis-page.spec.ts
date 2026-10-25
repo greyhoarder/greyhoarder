@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import type { Mini } from '@greyhoarder/domain/hoard';
+import type { Box, Mini } from '@greyhoarder/domain/hoard';
+import { MinisList } from '../../data/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { MinisPage } from './minis-page';
@@ -24,14 +25,14 @@ describe('Minis page', () => {
   let fixture: ComponentFixture<MinisPage>;
   let page: HTMLElement;
 
-  /** A fresh page whose hoard holds what `loadMinis` answers. */
-  function showPage(loadMinis: () => Promise<readonly Mini[]>): void {
+  /** A fresh page whose hoard holds what `loadMinis` answers, and these boxes. */
+  function showPage(loadMinis: () => Promise<readonly Mini[]>, boxes: readonly Box[] = []): void {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
         {
           provide: HttpBoxesAdapter,
-          useValue: { list: vi.fn(async () => ({ boxes: [], factionNames: new Map() })) },
+          useValue: { list: vi.fn(async () => ({ boxes, factionNames: new Map() })) },
         },
         {
           provide: HttpMinisAdapter,
@@ -90,5 +91,38 @@ describe('Minis page', () => {
     expect(byTestId('hoard-loading')).toHaveLength(1);
     expect(byTestId('hoard-empty')).toHaveLength(0);
     expect(byTestId('hoard-no-results')).toHaveLength(0);
+  });
+
+  describe('with two boxes of the same name', () => {
+    const box = (id: string, addedOn: string): Box => ({ id, name: 'Boyz (2026)', factionIds: [], tags: [], addedOn });
+    const BOXES = [box('b1', '2026-10-12'), box('b2', '2026-09-30')];
+
+    beforeEach(async () => {
+      showPage(
+        () => Promise.resolve([mini('m1', { boxId: 'b1' }), mini('m2', { name: 'Nob', boxId: 'b2' })]),
+        BOXES,
+      );
+      await fixture.whenStable();
+    });
+
+    it('tells boxes with the same name apart in the box filter by the day they were added', async () => {
+      byTestId('hoard-filter-box')[0]?.click();
+      await fixture.whenStable();
+
+      const options = [...document.querySelectorAll('[data-testid="hoard-filter-option"] label')].map((label) =>
+        label.textContent?.trim(),
+      );
+      expect(options).toEqual([
+        'Boyz (2026) · 12 Oct 2026',
+        'Boyz (2026) · 30 Sep 2026',
+      ]);
+    });
+
+    it('shows only the minis of the ticked box, not those of another box with the same name', async () => {
+      TestBed.inject(MinisList).boxFilter.set(new Set(['b2']));
+      await fixture.whenStable();
+
+      expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([expect.stringContaining('Nob')]);
+    });
   });
 });

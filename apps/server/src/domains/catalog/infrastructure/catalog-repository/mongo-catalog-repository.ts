@@ -92,6 +92,11 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
+  async findKitVersion(id: string, version: number): Promise<VersionedEntry<CatalogKit> | undefined> {
+    const kit = await this.kits.findOne({ kitId: id, version }).lean().exec();
+    return kit === null ? undefined : toVersionedEntry(kit, toCatalogKit);
+  }
+
   async findFactionNames(ids: readonly string[]): Promise<ReadonlyMap<string, string>> {
     const [systems, factions] = await Promise.all([
       this.systems.find({ ...LATEST, systemId: { $in: ids } }).lean().exec(),

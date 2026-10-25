@@ -14,6 +14,7 @@ const BOY: Mini = {
 const CATALOG: CatalogKitQueries = {
   searchKits: () => Promise.resolve([]),
   findKits: () => Promise.resolve([]),
+  findKitVersion: () => Promise.resolve(undefined),
   findFactionNames: () => Promise.resolve(new Map([['warhammer-40000/orks', 'Orks']])),
   findSystemNames: (factionIds) =>
     Promise.resolve(

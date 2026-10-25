@@ -9,6 +9,8 @@ export interface MiniRow {
   readonly factions: readonly string[];
   /** Name of the origin box; minis without a box have none. */
   readonly box?: string;
+  /** Id of the origin box, which tells boxes with the same name apart. */
+  readonly boxId?: string;
   readonly parts: readonly string[];
   readonly status: HobbyStatus;
   readonly isOnWorkbench: boolean;
@@ -38,6 +40,7 @@ export function toMiniRows(
             name: mini.name,
             factions: factionNamesOf(mini.factionIds, factionNames),
             box: mini.boxId === undefined ? undefined : boxNames.get(mini.boxId),
+            boxId: mini.boxId,
             parts: mini.parts,
             status: mini.status,
             isOnWorkbench: mini.isOnWorkbench,

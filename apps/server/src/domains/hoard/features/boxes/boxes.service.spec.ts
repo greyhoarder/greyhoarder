@@ -28,6 +28,7 @@ function fakeCatalog(kit: CatalogKit, version: number): CatalogKitQueries {
     searchKits: () => Promise.resolve([]),
     findKits: (ids) =>
       Promise.resolve(ids.includes(kit.id) ? [{ entry: kit, version, isRemoved: false }] : []),
+    findKitVersion: () => Promise.resolve(undefined),
     findFactionNames: () => Promise.resolve(new Map()),
     findSystemNames: () => Promise.resolve(new Map()),
   };

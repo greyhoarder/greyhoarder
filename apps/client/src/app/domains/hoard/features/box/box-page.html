@@ -1,0 +1,219 @@
+<a
+  routerLink="/hoard/boxes"
+  class="inline-flex w-fit items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+  data-testid="box-back"
+>
+  <ng-icon name="lucideChevronLeft" size="16" />
+  Boxes
+</a>
+
+@if (hasFailed()) {
+  <p class="text-destructive" role="alert" data-testid="box-error">
+    Can't load this box right now. Try again in a moment.
+  </p>
+} @else if (isLoading()) {
+  <div
+    class="flex flex-col gap-6"
+    aria-busy="true"
+    aria-label="Loading the box"
+    data-testid="box-loading"
+  >
+    <div class="flex items-start gap-5">
+      <hlm-skeleton class="size-28 rounded-xl" />
+      <div class="flex flex-1 flex-col gap-3">
+        <hlm-skeleton class="h-7 w-1/3" />
+        <hlm-skeleton class="h-4 w-1/4" />
+        <hlm-skeleton class="h-4 w-1/2" />
+      </div>
+    </div>
+    <hlm-skeleton class="h-36 w-full rounded-xl" />
+    @for (placeholder of [1, 2, 3]; track placeholder) {
+      <hlm-skeleton class="h-16 w-full rounded-xl" />
+    }
+  </div>
+} @else if (box(); as box) {
+  <header class="flex flex-wrap items-start gap-5">
+    <!-- Photos come later; until then every box shows the same placeholder. -->
+    <span
+      class="flex size-28 shrink-0 items-center justify-center rounded-xl bg-muted bg-busy-stripes text-muted-foreground"
+      aria-hidden="true"
+    >
+      <ng-icon name="lucideBox" size="32" />
+    </span>
+    <div class="flex min-w-0 flex-1 basis-64 flex-col gap-1.5">
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-2xl font-semibold" data-testid="box-name">{{ box.name }}</h1>
+        @if (progress(); as progress) {
+          <app-progress-badge [progress]="progress" data-testid="box-progress-badge" />
+        }
+      </div>
+      <p class="text-muted-foreground" data-testid="box-kit-line">{{ kitLine() }}</p>
+      <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+        <span data-testid="box-meta">{{ meta() }}</span>
+        @for (tag of box.tags; track tag) {
+          <span
+            hlmBadge
+            variant="outline"
+            class="rounded-md font-normal text-muted-foreground"
+            data-testid="box-tag"
+            >{{ tag }}</span
+          >
+        }
+      </div>
+    </div>
+    <!-- Taking from the sprue and editing come later. -->
+    <div class="flex flex-wrap gap-3">
+      @if (hasMinisOnSprue()) {
+        <button hlmBtn type="button" class="h-10 px-4 text-sm font-semibold" data-testid="box-take">
+          Take from the sprue
+        </button>
+      }
+      <button
+        hlmBtn
+        variant="outline"
+        type="button"
+        class="h-10 px-3.5 text-sm"
+        data-testid="box-edit"
+      >
+        Edit box
+      </button>
+      <hlm-popover align="end" sideOffset="6">
+        <button
+          hlmPopoverTrigger
+          hlmBtn
+          variant="outline"
+          size="icon"
+          class="size-10"
+          aria-label="More actions"
+          [attr.aria-haspopup]="'menu'"
+          data-testid="box-menu"
+        >
+          <ng-icon name="lucideEllipsisVertical" size="16" />
+        </button>
+        <ul
+          hlmPopoverContent
+          class="w-56 gap-0 p-1"
+          role="menu"
+          aria-label="Box"
+          *hlmPopoverPortal="let menu"
+        >
+          <li role="none">
+            <a
+              role="menuitem"
+              (keydown)="moveFocus($event)"
+              routerLink="/hoard/minis"
+              class="flex w-full rounded-md px-2 py-1.5 text-sm outline-none hover:bg-accent focus-visible:bg-accent"
+              data-testid="box-show-minis"
+              (click)="filterHoardByBox(box.id); menu.close()"
+              >Show minis in hoard</a
+            >
+          </li>
+          <!-- Adding and deleting come later. -->
+          <li role="none">
+            <button
+              type="button"
+              role="menuitem"
+              (keydown)="moveFocus($event)"
+              tabindex="-1"
+              class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent"
+              data-testid="box-add-mini"
+            >
+              Add a mini to this box
+            </button>
+          </li>
+          <li role="none">
+            <button
+              type="button"
+              role="menuitem"
+              (keydown)="moveFocus($event)"
+              tabindex="-1"
+              class="flex w-full rounded-md px-2 py-1.5 text-left text-sm text-destructive outline-none hover:bg-accent focus-visible:bg-accent"
+              data-testid="box-delete"
+            >
+              Delete box…
+            </button>
+          </li>
+        </ul>
+      </hlm-popover>
+    </div>
+  </header>
+
+  <section
+    class="flex flex-col gap-4 rounded-xl border bg-card p-5"
+    aria-labelledby="box-progress-heading"
+  >
+    <div class="flex items-baseline justify-between gap-4">
+      <h2 class="font-semibold" id="box-progress-heading">Progress</h2>
+      <span class="text-lg font-semibold tabular-nums" data-testid="box-percent">
+        {{ percent() }}<span class="text-sm text-muted-foreground">%</span>
+      </span>
+    </div>
+    <app-progress-bar [box]="box" data-testid="box-progress" />
+    <ul class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+      @for (entry of statuses(); track entry.status) {
+        <li
+          class="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2"
+          data-testid="box-status"
+        >
+          <span
+            class="size-2.5 rounded-full"
+            [class]="statusColor[entry.status]"
+            aria-hidden="true"
+          ></span>
+          <span class="flex-1 text-sm text-muted-foreground">{{ entry.label }}</span>
+          <span class="font-semibold tabular-nums">{{ entry.count }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <div class="@container">
+    <div class="flex flex-col gap-6 @[720px]:flex-row @[720px]:items-start">
+      <section class="flex min-w-0 flex-1 flex-col gap-3" aria-labelledby="box-minis-heading">
+        <div class="flex items-center justify-between gap-4">
+          <h2 class="flex items-center gap-2 font-semibold" id="box-minis-heading">
+            Minis
+            <span hlmBadge variant="secondary" class="font-normal text-muted-foreground">{{
+              miniCount()
+            }}</span>
+          </h2>
+          <a
+            routerLink="/hoard/minis"
+            class="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            data-testid="box-show-in-hoard"
+            (click)="filterHoardByBox(box.id)"
+          >
+            Show in hoard
+            <ng-icon name="lucideChevronRight" size="16" />
+          </a>
+        </div>
+        <div class="flex flex-col gap-2">
+          @for (row of miniRows(); track row.id) {
+            <app-box-mini-card [row]="row" [boxFactions]="box.factions" />
+          }
+        </div>
+      </section>
+      @if (kit(); as kit) {
+        <app-box-kit-card class="@[720px]:w-80 @[720px]:shrink-0" [kit]="kit" />
+      } @else if (hasKitFailed()) {
+        <p
+          class="text-sm text-muted-foreground @[720px]:w-80 @[720px]:shrink-0"
+          data-testid="box-kit-error"
+        >
+          Can't load the kit right now. Try again in a moment.
+        </p>
+      } @else if (isKitMissing()) {
+        <p
+          class="text-sm text-muted-foreground @[720px]:w-80 @[720px]:shrink-0"
+          data-testid="box-kit-missing"
+        >
+          The catalog no longer has this version of the kit.
+        </p>
+      }
+    </div>
+  </div>
+} @else {
+  <p class="text-muted-foreground" role="alert" data-testid="box-not-found">
+    This box isn't in your hoard.
+  </p>
+}

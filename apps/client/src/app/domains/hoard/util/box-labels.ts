@@ -1,4 +1,6 @@
+import type { Box } from '@greyhoarder/domain/hoard';
 import type { BoxProgress } from '../models/box-progress';
+import { formatDate } from './format-date';
 
 export const PROGRESS_LABELS: Readonly<Record<BoxProgress, string>> = {
   untouched: 'Untouched',
@@ -13,4 +15,15 @@ export function kitLine(box: { readonly kit?: { readonly name: string; readonly 
   }
   const { name, sku } = box.kit;
   return sku ? `${name} · ${sku}` : name;
+}
+
+/**
+ * What tells each box apart in a list of boxes, by id: its name, followed by the day it was
+ * added when another box has the same name, e.g. "Boyz (2026) · 12 Oct 2026".
+ */
+export function distinctBoxNames(boxes: readonly Box[]): Map<string, string> {
+  const namesake = (box: Box) => boxes.some((other) => other.id !== box.id && other.name === box.name);
+  return new Map(
+    boxes.map((box) => [box.id, namesake(box) ? `${box.name} · ${formatDate(box.addedOn)}` : box.name]),
+  );
 }
