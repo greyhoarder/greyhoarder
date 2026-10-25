@@ -64,6 +64,10 @@ exactly one user, and users see only their own hoard.
 - What a mini becomes is decided when it is built, mini by mini. The names
   of every variant of its box's kit are suggested, so one box can yield
   two Lootas and three Burna Boyz.
+- A mini keeps the name it got on the sprue as its sprue name, which never
+  changes. A suggestion is used up by the minis of the box built as it,
+  and by those built under a name of the user's own that had it on the
+  sprue.
 - A box from a catalog kit records the kit's id and version.
 - A box without a kit is created with a name and at least one mini,
   added by hand.
@@ -108,9 +112,10 @@ exactly one user, and users see only their own hoard.
 - Minis refer to terms, so renaming a term renames it on every mini.
 - A part on a mini can be marked as swappable (magnetised).
 - When choosing parts, the parts its kit suggests for the mini come first,
-  then the rest of the vocabulary; a new term can be typed at any time.
-  A part suggested by a catalog kit becomes a term of the user's
-  vocabulary when it is first used.
+  then the rest of the vocabulary, then the parts of the catalog kits of
+  its factions and the factions they are part of; a new term can be typed
+  at any time. A part suggested by a catalog kit becomes a term of the
+  user's vocabulary when it is first used.
 
 ### Workbench
 
@@ -134,7 +139,7 @@ exactly one user, and users see only their own hoard.
 ## Lists of minis
 
 Interfaces list minis, not boxes, wherever the hobby is concerned. Minis that are alike (same name, factions,
-status, parts and box, and all on the workbench or all off it) are shown as one row with a count ("Boy · on the
+status, parts, each glued or swappable alike, notes and box, and all on the workbench or all off it) are shown as one row with a count ("Boy · on the
 sprue · ×9"), from which the user picks how many to act on. As soon as a
 mini differs, it gets its own row. The origin box is shown as a detail and
 can be used as a filter, never as a level to navigate through.

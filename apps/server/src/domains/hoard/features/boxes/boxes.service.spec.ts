@@ -29,6 +29,8 @@ function fakeCatalog(kit: CatalogKit, version: number): CatalogKitQueries {
     findKits: (ids) =>
       Promise.resolve(ids.includes(kit.id) ? [{ entry: kit, version, isRemoved: false }] : []),
     findKitVersion: () => Promise.resolve(undefined),
+    findFactions: () => Promise.resolve([]),
+    findKitParts: () => Promise.resolve([]),
     findFactionNames: () => Promise.resolve(new Map()),
     findSystemNames: () => Promise.resolve(new Map()),
   };
@@ -37,7 +39,14 @@ function fakeCatalog(kit: CatalogKit, version: number): CatalogKitQueries {
 describe('Boxes', () => {
   it('adds boxes of the latest version of a catalog kit, each with the minis it puts on the sprue', async () => {
     const addBoxes = vi.fn<HoardRepository['addBoxes']>(() => Promise.resolve());
-    const hoard = { findBoxes: vi.fn(), findMinis: vi.fn(), addBoxes };
+    const hoard = {
+      findBoxes: vi.fn(),
+      findMinis: vi.fn(),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes,
+      updateMinis: vi.fn(),
+    };
     const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
 
     const { boxes, minis } = await service.add('owner', {

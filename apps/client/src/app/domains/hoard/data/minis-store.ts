@@ -19,10 +19,18 @@ export class MinisStore {
   });
 
   /** Empty until loaded; keeps the previous minis while reloading. */
-  readonly minis = computed<readonly Mini[]>(() => (this.loaded.hasValue() ? this.loaded.value() : []));
+  readonly minis = computed<readonly Mini[]>(() =>
+    this.loaded.hasValue() ? this.loaded.value() : [],
+  );
   /** Only the first load; a reload keeps showing what was there. */
   readonly isLoading = computed(() => this.loaded.status() === 'loading');
   readonly hasFailed = computed(() => this.loaded.error() !== undefined);
+
+  /** Puts minis the server changed in place of their old versions, without loading every mini again. */
+  apply(changed: readonly Mini[]): void {
+    const byId = new Map(changed.map((mini) => [mini.id, mini]));
+    this.loaded.update((minis) => minis?.map((mini) => byId.get(mini.id) ?? mini));
+  }
 
   /** Fetches the minis again, e.g. after boxes were added on the server. */
   reload(): void {

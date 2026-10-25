@@ -4,6 +4,7 @@ import type { Box, Mini } from '@greyhoarder/domain/hoard';
 import { MinisList } from '../../data/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
+import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
 import { HoardLayout } from './hoard-layout';
 
 const ORKS = 'warhammer-40000/orks';
@@ -28,7 +29,7 @@ const MINIS: Mini[] = [
   mini('m1', {}),
   mini('m2', {}),
   mini('m3', {}),
-  mini('m4', { name: 'Nob', parts: ['Power Klaw'], status: 'painted' }),
+  mini('m4', { name: 'Nob', parts: [{ partId: 'power-klaw', isSwappable: false }], status: 'painted' }),
   mini('m5', { boxId: 'b2', status: 'done' }),
 ];
 
@@ -46,6 +47,10 @@ describe('Hoard layout', () => {
         {
           provide: HttpBoxesAdapter,
           useValue: { list: vi.fn(() => answer({ boxes: hoard?.boxes ?? [], factionNames })) },
+        },
+        {
+          provide: HttpPartsAdapter,
+          useValue: { list: vi.fn(async () => [{ id: 'power-klaw', name: 'Power Klaw', aliases: [] }]) },
         },
         {
           provide: HttpMinisAdapter,

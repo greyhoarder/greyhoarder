@@ -1,0 +1,505 @@
+<div class="flex items-center justify-between gap-4">
+  <a
+    routerLink="/hoard/minis"
+    class="inline-flex w-fit items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    data-testid="mini-back"
+  >
+    <ng-icon name="lucideChevronLeft" size="16" />
+    Hoard
+  </a>
+  @if (mini()) {
+    @if (saveState() === 'failed') {
+      <p class="text-sm text-destructive" role="alert" data-testid="mini-save-error">
+        Can't save right now. Try again in a moment.
+      </p>
+    } @else {
+      <p class="text-sm text-muted-foreground" role="status" data-testid="mini-save-note">
+        @if (isOnSprue()) {
+          Nothing is saved until you build it
+        } @else if (saveState() === 'saving') {
+          Saving…
+        } @else {
+          All changes saved
+        }
+      </p>
+    }
+  }
+</div>
+
+@if (hasFailed()) {
+  <p class="text-destructive" role="alert" data-testid="mini-error">
+    Can't load this mini right now. Try again in a moment.
+  </p>
+} @else if (isLoading()) {
+  <div
+    class="flex flex-col gap-6"
+    aria-busy="true"
+    aria-label="Loading the mini"
+    data-testid="mini-loading"
+  >
+    <div class="flex items-start gap-5">
+      <hlm-skeleton class="size-28 rounded-xl" />
+      <div class="flex flex-1 flex-col gap-3">
+        <hlm-skeleton class="h-7 w-1/3" />
+        <hlm-skeleton class="h-6 w-1/2" />
+      </div>
+    </div>
+    <hlm-skeleton class="h-28 w-full rounded-xl" />
+  </div>
+} @else if (mini(); as mini) {
+  <header class="flex flex-wrap items-start gap-5">
+    <!-- Photos come later; until then every mini shows the same placeholder. -->
+    <button
+      type="button"
+      class="flex size-28 shrink-0 flex-col items-center justify-center gap-1 rounded-xl bg-muted bg-busy-stripes text-sm text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      aria-label="Add a photo"
+    >
+      <ng-icon name="lucideCamera" size="20" />
+      Add photo
+    </button>
+
+    <div class="flex min-w-0 flex-1 basis-64 flex-col gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-2xl font-semibold" data-testid="mini-name">{{ name() }}</h1>
+        <app-status-badge [status]="status()" data-testid="mini-status-badge" />
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-sm">
+        <ul class="flex flex-wrap items-center gap-2" aria-label="Factions">
+          @for (faction of factions(); track faction.id) {
+            <li
+              class="inline-flex h-8 items-center gap-1 rounded-full bg-muted pr-1.5 pl-3"
+              data-testid="mini-faction"
+            >
+              {{ faction.name }}
+              <button
+                type="button"
+                class="flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                [attr.aria-label]="'Remove ' + faction.name"
+                (click)="removeFaction(faction.id)"
+              >
+                <ng-icon name="lucideX" size="12" />
+              </button>
+            </li>
+          }
+        </ul>
+        <!-- Adding factions comes with own factions. -->
+        <button
+          type="button"
+          class="inline-flex h-8 items-center rounded-full border border-dashed border-muted-foreground/60 px-3 text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          aria-label="Add a faction"
+          data-testid="mini-add-faction"
+        >
+          + Faction
+        </button>
+        @if (box(); as box) {
+          <a
+            [routerLink]="['/hoard/boxes', box.id]"
+            class="ml-2 inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            data-testid="mini-origin"
+          >
+            <ng-icon name="lucidePackage" size="14" />
+            {{ origin() }}
+            <ng-icon name="lucideChevronRight" size="14" />
+          </a>
+        } @else {
+          <span class="ml-2 text-muted-foreground" data-testid="mini-origin">Without box</span>
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      <button
+        hlmBtn
+        variant="outline"
+        type="button"
+        class="h-10 px-3.5 text-sm"
+        [class.bg-muted]="isOnWorkbench()"
+        [class.text-muted-foreground]="!isOnWorkbench()"
+        aria-label="On the workbench"
+        [attr.aria-pressed]="isOnWorkbench()"
+        data-testid="mini-workbench"
+        (click)="toggleWorkbench()"
+      >
+        <ng-icon name="lucideBrush" size="16" />
+        {{ isOnWorkbench() ? 'On the workbench' : 'Put on workbench' }}
+      </button>
+      <hlm-popover align="end" sideOffset="6">
+        <button
+          hlmPopoverTrigger
+          hlmBtn
+          variant="outline"
+          size="icon"
+          class="size-10"
+          aria-label="More actions"
+          [attr.aria-haspopup]="'menu'"
+          data-testid="mini-menu"
+        >
+          <ng-icon name="lucideEllipsisVertical" size="16" />
+        </button>
+        <!-- Duplicating, changing the origin and deleting come later. -->
+        <ul
+          hlmPopoverContent
+          class="w-56 gap-0 p-1"
+          role="menu"
+          aria-label="Mini"
+          *hlmPopoverPortal="let menu"
+        >
+          @for (item of menuItems; track item.testId) {
+            <li role="none">
+              <button
+                type="button"
+                role="menuitem"
+                [attr.tabindex]="$first ? 0 : -1"
+                class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent"
+                [class.text-destructive]="item.isDestructive"
+                [attr.data-testid]="item.testId"
+                (keydown)="moveFocus($event)"
+              >
+                {{ item.label }}
+              </button>
+            </li>
+          }
+        </ul>
+      </hlm-popover>
+    </div>
+  </header>
+
+  <section
+    class="flex flex-col gap-4 rounded-xl border bg-card p-5"
+    aria-labelledby="mini-status-heading"
+  >
+    <h2 class="font-semibold" id="mini-status-heading">Status</h2>
+    <div
+      class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5"
+      role="group"
+      aria-labelledby="mini-status-heading"
+    >
+      @for (tile of statusTiles(); track tile.status) {
+        <button
+          type="button"
+          class="flex flex-col gap-3 rounded-lg border px-3 pt-3 pb-2.5 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          [class.bg-muted]="tile.isCurrent"
+          [class.border-muted-foreground]="tile.isCurrent"
+          [class.font-semibold]="tile.isCurrent"
+          [class.text-muted-foreground]="!tile.isCurrent && !tile.isPast"
+          [attr.aria-pressed]="tile.isCurrent"
+          data-testid="mini-status"
+          (click)="setStatus(tile.status)"
+        >
+          <span
+            class="h-1 w-full rounded-full"
+            [class]="tile.bar ?? 'invisible'"
+            aria-hidden="true"
+          ></span>
+          {{ tile.label }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <section
+    class="flex flex-col gap-4 rounded-xl border bg-card p-5"
+    aria-labelledby="mini-build-as-heading"
+  >
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 class="font-semibold" id="mini-build-as-heading">Build as</h2>
+      @if (nameTiles().length > 0) {
+        <span class="text-sm text-muted-foreground">Suggested by {{ boxName() }}</span>
+      }
+    </div>
+    <div
+      class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
+      role="group"
+      aria-labelledby="mini-build-as-heading"
+    >
+      @for (tile of nameTiles(); track tile.name) {
+        <button
+          type="button"
+          class="flex flex-col gap-1 rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          [class.bg-muted]="tile.isChosen"
+          [class.border-muted-foreground]="tile.isChosen"
+          [attr.aria-pressed]="tile.isChosen"
+          data-testid="mini-build-as"
+          (click)="chooseName(tile.name)"
+        >
+          <span class="font-semibold">{{ tile.name }}</span>
+          <span
+            class="text-xs"
+            [class.text-destructive]="tile.isWarning"
+            [class.text-muted-foreground]="!tile.isWarning"
+            data-testid="mini-name-left"
+            >{{ tile.hint }}</span
+          >
+        </button>
+      }
+      <label
+        class="flex flex-col gap-1 rounded-lg border border-dashed px-3 py-2.5 focus-within:ring-2 focus-within:ring-ring"
+        [class.border-solid]="ownName().trim() !== ''"
+        [class.bg-muted]="ownName().trim() !== ''"
+        [class.border-muted-foreground]="ownName().trim() !== ''"
+      >
+        <span class="text-xs text-muted-foreground">Your own name</span>
+        <input
+          type="text"
+          class="bg-transparent font-semibold outline-none placeholder:text-muted-foreground"
+          placeholder="e.g. Tankbusta"
+          data-testid="mini-own-name"
+          [value]="ownName()"
+          (input)="typeOwnName($event)"
+          (blur)="commitOwnName()"
+          (keydown.enter)="commitOwnName()"
+        />
+      </label>
+    </div>
+  </section>
+
+  <section
+    class="flex flex-col gap-4 rounded-xl border bg-card p-5"
+    aria-labelledby="mini-parts-heading"
+  >
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 class="font-semibold" id="mini-parts-heading">
+        Parts <span class="font-normal text-muted-foreground">{{ parts().length }}</span>
+      </h2>
+      <span class="text-sm text-muted-foreground">{{ partsHint() }}</span>
+    </div>
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      @for (part of parts(); track $index) {
+        <div class="flex flex-col gap-2 rounded-lg border px-3 py-2.5" data-testid="mini-part">
+          <div class="flex items-start justify-between gap-2">
+            <span class="font-semibold">{{ part.name }}</span>
+            <button
+              type="button"
+              class="text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              [attr.aria-label]="'Remove ' + part.name"
+              data-testid="mini-part-remove"
+              (click)="removePart($index)"
+            >
+              <ng-icon name="lucideX" size="14" />
+            </button>
+          </div>
+          <button
+            type="button"
+            class="inline-flex h-7 w-fit items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            [class.bg-muted]="part.isSwappable"
+            [class.border-muted-foreground]="part.isSwappable"
+            [class.text-muted-foreground]="!part.isSwappable"
+            [attr.aria-label]="'Swappable ' + part.name"
+            [attr.aria-pressed]="part.isSwappable"
+            data-testid="mini-part-swappable"
+            (click)="toggleSwappable($index)"
+          >
+            <ng-icon name="lucideMagnet" size="12" />
+            {{ part.isSwappable ? 'Swappable' : 'Glued' }}
+          </button>
+        </div>
+      }
+      <button
+        type="button"
+        class="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg border text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        [class.border-dashed]="!isPickerOpen()"
+        [class.bg-muted]="isPickerOpen()"
+        [class.border-muted-foreground]="isPickerOpen()"
+        [attr.aria-expanded]="isPickerOpen()"
+        aria-controls="mini-part-picker"
+        data-testid="mini-add-part"
+        (click)="togglePicker()"
+      >
+        <ng-icon
+          name="lucidePlus"
+          size="16"
+          class="transition-transform motion-reduce:transition-none"
+          [class.rotate-45]="isPickerOpen()"
+        />
+        {{ isPickerOpen() ? 'Close' : 'Add a part' }}
+      </button>
+    </div>
+
+    <!-- Unfolds by its rows, so its height needs no measuring. -->
+    <div
+      id="mini-part-picker"
+      data-part-picker
+      [attr.data-open]="isPickerOpen()"
+      [attr.aria-hidden]="!isPickerOpen()"
+      [inert]="!isPickerOpen()"
+    >
+      <!-- Room for the focus rings, which the clipping would cut off. -->
+      <div class="-mx-1 min-h-0 overflow-hidden px-1 pb-1">
+        <div class="mt-2 flex flex-col gap-4 border-t pt-4">
+          <label
+            class="flex h-10 w-full max-w-md items-center gap-2 rounded-lg border border-input px-3 focus-within:ring-2 focus-within:ring-ring"
+          >
+            <ng-icon name="lucideSearch" size="16" class="text-muted-foreground" />
+            <input
+              type="search"
+              class="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              placeholder="Filter, or type a new part"
+              aria-label="Filter parts"
+              data-testid="mini-part-filter"
+              [value]="filter()"
+              (input)="typeFilter($event)"
+            />
+          </label>
+          @if (options().fromKit.length > 0) {
+            <div class="flex flex-col gap-2">
+              <span class="text-xs text-muted-foreground">From the kit · {{ boxName() }}</span>
+              <div class="flex flex-wrap gap-2">
+                @for (option of options().fromKit; track option.name) {
+                  <ng-container *ngTemplateOutlet="chip; context: { $implicit: option }" />
+                }
+              </div>
+            </div>
+          }
+          @if (options().fromVocabulary.length > 0) {
+            <div class="flex flex-col gap-2">
+              <span class="text-xs text-muted-foreground">Your parts</span>
+              <div class="flex flex-wrap gap-2">
+                @for (option of options().fromVocabulary; track option.name) {
+                  <ng-container *ngTemplateOutlet="chip; context: { $implicit: option }" />
+                }
+              </div>
+            </div>
+          }
+          @if (options().fromRange.length > 0) {
+            <div class="flex flex-col gap-2">
+              <span class="text-xs text-muted-foreground">{{ rangeName() }} range</span>
+              <div class="flex flex-wrap gap-2">
+                @for (option of options().fromRange; track option.name) {
+                  <ng-container *ngTemplateOutlet="chip; context: { $implicit: option }" />
+                }
+              </div>
+            </div>
+          }
+          @if (options().create; as create) {
+            <div class="flex flex-col gap-2 border-t pt-4">
+              <span class="text-xs text-muted-foreground">New part</span>
+              <div class="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  class="inline-flex h-8 items-center gap-1.5 rounded-full border border-dashed border-muted-foreground bg-muted px-3 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  data-testid="mini-part-create"
+                  (click)="createPart(create)"
+                >
+                  <ng-icon name="lucidePlus" size="14" />
+                  Create “{{ create }}”
+                </button>
+                <span class="text-sm text-muted-foreground"
+                  >Becomes a part of your own, usable on every mini.</span
+                >
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ng-template #chip let-option>
+    <button
+      type="button"
+      class="inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      data-testid="mini-part-option"
+      (click)="addPart(option)"
+    >
+      + {{ option.name }}
+      @if (option.alias) {
+        <span class="text-muted-foreground">also {{ option.alias }}</span>
+      }
+    </button>
+  </ng-template>
+
+  <section class="flex flex-col gap-3 rounded-xl border bg-card p-5">
+    <label class="font-semibold" for="mini-notes">Notes</label>
+    <textarea
+      id="mini-notes"
+      rows="3"
+      class="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+      placeholder="Kitbash sources, loadout ideas, what is still to do"
+      data-testid="mini-notes"
+      [value]="notes()"
+      (input)="typeNotes($event)"
+      (blur)="commitNotes()"
+    ></textarea>
+  </section>
+
+  @if (isOnSprue()) {
+    <div
+      class="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-card p-4"
+      data-testid="mini-build-bar"
+    >
+      <p class="min-w-0 flex-1 basis-64 text-sm" data-testid="mini-build-summary">
+        {{ summary() }}
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        @if (rowSize() > 1) {
+          <div class="flex items-center gap-2 text-sm text-muted-foreground">
+            <div
+              class="flex h-10 items-center rounded-lg border"
+              role="group"
+              aria-label="How many to build"
+            >
+              <button
+                type="button"
+                class="flex size-10 items-center justify-center text-foreground disabled:opacity-50"
+                aria-label="One fewer"
+                data-testid="mini-build-less"
+                [disabled]="count() <= 1"
+                (click)="changeCount(-1)"
+              >
+                <ng-icon name="lucideMinus" size="16" />
+              </button>
+              <span
+                class="w-6 text-center font-semibold text-foreground tabular-nums"
+                aria-live="polite"
+                data-testid="mini-build-count"
+                >{{ count() }}</span
+              >
+              <button
+                type="button"
+                class="flex size-10 items-center justify-center text-foreground disabled:opacity-50"
+                aria-label="One more"
+                data-testid="mini-build-more"
+                [disabled]="count() >= rowSize()"
+                (click)="changeCount(1)"
+              >
+                <ng-icon name="lucidePlus" size="16" />
+              </button>
+            </div>
+            of {{ rowSize() }}
+          </div>
+        }
+        <div class="flex items-center gap-2 text-sm">
+          <hlm-checkbox
+            inputId="mini-build-workbench"
+            data-testid="mini-build-workbench"
+            [checked]="isOnWorkbench()"
+            (checkedChange)="setBuildWorkbench($event)"
+          />
+          <label for="mini-build-workbench">Put on workbench</label>
+        </div>
+        <button
+          hlmBtn
+          type="button"
+          class="h-10 px-4 text-sm font-semibold"
+          data-testid="mini-build"
+          [disabled]="isBuilding() || buildName() === ''"
+          [attr.aria-busy]="isBuilding()"
+          (click)="build()"
+        >
+          <ng-icon name="lucideHammer" size="16" />
+          @if (isBuilding()) {
+            Building…
+          } @else if (count() === 1) {
+            Build mini
+          } @else {
+            Build {{ count() }} minis
+          }
+        </button>
+      </div>
+    </div>
+  }
+} @else {
+  <p class="text-muted-foreground" role="alert" data-testid="mini-not-found">
+    This mini isn't in your hoard.
+  </p>
+}

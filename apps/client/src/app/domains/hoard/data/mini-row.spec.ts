@@ -37,7 +37,7 @@ describe('Mini rows', () => {
       boy('2', { name: 'Nob' }),
       boy('3', { factionIds: ['warhammer-40000/space-marines'] }),
       boy('4', { status: 'built' }),
-      boy('5', { parts: ['Slugga'] }),
+      boy('5', { parts: [{ partId: 'slugga', isSwappable: false }] }),
     ];
 
     const rows = toMiniRows(minis, BOXES, NAMES);

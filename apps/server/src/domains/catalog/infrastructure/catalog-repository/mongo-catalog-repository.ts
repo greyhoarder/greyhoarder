@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import type { ClientSession, Connection, Model } from 'mongoose';
+import type { CatalogFaction } from '../../models/catalog-faction.js';
 import type { CatalogImport } from '../../models/catalog-import.js';
 import type { CatalogUpdate } from '../../models/catalog-update.js';
 import type { ImportedCatalog } from '../../models/imported-catalog.js';
@@ -106,6 +107,22 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       ...systems.map((system) => [system.systemId, system.name] as const),
       ...factions.map((faction) => [faction.factionId, faction.name] as const),
     ]);
+  }
+
+  async findFactions(ids: readonly string[]): Promise<CatalogFaction[]> {
+    const factions = await this.factions.find({ ...LATEST, isRemoved: false, factionId: { $in: ids } }).lean().exec();
+    return factions.map(toCatalogFaction);
+  }
+
+  async findKitParts(factionIds: readonly string[]): Promise<string[]> {
+    const parts: unknown[] = await this.kits
+      .distinct('variants.slots.parts', {
+        ...LATEST,
+        isRemoved: false,
+        $or: [{ factionIds: { $in: factionIds } }, { 'variants.slots.factionIds': { $in: factionIds } }],
+      })
+      .exec();
+    return parts.filter((part): part is string => typeof part === 'string');
   }
 
   async findSystemNames(factionIds: readonly string[]): Promise<ReadonlyMap<string, string>> {

@@ -1,5 +1,5 @@
 import { InvalidMiniError } from './errors/invalid-mini.error.js';
-import { type Mini, parseMini } from './mini.js';
+import { type Mini, parseMini, withStatus } from './mini.js';
 
 function boy(mini: Partial<Mini> = {}): Mini {
   return {
@@ -30,5 +30,17 @@ describe('Mini', () => {
     const mini = parseMini(boy({ name: ' Boy ' }));
 
     expect(mini.name).toBe('Boy');
+  });
+
+  it('takes a mini off the workbench once it is done', () => {
+    const mini = withStatus(boy({ status: 'painted', isOnWorkbench: true }), 'done');
+
+    expect(mini.isOnWorkbench).toBe(false);
+  });
+
+  it('keeps a mini on the workbench for every other status', () => {
+    const mini = withStatus(boy({ status: 'built', isOnWorkbench: true }), 'primed');
+
+    expect(mini.isOnWorkbench).toBe(true);
   });
 });

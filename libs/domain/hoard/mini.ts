@@ -1,4 +1,10 @@
 import type { HobbyStatus } from './hobby-status.js';
+
+/** A part on a mini: one of the user's vocabulary, glued or swappable (magnetised). */
+export interface MiniPart {
+  readonly partId: string;
+  readonly isSwappable: boolean;
+}
 import { InvalidMiniError } from './errors/invalid-mini.error.js';
 
 /** One physical miniature, built or still on the sprue (docs/domains/hoard.md). */
@@ -9,7 +15,14 @@ export interface Mini {
   /** Catalog factions or the user's own; a mini may have none. */
   readonly factionIds: readonly string[];
   readonly status: HobbyStatus;
-  readonly parts: readonly string[];
+  readonly parts: readonly MiniPart[];
+  /** Kitbash sources, loadout ideas, what is still to do. */
+  readonly notes?: string;
+  /**
+   * The name it got when its box was added; never changes. A mini built under a name of the
+   * user's own uses up the suggestion it had on the sprue.
+   */
+  readonly sprueName?: string;
   /** The box it came out of; minis bought loose have none. */
   readonly boxId?: string;
   readonly isOnWorkbench: boolean;
@@ -26,4 +39,14 @@ export function parseMini(mini: Mini): Mini {
     throw new InvalidMiniError();
   }
   return { ...mini, name };
+}
+
+/** Whether a mini leaves the workbench on reaching the status: once done (docs/domains/hoard.md, Workbench). */
+export function leavesWorkbench(status: HobbyStatus): boolean {
+  return status === 'done';
+}
+
+/** A mini with a new status; once done, it leaves the workbench. */
+export function withStatus(mini: Mini, status: HobbyStatus): Mini {
+  return { ...mini, status, isOnWorkbench: leavesWorkbench(status) ? false : mini.isOnWorkbench };
 }

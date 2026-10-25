@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ImportService } from './features/import/import.service.js';
 import { KitsController } from './features/kits/kits.controller.js';
 import { KitsService } from './features/kits/kits.service.js';
+import { PartsController } from './features/parts/parts.controller.js';
+import { PartsService } from './features/parts/parts.service.js';
 import { CatalogFactionDbo, CatalogFactionSchema } from './infrastructure/catalog-repository/schemas/mongo-catalog-faction-schema.js';
 import { CatalogImportDbo, CatalogImportSchema } from './infrastructure/catalog-repository/schemas/mongo-catalog-import-schema.js';
 import { CatalogKitDbo, CatalogKitSchema } from './infrastructure/catalog-repository/schemas/mongo-catalog-kit-schema.js';
@@ -13,7 +15,7 @@ import { CatalogKitQueries } from './ports/catalog-kit-queries.js';
 import { CatalogRepository } from './ports/catalog-repository.js';
 import { CatalogSnapshotSource } from './ports/catalog-snapshot-source.js';
 
-/** Kits and factions of the community catalog, their import and the search for kits (ADR-0020). Depends on no other domain. */
+/** Kits and factions of the community catalog, their import, the search for kits and the parts of a range (ADR-0020). Depends on no other domain. */
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -23,10 +25,11 @@ import { CatalogSnapshotSource } from './ports/catalog-snapshot-source.js';
       { name: CatalogImportDbo.name, schema: CatalogImportSchema },
     ]),
   ],
-  controllers: [KitsController],
+  controllers: [KitsController, PartsController],
   providers: [
     ImportService,
     KitsService,
+    PartsService,
     { provide: CatalogSnapshotSource, useClass: YamlCatalogSnapshotSource },
     MongoCatalogRepository,
     { provide: CatalogRepository, useExisting: MongoCatalogRepository },

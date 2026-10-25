@@ -5,7 +5,7 @@
 - **Domain:** `hoard`
 - **Related:** [Domain: hoard](../domains/hoard.md),
   [ADR-0019](../adr/0019-hobby-data-model.md), [Shell](shell.md),
-  [Box](box.md)
+  [Box](box.md), [Mini](mini.md)
 
 ## Purpose
 
@@ -160,9 +160,9 @@ summary line.
   selection mode. "Select" starts the mode without a pointer, e.g. on touch
   screens.
 - In selection mode a click anywhere on a row selects or deselects it.
-  Outside it, a click on a row will open the row for editing (not built
-  yet), and a click on a box opens [Box](box.md). Returning from there
-  keeps the Boxes tab's search, filters and view.
+  Outside it, a click on a row opens [Mini](mini.md) for the row, and a
+  click on a box opens [Box](box.md). Returning from there keeps the tab's
+  search, filters and view.
 - "Select all" selects every row that is currently shown. "Done", and
   later every action on the selection, ends the mode and clears the
   selection.
@@ -188,9 +188,9 @@ summary line.
 - Sortable table headers are buttons, and the current column carries
   `aria-sort`.
 - The view switch marks the current view with `aria-pressed`.
-- The name of each box, on its card and in its table line, is a button:
-  it opens the box, or selects it in selection mode, so boxes open by
-  keyboard as well.
+- The name of each row of minis and of each box, on its card and in its
+  table line, is a button: it opens the row or the box, or selects it in
+  selection mode, so both open by keyboard as well.
 
 ## Test IDs
 

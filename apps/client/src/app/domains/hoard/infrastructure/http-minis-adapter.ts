@@ -1,8 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import type { Mini } from '@greyhoarder/domain/hoard';
-import type { MinisResponse } from '@greyhoarder/protocol/hoard';
+import type {
+  MinisResponse,
+  UpdateMinisRequest,
+  UpdateMinisResponse,
+} from '@greyhoarder/protocol/hoard';
 import { firstValueFrom } from 'rxjs';
+import type { MiniChanges } from '../models/mini-changes';
 
 /** Talks to `hoard/minis` on the server. */
 @Injectable({ providedIn: 'root' })
@@ -22,5 +27,14 @@ export class HttpMinisAdapter {
       factionNames: new Map(Object.entries(response.factionNames)),
       systemNames: new Map(Object.entries(response.systemNames)),
     };
+  }
+
+  /** Applies the changes to every given mini alike; part names the vocabulary lacks are added to it. */
+  async update(ids: readonly string[], changes: MiniChanges): Promise<readonly Mini[]> {
+    const body: UpdateMinisRequest = { ids, set: changes };
+    const response = await firstValueFrom(
+      this.http.patch<UpdateMinisResponse>('/api/hoard/minis', body),
+    );
+    return response.minis;
   }
 }

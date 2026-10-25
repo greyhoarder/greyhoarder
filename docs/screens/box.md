@@ -3,7 +3,7 @@
 - **Route:** `/hoard/boxes/:id`
 - **Domain:** `hoard`
 - **Related:** [Hoard](hoard.md), [Domain: hoard](../domains/hoard.md),
-  [Add box](add-box.md), [Shell](shell.md)
+  [Add box](add-box.md), [Mini](mini.md), [Shell](shell.md)
 
 ## Purpose
 
@@ -118,9 +118,9 @@ differ from the factions of the box. Alike minis share a row as in every
   minis on the sprue are the empty background of the bar.
 - The minis are sorted by status, from done back to on the sprue, then by
   name.
-- A click on a mini opens the mini for editing, the same window as a click
-  on a row of the Minis tab (not built yet). After a change, the minis,
-  the progress and the tiles show the new state.
+- A click on a mini opens [Mini](mini.md) for its row, as a click on a row
+  of the Minis tab does. After a change, the minis, the progress and the
+  tiles show the new state.
 - The row menu offers the same as on the Minis tab.
 - "Show in hoard" and "Show minis in hoard" lead to the Minis tab of the
   hoard with this box ticked in the "Box" filter.
@@ -148,11 +148,6 @@ differ from the factions of the box. Alike minis share a row as in every
 
 ## Open questions
 
-- The mini window: what it edits, and how many minis of a row with several
-  alike minis it changes (shared with the [hoard](hoard.md#open-questions)).
-- Whether the mini window gets a route of its own (e.g.
-  `/hoard/minis/:id`) so that both screens only link to it, or is a
-  shared component in `hoard/ui/`.
 - What "Take from the sprue" asks, and what "Edit box" edits (name,
   factions, tags, date).
 - Whether the kit card should say when the catalog has a newer version of

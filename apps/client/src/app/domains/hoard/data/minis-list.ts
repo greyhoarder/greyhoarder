@@ -8,6 +8,7 @@ import { countMinis, toMiniRows } from './mini-row';
 import { matchesSearch } from './mini-search';
 import { sortRows } from './mini-sort';
 import { MinisStore } from './minis-store';
+import { PartsStore } from './parts-store';
 
 /**
  * The minis of the hoard as the Minis tab lists them, alike ones as one row, with its search,
@@ -18,9 +19,15 @@ export class MinisList {
   private readonly minisStore = inject(MinisStore);
   private readonly boxesStore = inject(BoxesStore);
   private readonly factionNames = inject(FactionNamesStore);
+  private readonly partsStore = inject(PartsStore);
 
   readonly rows = computed(() =>
-    toMiniRows(this.minisStore.minis(), this.boxesStore.boxes(), this.factionNames.names()),
+    toMiniRows(
+      this.minisStore.minis(),
+      this.boxesStore.boxes(),
+      this.factionNames.names(),
+      this.partsStore.names(),
+    ),
   );
 
   readonly isLoading = computed(() => this.minisStore.isLoading() || this.boxesStore.isLoading());

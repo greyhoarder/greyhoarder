@@ -8,3 +8,9 @@ export {
   type KitSearchResponse,
   kitSearchResponseSchema,
 } from './kits.js';
+export {
+  type RangePartsRequest,
+  rangePartsRequestSchema,
+  type RangePartsResponse,
+  rangePartsResponseSchema,
+} from './parts.js';

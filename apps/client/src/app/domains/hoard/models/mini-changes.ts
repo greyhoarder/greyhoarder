@@ -1,0 +1,16 @@
+import type { HobbyStatus } from '@greyhoarder/domain/hoard';
+
+/** A part to put on minis: one of the vocabulary, or a name, which joins the vocabulary if it is new. */
+export type PartChange =
+  | { readonly partId: string; readonly isSwappable: boolean }
+  | { readonly name: string; readonly isSwappable: boolean };
+
+/** What to change on every mini of a row alike; left out means unchanged. */
+export interface MiniChanges {
+  readonly name?: string;
+  readonly status?: HobbyStatus;
+  readonly factionIds?: readonly string[];
+  readonly parts?: readonly PartChange[];
+  readonly notes?: string;
+  readonly isOnWorkbench?: boolean;
+}

@@ -36,6 +36,8 @@ function fakeQueries(kits: {
     findKits: (ids) => Promise.resolve(kits.catalog.filter((entry) => ids.includes(entry.id)).map(latest)),
     findKitVersion: (id, version) =>
       Promise.resolve(kits.versions?.find((stored) => stored.entry.id === id && stored.version === version)),
+    findFactions: () => Promise.resolve([]),
+    findKitParts: () => Promise.resolve([]),
     findFactionNames: () => Promise.resolve(new Map()),
     findSystemNames: () => Promise.resolve(new Map()),
   };

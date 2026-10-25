@@ -46,6 +46,7 @@ export function newBoxes(
             factionIds,
             status: 'sprue',
             parts: [],
+            sprueName: kind.name,
             boxId: box.id,
             isOnWorkbench: false,
           }),

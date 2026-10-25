@@ -124,4 +124,10 @@ describe('New boxes', () => {
       'Spanner',
     ]);
   });
+
+  it('remembers the name each mini got on the sprue', () => {
+    const { minis } = addBoyz(1);
+
+    expect(minis.map((mini) => mini.sprueName)).toEqual([...Array<string>(9).fill('Boy'), 'Nob']);
+  });
 });

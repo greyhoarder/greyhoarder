@@ -7,9 +7,14 @@ export default [
     loadComponent: async () => (await import('./features/add-box/add-box-page')).AddBoxPage,
   },
   {
+    path: 'hoard/minis/:id',
+    title: 'Mini · Greyhoarder',
+    loadComponent: async () => (await import('./features/mini-detail/mini-detail-page')).MiniDetailPage,
+  },
+  {
     path: 'hoard/boxes/:id',
     title: 'Box · Greyhoarder',
-    loadComponent: async () => (await import('./features/box/box-page')).BoxPage,
+    loadComponent: async () => (await import('./features/box-detail/box-detail-page')).BoxDetailPage,
   },
   {
     path: 'hoard',
@@ -19,11 +24,11 @@ export default [
       { path: '', pathMatch: 'full', redirectTo: 'minis' },
       {
         path: 'minis',
-        loadComponent: async () => (await import('./features/minis/minis-page')).MinisPage,
+        loadComponent: async () => (await import('./features/mini-list/mini-list-page')).MiniListPage,
       },
       {
         path: 'boxes',
-        loadComponent: async () => (await import('./features/boxes/boxes-page')).BoxesPage,
+        loadComponent: async () => (await import('./features/box-list/box-list-page')).BoxListPage,
       },
     ],
   },

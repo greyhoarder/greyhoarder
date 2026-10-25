@@ -1,7 +1,8 @@
 import type { Box, HobbyStatus, Mini } from '@greyhoarder/domain/hoard';
+import { alikeKey } from '../models/mini-alikeness';
 import { factionNamesOf } from '../util/kit-labels';
 
-/** Alike minis (same name, factions, status and parts) bundled into one row of a list. */
+/** Alike minis (same name, factions, status, parts and notes) bundled into one row of a list. */
 export interface MiniRow {
   /** That of the row's first mini. */
   readonly id: string;
@@ -11,6 +12,7 @@ export interface MiniRow {
   readonly box?: string;
   /** Id of the origin box, which tells boxes with the same name apart. */
   readonly boxId?: string;
+  /** The names of the parts. */
   readonly parts: readonly string[];
   readonly status: HobbyStatus;
   readonly isOnWorkbench: boolean;
@@ -25,11 +27,12 @@ export function toMiniRows(
   minis: readonly Mini[],
   boxes: readonly Box[],
   factionNames: ReadonlyMap<string, string>,
+  partNames: ReadonlyMap<string, string> = new Map(),
 ): MiniRow[] {
   const boxNames = new Map(boxes.map((box) => [box.id, box.name]));
   const rows = new Map<string, MiniRow>();
   for (const mini of minis) {
-    const key = JSON.stringify([mini.name, mini.factionIds, mini.status, mini.parts, mini.boxId, mini.isOnWorkbench]);
+    const key = alikeKey(mini);
     const row = rows.get(key);
     rows.set(
       key,
@@ -41,7 +44,7 @@ export function toMiniRows(
             factions: factionNamesOf(mini.factionIds, factionNames),
             box: mini.boxId === undefined ? undefined : boxNames.get(mini.boxId),
             boxId: mini.boxId,
-            parts: mini.parts,
+            parts: mini.parts.flatMap((part) => partNames.get(part.partId) ?? []),
             status: mini.status,
             isOnWorkbench: mini.isOnWorkbench,
             count: 1,
