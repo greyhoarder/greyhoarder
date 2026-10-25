@@ -175,10 +175,11 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
   `data/`, `models/`, `infrastructure/`, `util/` and `<domain>.routes.ts`.
 - `features/` holds pages, smart components and their state, and the
   presentational components only that feature uses, each in a folder of
-  its own (`features/boxes/box-card/`).
-- `ui/` holds the presentational components that at least two features of
-  the domain share. A component moves there when a second feature needs
-  it, never in advance.
+  its own (`features/box-list/box-card/`). Features are named after what
+  they show or do, e.g. `box-list`, `box-detail`, `add-box`.
+- `ui/` holds the presentational components, directives and pipes that at
+  least two features of the domain share. One moves there when a second
+  feature needs it, never in advance.
 - `data/` holds the data the client keeps locally: stores shared by
   features of the domain (in memory or browser storage) and fixed or
   temporary data, e.g. sample data named `sample-<subject>.ts` that stands
@@ -190,6 +191,13 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
   `Kit`) and the rules that follow from it, not how screens show it. It is
   the innermost layer: it imports nothing from Angular, RxJS or other
   frameworks and nothing from its own domain, only `@greyhoarder/domain`.
+  Models are readonly types and pure functions, not classes or services;
+  a rule that needs context (today's date, user settings) gets it as a
+  parameter from the store in `data/` that calls it.
+- When rules in `models/` or `libs/domain` keep needing context that
+  dependency injection would provide, or the same context is passed
+  through many rules, point it out and propose a new ADR that revisits
+  this layer, instead of injecting into models or working around it.
 - `infrastructure/` holds only access to external resources: one HTTP
   adapter per server controller, named `http-<resource>-adapter.ts`
   (`HttpSetupAdapter`). It maps between protocol DTOs and domain models

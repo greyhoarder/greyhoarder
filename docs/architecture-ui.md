@@ -18,6 +18,10 @@ _(derived from [ADR-0011](adr/0011-ui-components-with-spartan-and-tailwind.md))_
   domain terms, no imports from domains, services or the API.
 - Presentational components with domain terms (e.g. a box card or a hobby
   status badge) live in their domain and build on `shared/ui/`.
+- Directives and pipes follow the same rule as components: generic ones
+  (e.g. keyboard navigation in a menu) belong with the building blocks,
+  ones with domain terms in their domain. A pipe only shows a value; the
+  rule behind it lives in `models/` or `libs/domain`.
 
 _(derived from [ADR-0011](adr/0011-ui-components-with-spartan-and-tailwind.md))_
 
