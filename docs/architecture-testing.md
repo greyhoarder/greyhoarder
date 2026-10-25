@@ -14,6 +14,28 @@ end-to-end tests in `tests/e2e` and for architecture tests in
 
 _(derived from [ADR-0012](adr/0012-unit-tests-with-vitest.md))_
 
+## What tests check
+
+Tests check use cases, not code: what a user or caller can do and
+observe, not how the code does it.
+
+- "As the tests get more specific, the code gets more generic" (Robert C.
+  Martin). Each new test adds one specific case of a use case; the code
+  answers by becoming a more general solution, not by gaining a branch
+  per test.
+- A test describes a behavior a user or caller relies on. It does not
+  mirror the code's structure: no test per method, per branch or per
+  helper.
+- A refactoring that keeps the behavior keeps every test green and
+  unchanged. A test that breaks on such a refactoring checks the code,
+  not the use case.
+- A test case changes only when its use case changes.
+- A rule is tested where it lives (`models/`, `libs/domain`), with a case
+  per specific situation. A component that uses it gets one case showing
+  the rule's result, not the rule again.
+- Tests find elements by test IDs, roles or ARIA attributes, never by CSS
+  classes; a restyle keeps them green.
+
 ## Writing tests
 
 - Name spec files `<file>.spec.ts` and place them next to the code they
