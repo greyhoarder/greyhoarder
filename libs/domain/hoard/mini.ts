@@ -26,6 +26,22 @@ export interface Mini {
   /** The box it came out of; minis bought loose have none. */
   readonly boxId?: string;
   readonly isOnWorkbench: boolean;
+  /** Set once the mini left the hoard while its record stays; deleted minis are gone for good. */
+  readonly departure?: Departure;
+}
+
+/** Why a mini left the hoard (docs/domains/hoard.md, Leaving the hoard). */
+export const departureReasons = ['sold', 'given-away', 'stripped', 'lost'] as const;
+
+export type DepartureReason = (typeof departureReasons)[number];
+
+/** How a mini left the hoard. */
+export interface Departure {
+  readonly reason: DepartureReason;
+  /** ISO date, e.g. "2026-10-12". */
+  readonly on: string;
+  /** For minis stripped for parts: the minis that got them. */
+  readonly recipientMiniIds?: readonly string[];
 }
 
 /**
@@ -49,4 +65,18 @@ export function leavesWorkbench(status: HobbyStatus): boolean {
 /** A mini with a new status; once done, it leaves the workbench. */
 export function withStatus(mini: Mini, status: HobbyStatus): Mini {
   return { ...mini, status, isOnWorkbench: leavesWorkbench(status) ? false : mini.isOnWorkbench };
+}
+
+/** A gone mini left the hoard; its record stays. */
+export function isGone(mini: Mini): boolean {
+  return mini.departure !== undefined;
+}
+
+/** A mini that left the hoard, off the workbench; without a departure, one back in the hoard. */
+export function withDeparture(mini: Mini, departure: Departure | undefined): Mini {
+  if (departure === undefined) {
+    const { departure: _left, ...back } = mini;
+    return back;
+  }
+  return { ...mini, departure, isOnWorkbench: false };
 }
