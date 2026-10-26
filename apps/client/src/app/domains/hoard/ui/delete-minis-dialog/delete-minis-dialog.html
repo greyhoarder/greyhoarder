@@ -1,0 +1,46 @@
+<hlm-alert-dialog
+  [state]="isOpen() ? 'open' : 'closed'"
+  [disableClose]="isDeleting()"
+  autoFocus="[data-slot=alert-dialog-cancel]"
+  (closed)="closed.emit()"
+>
+  <hlm-alert-dialog-content *hlmAlertDialogPortal [attr.data-testid]="screen() + '-delete-dialog'">
+    <hlm-alert-dialog-header>
+      <h2 hlmAlertDialogTitle>
+        {{
+          count() === 1 ? 'Delete this mini for good?' : 'Delete ' + count() + ' minis for good?'
+        }}
+      </h2>
+      <p hlmAlertDialogDescription>{{ names() }}. This can't be undone.</p>
+    </hlm-alert-dialog-header>
+    @if (hasFailed()) {
+      <p
+        class="text-sm text-destructive"
+        role="alert"
+        [attr.data-testid]="screen() + '-delete-error'"
+      >
+        Can't delete right now. Try again in a moment.
+      </p>
+    }
+    <hlm-alert-dialog-footer>
+      <button
+        hlmAlertDialogCancel
+        [disabled]="isDeleting()"
+        [attr.data-testid]="screen() + '-delete-cancel'"
+      >
+        Cancel
+      </button>
+      <button
+        hlmAlertDialogAction
+        variant="destructive"
+        class="font-semibold"
+        [disabled]="isDeleting()"
+        [attr.aria-busy]="isDeleting()"
+        [attr.data-testid]="screen() + '-delete-confirm'"
+        (click)="confirmed.emit()"
+      >
+        {{ count() === 1 ? 'Delete mini' : 'Delete ' + count() + ' minis' }}
+      </button>
+    </hlm-alert-dialog-footer>
+  </hlm-alert-dialog-content>
+</hlm-alert-dialog>

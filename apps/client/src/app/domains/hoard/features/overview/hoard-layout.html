@@ -5,7 +5,7 @@
       <hlm-skeleton class="h-5 w-56" />
     } @else {
       <p class="text-muted-foreground" data-testid="hoard-summary">
-        {{ minis.miniCount() }} minis from {{ boxes.boxes().length }} boxes ·
+        {{ minis.ownedCount() }} minis from {{ boxes.boxes().length }} boxes ·
         {{ minis.paintedCount() }} painted
       </p>
     }

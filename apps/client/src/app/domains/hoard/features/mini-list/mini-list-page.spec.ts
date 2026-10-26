@@ -48,7 +48,13 @@ describe('Minis page', () => {
         { provide: HttpPartsAdapter, useValue: { list: vi.fn(async () => PARTS) } },
         {
           provide: HttpMinisAdapter,
-          useValue: { list: vi.fn(async () => ({ minis: await loadMinis(), factionNames: new Map(), systemNames: new Map() })) },
+          useValue: {
+            list: vi.fn(async () => ({
+              minis: await loadMinis(),
+              factionNames: new Map(),
+              systemNames: new Map(),
+            })),
+          },
         },
       ],
     });
@@ -73,10 +79,22 @@ describe('Minis page', () => {
     await fixture.whenStable();
   };
 
-  it('shows only the rows with a matching part while searching', async () => {
+  const openGroup = async (index: number): Promise<void> => {
+    byTestId('hoard-group-toggle')[index]?.click();
+    await fixture.whenStable();
+  };
+
+  const showTable = async (): Promise<void> => {
+    TestBed.inject(HoardView).mode.set('table');
+    await fixture.whenStable();
+  };
+
+  it('shows only the minis with a matching part while searching', async () => {
     await search('klaw');
 
-    expect(byTestId('hoard-row')).toHaveLength(1);
+    expect(byTestId('hoard-group').map((group) => group.textContent)).toEqual([
+      expect.stringContaining('Nob'),
+    ]);
   });
 
   it('says that nothing matches when the search finds no minis', async () => {
@@ -91,7 +109,7 @@ describe('Minis page', () => {
 
     await fixture.whenStable();
 
-    expect(textOf('hoard-empty')).toBe('No minis yet. Add a box and its minis appear here.');
+    expect(byTestId('hoard-empty')).toHaveLength(1);
     expect(byTestId('hoard-no-results')).toHaveLength(0);
   });
 
@@ -105,31 +123,73 @@ describe('Minis page', () => {
     expect(byTestId('hoard-no-results')).toHaveLength(0);
   });
 
-  it('opens a row with a click on its card', async () => {
+  it('opens a mini with a click on its line in an open group', async () => {
+    await openGroup(0);
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
     byTestId('hoard-row')[0]?.click();
 
-    expect(navigate).toHaveBeenCalledWith(['/hoard/minis', 'm1']);
+    expect(navigate).toHaveBeenCalledWith(['/hoard/minis', 'm2']);
   });
 
-  it('opens a row with a click on its table line', async () => {
-    TestBed.inject(HoardView).mode.set('table');
-    await fixture.whenStable();
+  it('opens a mini with a click on its table line', async () => {
+    await showTable();
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
     byTestId('hoard-row')[0]?.click();
 
-    expect(navigate).toHaveBeenCalledWith(['/hoard/minis', expect.stringMatching(/^m[123]$/)]);
+    expect(navigate).toHaveBeenCalledWith(['/hoard/minis', expect.stringMatching(/^m[23]$/)]);
+  });
+
+  it('leaves out minis still on the sprue', async () => {
+    showPage(() =>
+      Promise.resolve([mini('s1', { name: 'Grot' }), mini('b1', { name: 'Nob', status: 'built' })]),
+    );
+    await fixture.whenStable();
+
+    await showTable();
+
+    expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([
+      expect.stringContaining('Nob'),
+    ]);
+  });
+
+  it('shows a table line for every mini', async () => {
+    showPage(() => Promise.resolve(['b1', 'b2', 'b3'].map((id) => mini(id, { status: 'built' }))));
+    await fixture.whenStable();
+
+    await showTable();
+
+    expect(byTestId('hoard-row')).toHaveLength(3);
+  });
+
+  it('keeps a group open after coming back to the tab', async () => {
+    await openGroup(0);
+
+    fixture = TestBed.createComponent(MiniListPage);
+    page = fixture.nativeElement;
+    await fixture.whenStable();
+
+    expect(byTestId('hoard-group-toggle')[0]?.getAttribute('aria-expanded')).toBe('true');
   });
 
   describe('with two boxes of the same name', () => {
-    const box = (id: string, addedOn: string): Box => ({ id, name: 'Boyz (2026)', factionIds: [], tags: [], addedOn });
+    const box = (id: string, addedOn: string): Box => ({
+      id,
+      name: 'Boyz (2026)',
+      factionIds: [],
+      tags: [],
+      addedOn,
+    });
     const BOXES = [box('b1', '2026-10-12'), box('b2', '2026-09-30')];
 
     beforeEach(async () => {
       showPage(
-        () => Promise.resolve([mini('m1', { boxId: 'b1' }), mini('m2', { name: 'Nob', boxId: 'b2' })]),
+        () =>
+          Promise.resolve([
+            mini('m1', { boxId: 'b1', status: 'built' }),
+            mini('m2', { name: 'Nob', boxId: 'b2', status: 'built' }),
+          ]),
         BOXES,
       );
       await fixture.whenStable();
@@ -139,20 +199,20 @@ describe('Minis page', () => {
       byTestId('hoard-filter-box')[0]?.click();
       await fixture.whenStable();
 
-      const options = [...document.querySelectorAll('[data-testid="hoard-filter-option"] label')].map((label) =>
-        label.textContent?.trim(),
-      );
-      expect(options).toEqual([
-        'Boyz (2026) · 12 Oct 2026',
-        'Boyz (2026) · 30 Sep 2026',
-      ]);
+      const options = [
+        ...document.querySelectorAll('[data-testid="hoard-filter-option"] label'),
+      ].map((label) => label.textContent?.trim());
+      expect(options).toEqual(['Boyz (2026) · 12 Oct 2026', 'Boyz (2026) · 30 Sep 2026']);
     });
 
     it('shows only the minis of the ticked box, not those of another box with the same name', async () => {
+      await showTable();
       TestBed.inject(MinisList).boxFilter.set(new Set(['b2']));
       await fixture.whenStable();
 
-      expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([expect.stringContaining('Nob')]);
+      expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([
+        expect.stringContaining('Nob'),
+      ]);
     });
   });
 });

@@ -1,18 +1,21 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { hasReached } from '@greyhoarder/domain/hoard';
+import { hasReached, isGone } from '@greyhoarder/domain/hoard';
 import { toggled } from '../util/selection';
+import { MiniSelection } from './mini-selection';
 import { BoxesStore } from './boxes-store';
 import { FactionNamesStore } from './faction-names-store';
 import { matchesFilter } from './mini-filter';
-import { countMinis, toMiniRows } from './mini-row';
+import { toHoardGroups } from './hoard-group';
+import { countMinis, toSingleRows } from './mini-row';
 import { matchesSearch } from './mini-search';
 import { sortRows } from './mini-sort';
 import { MinisStore } from './minis-store';
 import { PartsStore } from './parts-store';
 
 /**
- * The minis of the hoard as the Minis tab lists them, alike ones as one row, with its search,
- * filters and selection; shared with the frame of the hoard, which shows the counts.
+ * The minis of the hoard past the sprue as the Minis tab lists them, each as a row of its own and
+ * in groups, with its search, filters, selection and open groups; shared with the frame of the
+ * hoard, which shows the counts.
  */
 @Injectable({ providedIn: 'root' })
 export class MinisList {
@@ -21,14 +24,18 @@ export class MinisList {
   private readonly factionNames = inject(FactionNamesStore);
   private readonly partsStore = inject(PartsStore);
 
+  /** Minis on the sprue are built on their box (docs/screens/hoard.md). */
   readonly rows = computed(() =>
-    toMiniRows(
-      this.minisStore.minis(),
+    toSingleRows(
+      this.minisStore.minis().filter((mini) => mini.status !== 'sprue'),
       this.boxesStore.boxes(),
       this.factionNames.names(),
       this.partsStore.names(),
     ),
   );
+
+  /** The rows of minis that are not gone. */
+  readonly presentRows = computed(() => this.rows().filter((row) => !row.departure));
 
   readonly isLoading = computed(() => this.minisStore.isLoading() || this.boxesStore.isLoading());
   readonly hasFailed = computed(() => this.minisStore.hasFailed() || this.boxesStore.hasFailed());
@@ -60,16 +67,25 @@ export class MinisList {
     ),
   );
 
-  readonly miniCount = computed(() => countMinis(this.rows()));
+  /** The groups of the visible rows, in their order. */
+  readonly visibleGroups = computed(() => toHoardGroups(this.visibleRows()));
+
+  /** Every mini that is not gone, on the sprue or not; for the summary. */
+  readonly ownedCount = computed(
+    () => this.minisStore.minis().filter((mini) => !isGone(mini)).length,
+  );
+  readonly miniCount = computed(() => countMinis(this.presentRows()));
   readonly visibleMiniCount = computed(() => countMinis(this.visibleRows()));
   readonly paintedCount = computed(() =>
-    countMinis(this.rows().filter((row) => hasReached(row.status, 'painted'))),
+    countMinis(this.presentRows().filter((row) => hasReached(row.status, 'painted'))),
   );
 
-  /** "Select" was pressed; selecting a row by its check starts the mode as well. */
-  private readonly isSelectStarted = signal(false);
-  readonly selectedIds = signal<ReadonlySet<string>>(new Set());
-  readonly isSelecting = computed(() => this.isSelectStarted() || this.selectedIds().size > 0);
+  /** Group cards stay open while the search or the filters change, and when coming back. */
+  readonly openGroupIds = signal<ReadonlySet<string>>(new Set());
+
+  private readonly selection = new MiniSelection();
+  readonly selectedIds = this.selection.selectedIds.asReadonly();
+  readonly isSelecting = this.selection.isSelecting;
   readonly selectedCount = computed(() =>
     countMinis(this.rows().filter((row) => this.selectedIds().has(row.id))),
   );
@@ -81,20 +97,23 @@ export class MinisList {
   }
 
   startSelecting(): void {
-    this.isSelectStarted.set(true);
+    this.selection.start();
   }
 
   /** Ends selection mode; nothing stays selected. */
   finishSelecting(): void {
-    this.isSelectStarted.set(false);
-    this.selectedIds.set(new Set());
+    this.selection.finish();
   }
 
   selectAll(): void {
-    this.selectedIds.set(new Set(this.visibleRows().map((row) => row.id)));
+    this.selection.selectAll(this.visibleRows().map((row) => row.id));
+  }
+
+  toggleGroup(id: string): void {
+    this.openGroupIds.update((ids) => toggled(ids, id, !ids.has(id)));
   }
 
   select(id: string, isSelected: boolean): void {
-    this.selectedIds.update((ids) => toggled(ids, id, isSelected));
+    this.selection.select(id, isSelected);
   }
 }

@@ -27,7 +27,8 @@
       "@spartan-ng/helm/select": ["./src/app/shared/ui/helm/select/src/index.ts"],
       "@spartan-ng/helm/popover": ["./src/app/shared/ui/helm/popover/src/index.ts"],
       "@spartan-ng/helm/table": ["./src/app/shared/ui/helm/table/src/index.ts"],
-      "@spartan-ng/helm/skeleton": ["./src/app/shared/ui/helm/skeleton/src/index.ts"]
+      "@spartan-ng/helm/skeleton": ["./src/app/shared/ui/helm/skeleton/src/index.ts"],
+      "@spartan-ng/helm/alert-dialog": ["./src/app/shared/ui/helm/alert-dialog/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

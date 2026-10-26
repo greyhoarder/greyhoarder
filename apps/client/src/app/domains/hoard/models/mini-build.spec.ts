@@ -20,12 +20,18 @@ const LOOTAS: Kit = {
   variants: [
     {
       name: 'Lootas',
-      slots: [slot(4, ['Loota'], ['Deffgun']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])],
+      slots: [
+        slot(4, ['Loota'], ['Deffgun']),
+        slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
+      ],
       minis: 5,
     },
     {
       name: 'Burna Boyz',
-      slots: [slot(4, ['Burna Boy'], ['Burna']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])],
+      slots: [
+        slot(4, ['Burna Boy'], ['Burna']),
+        slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
+      ],
       minis: 5,
     },
   ],
@@ -111,9 +117,21 @@ describe('Build suggestions', () => {
     expect(left).toBe(3);
   });
 
+  it('counts a mini built from an either-or slot as using up every name of that slot', () => {
+    const left = leftOf(
+      [mini('m1', { name: 'Loota', sprueName: 'Lootas / Burna Boyz', status: 'built' })],
+      'Burna Boy',
+    );
+
+    expect(left).toBe(3);
+  });
+
   it('never counts below none left', () => {
     const left = leftOf(
-      [mini('m1', { name: 'Spanner', status: 'built' }), mini('m2', { name: 'Spanner', status: 'primed' })],
+      [
+        mini('m1', { name: 'Spanner', status: 'built' }),
+        mini('m2', { name: 'Spanner', status: 'primed' }),
+      ],
       'Spanner',
     );
 
@@ -124,7 +142,11 @@ describe('Build suggestions', () => {
 describe('Preselected parts', () => {
   it('takes the parts of the mini most recently built as the name', () => {
     const minis = [
-      mini('m1', { name: 'Loota', status: 'built', parts: [{ partId: 'old', isSwappable: false }] }),
+      mini('m1', {
+        name: 'Loota',
+        status: 'built',
+        parts: [{ partId: 'old', isSwappable: false }],
+      }),
       mini('m2', { name: 'Loota', status: 'built', parts: [{ partId: 'new', isSwappable: true }] }),
     ];
 

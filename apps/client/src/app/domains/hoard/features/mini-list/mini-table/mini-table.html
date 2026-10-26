@@ -4,7 +4,7 @@
       <tr hlmTr>
         <th hlmTh class="w-10"><span class="sr-only">Selection</span></th>
         @for (column of columns; track column.order) {
-          <th hlmTh [attr.aria-sort]="ariaSort(column)" [class.text-right]="column.isNumeric">
+          <th hlmTh [attr.aria-sort]="ariaSort(column)">
             <button
               type="button"
               class="inline-flex items-center gap-1 rounded-md py-1 font-medium hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
@@ -23,7 +23,6 @@
             </button>
           </th>
         }
-        <th hlmTh class="w-10"><span class="sr-only">Menu</span></th>
       </tr>
     </thead>
     <tbody hlmTBody>
@@ -49,6 +48,7 @@
               <button
                 type="button"
                 class="truncate rounded-sm text-left font-medium focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                data-testid="hoard-row-open"
               >
                 <app-either-or-name [name]="row.name" />
               </button>
@@ -62,22 +62,12 @@
           </td>
           <td hlmTd class="text-muted-foreground">{{ row.factions.join(', ') }}</td>
           <td hlmTd class="text-muted-foreground">{{ row.box ?? 'Without box' }}</td>
-          <td hlmTd><app-status-badge [status]="row.status" /></td>
-          <td hlmTd class="text-right font-semibold tabular-nums">×{{ row.count }}</td>
           <td hlmTd>
-            <!-- The menu of the row comes with editing. -->
-            <button
-              hlmBtn
-              variant="ghost"
-              size="icon"
-              type="button"
-              class="text-muted-foreground"
-              aria-label="More actions"
-              data-testid="hoard-row-menu"
-              (click)="$event.stopPropagation()"
-            >
-              <ng-icon name="lucideEllipsisVertical" size="16" />
-            </button>
+            @if (row.departure; as departure) {
+              <app-gone-badge [reason]="departure.reason" />
+            } @else {
+              <app-status-badge [status]="row.status" />
+            }
           </td>
         </tr>
       }

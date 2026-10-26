@@ -1,0 +1,102 @@
+<div class="flex items-center gap-2 rounded-xl border border-primary/60 bg-card p-2 pl-4">
+  <span
+    class="flex-1 truncate text-sm font-medium"
+    [attr.data-testid]="screen() + '-selection-count'"
+  >
+    {{ count() }} {{ count() === 1 ? 'mini' : 'minis' }} selected
+  </span>
+  <button
+    hlmBtn
+    variant="outline"
+    type="button"
+    class="h-9 text-sm"
+    [disabled]="count() === 0"
+    [attr.data-testid]="screen() + '-selection-edit'"
+    (click)="editChosen.emit()"
+  >
+    Edit
+  </button>
+  <button
+    hlmBtn
+    variant="outline"
+    type="button"
+    class="hidden h-9 text-sm @2xl:inline-flex"
+    [disabled]="!canLeave()"
+    [attr.data-testid]="screen() + '-selection-leave'"
+    (click)="leaveChosen.emit()"
+  >
+    Leave the hoard…
+  </button>
+  <button
+    hlmBtn
+    variant="outline"
+    type="button"
+    class="hidden h-9 text-sm text-destructive @2xl:inline-flex"
+    [disabled]="count() === 0"
+    [attr.data-testid]="screen() + '-selection-delete'"
+    (click)="deleteChosen.emit()"
+  >
+    Delete…
+  </button>
+  <span class="mx-1 hidden h-6 w-px bg-border @2xl:block" aria-hidden="true"></span>
+  <button
+    hlmBtn
+    variant="ghost"
+    type="button"
+    class="hidden h-9 text-sm @2xl:inline-flex"
+    [attr.data-testid]="screen() + '-select-all'"
+    (click)="allSelected.emit()"
+  >
+    Select all
+  </button>
+
+  <hlm-popover class="@2xl:hidden" align="end" sideOffset="6">
+    <button
+      hlmPopoverTrigger
+      hlmBtn
+      variant="outline"
+      size="icon"
+      type="button"
+      class="size-9"
+      aria-label="More actions for the selection"
+      [attr.aria-haspopup]="'menu'"
+      [attr.data-testid]="screen() + '-selection-menu'"
+    >
+      <ng-icon name="lucideEllipsisVertical" size="16" />
+    </button>
+    <ul
+      hlmPopoverContent
+      class="w-48 gap-0 p-1"
+      role="menu"
+      aria-label="Selection"
+      *hlmPopoverPortal="let menu"
+    >
+      @for (item of menuItems; track item.action) {
+        <li role="none">
+          <button
+            type="button"
+            role="menuitem"
+            [attr.tabindex]="$first ? 0 : -1"
+            class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent disabled:pointer-events-none disabled:opacity-50"
+            [class.text-destructive]="item.isDestructive"
+            [disabled]="isDisabled(item.action)"
+            (click)="choose(item.action); menu.close()"
+          >
+            {{ item.label }}
+          </button>
+        </li>
+      }
+    </ul>
+  </hlm-popover>
+
+  <button
+    hlmBtn
+    variant="secondary"
+    type="button"
+    class="h-9 text-sm"
+    [attr.data-testid]="screen() + '-select-done'"
+    (click)="finished.emit()"
+  >
+    Done
+  </button>
+</div>

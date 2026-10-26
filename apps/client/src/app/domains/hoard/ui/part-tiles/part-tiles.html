@@ -1,0 +1,67 @@
+<div class="flex flex-wrap items-baseline justify-between gap-2">
+  <h2 class="font-semibold" [id]="headingId">
+    Parts
+    <span class="font-normal text-muted-foreground">{{ parts().length }}</span>
+  </h2>
+  <span class="text-sm text-muted-foreground">{{ hint() }}</span>
+</div>
+<div class="grid grid-cols-1 gap-2 @md/main:grid-cols-2 @3xl/main:grid-cols-3">
+  @for (part of parts(); track $index) {
+    <div class="flex flex-col gap-2 rounded-lg border px-3 py-2.5" data-testid="mini-part">
+      <div class="flex items-start justify-between gap-2">
+        <span class="font-semibold" data-testid="mini-part-name">{{ part.name }}</span>
+        <button
+          type="button"
+          class="text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          [attr.aria-label]="'Remove ' + part.name"
+          data-testid="mini-part-remove"
+          (click)="removed.emit($index)"
+        >
+          <ng-icon name="lucideX" size="14" />
+        </button>
+      </div>
+      <button
+        type="button"
+        class="inline-flex h-7 w-fit items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        [class.bg-muted]="part.isSwappable"
+        [class.border-muted-foreground]="part.isSwappable"
+        [class.text-muted-foreground]="!part.isSwappable"
+        [attr.aria-label]="'Swappable ' + part.name"
+        [attr.aria-pressed]="part.isSwappable"
+        data-testid="mini-part-swappable"
+        (click)="swappableToggled.emit($index)"
+      >
+        <ng-icon [name]="part.isSwappable ? 'lucideMagnet' : 'lucideDroplet'" size="12" />
+        {{ part.isSwappable ? 'Swappable' : 'Glued' }}
+      </button>
+    </div>
+  }
+  <button
+    type="button"
+    class="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg border text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    [class.border-dashed]="!isPickerOpen()"
+    [class.bg-muted]="isPickerOpen()"
+    [class.border-muted-foreground]="isPickerOpen()"
+    [attr.aria-expanded]="isPickerOpen()"
+    [attr.aria-controls]="picker.id"
+    data-testid="mini-add-part"
+    (click)="pickerToggled.emit()"
+  >
+    <ng-icon
+      name="lucidePlus"
+      size="16"
+      class="transition-transform motion-reduce:transition-none"
+      [class.rotate-45]="isPickerOpen()"
+    />
+    {{ isPickerOpen() ? 'Close' : 'Add a part' }}
+  </button>
+</div>
+
+<app-part-picker
+  #picker
+  [isOpen]="isPickerOpen()"
+  [source]="source()"
+  [boxName]="boxName()"
+  [rangeName]="rangeName()"
+  (added)="added.emit($event)"
+/>

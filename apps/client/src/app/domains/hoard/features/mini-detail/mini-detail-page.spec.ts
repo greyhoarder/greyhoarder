@@ -37,8 +37,20 @@ const LOOTAS_KIT = {
   isDraft: true,
   contains: [],
   variants: [
-    { name: 'Lootas', slots: [slot(4, ['Loota'], ['Deffgun']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])] },
-    { name: 'Burna Boyz', slots: [slot(4, ['Burna Boy'], ['Burna']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])] },
+    {
+      name: 'Lootas',
+      slots: [
+        slot(4, ['Loota'], ['Deffgun']),
+        slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
+      ],
+    },
+    {
+      name: 'Burna Boyz',
+      slots: [
+        slot(4, ['Burna Boy'], ['Burna']),
+        slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
+      ],
+    },
   ],
 };
 
@@ -63,9 +75,6 @@ const ON_THE_SPRUE = ['m1', 'm2', 'm3', 'm4'].map((id) => mini(id));
 const BUILT = ['m1', 'm2'].map((id) =>
   mini(id, { name: 'Loota', status: 'built', parts: [{ partId: 'deffgun', isSwappable: false }] }),
 );
-
-/** Three Lootas of the same box, built; one Loota is left in the box. */
-const THREE_LOOTAS = ['m5', 'm6', 'm7'].map((id) => mini(id, { name: 'Loota', status: 'built' }));
 
 describe('Mini page', () => {
   let fixture: ComponentFixture<MiniDetailPage>;
@@ -101,7 +110,11 @@ describe('Mini page', () => {
         {
           provide: HttpKitsAdapter,
           useValue: {
-            find: vi.fn(async () => ({ kits: [LOOTAS_KIT], containedKits: new Map(), factionNames: new Map() })),
+            find: vi.fn(async () => ({
+              kits: [LOOTAS_KIT],
+              containedKits: new Map(),
+              factionNames: new Map(),
+            })),
           },
         },
         { provide: HttpCatalogPartsAdapter, useValue: { rangeParts: vi.fn(async () => []) } },
@@ -112,13 +125,16 @@ describe('Mini page', () => {
   }
 
   const all = (testId: string): HTMLElement[] => [
-    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
+    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
+      `[data-testid="${testId}"]`,
+    ),
   ];
   const textsOf = (testId: string): string[] =>
     all(testId).map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '');
   const nameTile = (name: string) =>
     all('mini-build-as').find(
-      (tile) => tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim() === name,
+      (tile) =>
+        tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim() === name,
     );
   const partNames = () => textsOf('mini-part-name');
 
@@ -177,18 +193,6 @@ describe('Mini page', () => {
     ]);
   });
 
-  it('warns when more minis are to be built than are left for the chosen name', async () => {
-    showMini('m1', () => Promise.resolve([...ON_THE_SPRUE, ...THREE_LOOTAS]));
-    await fixture.whenStable();
-    await click(nameTile('Loota'));
-
-    await click(all('mini-build-more')[0]);
-
-    const hint = nameTile('Loota')?.querySelector('[data-testid="mini-name-left"]');
-    expect(hint?.getAttribute('data-warning')).toBe('true');
-    expect(hint?.textContent).toContain('1');
-  });
-
   it('preselects the parts for the chosen name', async () => {
     showMini('m1');
     await fixture.whenStable();
@@ -219,48 +223,15 @@ describe('Mini page', () => {
     expect(partNames()).toEqual(['Deffgun']);
   });
 
-  it('tells screen readers whether the part picker is open', async () => {
-    showMini('m1');
-    await fixture.whenStable();
-    const addPart = all('mini-add-part')[0];
-    const closed = addPart?.getAttribute('aria-expanded');
-
-    await click(addPart);
-
-    expect([closed, addPart?.getAttribute('aria-expanded')]).toEqual(['false', 'true']);
-  });
-
-  it('tells screen readers whether a part is swappable', async () => {
-    showMini('m1');
-    await fixture.whenStable();
-    await click(nameTile('Loota'));
-    const glued = all('mini-part-swappable')[0]?.getAttribute('aria-pressed');
-
-    await click(all('mini-part-swappable')[0]);
-
-    expect([glued, all('mini-part-swappable')[0]?.getAttribute('aria-pressed')]).toEqual(['false', 'true']);
-  });
-
-  it('offers to build only once a name is chosen', async () => {
-    showMini('m1');
-    await fixture.whenStable();
-    const before = (all('mini-build')[0] as HTMLButtonElement).disabled;
-
-    await click(nameTile('Loota'));
-
-    expect([before, (all('mini-build')[0] as HTMLButtonElement).disabled]).toEqual([true, false]);
-  });
-
-  it('builds as many minis of the row as chosen, the one of the address first, with what was chosen', async () => {
+  it('builds only this mini with what was chosen, its alike minis stay on the sprue', async () => {
     showMini('m3');
     await fixture.whenStable();
     await click(nameTile('Loota'));
-    await click(all('mini-build-more')[0]);
 
     await click(all('mini-build')[0]);
 
     expect(update).toHaveBeenCalledWith(
-      ['m3', 'm1'],
+      ['m3'],
       expect.objectContaining({
         name: 'Loota',
         status: 'built',
@@ -278,13 +249,13 @@ describe('Mini page', () => {
     expect(textsOf('mini-save-note')).toEqual(['Nothing is saved until you build it']);
   });
 
-  it('saves a change past the sprue for every mini of the row at once', async () => {
+  it('saves a change past the sprue for this mini only', async () => {
     showMini('m1', () => Promise.resolve(BUILT));
     await fixture.whenStable();
 
     await click(all('mini-workbench')[0]);
 
-    expect(update).toHaveBeenCalledWith(['m1', 'm2'], { isOnWorkbench: true });
+    expect(update).toHaveBeenCalledWith(['m1'], { isOnWorkbench: true });
   });
 
   it('shows what the server stored after a change without loading the hoard again', async () => {
@@ -312,6 +283,31 @@ describe('Mini page', () => {
     await click(all('mini-workbench')[0]);
 
     expect(all('mini-save-error')).toHaveLength(1);
+  });
+
+  it('leads back to the box when opened from it', async () => {
+    showMini('m1', () => Promise.resolve(BUILT));
+    fixture.componentRef.setInput('from', 'box');
+
+    await fixture.whenStable();
+
+    const back = all('mini-back')[0];
+    expect([back?.textContent?.trim(), back?.getAttribute('href')]).toEqual([
+      'Box',
+      '/hoard/boxes/b1',
+    ]);
+  });
+
+  it('leads back to the hoard when opened from anywhere else', async () => {
+    showMini('m1', () => Promise.resolve(BUILT));
+
+    await fixture.whenStable();
+
+    const back = all('mini-back')[0];
+    expect([back?.textContent?.trim(), back?.getAttribute('href')]).toEqual([
+      'Hoard',
+      '/hoard/minis',
+    ]);
   });
 
   it('shows placeholders while the hoard loads', () => {

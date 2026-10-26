@@ -32,6 +32,12 @@ export class MinisStore {
     this.loaded.update((minis) => minis?.map((mini) => byId.get(mini.id) ?? mini));
   }
 
+  /** Takes minis the server deleted out of the hoard. */
+  remove(ids: readonly string[]): void {
+    const deleted = new Set(ids);
+    this.loaded.update((minis) => minis?.filter((mini) => !deleted.has(mini.id)));
+  }
+
   /** Fetches the minis again, e.g. after boxes were added on the server. */
   reload(): void {
     this.loaded.reload();

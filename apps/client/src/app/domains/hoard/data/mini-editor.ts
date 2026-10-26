@@ -7,16 +7,26 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { findPart, type HobbyStatus, type Kit, type Mini, toKit } from '@greyhoarder/domain/hoard';
-import { HttpKitsAdapter } from '../../../catalog/api';
-import { BoxesStore } from '../../data/boxes-store';
-import { MinisStore } from '../../data/minis-store';
-import { PartsStore } from '../../data/parts-store';
-import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
-import { areAlike } from '../../models/mini-alikeness';
-import { buildSuggestions, preselectedParts } from '../../models/mini-build';
-import type { MiniChanges, PartChange } from '../../models/mini-changes';
-import type { PartOption } from '../../models/part-options';
+import {
+  type Departure,
+  findPart,
+  type HobbyStatus,
+  isGone,
+  type Kit,
+  type Mini,
+  toKit,
+} from '@greyhoarder/domain/hoard';
+import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../catalog/api';
+import { HttpMinisAdapter } from '../infrastructure/http-minis-adapter';
+import { areAlike } from '../models/mini-alikeness';
+import { buildSuggestions, preselectedParts } from '../models/mini-build';
+import type { MiniChanges, PartChange } from '../models/mini-changes';
+import type { PartOption } from '../models/part-options';
+import { eitherOrText } from '../util/either-or';
+import { BoxesStore } from './boxes-store';
+import { FactionNamesStore } from './faction-names-store';
+import { MinisStore } from './minis-store';
+import { PartsStore } from './parts-store';
 
 /** A part as the screen shows and edits it; a new part has a name but no id yet. */
 export interface PartDraft {
@@ -27,39 +37,65 @@ export interface PartDraft {
 
 export type SaveState = 'saved' | 'saving' | 'failed';
 
+/** Another mini named on the screen, e.g. as a recipient of parts or as their source. */
+export interface MiniLink {
+  readonly id: string;
+  readonly name: string;
+  /** The name of its box; none without a box. */
+  readonly box?: string;
+  /** For sources of parts: the day they were stripped. */
+  readonly strippedOn?: string;
+}
+
 /**
- * The row of alike minis one mini page is about: what is chosen while they are on the sprue, building
- * them, and saving every change afterwards (docs/screens/mini.md). Provided by the page, so each
- * opened mini has its own, and what was chosen on the sprue goes when the page closes.
+ * One mini, or on its box the row of alike minis on the sprue: what is chosen while they are on the
+ * sprue, building them, letting them leave the hoard or deleting them, and saving every change
+ * afterwards (docs/screens/mini.md, docs/screens/box.md). Provided by the mini page and by each card
+ * on the sprue of the box page, so each has its own, and what was chosen on the sprue goes with it.
  */
 @Injectable()
 export class MiniEditor {
   private readonly minisStore = inject(MinisStore);
   private readonly boxesStore = inject(BoxesStore);
   private readonly partsStore = inject(PartsStore);
+  private readonly factionNames = inject(FactionNamesStore);
   private readonly minisAdapter = inject(HttpMinisAdapter);
   private readonly catalogKits = inject(HttpKitsAdapter);
+  private readonly catalogParts = inject(HttpCatalogPartsAdapter);
 
-  /** The mini of the address, the first of its row. */
+  /** The mini of the address, or the first of a row. */
   readonly miniId = signal('');
+  /**
+   * Whether the minis alike to it are acted on with it: on the box, for a row on the sprue; on the
+   * mini page only the one mini.
+   */
+  readonly withAlike = signal(false);
 
   readonly isLoading = computed(() => this.minisStore.isLoading() || this.boxesStore.isLoading());
   readonly hasFailed = computed(() => this.minisStore.hasFailed() || this.boxesStore.hasFailed());
 
   /** Undefined while loading and for a mini that isn't in the hoard. */
   readonly mini = computed(() => this.minisStore.minis().find((mini) => mini.id === this.miniId()));
-  /** The mini of the address first, then every mini alike to it. */
+  /** The mini first, then, with `withAlike`, every mini alike to it. */
   private readonly row = computed(() => {
     const mini = this.mini();
-    return mini
+    if (!mini) {
+      return [];
+    }
+    return this.withAlike()
       ? [
           mini,
           ...this.minisStore.minis().filter((other) => other !== mini && areAlike(other, mini)),
         ]
-      : [];
+      : [mini];
   });
   readonly rowSize = computed(() => this.row().length);
-  readonly isOnSprue = computed(() => this.mini()?.status === 'sprue');
+  readonly isGone = computed(() => this.mini()?.departure !== undefined);
+  /**
+   * On the sprue and in the hoard: what is chosen waits for building. Gone minis on the sprue are
+   * not built; their changes are saved at once.
+   */
+  readonly isOnSprue = computed(() => this.mini()?.status === 'sprue' && !this.isGone());
 
   readonly box = computed(() => {
     const boxId = this.mini()?.boxId;
@@ -76,6 +112,35 @@ export class MiniEditor {
   });
   /** The kit of the minis' box; left out while loading, when it can't be loaded and without a box. */
   readonly kit = computed(() => (this.loadedKit.hasValue() ? this.loadedKit.value() : undefined));
+  /** The box's name as plain text, e.g. for "Suggested by {box name}". */
+  readonly boxName = computed(() => {
+    const box = this.box();
+    return box && eitherOrText(box.name);
+  });
+
+  /** The parts of the catalog kits of the minis' factions and those they are part of. */
+  private readonly rangeParts = resource({
+    params: () => {
+      const factionIds = this.factionIds();
+      return factionIds.length > 0 ? { factionIds } : undefined;
+    },
+    loader: ({ params: { factionIds } }) => this.catalogParts.rangeParts(factionIds),
+  });
+  /** What the part picker offers parts from, but the filter text. */
+  readonly partSource = computed(() => ({
+    kit: this.kit(),
+    sprueName: this.mini()?.sprueName,
+    vocabulary: this.partsStore.parts(),
+    range: this.rangeParts.hasValue() ? this.rangeParts.value() : [],
+    carried: this.parts().map((part) => part.name),
+  }));
+  /** Named after the minis' first faction, e.g. "Orks" for "Orks range". */
+  readonly rangeName = computed(() => {
+    const [factionId] = this.factionIds();
+    return factionId === undefined
+      ? undefined
+      : (this.factionNames.names().get(factionId) ?? factionId);
+  });
 
   /** Every mini of the minis' box, the row included; none without a box. */
   readonly minisOfBox = computed(() => {
@@ -148,6 +213,30 @@ export class MiniEditor {
   readonly parts = computed(() =>
     this.isOnSprue() ? this.chosenParts() : this.toPartDrafts(this.mini()?.parts ?? []),
   );
+
+  /** For a gone mini stripped for parts: the minis that got them. */
+  readonly recipients = computed(() => {
+    const ids = new Set(this.mini()?.departure?.recipientMiniIds ?? []);
+    return this.links(this.minisStore.minis().filter((mini) => ids.has(mini.id)));
+  });
+  /** The minis stripped for parts that went into this mini. */
+  readonly partsFrom = computed(() => {
+    const id = this.mini()?.id;
+    return this.links(
+      this.minisStore
+        .minis()
+        .filter((mini) => id !== undefined && mini.departure?.recipientMiniIds?.includes(id)),
+    );
+  });
+  /** What can get the parts of these minis: every other mini past the sprue that is not gone. */
+  readonly recipientChoices = computed(() => {
+    const ids = new Set(this.row().map((mini) => mini.id));
+    return this.links(
+      this.minisStore
+        .minis()
+        .filter((mini) => !ids.has(mini.id) && !isGone(mini) && mini.status !== 'sprue'),
+    );
+  });
 
   readonly isBuilding = signal(false);
   readonly saveState = signal<SaveState>('saved');
@@ -231,7 +320,7 @@ export class MiniEditor {
   }
 
   /**
-   * Builds as many minis of the row as chosen, the one of the address first, with everything
+   * Builds as many minis of the row as chosen, the first one first, with everything
    * chosen; the rest of the row stays on the sprue.
    */
   async build(): Promise<void> {
@@ -256,6 +345,52 @@ export class MiniEditor {
     }
   }
 
+  /** Lets as many minis of the row as given leave the hoard, the first one first. */
+  async leave(departure: Departure, count: number): Promise<boolean> {
+    const ids = this.firstOfRow(count);
+    this.saveState.set('saving');
+    try {
+      this.afterSave(await this.minisAdapter.update(ids, { departure }), []);
+      return true;
+    } catch {
+      this.saveState.set('failed');
+      return false;
+    }
+  }
+
+  /** Brings the gone mini back into the hoard. */
+  comeBack(): void {
+    void this.save({ departure: null });
+  }
+
+  /**
+   * Deletes as many minis of the row as given for good, the first one first.
+   *
+   * @returns whether they are deleted, and the ids of the boxes left without any minis; boxes stay
+   */
+  async delete(
+    count: number,
+  ): Promise<{ readonly isDeleted: boolean; readonly emptiedBoxIds: readonly string[] }> {
+    const ids = this.firstOfRow(count);
+    this.saveState.set('saving');
+    try {
+      const { emptiedBoxIds, minis } = await this.minisAdapter.delete(ids);
+      this.minisStore.remove(ids);
+      this.minisStore.apply(minis);
+      this.saveState.set('saved');
+      return { isDeleted: true, emptiedBoxIds };
+    } catch {
+      this.saveState.set('failed');
+      return { isDeleted: false, emptiedBoxIds: [] };
+    }
+  }
+
+  private firstOfRow(count: number): string[] {
+    return this.row()
+      .slice(0, count)
+      .map((mini) => mini.id);
+  }
+
   private changeParts(parts: readonly PartDraft[]): void {
     if (this.isOnSprue()) {
       this.chosenParts.set(parts);
@@ -265,7 +400,7 @@ export class MiniEditor {
     void this.save({ parts: parts.map(toPartChange) });
   }
 
-  /** Saves a change of every mini of the row at once; they stay alike. */
+  /** Saves a change of every mini of the row at once; a row stays alike. */
   private async save(changes: MiniChanges): Promise<void> {
     this.saveState.set('saving');
     try {
@@ -286,6 +421,16 @@ export class MiniEditor {
     if (parts.some((part) => !('partId' in part) || part.partId === undefined)) {
       this.partsStore.reload();
     }
+  }
+
+  private links(minis: readonly Mini[]): MiniLink[] {
+    const boxNames = new Map(this.boxesStore.boxes().map((box) => [box.id, box.name]));
+    return minis.map((mini) => ({
+      id: mini.id,
+      name: mini.name,
+      box: mini.boxId === undefined ? undefined : boxNames.get(mini.boxId),
+      strippedOn: mini.departure?.reason === 'stripped' ? mini.departure.on : undefined,
+    }));
   }
 
   /** Parts of a mini, or kit parts by name, which refer to the vocabulary's part once it has one. */

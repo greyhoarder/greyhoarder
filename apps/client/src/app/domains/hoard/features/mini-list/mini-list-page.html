@@ -48,36 +48,34 @@
 </div>
 
 @if (store.isSelecting()) {
-  <!-- Actions on the selection come with the backend. -->
-  <div
-    class="sticky top-0 z-10 flex items-center gap-3 rounded-xl border border-primary/60 bg-card p-2 pl-4"
-    data-testid="hoard-selection-bar"
-  >
-    <span class="flex-1 text-sm font-medium" data-testid="hoard-selection-count">
-      {{ store.selectedCount() }} {{ store.selectedCount() === 1 ? 'mini' : 'minis' }} selected
-    </span>
-    <button
-      hlmBtn
-      variant="ghost"
-      type="button"
-      class="h-9 text-sm"
-      data-testid="hoard-select-all"
-      (click)="store.selectAll()"
-    >
-      Select all
-    </button>
-    <button
-      hlmBtn
-      variant="secondary"
-      type="button"
-      class="h-9 text-sm"
-      data-testid="hoard-select-done"
-      (click)="store.finishSelecting()"
-    >
-      Done
-    </button>
-  </div>
+  <app-selection-bar
+    screen="hoard"
+    [count]="store.selectedCount()"
+    [canLeave]="canLeave()"
+    (allSelected)="store.selectAll()"
+    (finished)="store.finishSelecting()"
+    (deleteChosen)="deletion.ask(store.selectedIds())"
+  />
 }
+<app-delete-minis-dialog
+  screen="hoard"
+  [isOpen]="deletion.isAsking()"
+  [count]="deletion.count()"
+  [names]="deletion.names()"
+  [isDeleting]="deletion.isDeleting()"
+  [hasFailed]="deletion.hasFailed()"
+  (confirmed)="deleteSelected()"
+  (closed)="deletion.cancel()"
+/>
+<app-empty-boxes-dialog
+  screen="hoard"
+  [isOpen]="boxesDeletion.isAsking()"
+  [names]="boxesDeletion.names()"
+  [isDeleting]="boxesDeletion.isDeleting()"
+  [hasFailed]="boxesDeletion.hasFailed()"
+  (confirmed)="deleteEmptyBoxes()"
+  (closed)="boxesDeletion.cancel()"
+/>
 
 @if (store.isLoading()) {
   <div
@@ -103,7 +101,7 @@
     class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
     data-testid="hoard-empty"
   >
-    No minis yet. Add a box and its minis appear here.
+    No minis built yet. Build the minis of a box and they appear here.
   </p>
 } @else if (store.visibleRows().length === 0) {
   <p
@@ -125,13 +123,15 @@
     (opened)="open($event)"
   />
 } @else {
-  @for (row of store.visibleRows(); track row.id) {
-    <app-mini-card
-      [row]="row"
+  @for (group of store.visibleGroups(); track group.id) {
+    <app-mini-group-card
+      [group]="group"
+      [isOpen]="store.openGroupIds().has(group.id)"
       [isSelectionMode]="store.isSelecting()"
-      [isSelected]="store.selectedIds().has(row.id)"
-      (selectedChange)="select({ row, isSelected: $event })"
-      (opened)="open(row)"
+      [selectedIds]="store.selectedIds()"
+      (toggled)="store.toggleGroup(group.id)"
+      (selectedChange)="select($event)"
+      (opened)="open($event)"
     />
   }
 }

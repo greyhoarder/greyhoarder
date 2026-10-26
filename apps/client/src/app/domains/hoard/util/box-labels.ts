@@ -7,10 +7,14 @@ export const PROGRESS_LABELS: Readonly<Record<BoxProgress, string>> = {
   untouched: 'Untouched',
   started: 'Started',
   done: 'Done',
+  'all-gone': 'All gone',
+  empty: 'Empty',
 };
 
 /** E.g. "Boyz (2026) · 50-80"; "No kit" for boxes without one. */
-export function kitLine(box: { readonly kit?: { readonly name: string; readonly sku?: string } }): string {
+export function kitLine(box: {
+  readonly kit?: { readonly name: string; readonly sku?: string };
+}): string {
   if (!box.kit) {
     return 'No kit';
   }
@@ -23,7 +27,8 @@ export function kitLine(box: { readonly kit?: { readonly name: string; readonly 
  * added when another box has the same name, e.g. "Boyz (2026) · 12 Oct 2026".
  */
 export function distinctBoxNames(boxes: readonly Box[]): Map<string, string> {
-  const namesake = (box: Box) => boxes.some((other) => other.id !== box.id && other.name === box.name);
+  const namesake = (box: Box) =>
+    boxes.some((other) => other.id !== box.id && other.name === box.name);
   return new Map(
     boxes.map((box) => {
       const name = eitherOrText(box.name);

@@ -14,14 +14,15 @@ interface Segment {
 
 /**
  * A bar over all minis of a box, split by status in the order of the hobby
- * pipeline, from built on the left to done on the right; minis still on the
- * sprue are the empty background. Names the counts for a tooltip and screen readers.
+ * pipeline and aligned right, so done ends on the right; minis still on the
+ * sprue are the empty background on the left. Names the counts for a tooltip
+ * and screen readers.
  */
 @Component({
   selector: 'app-progress-bar',
   template: `
     <div
-      class="flex h-2 w-full gap-0.5 overflow-hidden rounded-full bg-muted"
+      class="flex h-2 w-full justify-end gap-0.5 overflow-hidden rounded-full bg-muted"
       role="img"
       [attr.aria-label]="description()"
       [title]="description()"

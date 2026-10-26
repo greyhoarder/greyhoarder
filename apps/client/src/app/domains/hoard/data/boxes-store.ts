@@ -18,10 +18,18 @@ export class BoxesStore {
   });
 
   /** Empty until loaded; keeps the previous boxes while reloading. */
-  readonly boxes = computed<readonly Box[]>(() => (this.loaded.hasValue() ? this.loaded.value() : []));
+  readonly boxes = computed<readonly Box[]>(() =>
+    this.loaded.hasValue() ? this.loaded.value() : [],
+  );
   /** Only the first load; a reload keeps showing what was there. */
   readonly isLoading = computed(() => this.loaded.status() === 'loading');
   readonly hasFailed = computed(() => this.loaded.error() !== undefined);
+
+  /** Takes boxes the server deleted out of the hoard. */
+  remove(ids: readonly string[]): void {
+    const deleted = new Set(ids);
+    this.loaded.update((boxes) => boxes?.filter((box) => !deleted.has(box.id)));
+  }
 
   /** Fetches the boxes again, e.g. after boxes were added on the server. */
   reload(): void {

@@ -1,25 +1,19 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideArrowDown,
-  lucideArrowUp,
-  lucideChevronsUpDown,
-  lucideEllipsisVertical,
-} from '@ng-icons/lucide';
+import { lucideArrowDown, lucideArrowUp, lucideChevronsUpDown } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTableImports } from '@spartan-ng/helm/table';
 import type { MiniRow } from '../../../data/mini-row';
 import { type MiniSortOrder, sortRows } from '../../../data/mini-sort';
 import type { SortDirection } from '../../../util/sort-direction';
 import { RowCheck } from '../../../ui/row-check/row-check';
+import { GoneBadge } from '../../../ui/gone-badge/gone-badge';
 import { StatusBadge } from '../../../ui/status-badge/status-badge';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 
 interface Column {
   readonly order: MiniSortOrder;
   readonly label: string;
-  readonly isNumeric?: boolean;
 }
 
 const COLUMNS: readonly Column[] = [
@@ -27,7 +21,6 @@ const COLUMNS: readonly Column[] = [
   { order: 'army', label: 'Faction' },
   { order: 'box', label: 'Box' },
   { order: 'status', label: 'Status' },
-  { order: 'count', label: 'Count', isNumeric: true },
 ];
 
 export interface RowSelection {
@@ -35,13 +28,11 @@ export interface RowSelection {
   readonly isSelected: boolean;
 }
 
-/** The minis as a table, sorted by clicking a column header; starts sorted by faction. */
+/** The minis as a table, one line each, sorted by clicking a column header; starts sorted by faction. */
 @Component({
   selector: 'app-mini-table',
-  imports: [EitherOrName, NgIcon, HlmBadge, HlmButton, HlmTableImports, RowCheck, StatusBadge],
-  providers: [
-    provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical }),
-  ],
+  imports: [EitherOrName, NgIcon, HlmBadge, HlmTableImports, RowCheck, GoneBadge, StatusBadge],
+  providers: [provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown })],
   templateUrl: './mini-table.html',
   host: { class: 'block rounded-xl border bg-card' },
 })
@@ -52,7 +43,7 @@ export class MiniTable {
   readonly selectedIds = input<ReadonlySet<string>>(new Set());
 
   readonly selectedChange = output<RowSelection>();
-  /** Outside selection mode a click on a line opens its row. */
+  /** Outside selection mode a click on a line opens its mini. */
   readonly opened = output<MiniRow>();
 
   protected readonly columns = COLUMNS;

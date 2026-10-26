@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import type { Mini } from '@greyhoarder/domain/hoard';
 import type {
+  DeleteMinisRequest,
+  DeleteMinisResponse,
   MinisResponse,
   UpdateMinisRequest,
   UpdateMinisResponse,
@@ -36,5 +38,19 @@ export class HttpMinisAdapter {
       this.http.patch<UpdateMinisResponse>('/api/hoard/minis', body),
     );
     return response.minis;
+  }
+
+  /**
+   * Deletes the minis for good; the server takes them out of other minis' recipients and keeps
+   * their boxes, also empty ones.
+   */
+  async delete(ids: readonly string[]): Promise<{
+    /** The boxes left without any minis, gone ones included. */
+    readonly emptiedBoxIds: readonly string[];
+    /** Other minis changed by it. */
+    readonly minis: readonly Mini[];
+  }> {
+    const body: DeleteMinisRequest = { ids };
+    return firstValueFrom(this.http.delete<DeleteMinisResponse>('/api/hoard/minis', { body }));
   }
 }

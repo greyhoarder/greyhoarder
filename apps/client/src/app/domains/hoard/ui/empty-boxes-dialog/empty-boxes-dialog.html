@@ -1,0 +1,44 @@
+<hlm-alert-dialog
+  [state]="isOpen() ? 'open' : 'closed'"
+  [disableClose]="isDeleting()"
+  autoFocus="[data-slot=alert-dialog-cancel]"
+  (closed)="closed.emit()"
+>
+  <hlm-alert-dialog-content
+    *hlmAlertDialogPortal
+    [attr.data-testid]="screen() + '-empty-boxes-dialog'"
+  >
+    <hlm-alert-dialog-header>
+      <h2 hlmAlertDialogTitle>{{ question() }}</h2>
+    </hlm-alert-dialog-header>
+    @if (hasFailed()) {
+      <p
+        class="text-sm text-destructive"
+        role="alert"
+        [attr.data-testid]="screen() + '-empty-boxes-error'"
+      >
+        Can't delete right now. Try again in a moment.
+      </p>
+    }
+    <hlm-alert-dialog-footer>
+      <button
+        hlmAlertDialogCancel
+        [disabled]="isDeleting()"
+        [attr.data-testid]="screen() + '-empty-boxes-keep'"
+      >
+        {{ isOne() ? 'Keep box' : 'Keep boxes' }}
+      </button>
+      <button
+        hlmAlertDialogAction
+        variant="destructive"
+        class="font-semibold"
+        [disabled]="isDeleting()"
+        [attr.aria-busy]="isDeleting()"
+        [attr.data-testid]="screen() + '-empty-boxes-delete'"
+        (click)="confirmed.emit()"
+      >
+        {{ isOne() ? 'Delete box' : 'Delete boxes' }}
+      </button>
+    </hlm-alert-dialog-footer>
+  </hlm-alert-dialog-content>
+</hlm-alert-dialog>

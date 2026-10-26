@@ -1,0 +1,105 @@
+<button
+  type="button"
+  class="flex w-full items-center gap-4 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+  [attr.aria-expanded]="isOpen()"
+  [attr.aria-controls]="listId"
+  data-testid="box-group-toggle"
+  (click)="toggle()"
+>
+  <span class="flex min-w-0 flex-1 flex-col gap-1.5">
+    <span class="truncate font-semibold"><app-either-or-name [name]="group().name" /></span>
+    <!-- Always present, so groups without parts are as tall as the others. -->
+    <span class="flex min-h-6 flex-wrap gap-1.5">
+      @for (chip of chips(); track chip) {
+        <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{
+          chip
+        }}</span>
+      }
+    </span>
+  </span>
+
+  <span class="hidden w-56 shrink-0 flex-col gap-1.5 sm:flex">
+    <app-progress-bar [box]="{ minis: group().counts }" data-testid="box-group-progress" />
+    <span class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground" aria-hidden="true">
+      @for (entry of legend(); track entry.status) {
+        <span class="inline-flex items-center gap-1.5">
+          <span class="size-2 rounded-full" [class]="statusColor[entry.status]"></span>
+          <span class="font-semibold text-foreground tabular-nums">{{ entry.count }}</span>
+          {{ entry.label }}
+        </span>
+      }
+    </span>
+  </span>
+
+  <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(count())">
+    ×{{ count() }}
+  </span>
+  <ng-icon
+    name="lucideChevronDown"
+    size="16"
+    class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
+    [class.rotate-180]="isOpen()"
+  />
+</button>
+
+@if (isOpen()) {
+  <ul class="flex flex-col gap-1 border-t p-2" [id]="listId">
+    @for (mini of group().minis; track mini.id) {
+      <li
+        class="group relative flex flex-wrap items-center gap-3 rounded-lg p-2 transition-colors"
+        [class.bg-primary/5]="selectedIds().has(mini.id)"
+        data-testid="box-group-mini"
+      >
+        <div class="relative z-10 shrink-0">
+          <!-- Photos come later; until then every mini shows the same placeholder. -->
+          <div class="size-10 rounded-md bg-muted bg-busy-stripes" aria-hidden="true"></div>
+          <app-row-check
+            class="absolute -top-1.5 -left-1.5"
+            testId="box-group-mini-check"
+            [label]="'Select ' + mini.name"
+            [isSelected]="selectedIds().has(mini.id)"
+            [isVisible]="isSelectionMode()"
+            (selectedChange)="selectedChange.emit({ miniId: mini.id, isSelected: $event })"
+          />
+        </div>
+        <!-- Covers the whole line, so a click anywhere on it opens or selects the mini. -->
+        <button
+          type="button"
+          class="flex min-w-36 flex-1 items-center gap-3 rounded-md text-left after:absolute after:inset-0 after:rounded-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          data-testid="box-group-mini-open"
+          (click)="onMiniClick(mini.id)"
+        >
+          <span class="truncate font-semibold"><app-either-or-name [name]="mini.name" /></span>
+          @if (mini.isOnWorkbench) {
+            <span hlmBadge variant="secondary" class="text-muted-foreground">Workbench</span>
+          }
+        </button>
+        <!-- Above the line's button: it works in selection mode as well, and its clicks don't select. -->
+        <div
+          class="relative z-10 flex overflow-hidden rounded-lg border bg-card"
+          role="group"
+          [attr.aria-label]="'Status of ' + mini.name"
+        >
+          @for (choice of statuses; track choice.status) {
+            <button
+              type="button"
+              class="h-8 px-3 text-sm transition-colors not-first:border-l focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset"
+              [class.bg-muted]="choice.status === mini.status"
+              [class.font-medium]="choice.status === mini.status"
+              [class.text-muted-foreground]="choice.status !== mini.status"
+              [attr.aria-pressed]="choice.status === mini.status"
+              [attr.data-status]="choice.status"
+              data-testid="box-group-status"
+              (click)="
+                choice.status !== mini.status &&
+                  statusChosen.emit({ miniId: mini.id, status: choice.status })
+              "
+            >
+              {{ choice.label }}
+            </button>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+}

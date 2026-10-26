@@ -55,12 +55,16 @@
           </td>
           <td hlmTd class="max-w-48 truncate">{{ box.factions.join(', ') }}</td>
           <td hlmTd class="w-52">
-            <div class="flex items-center gap-3">
-              <app-progress-bar class="flex-1" [box]="box" />
-              <span class="w-10 text-right text-sm tabular-nums" data-testid="hoard-box-percent"
-                >{{ percentOf(box) }}%</span
-              >
-            </div>
+            @if (!hasPercent(progressOf(box))) {
+              <app-progress-badge [progress]="progressOf(box)" />
+            } @else {
+              <div class="flex items-center gap-3">
+                <app-progress-bar class="flex-1" [box]="box" />
+                <span class="w-10 text-right text-sm tabular-nums" data-testid="hoard-box-percent"
+                  >{{ percentOf(box) }}%</span
+                >
+              </div>
+            }
           </td>
           <td hlmTd class="text-right tabular-nums">{{ sprueCount(box) }}</td>
           <td hlmTd class="text-right tabular-nums">{{ paintedText(box) }}</td>

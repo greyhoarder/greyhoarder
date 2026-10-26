@@ -1,0 +1,136 @@
+<div class="flex items-center gap-2 pr-2">
+  <button
+    #toggleButton
+    type="button"
+    class="flex min-w-0 flex-1 items-center gap-4 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    [attr.aria-expanded]="panel() !== undefined"
+    [attr.aria-controls]="panelId"
+    data-testid="box-sprue-toggle"
+    (click)="toggle()"
+  >
+    <span class="min-w-0 flex-1 truncate font-semibold">
+      <app-either-or-name [name]="row().name" />
+    </span>
+    <span
+      class="w-10 shrink-0 text-right font-semibold"
+      [attr.aria-label]="minisLabel(row().count)"
+    >
+      ×{{ row().count }}
+    </span>
+    <ng-icon
+      name="lucideChevronDown"
+      size="16"
+      class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
+      [class.rotate-180]="panel() !== undefined"
+    />
+  </button>
+
+  <hlm-popover align="end" sideOffset="4">
+    <button
+      #menuButton
+      hlmPopoverTrigger
+      hlmBtn
+      variant="ghost"
+      size="icon"
+      type="button"
+      class="shrink-0 text-muted-foreground"
+      aria-label="More actions"
+      [attr.aria-haspopup]="'menu'"
+      data-testid="box-sprue-menu"
+    >
+      <ng-icon name="lucideEllipsisVertical" size="16" />
+    </button>
+    <ul
+      hlmPopoverContent
+      class="w-48 gap-0 p-1"
+      role="menu"
+      [attr.aria-label]="row().name"
+      *hlmPopoverPortal="let menu"
+    >
+      @for (item of menuItems; track item.panel) {
+        <li role="none">
+          <button
+            type="button"
+            role="menuitem"
+            [attr.tabindex]="$first ? 0 : -1"
+            class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent"
+            [class.text-destructive]="item.isDestructive"
+            [attr.data-testid]="item.testId"
+            (click)="choose(item.panel); menu.close()"
+          >
+            {{ item.label }}
+          </button>
+        </li>
+      }
+    </ul>
+  </hlm-popover>
+</div>
+
+@if (panel(); as panel) {
+  <div
+    #panelElement
+    class="@container/main flex flex-col gap-6 border-t p-4"
+    data-testid="box-sprue-panel"
+    [id]="panelId"
+  >
+    @if (editor.saveState() === 'failed') {
+      <p class="text-sm text-destructive" role="alert" data-testid="mini-save-error">
+        Can't save right now. Try again in a moment.
+      </p>
+    }
+    @switch (panel) {
+      @case ('build') {
+        <app-build-as
+          [suggestions]="editor.suggestions()"
+          [name]="editor.name()"
+          [ownName]="editor.ownName()"
+          [boxName]="editor.boxName()"
+          [count]="editor.count()"
+          (nameChosen)="editor.chooseName($event)"
+          (ownNameChange)="editor.ownName.set($event)"
+        />
+        <app-part-tiles
+          [parts]="editor.parts()"
+          [hint]="partsHint()"
+          [isPickerOpen]="isPickerOpen()"
+          [source]="editor.partSource()"
+          [boxName]="editor.boxName()"
+          [rangeName]="editor.rangeName()"
+          (removed)="editor.removePart($event)"
+          (swappableToggled)="editor.toggleSwappable($event)"
+          (added)="editor.addPart($event)"
+          (pickerToggled)="isPickerOpen.set(!isPickerOpen())"
+        />
+        <app-build-bar
+          class="border-t pt-4"
+          [name]="editor.buildName()"
+          [parts]="editor.parts()"
+          [count]="editor.count()"
+          [rowSize]="editor.rowSize()"
+          [isOnWorkbench]="editor.isOnWorkbench()"
+          [isBuilding]="editor.isBuilding()"
+          (countChanged)="editor.changeCount($event)"
+          (workbenchChange)="editor.setBuildWorkbench($event)"
+          (built)="build()"
+        />
+      }
+      @case ('leave') {
+        <app-leave-panel
+          [rowSize]="editor.rowSize()"
+          [recipientChoices]="editor.recipientChoices()"
+          [isLeaving]="isLeaving()"
+          (left)="leave($event)"
+          (closed)="close()"
+        />
+      }
+      @case ('delete') {
+        <app-delete-panel
+          [rowSize]="editor.rowSize()"
+          [isDeleting]="isDeleting()"
+          (deleted)="delete($event)"
+          (closed)="close()"
+        />
+      }
+    }
+  </div>
+}

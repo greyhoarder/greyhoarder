@@ -1,0 +1,49 @@
+<div class="flex flex-wrap items-baseline justify-between gap-2">
+  <h2 class="font-semibold" [id]="headingId">Build as</h2>
+  @if (tiles().length > 0) {
+    <span class="text-sm text-muted-foreground">Suggested by {{ boxName() }}</span>
+  }
+</div>
+<div class="grid grid-cols-1 gap-2 @md/main:grid-cols-2 @3xl/main:grid-cols-4">
+  @for (tile of tiles(); track tile.name) {
+    <button
+      type="button"
+      class="flex flex-col gap-1 rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      [class.bg-muted]="tile.isChosen"
+      [class.border-muted-foreground]="tile.isChosen"
+      [class.opacity-50]="tile.isEmpty"
+      [attr.aria-pressed]="tile.isChosen"
+      data-testid="mini-build-as"
+      (click)="nameChosen.emit(tile.name)"
+    >
+      <span class="font-semibold" data-testid="mini-build-as-name">{{ tile.name }}</span>
+      <span
+        class="text-xs"
+        [class.text-destructive]="tile.isWarning"
+        [class.text-muted-foreground]="!tile.isWarning"
+        [attr.data-warning]="tile.isWarning"
+        [attr.data-empty]="tile.isEmpty"
+        data-testid="mini-name-left"
+        >{{ tile.hint }}</span
+      >
+    </button>
+  }
+  <label
+    class="flex flex-col gap-1 rounded-lg border border-dashed px-3 py-2.5 focus-within:ring-2 focus-within:ring-ring"
+    [class.border-solid]="hasOwnName()"
+    [class.bg-muted]="hasOwnName()"
+    [class.border-muted-foreground]="hasOwnName()"
+  >
+    <span class="text-xs text-muted-foreground">Your own name</span>
+    <input
+      type="text"
+      class="bg-transparent font-semibold outline-none placeholder:text-muted-foreground"
+      placeholder="e.g. Tankbusta"
+      data-testid="mini-own-name"
+      [value]="ownName()"
+      (input)="typeOwnName($event)"
+      (blur)="ownNameCommitted.emit()"
+      (keydown.enter)="ownNameCommitted.emit()"
+    />
+  </label>
+</div>

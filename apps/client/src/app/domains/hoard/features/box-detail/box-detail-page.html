@@ -63,10 +63,16 @@
         }
       </div>
     </div>
-    <!-- Taking from the sprue and editing come later. -->
+    <!-- Editing comes later. -->
     <div class="flex flex-wrap gap-3">
       @if (hasMinisOnSprue()) {
-        <button hlmBtn type="button" class="h-10 px-4 text-sm font-semibold" data-testid="box-take">
+        <button
+          hlmBtn
+          type="button"
+          class="h-10 px-4 text-sm font-semibold"
+          data-testid="box-take"
+          (click)="takeFromSprue()"
+        >
           Take from the sprue
         </button>
       }
@@ -131,6 +137,7 @@
               tabindex="-1"
               class="flex w-full rounded-md px-2 py-1.5 text-left text-sm text-destructive outline-none hover:bg-accent focus-visible:bg-accent"
               data-testid="box-delete"
+              (click)="askToDeleteBox(); menu.close()"
             >
               Delete box…
             </button>
@@ -145,9 +152,11 @@
       <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="box-progress-heading">
         Progress
       </h2>
-      <span class="text-lg font-semibold tabular-nums" data-testid="box-percent">
-        {{ percent() }}<span class="text-sm text-muted-foreground">%</span>
-      </span>
+      @if (hasPercentage()) {
+        <span class="text-lg font-semibold tabular-nums" data-testid="box-percent">
+          {{ percent() }}<span class="text-sm text-muted-foreground">%</span>
+        </span>
+      }
     </div>
     <app-progress-bar [box]="box" data-testid="box-progress" />
     <ul class="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3 lg:grid-cols-5">
@@ -165,16 +174,186 @@
     </ul>
   </section>
 
+  @if (selection.isSelecting()) {
+    <app-selection-bar
+      screen="box"
+      [count]="selectedCount()"
+      [canLeave]="canLeave()"
+      (allSelected)="selectAll()"
+      (finished)="selection.finish()"
+      (deleteChosen)="deletion.ask(selection.selectedIds())"
+    />
+  }
+  <app-delete-minis-dialog
+    screen="box"
+    [isOpen]="deletion.isAsking()"
+    [count]="deletion.count()"
+    [names]="deletion.names()"
+    [isDeleting]="deletion.isDeleting()"
+    [hasFailed]="deletion.hasFailed()"
+    (confirmed)="deleteSelected()"
+    (closed)="deletion.cancel()"
+  />
+  <app-empty-boxes-dialog
+    screen="box"
+    [isOpen]="boxesDeletion.isAsking() && boxQuestion() === 'emptied'"
+    [names]="boxesDeletion.names()"
+    [isDeleting]="boxesDeletion.isDeleting()"
+    [hasFailed]="boxesDeletion.hasFailed()"
+    (confirmed)="deleteBox()"
+    (closed)="boxesDeletion.cancel()"
+  />
+  <app-delete-box-dialog
+    [isOpen]="boxesDeletion.isAsking() && boxQuestion() === 'delete'"
+    [name]="boxesDeletion.names()[0] ?? ''"
+    [miniCount]="boxesDeletion.miniCount()"
+    [isDeleting]="boxesDeletion.isDeleting()"
+    [hasFailed]="boxesDeletion.hasFailed()"
+    (confirmed)="deleteBox()"
+    (closed)="boxesDeletion.cancel()"
+  />
+
   <div class="@container">
     <div class="flex flex-col gap-6 @[720px]:flex-row @[720px]:items-start">
-      <section class="flex min-w-0 flex-1 flex-col gap-3" aria-labelledby="box-minis-heading">
-        <div class="flex items-center justify-between gap-4">
-          <h2 class="flex items-center gap-2 font-semibold" id="box-minis-heading">
-            Minis
-            <span hlmBadge variant="secondary" class="font-normal text-muted-foreground">{{
-              miniCount()
-            }}</span>
-          </h2>
+      <div class="flex min-w-0 flex-1 flex-col gap-8">
+        @if (hasSaveFailed()) {
+          <p class="text-sm text-destructive" role="alert" data-testid="box-save-error">
+            Can't save right now. Try again in a moment.
+          </p>
+        }
+        @if (isEmpty()) {
+          <p
+            class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
+            data-testid="box-no-minis"
+          >
+            No minis in this box.
+          </p>
+        }
+        @if (groups().length > 0) {
+          <section class="flex flex-col gap-3" aria-labelledby="box-minis-heading">
+            <div class="flex items-center justify-between gap-4">
+              <h2 class="font-semibold" id="box-minis-heading">
+                Minis <span class="font-normal text-muted-foreground">{{ builtCount() }}</span>
+              </h2>
+              <div class="flex items-center gap-3">
+                <ng-container *ngTemplateOutlet="selectButton" />
+                <ng-container *ngTemplateOutlet="showInHoard" />
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              @for (group of groups(); track group.id) {
+                <app-box-group-card
+                  [group]="group"
+                  [boxFactions]="box.factions"
+                  [isSelectionMode]="selection.isSelecting()"
+                  [selectedIds]="selection.selectedIds()"
+                  (statusChosen)="chooseStatus($event)"
+                  (miniOpened)="openMini($event)"
+                  (selectedChange)="selectMini($event)"
+                />
+              }
+            </div>
+          </section>
+        }
+        @if (sprueRows().length > 0) {
+          <section class="flex flex-col gap-3" aria-labelledby="box-sprue-heading">
+            <div class="flex items-center justify-between gap-4">
+              <h2 class="font-semibold" id="box-sprue-heading">
+                On the sprue
+                <span class="font-normal text-muted-foreground">{{ sprueCount() }}</span>
+              </h2>
+              @if (groups().length === 0) {
+                <ng-container *ngTemplateOutlet="showInHoard" />
+              }
+            </div>
+            <div class="flex flex-col gap-2">
+              @for (row of sprueRows(); track row.id) {
+                <app-box-sprue-card
+                  [row]="row"
+                  [panel]="openSprue()?.rowId === row.id ? openSprue()?.panel : undefined"
+                  (panelChange)="openSprueCard(row.id, $event)"
+                  (boxesEmptied)="askIfEmptied($event)"
+                />
+              }
+            </div>
+          </section>
+        }
+        @if (goneRows().length > 0) {
+          <section class="flex flex-col gap-3">
+            <div class="flex items-center justify-between gap-4">
+              <h2>
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-2 rounded-sm font-semibold focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  [attr.aria-expanded]="isGoneOpen()"
+                  aria-controls="box-gone-list"
+                  data-testid="box-gone-toggle"
+                  (click)="isGoneOpen.set(!isGoneOpen())"
+                >
+                  Gone <span class="font-normal text-muted-foreground">{{ goneCount() }}</span>
+                  <ng-icon
+                    name="lucideChevronDown"
+                    size="16"
+                    class="text-muted-foreground transition-transform motion-reduce:transition-none"
+                    [class.rotate-180]="isGoneOpen()"
+                  />
+                </button>
+              </h2>
+              @if (groups().length === 0) {
+                <ng-container *ngTemplateOutlet="selectButton" />
+              }
+            </div>
+            @if (isGoneOpen()) {
+              <ul class="flex flex-col gap-2" id="box-gone-list">
+                @for (row of goneRows(); track row.id) {
+                  <li
+                    class="group relative flex items-center gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-muted/40"
+                    [class.bg-primary/5]="selection.selectedIds().has(row.id)"
+                  >
+                    <app-row-check
+                      class="relative z-10"
+                      testId="box-gone-check"
+                      [label]="'Select ' + row.name"
+                      [isSelected]="selection.selectedIds().has(row.id)"
+                      [isVisible]="selection.isSelecting()"
+                      (selectedChange)="selection.select(row.id, $event)"
+                    />
+                    <!-- Covers the whole line, so a click anywhere on it opens or selects the mini. -->
+                    <button
+                      type="button"
+                      class="min-w-0 flex-1 truncate rounded-sm text-left font-semibold after:absolute after:inset-0 after:rounded-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                      data-testid="box-gone"
+                      (click)="onGoneClick(row.id)"
+                    >
+                      <app-either-or-name [name]="row.name" />
+                    </button>
+                    <span class="shrink-0 text-sm text-muted-foreground">{{
+                      row.departureText
+                    }}</span>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+        }
+
+        <!-- Beside "Minis", or beside "Gone" when nothing is built. -->
+        <ng-template #selectButton>
+          <button
+            hlmBtn
+            variant="ghost"
+            type="button"
+            class="h-8 px-2 text-sm"
+            data-testid="box-select"
+            [disabled]="selection.isSelecting()"
+            (click)="selection.start()"
+          >
+            Select
+          </button>
+        </ng-template>
+
+        <!-- In the heading of the first section, so it is there with or without built minis. -->
+        <ng-template #showInHoard>
           <a
             routerLink="/hoard/minis"
             class="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
@@ -184,17 +363,8 @@
             Show in hoard
             <ng-icon name="lucideChevronRight" size="16" />
           </a>
-        </div>
-        <div class="flex flex-col gap-2">
-          @for (row of miniRows(); track row.id) {
-            <app-box-mini-card
-              [row]="row"
-              [boxFactions]="box.factions"
-              (opened)="openMini(row.id)"
-            />
-          }
-        </div>
-      </section>
+        </ng-template>
+      </div>
       @if (kit(); as kit) {
         <app-box-kit-card class="@[720px]:w-80 @[720px]:shrink-0" [kit]="kit" />
       } @else if (hasKitFailed()) {

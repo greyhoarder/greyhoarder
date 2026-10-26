@@ -9,7 +9,9 @@ import {
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTableImports } from '@spartan-ng/helm/table';
 import { kitLine } from '../../../util/box-labels';
-import { miniCount, paintedCount, percentOf, sprueCount } from '../../../data/box-row';
+import { miniCount, paintedCount, percentOf, progressOf, sprueCount } from '../../../data/box-row';
+import { hasPercent } from '../../../models/box-progress';
+import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
 import { formatDate } from '../../../util/format-date';
 import type { BoxRow } from '../../../data/box-row';
 import { type BoxSortOrder, sortBoxes } from '../../../data/box-sort';
@@ -41,7 +43,7 @@ const COLUMNS: readonly Column[] = [
 /** The boxes as a table, sorted by clicking a column header; starts with the newest. */
 @Component({
   selector: 'app-box-table',
-  imports: [EitherOrName, NgIcon, HlmButton, HlmTableImports, ProgressBar, RowCheck],
+  imports: [EitherOrName, NgIcon, HlmButton, HlmTableImports, ProgressBadge, ProgressBar, RowCheck],
   providers: [
     provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical }),
   ],
@@ -67,6 +69,8 @@ export class BoxTable {
   protected readonly kitLine = kitLine;
   protected readonly sprueCount = sprueCount;
   protected readonly percentOf = percentOf;
+  protected readonly progressOf = progressOf;
+  protected readonly hasPercent = hasPercent;
   protected readonly formatDate = formatDate;
 
   protected paintedText(box: BoxRow): string {

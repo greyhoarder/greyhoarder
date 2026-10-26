@@ -1,5 +1,5 @@
 import { computed, inject, Injectable } from '@angular/core';
-import { hasReached } from '@greyhoarder/domain/hoard';
+import { hasReached, isGone } from '@greyhoarder/domain/hoard';
 import { type FactionProgress, factionProgresses } from '../models/faction-progress';
 import { FactionNamesStore } from './faction-names-store';
 import { MinisStore } from './minis-store';
@@ -20,19 +20,23 @@ export class HoardByFaction {
 
   readonly isLoading = this.minisStore.isLoading;
   readonly hasFailed = this.minisStore.hasFailed;
-  readonly miniCount = computed(() => this.minisStore.minis().length);
+  /** Gone minis are not counted. */
+  private readonly minis = computed(() => this.minisStore.minis().filter((mini) => !isGone(mini)));
+  readonly miniCount = computed(() => this.minis().length);
   readonly paintedCount = computed(
-    () => this.minisStore.minis().filter((mini) => hasReached(mini.status, 'painted')).length,
+    () => this.minis().filter((mini) => hasReached(mini.status, 'painted')).length,
   );
 
   /** Most minis first, then by name; the minis without a faction last. */
   readonly factions = computed<readonly FactionOverview[]>(() => {
     const names = this.factionNames.names();
     const systemNames = this.factionNames.systemNames();
-    return factionProgresses(this.minisStore.minis())
+    return factionProgresses(this.minis())
       .map(({ factionId, ...progress }) => ({
         ...progress,
-        ...(factionId === undefined ? {} : { name: names.get(factionId) ?? factionId, systemName: systemNames.get(factionId) }),
+        ...(factionId === undefined
+          ? {}
+          : { name: names.get(factionId) ?? factionId, systemName: systemNames.get(factionId) }),
       }))
       .sort(
         (a, b) =>

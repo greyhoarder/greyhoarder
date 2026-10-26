@@ -1,5 +1,12 @@
 import { type BoxProgress, boxProgress, progressPercent } from '../models/box-progress';
-import { type Box, hasReached, type HobbyStatus, hobbyStatuses, type Mini } from '@greyhoarder/domain/hoard';
+import {
+  type Box,
+  hasReached,
+  type HobbyStatus,
+  hobbyStatuses,
+  isGone,
+  type Mini,
+} from '@greyhoarder/domain/hoard';
 import { factionNamesOf } from '../util/kit-labels';
 
 export interface BoxKit {
@@ -9,14 +16,17 @@ export interface BoxKit {
   readonly sku?: string;
 }
 
-/** One box in a list of boxes, with how many of its minis stand at each status. */
+/** One box in a list of boxes, with how many of its minis stand at each status and how many are gone. */
 export interface BoxRow {
   readonly id: string;
   readonly name: string;
   /** Boxes without a kit have a name only. */
   readonly kit?: BoxKit;
   readonly factions: readonly string[];
+  /** The minis that are not gone, by status. */
   readonly minis: Readonly<Partial<Record<HobbyStatus, number>>>;
+  /** Left out when none is gone. */
+  readonly goneCount?: number;
   /** ISO date, e.g. "2026-10-12". */
   readonly addedOn: string;
   readonly tags: readonly string[];
@@ -29,8 +39,13 @@ export function toBoxRows(
   factionNames: ReadonlyMap<string, string>,
 ): BoxRow[] {
   const counts = new Map<string, Partial<Record<HobbyStatus, number>>>();
+  const goneCounts = new Map<string, number>();
   for (const mini of minis) {
     if (mini.boxId === undefined) {
+      continue;
+    }
+    if (isGone(mini)) {
+      goneCounts.set(mini.boxId, (goneCounts.get(mini.boxId) ?? 0) + 1);
       continue;
     }
     const count = counts.get(mini.boxId) ?? {};
@@ -43,6 +58,7 @@ export function toBoxRows(
     kit: box.kit && { name: box.kit.name, sku: box.kit.sku },
     factions: factionNamesOf(box.factionIds, factionNames),
     minis: counts.get(box.id) ?? {},
+    goneCount: goneCounts.get(box.id) ?? 0,
     addedOn: box.addedOn,
     tags: box.tags,
   }));
@@ -63,12 +79,13 @@ export function paintedCount(box: BoxRow): number {
 }
 
 export function progressOf(box: BoxRow): BoxProgress {
-  return boxProgress(statusesOf(box));
+  return boxProgress(statusesOf(box), box.goneCount ?? 0);
 }
 
-/** 0 to 100, weighted by status (see `progressPercent`). */
+/** 0 to 100, weighted by status (see `progressPercent`); 0 once all minis are gone. */
 export function percentOf(box: BoxRow): number {
-  return progressPercent(statusesOf(box));
+  const statuses = statusesOf(box);
+  return statuses.length > 0 ? progressPercent(statuses) : 0;
 }
 
 /** One status per mini of the box. */

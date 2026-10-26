@@ -3,10 +3,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import type { Box, HobbyStatus, Mini } from '@greyhoarder/domain/hoard';
-import { HttpKitsAdapter } from '../../../catalog/api';
+import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
 import { MinisList } from '../../data/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
+import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
 import { BoxDetailPage } from './box-detail-page';
 
 const ORKS = 'warhammer-40000/orks';
@@ -32,7 +33,13 @@ const mini = (id: string, status: HobbyStatus, overrides: Partial<Mini> = {}): M
   ...overrides,
 });
 
-const LOOSE: Box = { id: 'b2', name: 'Bits from a friend', factionIds: [ORKS], tags: [], addedOn: '2026-10-01' };
+const LOOSE: Box = {
+  id: 'b2',
+  name: 'Bits from a friend',
+  factionIds: [ORKS],
+  tags: [],
+  addedOn: '2026-10-01',
+};
 
 const BOYZ_KIT = {
   id: 'games-workshop/orks/boyz-2026',
@@ -44,32 +51,57 @@ const BOYZ_KIT = {
   minis: 10,
   isDraft: false,
   contains: [],
-  variants: [{ name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: [], factionIds: [] }] }],
+  variants: [
+    { name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: [], factionIds: [] }] },
+  ],
 };
 
 @Component({ template: '' })
 class MinisTab {}
 
-const MINIS: Mini[] = [mini('m1', 'sprue'), mini('m2', 'sprue'), mini('m3', 'built'), mini('m4', 'done')];
+const MINIS: Mini[] = [
+  mini('m1', 'sprue'),
+  mini('m2', 'sprue'),
+  mini('m3', 'built'),
+  mini('m4', 'done'),
+];
 
 describe('Box page', () => {
   let fixture: ComponentFixture<BoxDetailPage>;
-  const findKit = vi.fn(async () => ({ kits: [BOYZ_KIT], containedKits: new Map(), factionNames: new Map() }));
+  const findKit = vi.fn(async () => ({
+    kits: [BOYZ_KIT],
+    containedKits: new Map(),
+    factionNames: new Map(),
+  }));
 
   /** A fresh page for the box with this id, whose hoard holds what `loadMinis` answers. */
-  function showBox(id: string, loadMinis: () => Promise<readonly Mini[]> = () => Promise.resolve(MINIS)): void {
+  function showBox(
+    id: string,
+    loadMinis: () => Promise<readonly Mini[]> = () => Promise.resolve(MINIS),
+  ): void {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'hoard/minis', component: MinisTab }]),
         {
           provide: HttpBoxesAdapter,
-          useValue: { list: vi.fn(async () => ({ boxes: [BOYZ, LOOSE], factionNames: new Map([[ORKS, 'Orks']]) })) },
+          useValue: {
+            list: vi.fn(async () => ({
+              boxes: [BOYZ, LOOSE],
+              factionNames: new Map([[ORKS, 'Orks']]),
+            })),
+          },
         },
         { provide: HttpKitsAdapter, useValue: { find: findKit } },
+        { provide: HttpCatalogPartsAdapter, useValue: { rangeParts: vi.fn(async () => []) } },
+        { provide: HttpPartsAdapter, useValue: { list: vi.fn(async () => []) } },
         {
           provide: HttpMinisAdapter,
           useValue: {
-            list: vi.fn(async () => ({ minis: await loadMinis(), factionNames: new Map([[FREEBOOTERZ, 'Freebooterz']]), systemNames: new Map() })),
+            list: vi.fn(async () => ({
+              minis: await loadMinis(),
+              factionNames: new Map([[FREEBOOTERZ, 'Freebooterz']]),
+              systemNames: new Map(),
+            })),
           },
         },
       ],
@@ -79,11 +111,14 @@ describe('Box page', () => {
   }
 
   const all = (testId: string): HTMLElement[] => [
-    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
+    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
+      `[data-testid="${testId}"]`,
+    ),
   ];
-  const textOf = (testId: string): string => all(testId)[0]?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-  const miniNames = (): string[] =>
-    all('box-mini').map((card) => card.querySelector('.font-semibold')?.textContent?.trim() ?? '');
+  const textOf = (testId: string): string =>
+    all(testId)[0]?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+  const groupTexts = (): string[] =>
+    all('box-group-toggle').map((toggle) => toggle.textContent?.replace(/\s+/g, ' ').trim() ?? '');
 
   it('says the name of the box as the title', async () => {
     showBox(BOYZ.id);
@@ -191,56 +226,64 @@ describe('Box page', () => {
     expect(all('box-error')).toHaveLength(1);
   });
 
-  it('shows the minis of the box, alike ones as one row', async () => {
-    showBox(BOYZ.id);
-
-    await fixture.whenStable();
-
-    expect(all('box-mini')).toHaveLength(3);
-  });
-
-  it('shows the minis from the furthest status back to the sprue, then by name', async () => {
+  it('shows the minis on the sprue, alike ones as one row', async () => {
     showBox(BOYZ.id, () =>
       Promise.resolve([
         mini('m1', 'sprue'),
-        mini('m2', 'sprue', { name: 'Nob' }),
-        mini('m3', 'done'),
-        mini('m4', 'sprue', { name: 'Ammo Runt' }),
-        mini('m5', 'primed', { name: 'Nob' }),
+        mini('m2', 'sprue'),
+        mini('m3', 'sprue', { name: 'Nob' }),
       ]),
     );
 
     await fixture.whenStable();
 
-    expect(miniNames()).toEqual(['Boy', 'Nob', 'Ammo Runt', 'Boy', 'Nob']);
+    expect(all('box-sprue')).toHaveLength(2);
   });
 
-  it('shows the factions of a mini only when they differ from those of the box', async () => {
-    showBox(BOYZ.id, () => Promise.resolve([mini('m1', 'sprue'), mini('m2', 'built', { factionIds: [FREEBOOTERZ] })]));
+  it('shows the groups from the furthest status back to built, then by name', async () => {
+    showBox(BOYZ.id, () =>
+      Promise.resolve([
+        mini('m1', 'built', { name: 'Grot' }),
+        mini('m2', 'primed', { name: 'Nob' }),
+        mini('m3', 'done'),
+        mini('m4', 'built', { name: 'Ammo Runt' }),
+      ]),
+    );
 
     await fixture.whenStable();
 
-    const texts = all('box-mini').map((card) => card.textContent ?? '');
-    expect(texts.map((text) => text.includes('Freebooterz'))).toEqual([true, false]);
-    expect(texts.some((text) => text.includes('Orks'))).toBe(false);
+    expect(groupTexts()).toEqual([
+      expect.stringMatching(/^Boy/),
+      expect.stringMatching(/^Nob/),
+      expect.stringMatching(/^Ammo Runt/),
+      expect.stringMatching(/^Grot/),
+    ]);
   });
 
-  it('leaves out the box in the rows of its minis', async () => {
+  it('does not show the box on the cards of its own minis', async () => {
     showBox(BOYZ.id);
 
     await fixture.whenStable();
 
-    expect(all('box-mini').some((card) => card.textContent?.includes(BOYZ.name))).toBe(false);
+    const cards = [...all('box-group'), ...all('box-sprue')];
+    expect([all('box-group').length > 0, all('box-sprue').length > 0]).toEqual([true, true]);
+    expect(cards.some((card) => card.textContent?.includes(BOYZ.name))).toBe(false);
   });
 
-  it('says how many minis the box holds', async () => {
+  it('says how many minis are built and how many are still on the sprue', async () => {
     showBox(BOYZ.id);
 
     await fixture.whenStable();
 
-    expect(
-      (fixture.nativeElement as HTMLElement).querySelector('#box-minis-heading')?.textContent?.replace(/\s+/g, ' ').trim(),
-    ).toBe('Minis 4');
+    const heading = (id: string): string | undefined =>
+      (fixture.nativeElement as HTMLElement)
+        .querySelector(`#${id}`)
+        ?.textContent?.replace(/\s+/g, ' ')
+        .trim();
+    expect([heading('box-minis-heading'), heading('box-sprue-heading')]).toEqual([
+      'Minis 2',
+      'On the sprue 2',
+    ]);
   });
 
   it('leads to the minis of the box in the hoard', async () => {
@@ -252,28 +295,6 @@ describe('Box page', () => {
 
     expect(TestBed.inject(Router).url).toBe('/hoard/minis');
     expect(TestBed.inject(MinisList).boxFilter()).toEqual(new Set([BOYZ.id]));
-  });
-
-  it('tells screen readers the name of each mini', async () => {
-    showBox(BOYZ.id, () => Promise.resolve([mini('m1', 'sprue', { name: 'Nob' })]));
-
-    await fixture.whenStable();
-
-    const button = all('box-mini')[0]?.querySelector('button');
-    const labelId = button?.getAttribute('aria-labelledby') ?? '';
-    expect((fixture.nativeElement as HTMLElement).querySelector(`#${labelId}`)?.textContent?.trim()).toBe('Nob');
-  });
-
-  it('tells screen readers how many minis a row stands for', async () => {
-    showBox(BOYZ.id);
-
-    await fixture.whenStable();
-
-    expect(all('box-mini').map((card) => card.querySelector('[aria-label$=" mini"], [aria-label$=" minis"]')?.getAttribute('aria-label'))).toEqual([
-      '1 mini',
-      '1 mini',
-      '2 minis',
-    ]);
   });
 
   it('shows the kit the box was added from, in the version the box records', async () => {
@@ -359,10 +380,22 @@ describe('Box page', () => {
   it('opens a mini of the box with a click on it', async () => {
     showBox(BOYZ.id);
     await fixture.whenStable();
+    all('box-group-toggle')[0]?.click();
+    await fixture.whenStable();
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
-    all('box-mini')[0]?.querySelector('button')?.click();
+    all('box-group-mini-open')[0]?.click();
 
-    expect(navigate).toHaveBeenCalledWith(['/hoard/minis', expect.any(String)]);
+    expect(navigate).toHaveBeenCalledWith(['/hoard/minis', 'm4'], { queryParams: { from: 'box' } });
+  });
+
+  it('opens the first card on the sprue with "Take from the sprue"', async () => {
+    showBox(BOYZ.id);
+    await fixture.whenStable();
+
+    all('box-take')[0]?.click();
+    await fixture.whenStable();
+
+    expect(all('box-sprue-panel')).toHaveLength(1);
   });
 });

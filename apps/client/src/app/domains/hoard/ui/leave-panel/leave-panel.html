@@ -1,0 +1,120 @@
+<h2 class="font-semibold" [id]="headingId">Leave the hoard</h2>
+
+<div class="flex flex-wrap gap-2" role="group" aria-label="Reason">
+  @for (option of reasons; track option.reason) {
+    <button
+      type="button"
+      class="rounded-lg border px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      [class.bg-muted]="reason() === option.reason"
+      [class.border-muted-foreground]="reason() === option.reason"
+      [attr.aria-pressed]="reason() === option.reason"
+      [attr.data-reason]="option.reason"
+      data-testid="mini-leave-reason"
+      (click)="reason.set(option.reason)"
+    >
+      {{ option.label }}
+    </button>
+  }
+</div>
+
+<div class="flex flex-wrap items-end gap-6">
+  <label class="flex flex-col gap-1 text-sm">
+    <span class="text-muted-foreground">Day</span>
+    <input
+      type="date"
+      class="h-10 rounded-lg border border-input bg-transparent px-3 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      data-testid="mini-leave-date"
+      [value]="date()"
+      (change)="typeDate($event)"
+    />
+  </label>
+
+  @if (rowSize() > 1) {
+    <app-count-stepper
+      label="How many leave"
+      testId="mini-leave"
+      [count]="count()"
+      [max]="rowSize()"
+      (changed)="changeCount($event)"
+    />
+  }
+</div>
+
+@if (reason() === 'stripped') {
+  <div class="flex flex-col gap-2">
+    <span class="text-sm text-muted-foreground" [id]="recipientsLabelId">Parts went to</span>
+    @if (recipients().length > 0) {
+      <ul class="flex flex-wrap gap-2" [attr.aria-labelledby]="recipientsLabelId">
+        @for (recipient of recipients(); track recipient.id) {
+          <li
+            class="inline-flex h-8 items-center gap-1 rounded-full bg-muted pr-1.5 pl-3 text-sm"
+            data-testid="mini-leave-recipient"
+          >
+            <app-either-or-name [name]="recipient.name" />
+            <button
+              type="button"
+              class="flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              [attr.aria-label]="'Remove ' + recipient.name"
+              (click)="removeRecipient(recipient.id)"
+            >
+              <ng-icon name="lucideX" size="12" />
+            </button>
+          </li>
+        }
+      </ul>
+    }
+    <label
+      class="flex h-10 w-full max-w-md items-center gap-2 rounded-lg border border-input px-3 focus-within:ring-2 focus-within:ring-ring"
+    >
+      <ng-icon name="lucideSearch" size="16" class="text-muted-foreground" />
+      <input
+        type="search"
+        class="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        placeholder="Search your minis"
+        [attr.aria-labelledby]="recipientsLabelId"
+        data-testid="mini-leave-recipients"
+        [value]="query()"
+        (input)="typeQuery($event)"
+      />
+    </label>
+    <div class="flex flex-wrap gap-2">
+      @for (choice of choices(); track choice.id) {
+        <button
+          type="button"
+          class="inline-flex h-8 items-center gap-1 rounded-full border px-3 text-sm hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          data-testid="mini-leave-recipient-option"
+          (click)="addRecipient(choice)"
+        >
+          + <app-either-or-name [name]="choice.name" />
+          <span class="text-muted-foreground">{{
+            choice.box ? eitherOrText(choice.box) : 'Without box'
+          }}</span>
+        </button>
+      }
+    </div>
+  </div>
+}
+
+<div class="flex flex-wrap justify-end gap-2">
+  <button
+    hlmBtn
+    variant="ghost"
+    type="button"
+    class="h-10"
+    data-testid="mini-leave-cancel"
+    (click)="closed.emit()"
+  >
+    Cancel
+  </button>
+  <button
+    hlmBtn
+    type="button"
+    class="h-10 font-semibold"
+    data-testid="mini-leave-confirm"
+    [disabled]="reason() === undefined || isLeaving()"
+    [attr.aria-busy]="isLeaving()"
+    (click)="leave()"
+  >
+    {{ count() > 1 ? 'Leave the hoard (' + count() + ')' : 'Leave the hoard' }}
+  </button>
+</div>

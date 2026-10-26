@@ -8,20 +8,36 @@ import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { BoxesStore } from '../../data/boxes-store';
 import { HoardView } from '../../data/hoard-view';
+import { BoxesDeletion } from '../../data/boxes-deletion';
+import { MinisDeletion } from '../../data/minis-deletion';
 import { MinisList } from '../../data/minis-list';
+import { DeleteMinisDialog } from '../../ui/delete-minis-dialog/delete-minis-dialog';
+import { EmptyBoxesDialog } from '../../ui/empty-boxes-dialog/empty-boxes-dialog';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
-import { MiniCard } from './mini-card/mini-card';
+import { SelectionBar } from '../../ui/selection-bar/selection-bar';
+import { MiniGroupCard } from './mini-group-card/mini-group-card';
 import { MiniTable, type RowSelection } from './mini-table/mini-table';
-import { NONE } from '../../data/mini-filter';
+import { GONE, NONE } from '../../data/mini-filter';
 import { countMinis, type MiniRow } from '../../data/mini-row';
 import { distinctBoxNames } from '../../util/box-labels';
 import { STATUS_LABELS } from '../../util/status-labels';
 
-/** The Minis tab of the hoard: search, filters, selection and the minis as cards or table. */
+/** The Minis tab of the hoard: search, filters, selection and the minis as group cards or table. */
 @Component({
   selector: 'app-mini-list-page',
-  imports: [NgIcon, HlmButton, HlmInputGroupImports, HlmSkeleton, FilterChip, MiniCard, MiniTable],
-  providers: [provideIcons({ lucideSearch, lucideX })],
+  imports: [
+    NgIcon,
+    HlmButton,
+    HlmInputGroupImports,
+    HlmSkeleton,
+    FilterChip,
+    MiniGroupCard,
+    MiniTable,
+    SelectionBar,
+    DeleteMinisDialog,
+    EmptyBoxesDialog,
+  ],
+  providers: [provideIcons({ lucideSearch, lucideX }), MinisDeletion, BoxesDeletion],
   templateUrl: './mini-list-page.html',
   host: { class: 'flex flex-col gap-3' },
 })
@@ -30,27 +46,56 @@ export class MiniListPage {
   protected readonly view = inject(HoardView);
   private readonly boxes = inject(BoxesStore);
   private readonly router = inject(Router);
+  protected readonly deletion = inject(MinisDeletion);
+  protected readonly boxesDeletion = inject(BoxesDeletion);
 
   protected readonly factionOptions = computed(() =>
-    optionsOf(this.store.rows(), (row) => row.factions),
+    optionsOf(this.store.presentRows(), (row) => row.factions),
   );
-  protected readonly statusOptions = computed<FilterOption[]>(() =>
-    hobbyStatuses.map((status) => ({
-      value: status,
-      label: STATUS_LABELS[status],
-      count: countMinis(this.store.rows().filter((row) => row.status === status)),
-    })),
-  );
+  /** The statuses past the sprue of the minis that are not gone, then the gone ones. */
+  protected readonly statusOptions = computed<FilterOption[]>(() => [
+    ...hobbyStatuses
+      .filter((status) => status !== 'sprue')
+      .map((status) => ({
+        value: status,
+        label: STATUS_LABELS[status],
+        count: countMinis(this.store.presentRows().filter((row) => row.status === status)),
+      })),
+    {
+      value: GONE,
+      label: 'Gone',
+      count: countMinis(this.store.rows().filter((row) => row.departure)),
+    },
+  ]);
   /** By box, so boxes with the same name stay apart. */
   protected readonly boxOptions = computed(() => {
     const names = distinctBoxNames(this.boxes.boxes());
     return optionsOf(
-      this.store.rows(),
+      this.store.presentRows(),
       (row) => [row.boxId ?? NONE],
       'Without box',
       (id) => names.get(id) ?? id,
     );
   });
+
+  /** Gone minis can't leave again; the others among the selected can. */
+  protected readonly canLeave = computed(() =>
+    this.store.rows().some((row) => this.store.selectedIds().has(row.id) && !row.departure),
+  );
+
+  protected async deleteSelected(): Promise<void> {
+    const { isDeleted, emptiedBoxIds } = await this.deletion.confirm();
+    if (isDeleted) {
+      this.store.finishSelecting();
+    }
+    if (emptiedBoxIds.length > 0) {
+      this.boxesDeletion.ask(emptiedBoxIds);
+    }
+  }
+
+  protected async deleteEmptyBoxes(): Promise<void> {
+    await this.boxesDeletion.confirm();
+  }
 
   protected select({ row, isSelected }: RowSelection): void {
     this.store.select(row.id, isSelected);

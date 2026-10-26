@@ -1,0 +1,65 @@
+<button
+  type="button"
+  class="flex w-full items-center gap-4 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+  [attr.aria-expanded]="isOpen()"
+  [attr.aria-controls]="listId"
+  data-testid="hoard-group-toggle"
+  (click)="toggled.emit()"
+>
+  <!-- Photos come later; until then every group shows the same placeholder. -->
+  <span
+    aria-hidden="true"
+    class="size-12 shrink-0 rounded-lg bg-muted bg-busy-stripes sm:size-14"
+  ></span>
+  <span class="flex min-w-0 flex-1 flex-col gap-1">
+    <span class="truncate font-semibold"><app-either-or-name [name]="group().name" /></span>
+    <span class="truncate text-sm text-muted-foreground">{{ origin() }}</span>
+    <!-- Always present, so groups without parts are as tall as the others. -->
+    <span class="flex min-h-6 flex-wrap gap-1.5">
+      @for (part of group().parts; track part) {
+        <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{
+          part
+        }}</span>
+      }
+    </span>
+  </span>
+
+  <span class="hidden w-56 shrink-0 flex-col gap-1.5 sm:flex">
+    <app-progress-bar [box]="{ minis: group().counts }" data-testid="hoard-group-progress" />
+    <span class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground" aria-hidden="true">
+      @for (entry of legend(); track entry.status) {
+        <span class="inline-flex items-center gap-1.5">
+          <span class="size-2 rounded-full" [class]="statusColor[entry.status]"></span>
+          <span class="font-semibold text-foreground tabular-nums">{{ entry.count }}</span>
+          {{ entry.label }}
+        </span>
+      }
+    </span>
+  </span>
+
+  <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(count())">
+    ×{{ count() }}
+  </span>
+  <ng-icon
+    name="lucideChevronDown"
+    size="16"
+    class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
+    [class.rotate-180]="isOpen()"
+  />
+</button>
+
+@if (isOpen()) {
+  <ul class="flex flex-col gap-1 border-t p-2" [id]="listId">
+    @for (row of group().rows; track row.id) {
+      <li>
+        <app-mini-card
+          [row]="row"
+          [isSelectionMode]="isSelectionMode()"
+          [isSelected]="selectedIds().has(row.id)"
+          (selectedChange)="selectedChange.emit({ row, isSelected: $event })"
+          (opened)="opened.emit(row)"
+        />
+      </li>
+    }
+  </ul>
+}

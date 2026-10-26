@@ -1,0 +1,38 @@
+<h2 class="font-semibold" [id]="headingId">
+  {{ count() > 1 ? 'Delete ' + count() + ' minis for good?' : 'Delete this mini for good?' }}
+</h2>
+
+@if (rowSize() > 1) {
+  <app-count-stepper
+    label="How many to delete"
+    testId="mini-delete"
+    [count]="count()"
+    [max]="rowSize()"
+    (changed)="changeCount($event)"
+  />
+}
+
+<div class="flex flex-wrap justify-end gap-2">
+  <button
+    hlmBtn
+    variant="ghost"
+    type="button"
+    class="h-10"
+    data-testid="mini-delete-cancel"
+    (click)="closed.emit()"
+  >
+    Cancel
+  </button>
+  <button
+    hlmBtn
+    variant="destructive"
+    type="button"
+    class="h-10 font-semibold"
+    data-testid="mini-delete-confirm"
+    [disabled]="isDeleting()"
+    [attr.aria-busy]="isDeleting()"
+    (click)="deleted.emit(count())"
+  >
+    Delete
+  </button>
+</div>

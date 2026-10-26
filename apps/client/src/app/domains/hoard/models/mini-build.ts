@@ -1,4 +1,4 @@
-import { type Kit, type Mini, type MiniPart } from '@greyhoarder/domain/hoard';
+import { type Kit, type Mini, type MiniPart, sprueMinis } from '@greyhoarder/domain/hoard';
 import { slotsOf, sprueOffer } from './kit-slots';
 
 // Building minis that were on the sprue (docs/screens/mini.md).
@@ -14,7 +14,8 @@ export interface BuildSuggestion {
  * kit's order; without a slot of that sprue name, every name the kit suggests, kits in it included.
  * A name is left as often as the kit provides it (in the variant that provides the most) minus the
  * minis of the box that used it up: those built as it, and those built under a name of the user's
- * own that had it on the sprue.
+ * own that had it on the sprue, and those built from a slot that offered it: the names of an
+ * either-or slot share its minis, so building a Loota leaves one Burna Boy fewer as well.
  */
 export function buildSuggestions(
   kit: Kit,
@@ -22,11 +23,17 @@ export function buildSuggestions(
   sprueName?: string,
 ): BuildSuggestion[] {
   const allNames = [...new Set(slotsOf(kit).flatMap((slot) => slot.names))];
+  const kinds = sprueMinis(kit);
+  /** What the kit put minis with this sprue name on the sprue to be built as; none for other names. */
+  const offeredBy = (sprueName: string | undefined): readonly string[] =>
+    kinds.filter((kind) => kind.name === sprueName).flatMap((kind) => kind.builds);
   return sprueOffer(kit, sprueName).names.map((name) => {
     const usedUp = minisOfBox.filter(
       (mini) =>
         mini.status !== 'sprue' &&
-        (mini.name === name || (!allNames.includes(mini.name) && mini.sprueName === name)),
+        (mini.name === name ||
+          (!allNames.includes(mini.name) && mini.sprueName === name) ||
+          offeredBy(mini.sprueName).includes(name)),
     ).length;
     return { name, left: Math.max(0, provided(kit, name) - usedUp) };
   });

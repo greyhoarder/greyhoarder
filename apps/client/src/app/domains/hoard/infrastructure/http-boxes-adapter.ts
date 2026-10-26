@@ -5,6 +5,7 @@ import type {
   AddBoxesRequest,
   AddBoxesResponse,
   BoxesResponse,
+  DeleteBoxResponse,
 } from '@greyhoarder/protocol/hoard';
 import { firstValueFrom } from 'rxjs';
 import type { BoxesToAdd } from '../models/boxes-to-add';
@@ -31,5 +32,17 @@ export class HttpBoxesAdapter {
   ): Promise<{ readonly boxes: readonly Box[]; readonly minis: readonly Mini[] }> {
     const body: AddBoxesRequest = { kitId, ...boxesToAdd, addedOn };
     return firstValueFrom(this.http.post<AddBoxesResponse>('/api/hoard/boxes', body));
+  }
+
+  /** Deletes the box for good with all its minis, gone ones included. */
+  async delete(id: string): Promise<{
+    /** The box's minis. */
+    readonly deletedMiniIds: readonly string[];
+    /** Other minis whose recipients lost the deleted ones. */
+    readonly minis: readonly Mini[];
+  }> {
+    return firstValueFrom(
+      this.http.delete<DeleteBoxResponse>(`/api/hoard/boxes/${encodeURIComponent(id)}`),
+    );
   }
 }

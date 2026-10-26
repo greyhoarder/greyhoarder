@@ -29,7 +29,11 @@ const MINIS: Mini[] = [
   mini('m1', {}),
   mini('m2', {}),
   mini('m3', {}),
-  mini('m4', { name: 'Nob', parts: [{ partId: 'power-klaw', isSwappable: false }], status: 'painted' }),
+  mini('m4', {
+    name: 'Nob',
+    parts: [{ partId: 'power-klaw', isSwappable: false }],
+    status: 'painted',
+  }),
   mini('m5', { boxId: 'b2', status: 'done' }),
 ];
 
@@ -50,11 +54,17 @@ describe('Hoard layout', () => {
         },
         {
           provide: HttpPartsAdapter,
-          useValue: { list: vi.fn(async () => [{ id: 'power-klaw', name: 'Power Klaw', aliases: [] }]) },
+          useValue: {
+            list: vi.fn(async () => [{ id: 'power-klaw', name: 'Power Klaw', aliases: [] }]),
+          },
         },
         {
           provide: HttpMinisAdapter,
-          useValue: { list: vi.fn(() => answer({ minis: hoard?.minis ?? [], factionNames, systemNames: new Map() })) },
+          useValue: {
+            list: vi.fn(() =>
+              answer({ minis: hoard?.minis ?? [], factionNames, systemNames: new Map() }),
+            ),
+          },
         },
       ],
     });
@@ -75,12 +85,23 @@ describe('Hoard layout', () => {
   });
 
   it('counts the shown minis on the tab while a search narrows the list', async () => {
-    await showHoard({ boxes: BOXES, minis: MINIS });
+    const built = MINIS.map((each) =>
+      each.status === 'sprue' ? { ...each, status: 'built' as const } : each,
+    );
+    await showHoard({ boxes: BOXES, minis: built });
 
     TestBed.inject(MinisList).query.set('klaw');
     await fixture.whenStable();
 
     expect(textOf('hoard-tab-minis-count')).toBe('1 of 5');
+  });
+
+  it('says how many minis the hoard holds, those on the sprue included', async () => {
+    const twoBuiltThreeOnSprue = MINIS;
+
+    await showHoard({ boxes: BOXES, minis: twoBuiltThreeOnSprue });
+
+    expect(textOf('hoard-summary')).toContain('5 minis');
   });
 
   it("says that the hoard can't be loaded when the server does not answer", async () => {

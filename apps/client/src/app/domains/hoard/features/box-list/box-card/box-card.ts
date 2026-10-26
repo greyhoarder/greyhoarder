@@ -5,11 +5,16 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { kitLine } from '../../../util/box-labels';
 import { percentOf, progressOf } from '../../../data/box-row';
+import { hasPercent } from '../../../models/box-progress';
 import { formatDate } from '../../../util/format-date';
 import type { BoxRow } from '../../../data/box-row';
 import { STATUS_SHORT_LABELS } from '../../../util/status-labels';
 import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
-import { PROGRESS_STATUSES, ProgressBar, STATUS_COLORS } from '../../../ui/progress-bar/progress-bar';
+import {
+  PROGRESS_STATUSES,
+  ProgressBar,
+  STATUS_COLORS,
+} from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 
@@ -39,6 +44,7 @@ export class BoxCard {
   protected readonly progress = computed(() => progressOf(this.box()));
   protected readonly kitLine = computed(() => kitLine(this.box()));
   protected readonly percent = computed(() => percentOf(this.box()));
+  protected readonly hasPercent = hasPercent;
   protected readonly statusColor = STATUS_COLORS;
   /** Every status past the sprue in pipeline order with its count, also zero, so all cards read alike. */
   protected readonly statusCounts = computed(() =>

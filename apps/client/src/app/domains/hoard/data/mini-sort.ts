@@ -2,7 +2,7 @@ import { hobbyStatuses } from '@greyhoarder/domain/hoard';
 import type { SortDirection } from '../util/sort-direction';
 import type { MiniRow } from './mini-row';
 
-export const miniSortOrders = ['name', 'army', 'box', 'status', 'count'] as const;
+export const miniSortOrders = ['name', 'army', 'box', 'status'] as const;
 
 export type MiniSortOrder = (typeof miniSortOrders)[number];
 
@@ -15,7 +15,6 @@ const COMPARERS: Record<MiniSortOrder, (a: MiniRow, b: MiniRow) => number> = {
   army: (a, b) => a.factions.join().localeCompare(b.factions.join()),
   box: (a, b) => byOptionalText(a.box, b.box),
   status: (a, b) => hobbyStatuses.indexOf(a.status) - hobbyStatuses.indexOf(b.status),
-  count: (a, b) => a.count - b.count,
 };
 
 /** A sorted copy; rows that compare equal keep their order in both directions. */

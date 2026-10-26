@@ -1,11 +1,11 @@
 <div class="flex items-center justify-between gap-4">
   <a
-    routerLink="/hoard/minis"
+    [routerLink]="back().link"
     class="inline-flex w-fit items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     data-testid="mini-back"
   >
     <ng-icon name="lucideChevronLeft" size="16" />
-    Hoard
+    {{ back().label }}
   </a>
   @if (editor.mini()) {
     @if (editor.saveState() === 'failed') {
@@ -97,23 +97,26 @@
     </div>
 
     <div class="flex flex-wrap gap-3">
-      <button
-        hlmBtn
-        variant="outline"
-        type="button"
-        class="h-10 px-3.5 text-sm"
-        [class.bg-muted]="editor.isOnWorkbench()"
-        [class.text-muted-foreground]="!editor.isOnWorkbench()"
-        aria-label="On the workbench"
-        [attr.aria-pressed]="editor.isOnWorkbench()"
-        data-testid="mini-workbench"
-        (click)="editor.toggleWorkbench()"
-      >
-        <ng-icon name="lucideBrush" size="16" />
-        {{ editor.isOnWorkbench() ? 'On the workbench' : 'Put on workbench' }}
-      </button>
+      @if (!editor.isGone()) {
+        <button
+          hlmBtn
+          variant="outline"
+          type="button"
+          class="h-10 px-3.5 text-sm"
+          [class.bg-muted]="editor.isOnWorkbench()"
+          [class.text-muted-foreground]="!editor.isOnWorkbench()"
+          aria-label="On the workbench"
+          [attr.aria-pressed]="editor.isOnWorkbench()"
+          data-testid="mini-workbench"
+          (click)="editor.toggleWorkbench()"
+        >
+          <ng-icon name="lucideBrush" size="16" />
+          {{ editor.isOnWorkbench() ? 'On the workbench' : 'Put on workbench' }}
+        </button>
+      }
       <hlm-popover align="end" sideOffset="6">
         <button
+          #menuButton
           hlmPopoverTrigger
           hlmBtn
           variant="outline"
@@ -125,7 +128,7 @@
         >
           <ng-icon name="lucideEllipsisVertical" size="16" />
         </button>
-        <!-- Duplicating, changing the origin and deleting come later. -->
+        <!-- Duplicating and changing the origin come later. -->
         <ul
           hlmPopoverContent
           class="w-56 gap-0 p-1"
@@ -133,7 +136,7 @@
           aria-label="Mini"
           *hlmPopoverPortal="let menu"
         >
-          @for (item of menuItems; track item.testId) {
+          @for (item of menuItems(); track item.testId) {
             <li role="none">
               <button
                 type="button"
@@ -143,6 +146,7 @@
                 [class.text-destructive]="item.isDestructive"
                 [attr.data-testid]="item.testId"
                 (keydown)="moveFocus($event)"
+                (click)="openMenuPanel(item.panel); menu.close()"
               >
                 {{ item.label }}
               </button>
@@ -152,6 +156,52 @@
       </hlm-popover>
     </div>
   </header>
+
+  @if (openPanel() === 'leave') {
+    <app-leave-panel
+      [recipientChoices]="editor.recipientChoices()"
+      [isLeaving]="isLeaving()"
+      (left)="leave($event)"
+      (closed)="closePanel()"
+    />
+  } @else if (openPanel() === 'delete') {
+    <app-delete-panel [isDeleting]="isDeleting()" (deleted)="delete()" (closed)="closePanel()" />
+  }
+
+  @if (departureText(); as departure) {
+    <div
+      class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-muted px-4 py-3"
+      role="status"
+      data-testid="mini-gone"
+    >
+      <div class="flex flex-col gap-0.5 text-sm">
+        <span class="font-semibold">{{ departure }}</span>
+        @if (editor.recipients().length > 0) {
+          <span class="text-muted-foreground">
+            Parts went to
+            @for (recipient of editor.recipients(); track recipient.id) {
+              <a
+                class="text-foreground underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                [routerLink]="['/hoard/minis', recipient.id]"
+                data-testid="mini-gone-recipient"
+                ><app-either-or-name [name]="recipient.name" /></a
+              >{{ $last ? '' : ', ' }}
+            }
+          </span>
+        }
+      </div>
+      <button
+        hlmBtn
+        variant="outline"
+        type="button"
+        class="h-10"
+        data-testid="mini-back-to-hoard"
+        (click)="editor.comeBack()"
+      >
+        Back to hoard
+      </button>
+    </div>
+  }
 
   <section class="flex flex-col gap-3" aria-labelledby="mini-status-heading">
     <div class="flex items-baseline justify-between gap-4">
@@ -180,125 +230,29 @@
   <div class="@container">
     <div class="flex flex-col gap-8 @[720px]:flex-row @[720px]:items-start">
       <div class="@container/main flex min-w-0 flex-1 flex-col gap-8">
-        <section class="flex flex-col gap-4" aria-labelledby="mini-build-as-heading">
-          <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 class="font-semibold" id="mini-build-as-heading">Build as</h2>
-            @if (nameTiles().length > 0) {
-              <span class="text-sm text-muted-foreground">Suggested by {{ boxName() }}</span>
-            }
-          </div>
-          <div
-            class="grid grid-cols-1 gap-2 @md/main:grid-cols-2 @3xl/main:grid-cols-4"
-            role="group"
-            aria-labelledby="mini-build-as-heading"
-          >
-            @for (tile of nameTiles(); track tile.name) {
-              <button
-                type="button"
-                class="flex flex-col gap-1 rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                [class.bg-muted]="tile.isChosen"
-                [class.border-muted-foreground]="tile.isChosen"
-                [attr.aria-pressed]="tile.isChosen"
-                data-testid="mini-build-as"
-                (click)="editor.chooseName(tile.name)"
-              >
-                <span class="font-semibold" data-testid="mini-build-as-name">{{ tile.name }}</span>
-                <span
-                  class="text-xs"
-                  [class.text-destructive]="tile.isWarning"
-                  [class.text-muted-foreground]="!tile.isWarning"
-                  [attr.data-warning]="tile.isWarning"
-                  data-testid="mini-name-left"
-                  >{{ tile.hint }}</span
-                >
-              </button>
-            }
-            <label
-              class="flex flex-col gap-1 rounded-lg border border-dashed px-3 py-2.5 focus-within:ring-2 focus-within:ring-ring"
-              [class.border-solid]="editor.ownName().trim() !== ''"
-              [class.bg-muted]="editor.ownName().trim() !== ''"
-              [class.border-muted-foreground]="editor.ownName().trim() !== ''"
-            >
-              <span class="text-xs text-muted-foreground">Your own name</span>
-              <input
-                type="text"
-                class="bg-transparent font-semibold outline-none placeholder:text-muted-foreground"
-                placeholder="e.g. Tankbusta"
-                data-testid="mini-own-name"
-                [value]="editor.ownName()"
-                (input)="typeOwnName($event)"
-                (blur)="editor.commitOwnName()"
-                (keydown.enter)="editor.commitOwnName()"
-              />
-            </label>
-          </div>
-        </section>
+        <app-build-as
+          [suggestions]="editor.suggestions()"
+          [name]="editor.name()"
+          [ownName]="editor.ownName()"
+          [boxName]="editor.boxName()"
+          [count]="editor.isOnSprue() ? 1 : 0"
+          (nameChosen)="editor.chooseName($event)"
+          (ownNameChange)="editor.ownName.set($event)"
+          (ownNameCommitted)="editor.commitOwnName()"
+        />
 
-        <section class="flex flex-col gap-4" aria-labelledby="mini-parts-heading">
-          <div class="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 class="font-semibold" id="mini-parts-heading">
-              Parts
-              <span class="font-normal text-muted-foreground">{{ editor.parts().length }}</span>
-            </h2>
-            <span class="text-sm text-muted-foreground">{{ partsHint() }}</span>
-          </div>
-          <div class="grid grid-cols-1 gap-2 @md/main:grid-cols-2 @3xl/main:grid-cols-3">
-            @for (part of editor.parts(); track $index) {
-              <div
-                class="flex flex-col gap-2 rounded-lg border px-3 py-2.5"
-                data-testid="mini-part"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <span class="font-semibold" data-testid="mini-part-name">{{ part.name }}</span>
-                  <button
-                    type="button"
-                    class="text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                    [attr.aria-label]="'Remove ' + part.name"
-                    data-testid="mini-part-remove"
-                    (click)="editor.removePart($index)"
-                  >
-                    <ng-icon name="lucideX" size="14" />
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  class="inline-flex h-7 w-fit items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                  [class.bg-muted]="part.isSwappable"
-                  [class.border-muted-foreground]="part.isSwappable"
-                  [class.text-muted-foreground]="!part.isSwappable"
-                  [attr.aria-label]="'Swappable ' + part.name"
-                  [attr.aria-pressed]="part.isSwappable"
-                  data-testid="mini-part-swappable"
-                  (click)="editor.toggleSwappable($index)"
-                >
-                  <ng-icon [name]="part.isSwappable ? 'lucideMagnet' : 'lucideDroplet'" size="12" />
-                  {{ part.isSwappable ? 'Swappable' : 'Glued' }}
-                </button>
-              </div>
-            }
-            <button
-              type="button"
-              class="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg border text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-              [class.border-dashed]="!isPickerOpen()"
-              [class.bg-muted]="isPickerOpen()"
-              [class.border-muted-foreground]="isPickerOpen()"
-              [attr.aria-expanded]="isPickerOpen()"
-              aria-controls="mini-part-picker"
-              data-testid="mini-add-part"
-              (click)="togglePicker()"
-            >
-              <ng-icon
-                name="lucidePlus"
-                size="16"
-                class="transition-transform motion-reduce:transition-none"
-                [class.rotate-45]="isPickerOpen()"
-              />
-              {{ isPickerOpen() ? 'Close' : 'Add a part' }}
-            </button>
-          </div>
-
-          <app-part-picker [isOpen]="isPickerOpen()" />
-        </section>
+        <app-part-tiles
+          [parts]="editor.parts()"
+          [hint]="partsHint()"
+          [isPickerOpen]="isPickerOpen()"
+          [source]="editor.partSource()"
+          [boxName]="editor.boxName()"
+          [rangeName]="editor.rangeName()"
+          (removed)="editor.removePart($event)"
+          (swappableToggled)="editor.toggleSwappable($event)"
+          (added)="editor.addPart($event)"
+          (pickerToggled)="togglePicker()"
+        />
 
         <section class="flex flex-col gap-3">
           <label class="font-semibold" for="mini-notes">Notes</label>
@@ -330,85 +284,45 @@
             Without box
           </p>
         }
+        @if (editor.partsFrom().length > 0) {
+          <section
+            class="mt-4 flex flex-col gap-3 rounded-xl border bg-card p-5"
+            aria-labelledby="mini-parts-from-heading"
+            data-testid="mini-parts-from"
+          >
+            <h2 class="text-sm text-muted-foreground" id="mini-parts-from-heading">Parts from</h2>
+            <ul class="flex flex-col gap-2">
+              @for (source of editor.partsFrom(); track source.id) {
+                <li class="flex flex-col" data-testid="mini-parts-from-source">
+                  <a
+                    class="font-semibold underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    [routerLink]="['/hoard/minis', source.id]"
+                    ><app-either-or-name [name]="source.name"
+                  /></a>
+                  @if (source.strippedOn; as strippedOn) {
+                    <span class="text-sm text-muted-foreground"
+                      >Stripped on {{ formatDate(strippedOn) }}</span
+                    >
+                  }
+                </li>
+              }
+            </ul>
+          </section>
+        }
       </aside>
     </div>
   </div>
 
   @if (editor.isOnSprue()) {
-    <div
-      class="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-card p-4"
-      data-testid="mini-build-bar"
-    >
-      <p class="min-w-0 flex-1 basis-64 text-sm" data-testid="mini-build-summary">
-        {{ summary() }}
-      </p>
-      <div class="flex flex-wrap items-center gap-4">
-        @if (editor.rowSize() > 1) {
-          <div class="flex items-center gap-2 text-sm text-muted-foreground">
-            <div
-              class="flex h-10 items-center rounded-lg border"
-              role="group"
-              aria-label="How many to build"
-            >
-              <button
-                type="button"
-                class="flex size-10 items-center justify-center text-foreground disabled:opacity-50"
-                aria-label="One fewer"
-                data-testid="mini-build-less"
-                [disabled]="editor.count() <= 1"
-                (click)="editor.changeCount(-1)"
-              >
-                <ng-icon name="lucideMinus" size="16" />
-              </button>
-              <span
-                class="w-6 text-center font-semibold text-foreground tabular-nums"
-                aria-live="polite"
-                data-testid="mini-build-count"
-                >{{ editor.count() }}</span
-              >
-              <button
-                type="button"
-                class="flex size-10 items-center justify-center text-foreground disabled:opacity-50"
-                aria-label="One more"
-                data-testid="mini-build-more"
-                [disabled]="editor.count() >= editor.rowSize()"
-                (click)="editor.changeCount(1)"
-              >
-                <ng-icon name="lucidePlus" size="16" />
-              </button>
-            </div>
-            of {{ editor.rowSize() }}
-          </div>
-        }
-        <div class="flex items-center gap-2 text-sm">
-          <hlm-checkbox
-            inputId="mini-build-workbench"
-            data-testid="mini-build-workbench"
-            [checked]="editor.isOnWorkbench()"
-            (checkedChange)="editor.setBuildWorkbench($event)"
-          />
-          <label for="mini-build-workbench">Put on workbench</label>
-        </div>
-        <button
-          hlmBtn
-          type="button"
-          class="h-10 px-4 text-sm font-semibold"
-          data-testid="mini-build"
-          [disabled]="editor.isBuilding() || editor.buildName() === ''"
-          [attr.aria-busy]="editor.isBuilding()"
-          (click)="editor.build()"
-        >
-          <ng-icon name="lucideHammer" size="16" />
-          @if (editor.isBuilding()) {
-            Building…
-          } @else if (editor.count() === 1) {
-            Build mini
-          } @else {
-            Build {{ editor.count() }} minis
-          }
-        </button>
-      </div>
-    </div>
+    <app-build-bar
+      class="sticky bottom-4 z-10 rounded-xl border bg-card p-4"
+      [name]="editor.buildName()"
+      [parts]="editor.parts()"
+      [isOnWorkbench]="editor.isOnWorkbench()"
+      [isBuilding]="editor.isBuilding()"
+      (workbenchChange)="editor.setBuildWorkbench($event)"
+      (built)="editor.build()"
+    />
   }
 } @else {
   <p class="text-muted-foreground" role="alert" data-testid="mini-not-found">

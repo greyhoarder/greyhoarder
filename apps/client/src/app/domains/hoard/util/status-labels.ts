@@ -1,4 +1,4 @@
-import type { HobbyStatus } from '@greyhoarder/domain/hoard';
+import type { DepartureReason, HobbyStatus } from '@greyhoarder/domain/hoard';
 
 export const STATUS_LABELS: Readonly<Record<HobbyStatus, string>> = {
   sprue: 'On the sprue',
@@ -15,4 +15,12 @@ export const STATUS_SHORT_LABELS: Readonly<Record<HobbyStatus, string>> = {
   primed: 'primed',
   painted: 'painted',
   done: 'done',
+};
+
+/** Why minis left the hoard, as reasons to choose and as badges. */
+export const DEPARTURE_LABELS: Readonly<Record<DepartureReason, string>> = {
+  sold: 'Sold',
+  'given-away': 'Given away',
+  stripped: 'Stripped for parts',
+  lost: 'Lost or broken',
 };

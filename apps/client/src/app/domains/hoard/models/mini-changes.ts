@@ -1,4 +1,4 @@
-import type { HobbyStatus } from '@greyhoarder/domain/hoard';
+import type { Departure, HobbyStatus } from '@greyhoarder/domain/hoard';
 
 /** A part to put on minis: one of the vocabulary, or a name, which joins the vocabulary if it is new. */
 export type PartChange =
@@ -13,4 +13,6 @@ export interface MiniChanges {
   readonly parts?: readonly PartChange[];
   readonly notes?: string;
   readonly isOnWorkbench?: boolean;
+  /** Lets the minis leave the hoard; `null` brings them back. */
+  readonly departure?: Departure | null;
 }

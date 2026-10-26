@@ -42,9 +42,15 @@ describe('Box progress', () => {
     expect(percent).toBe(17);
   });
 
-  it('refuses to rate a box without minis', () => {
-    const rate = [() => boxProgress([]), () => progressPercent([])];
+  it('gives no percentage for a box without minis', () => {
+    const rate = () => progressPercent([]);
 
-    rate.forEach((rateBox) => expect(rateBox).toThrow(EmptyBoxError));
+    expect(rate).toThrow(EmptyBoxError);
+  });
+
+  it('calls a box without any minis empty', () => {
+    const progress = boxProgress([], 0);
+
+    expect(progress).toBe('empty');
   });
 });
