@@ -31,6 +31,8 @@ exactly one user, and users see only their own hoard.
 | **Own faction** | A faction the user created, e.g. a custom successor chapter; it can be part of another faction. |
 | **Status** | Where a mini stands: on the sprue, built, primed, painted, done. |
 | **Workbench** | The minis the user is currently working on. |
+| **Departure** | A mini leaving the hoard while its record stays: sold, given away, stripped for parts, lost or broken. |
+| **Gone** | A mini that departed. |
 
 ## Rules
 
@@ -43,7 +45,8 @@ exactly one user, and users see only their own hoard.
 - A mini may exist without a box (bought loose, second hand, already
   painted, 3D printed, kitbashed) and may start with any status.
 - A mini has at most one box as its origin. Further origins of a kitbash
-  go into its notes.
+  go into its notes; minis stripped for its parts are named as its
+  sources of parts.
 
 ### Boxes and kits
 
@@ -75,8 +78,10 @@ exactly one user, and users see only their own hoard.
 - A box from a catalog kit records the kit's id and version.
 - A box without a kit is created with a name and at least one mini,
   added by hand.
-- A box always has at least one mini. Deleting its last mini warns that
-  the box is deleted with it.
+- A box is created with at least one mini, but it can become empty.
+  Deleting minis never deletes their box: when a box has no minis left,
+  gone ones included, the user is asked whether to delete it as well.
+- Deleting a box deletes all its minis for good, gone ones included.
 - Kits only suggest. Any name and any part can be given to any mini, and a
   box may end up with more, fewer or other minis than its kit describes.
 - Changing a kit never changes existing boxes or minis; neither does a
@@ -85,11 +90,13 @@ exactly one user, and users see only their own hoard.
   It records no price.
 - A box can carry any number of the user's tags. Each user has their own
   tags; renaming a tag renames it on every box.
-- A box's progress is derived from its minis, never stored: untouched
-  while all of them are on the sprue, done once all of them are painted
-  (painted or done), started in between. The rule lives in the client's
-  `hoard/models/`.
-- A box's progress as a percentage counts each of its minis by its status
+- A box's progress is derived from its minis that are not gone, never
+  stored: untouched while all of them are on the sprue, done once all of
+  them are painted (painted or done), started in between. A box whose
+  minis are all gone stays in the list of boxes and shows "All gone" in
+  place of its progress; a box without any minis shows "Empty". The rule lives in the client's `hoard/models/`.
+- A box's progress as a percentage counts each of its minis that are not
+  gone by its status
   in equal steps: on the sprue 0, built 25, primed 50, painted 75, done
   100; the box gets the rounded average. The rule lives in the client's
   `hoard/models/` as well.
@@ -126,8 +133,30 @@ exactly one user, and users see only their own hoard.
 - A mini is on the workbench only because the user put it there. Built,
   primed or painted alone does not put it there.
 - Minis are put on the workbench singly or several at once.
-- A mini leaves the workbench when the user takes it off, or when it
-  reaches the last status (done).
+- A mini leaves the workbench when the user takes it off, when it
+  reaches the last status (done), or when it departs.
+
+### Leaving the hoard
+
+- A mini leaves the hoard in one of two ways:
+  - **Deleting** removes it for good, for an entry that was a mistake.
+  - **A departure** keeps it as a gone mini with the reason (sold, given
+    away, stripped for parts, lost or broken) and the day (by default the
+    day it is entered).
+- Any mini can depart, on the sprue or built. Its status, name, parts and
+  factions stay as they were. A departure takes it off the workbench.
+- Gone minis do not count in the lists of the hoard and the workbench, in
+  starting a new model, or in a box's progress. A list shows them only
+  when asked to.
+- Gone minis still use up the suggestion of their kit.
+- A gone mini can still be edited, and it can be brought back into the
+  hoard, which removes its departure.
+- A mini stripped for parts can name the minis that got its parts. Each of
+  them shows it as a source of parts. Taking only some parts off a mini
+  changes its parts and is no departure.
+- Several minis depart together: alike minis on the sprue, as many as the
+  user picks from their row on the box, or any minis the user selects in
+  a list. Minis that are gone already do not depart again.
 
 ## Life of a mini
 
@@ -139,21 +168,35 @@ exactly one user, and users see only their own hoard.
 3. The user puts some of them on the workbench.
 4. Status changes move them through primed, painted and done; once done
    they leave the workbench.
+5. Some leave the hoard later: sold, given away, stripped for parts that
+   go into other minis, lost or broken.
 
 ## Lists of minis
 
-Interfaces list minis, not boxes, wherever the hobby is concerned. Minis that are alike (same name, factions,
-status, parts, each glued or swappable alike, notes and box, and all on the workbench or all off it) are shown as one row with a count ("Boy · on the
-sprue · ×9"), from which the user picks how many to act on. As soon as a
-mini differs, it gets its own row. The origin box is shown as a detail and
-can be used as a filter, never as a level to navigate through.
+Interfaces list minis, not boxes, wherever the hobby is concerned. Minis
+past the sprue with the same name, factions and parts (each glued or
+swappable alike) form a group, whatever their box, status or workbench
+place: the group is shown with its count and its minis per status
+("Boy · Slugga, Choppa · ×9"), and opened it lists each mini on its own.
+The user acts on single minis, one at a time or several selected
+together, never on a group as a whole; as soon as a mini's name, factions
+or parts change, it belongs to another group. A table lists every mini on its own
+line. The origin box is shown as a detail of each mini and can be used as
+a filter, never as a level to navigate through.
+
+Minis on the sprue are not listed with the others: they are taken from
+the sprue on their box. There, minis on the sprue that are alike (same
+name, factions, parts and notes) share a row with a count, from which the
+user picks how many to build, to let depart or to delete. Minis past the
+sprue and gone minis are acted on several at once by selecting them, one
+by one, in a list.
 
 A separate list of boxes shows what was bought: per box its kit, factions,
 progress, how many minis are still on the sprue and how many are painted,
 when it was added and its tags. It is an overview of purchases. A box can
 be opened to see what it was added from, how far its minis have come and
-the minis themselves, listed like every list of minis and edited the same
-way as in the hoard. The lists of minis are still never browsed box by
+the minis themselves: those past the sprue grouped like every list of
+minis, those on the sprue in their rows to be built. The lists of minis are still never browsed box by
 box.
 
 Filtering by faction depends on what the list is for:
@@ -195,4 +238,4 @@ Filtering by faction depends on what the list is for:
 - The data model will change soon for minis on the sprue: they will be
   handled apart from built minis instead of as minis with the status
   `sprue`. How they are stored and how building turns them into minis is
-  open.
+  open. The departure of minis on the sprue has to carry over.

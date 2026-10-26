@@ -68,6 +68,8 @@ Each card is a bordered card on the card surface with rounded corners:
 ## Behavior
 
 - Every navigation asks the server whether the session is still valid.
+- Gone minis ([domain](../domains/hoard.md#leaving-the-hoard)) are not
+  counted.
 - A mini counts under each of its factions; the summary counts it once.
   Minis without a faction count under "No faction".
 - The cards are sorted by their number of minis, most first, then by name;

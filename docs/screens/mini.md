@@ -8,11 +8,11 @@
 
 ## Purpose
 
-Everything about one mini, or one row of alike minis: what it was built
-as, which parts it carries, where it stands in the pipeline and whether
-it is on the workbench. While the minis are on the sprue, the screen is
-where they are built: the user picks a name and parts and builds one or
-more of them at once.
+Everything about one mini: what it was built as, which parts it carries,
+where it stands in the pipeline and whether it is on the workbench. The
+screen always shows a single mini; acting on several at once happens on
+their [box](box.md). A mini still on the sprue can be built here on its
+own: the user picks a name and parts and builds it.
 
 ## Layout
 
@@ -21,7 +21,8 @@ the sidebar, as wide as the hoard. Below the status, the column splits like
 on [Box](box.md): the sections on the left, the box card in a side column
 on the right; on narrow content widths the box card moves below them.
 
-1. A back link "Hoard" with a left chevron; on the right of the same line
+1. A back link "Hoard", or "Box" when opened from a box, with a left
+   chevron; on the right of the same line
    the save note in small `muted-foreground` text.
 2. The header:
    - left, a 112 × 112 photo placeholder with rounded corners, muted with
@@ -34,6 +35,23 @@ on the right; on narrow content widths the box card moves below them.
 
    On narrow screens the middle column wraps below the photo and the
    buttons move below it.
+
+   While the leave panel is open, it unfolds below the header, on the card
+   surface with a border, like the part picker: the heading "Leave the
+   hoard"; the reasons as a row of toggle tiles "Sold · Given away ·
+   Stripped for parts · Lost or broken"; a date field (today at first);
+   for "Stripped for parts" the field "Parts went to" with a search over
+   the minis of the hoard and the chosen minis as chips with "×"; at the
+   end "Cancel" (ghost) and "Leave the hoard" (primary).
+
+   While the delete panel is open, it unfolds at the same place: the text
+   "Delete this mini for good?", then "Cancel" (ghost) and "Delete"
+   (`destructive`).
+
+   For gone minis, a bar below the header on the `muted` surface: the
+   departure ("Sold on {date}") and, for minis stripped for parts, "Parts
+   went to {names}", each name a link; on the right "Back to hoard"
+   (outline).
 3. The status, without a card: the label "Status" in small
    `muted-foreground` text and on its right the share as a percentage, as
    on [Box](box.md); below it a thin bar of four segments, one per status
@@ -86,11 +104,14 @@ on the right; on narrow content widths the box card moves below them.
    only suggest. What you add here counts." Without a kit the card shows
    the box's name and neither the parts nor the note; a mini without a
    box shows a card reading "Without box".
+
+   Below it, only for minis that got the parts of stripped minis, a card
+   "Parts from": one line per source mini, its name as a link and below
+   it, muted, "Stripped on {date}".
 8. Only while the minis are on the sprue: the build bar, sticking to the
    bottom of the screen while scrolling, on the card surface with a
-   border and without a shadow: the summary on the left; on the right the count stepper
-   "− {n} + of {N}" (only for rows of more than one mini), the checkbox
-   "Put on workbench" and the primary button.
+   border and without a shadow: the summary on the left; on the right the
+   checkbox "Put on workbench" and the primary button.
 
 Tiles share the width in one row and wrap on narrow screens; header and
 build bar stack. Gold appears only on the build button, the done badge and
@@ -106,21 +127,32 @@ muted line, the "or" is plain.
 | Element | Text or content |
 |---------|-----------------|
 | Browser tab title | {name} · Greyhoarder |
-| Back link | Hoard |
+| Back link | Hoard; opened from a box: Box |
 | Save note | On the sprue: Nothing is saved until you build it · otherwise: Saving… / All changes saved |
 | Photo placeholder | Add photo |
 | Title | The name; on the sprue the chosen suggestion or the typed own name, and the mini's name until one is chosen |
 | Status badge | On the sprue / Built / Primed / Painted / Done |
 | Faction chip | {faction}; own factions: {faction} · own |
 | Add faction chip | + Faction |
-| Workbench toggle | On the workbench / Put on workbench |
+| Workbench toggle | On the workbench / Put on workbench; not shown for gone minis |
 | Mini menu button (accessible name) | More actions |
-| Mini menu | Duplicate mini · Change origin box… · Delete mini… |
+| Mini menu | Change origin box… · Leave the hoard… · Delete mini…; for gone minis: Change origin box… · Delete mini… |
+| Leave panel heading | Leave the hoard |
+| Reasons | Sold · Given away · Stripped for parts · Lost or broken |
+| Date field | Day; today at first |
+| Recipients field | Parts went to; placeholder: Search your minis |
+| Leave buttons | Cancel · Leave the hoard |
+| Delete panel | Delete this mini for good? |
+| Delete buttons | Cancel · Delete |
+| Gone bar | Sold on {date} · Given away on {date} · Stripped for parts on {date} · Lost or broken on {date} |
+| Recipients line | Parts went to {names} |
+| Back button | Back to hoard |
+| Parts from card | Parts from; per source: {name}, below: Stripped on {date} |
 | Status label | Status; on its right {percent}% (sprue 0, built 25, primed 50, painted 75, done 100) |
 | Status bar labels | Built · Primed · Painted · Done |
 | Build as heading | Build as |
 | Suggestions note | Suggested by {box name} |
-| Name tile | {name}; below: {n} left in this box · None left in this box · Only {n} left in this box |
+| Name tile | {name}; below: {n} left in this box · None left in this box |
 | Own name tile | Your own name; placeholder: e.g. Tankbusta |
 | Parts heading | Parts {count} |
 | Parts hint | On the sprue, before parts were changed: Preselected for {name} — change what you actually built · otherwise: What is physically on this mini |
@@ -143,10 +175,9 @@ muted line, the "or" is plain.
 | Box card parts | The kit suggests for a {name} |
 | Box card note | Kits only suggest. What you add here counts. |
 | Without box | Without box |
-| Build summary | {n} of {N} alike minis becomes {name} with {parts}. — several: become; parts joined with ", ", a swappable one followed by " (swappable)"; without parts: …becomes {name}, no parts. For a single mini: This mini becomes {name} with {parts}. Before a name is chosen: Choose what to build. |
-| Count stepper | − {n} + of {N}; buttons: One fewer, One more |
+| Build summary | This mini becomes {name} with {parts}. — parts joined with ", ", a swappable one followed by " (swappable)"; without parts: This mini becomes {name}, no parts. Before a name is chosen: Choose what to build. |
 | Build checkbox | Put on workbench |
-| Build button | Build mini · Build {n} minis; disabled until a name is chosen |
+| Build button | Build mini; disabled until a name is chosen |
 | Not found | This mini isn't in your hoard. |
 | Load failed | Can't load this mini right now. Try again in a moment. |
 | Save failed | Can't save right now. Try again in a moment. |
@@ -156,27 +187,29 @@ muted line, the "or" is plain.
 | State | When | What the user sees |
 |-------|------|--------------------|
 | Loading | The hoard is loaded | The back link; skeletons in the shape of the header and the status |
-| On the sprue | The minis of the row are on the sprue | The status "On the sprue", "Build as" with the mini's name chosen when it is a suggestion, else nothing chosen, parts preselected (see Behavior), the build bar; the save note says nothing is saved |
+| On the sprue | The mini is on the sprue | The status "On the sprue", "Build as" with the mini's name chosen when it is a suggestion, else nothing chosen, parts preselected (see Behavior), the build bar; the save note says nothing is saved |
 | Building | "Build mini" pressed | The button shows the busy stripes and "Building…"; the bar stays until the server answers |
-| Built | The minis are past the sprue | No build bar; every change is saved at once, the save note says so |
+| Built | The mini is past the sprue | No build bar; every change is saved at once, the save note says so |
 | Without kit | The mini has no box, or its box no kit, or the kit can't be loaded | No suggestion tiles, only "Your own name"; no "Suggested by"; the part picker has no kit group; the box card without kit, parts and note |
-| Too many | The chosen count is larger than what is left for the chosen name | The name tile's line in `destructive`: Only {n} left in this box; nothing is blocked |
 | Picker open | "Add a part" pressed | The part picker below the part tiles |
 | Not found | No mini with this id in the user's hoard, also one of another user | The not-found message below the back link |
 | Load failed | The server does not answer | The load-failed message in `destructive` below the back link, announced to screen readers |
 | Save failed | A change or the build is not saved | The save-failed message in `destructive` in place of the save note, announced to screen readers; what was entered stays |
+| Leaving | "Leave the hoard…" chosen in the mini menu | The leave panel; "Leave the hoard" disabled until a reason is chosen |
+| Deleting | "Delete mini…" chosen in the mini menu | The delete panel |
+| Gone | The mini is gone | The gone bar; no workbench toggle; on the sprue no build bar; everything else as for minis on the sprue or past it, saved at once |
+| Parts from | Stripped minis name this mini as a recipient | The "Parts from" card |
 
 ## Behavior
 
-- A click on a row of the Minis tab of the [hoard](hoard.md), as card or
-  table line and outside selection mode, or on a mini of a
-  [box](box.md) opens this screen with the row's first mini in the
-  address. The screen is about the whole row: every mini of the hoard that
-  is alike to that mini (same name, factions, status, parts, box and
-  workbench place, see [Lists of minis](../domains/hoard.md#lists-of-minis)).
-- The back link leads to the Minis tab of the hoard; the browser's back
-  button returns to where the screen was opened from. Search, filters and
-  view of the hoard stay as they were.
+- A click on a mini of the Minis tab of the [hoard](hoard.md), in a group
+  card or a table line and outside selection mode, or on a mini of a
+  [box](box.md) opens this screen for that mini. The screen is about that
+  one mini only; minis alike to it are not changed with it.
+- The back link leads back to where the screen was opened from: to the
+  [box](box.md) of the mini when it was opened there, also after reloading
+  the page, else to the Minis tab of the hoard. The browser's back button
+  does the same. Search, filters and view of the hoard stay as they were.
 - **Status:** the bar and the percentage only show the status; there is no
   control to change it yet.
 - **Build as:** the tiles offer what the minis' slot can be built as: the
@@ -189,11 +222,11 @@ muted line, the "or" is plain.
   For each name, "{n} left in this box" counts the minis the box's kit
   provides for it (in the variant that provides the most) minus the minis
   of this box that already use it up: those past the sprue that were built
-  as it, and those built under an own name that had it on the sprue. With none
-  left, the line reads "None left in this box" in `destructive`. When the
-  chosen count is larger than what is left, the chosen tile's line
-  becomes "Only {n} left in this box" in `destructive`. Nothing is
-  blocked: kits only suggest.
+  as it, and those built under an own name that had it on the sprue. A mini
+  built from a slot of either-or names uses up each of them: building a Loota
+  leaves one Burna Boy fewer as well. With none
+  left, the line reads "None left in this box" and the tile is greyed out;
+  it can still be chosen. Nothing is blocked: kits only suggest.
 - Typing an own name chooses its tile; choosing a suggestion empties it.
   A mini built under an own name uses up the suggestion it had on the
   sprue.
@@ -221,21 +254,46 @@ muted line, the "or" is plain.
   `grid-template-rows` from `0fr` to `1fr` in about 260 ms; with
   `prefers-reduced-motion` it opens without animation.
 - **On the sprue** nothing is saved until "Build mini". The build bar's
-  summary follows every choice. The count stepper goes from 1 to the
-  number of minis in the row; "Put on workbench" is ticked at first, and
+  summary follows every choice. "Put on workbench" is ticked at first, and
   the header's workbench toggle shows the same choice. "Build mini" sets
-  that many minis of the row, the one in the address first, to built,
-  with the chosen name, parts, notes and workbench place; the rest of the
-  row stays on the sprue unchanged. Afterwards the screen shows the built minis.
+  the mini to built with the chosen name, parts, notes and workbench
+  place; the minis alike to it stay on the sprue. Afterwards the screen
+  shows the built mini.
 - **Past the sprue** every change is saved at once: name, parts,
   workbench and the faction removals as soon as they are made, the notes
-  when the text area loses focus. Each change applies to every mini of the
-  row, so they stay alike.
+  when the text area loses focus. Each change applies to this mini only;
+  a new name, new parts or factions move it into another group of the
+  [hoard](hoard.md).
 - A faction chip's "×" removes the faction from the minis.
 - The box card's link opens [Box](box.md). Its parts follow the name to
   build: the chosen or typed one, else the minis' name; without parts for
   it the part line is left out.
-- "+ Faction", "Add photo" and the mini menu's items have no function yet.
+- **Leaving the hoard:** "Leave the hoard…" opens the leave panel; the
+  delete panel and the part picker close. "Leave the hoard" gives the
+  mini the chosen reason, day and recipients
+  ([domain](../domains/hoard.md#leaving-the-hoard)); it leaves the
+  workbench. Afterwards the screen shows the gone mini. "Cancel" closes the panel and forgets what
+  was chosen.
+- "Parts went to" offers the minis of the hoard past the sprue that are
+  not gone, except this one, each with its box, filtered by name like the
+  part picker; choosing one adds it as a recipient.
+- **Minis on the sprue** can leave the hoard as well (a sprue given away);
+  for a gone mini on the sprue nothing is built and the build bar is not
+  shown. "Back to hoard" brings it back on the sprue with the build bar.
+- **Gone minis** are edited like the others, saved at once. "Back to
+  hoard" removes the mini's departure; its recipients no longer show it as
+  a source of parts.
+- **Deleting:** "Delete mini…" opens the delete panel; the leave panel and
+  the part picker close. "Delete" deletes the mini for good and leads to
+  its [box](box.md), or to the Minis tab of the hoard when it has none;
+  the box stays ([domain](../domains/hoard.md#boxes-and-kits)). When the
+  mini was the box's last, gone ones included, the [box](box.md#behavior)
+  opens with its empty boxes dialog.
+  Deleted minis disappear from the recipients and sources of others.
+- A source in the "Parts from" card and a name in "Parts went to" open
+  this screen for that mini.
+- "+ Faction", "Add photo" and "Change origin box…" have
+  no function yet.
 - The screen has no field for "counts as"; the data model keeps it.
 
 ## Accessibility
@@ -250,7 +308,12 @@ muted line, the "or" is plain.
 - "Add a part" has `aria-expanded` and `aria-controls` for the picker;
   the closed picker is hidden from screen readers.
 - The mini menu button has `aria-haspopup="menu"` and `aria-expanded`.
-- The save note and the count are live regions; the not-found, load-failed
+- The reason tiles are toggle buttons with `aria-pressed` in a group
+  labelled "Reason"; the leave and delete panels are regions labelled by
+  their heading or text, and focus moves into them when they open and
+  back to the menu button when they close.
+- The gone bar is announced when the mini becomes gone.
+- The save note is a live region; the not-found, load-failed
   and save-failed messages are announced.
 - The photo placeholder is a button named "Add a photo"; the text area is
   labelled by "Notes".
@@ -259,7 +322,16 @@ muted line, the "or" is plain.
 
 `mini-back`, `mini-save-note`, `mini-name`, `mini-status-badge`,
 `mini-faction`, `mini-add-faction`, `mini-workbench`,
-`mini-menu`, `mini-duplicate`, `mini-change-origin`, `mini-delete`,
+`mini-menu`, `mini-change-origin`, `mini-leave`, `mini-delete`,
+`mini-leave-panel`, `mini-leave-reason` (with `data-reason`: `sold`,
+`given-away`, `stripped` or `lost`), `mini-leave-date`, `mini-leave-less`,
+`mini-leave-count`, `mini-leave-more` (count stepper, only on [Box](box.md)), `mini-leave-recipients`,
+`mini-leave-recipient-option`, `mini-leave-recipient`, `mini-leave-cancel`,
+`mini-leave-confirm`, `mini-delete-panel`, `mini-delete-less`,
+`mini-delete-count`, `mini-delete-more` (only on [Box](box.md)),
+`mini-delete-cancel`, `mini-delete-confirm`, `mini-gone`,
+`mini-gone-recipient`, `mini-back-to-hoard`, `mini-parts-from`,
+`mini-parts-from-source`,
 `mini-percent`, `mini-build-as`, `mini-build-as-name`, `mini-name-left`
 (with `data-warning` while it warns), `mini-own-name`,
 `mini-part`, `mini-part-name`, `mini-part-remove`, `mini-part-swappable`,
@@ -269,7 +341,7 @@ muted line, the "or" is plain.
 `mini-origin` (the box card's link, or "Without box"), `mini-box-added`,
 `mini-box-part`,
 `mini-build-bar`, `mini-build-summary`, `mini-build-less`,
-`mini-build-count`, `mini-build-more`, `mini-build-workbench`,
+`mini-build-count`, `mini-build-more` (only on [Box](box.md)), `mini-build-workbench`,
 `mini-build`, `mini-loading`, `mini-not-found`, `mini-error`,
 `mini-save-error` (ADR-0013).
 
@@ -282,5 +354,7 @@ muted line, the "or" is plain.
 - Minis on the sprue will soon be handled apart from built minis in the
   data model ([domain](../domains/hoard.md#open-questions)); building on
   this screen changes with it.
+- Whether a mini on the sprue should be opened here at all, now that
+  building usually happens on its box.
 - What the screen asks when a mini becomes primed, painted or done.
-- What the mini menu's items do.
+- What "Change origin box…" does.
