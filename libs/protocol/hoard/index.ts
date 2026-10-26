@@ -5,7 +5,12 @@ export {
   addBoxesResponseSchema,
 } from './add-boxes.js';
 export { type BoxesResponse, boxesResponseSchema } from './boxes.js';
+export { type DeleteBoxResponse, deleteBoxResponseSchema } from './delete-box.js';
 export {
+  type DeleteMinisRequest,
+  deleteMinisRequestSchema,
+  type DeleteMinisResponse,
+  deleteMinisResponseSchema,
   type MinisResponse,
   minisResponseSchema,
   type UpdateMinisRequest,

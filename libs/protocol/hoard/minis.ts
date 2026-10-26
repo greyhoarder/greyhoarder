@@ -1,10 +1,18 @@
-import { hobbyStatuses } from '@greyhoarder/domain/hoard';
+import { departureReasons, hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { z } from 'zod';
+import { isoDateSchema } from './boxes.js';
 
 /** A part on a mini as `MiniPart` describes it. */
 const miniPartSchema = z.object({
   partId: z.string(),
   isSwappable: z.boolean(),
+});
+
+/** How a mini left the hoard, as `Departure` describes it. */
+const departureSchema = z.object({
+  reason: z.enum(departureReasons),
+  on: isoDateSchema,
+  recipientMiniIds: z.array(z.string().min(1)).readonly().optional(),
 });
 
 /** A mini as `Mini` describes it. */
@@ -18,6 +26,7 @@ export const miniSchema = z.object({
   sprueName: z.string().optional(),
   boxId: z.string().optional(),
   isOnWorkbench: z.boolean(),
+  departure: departureSchema.optional(),
 });
 
 /** Every mini of the signed-in user's hoard. */
@@ -50,6 +59,8 @@ export const updateMinisRequestSchema = z.object({
     parts: z.array(partChangeSchema).readonly().optional(),
     notes: z.string().max(5000).optional(),
     isOnWorkbench: z.boolean().optional(),
+    /** A departure lets the minis leave the hoard; `null` brings them back. */
+    departure: departureSchema.nullable().optional(),
   }),
 });
 
@@ -60,3 +71,19 @@ export const updateMinisResponseSchema = z.object({
 });
 
 export type UpdateMinisResponse = z.infer<typeof updateMinisResponseSchema>;
+
+/** Minis to delete for good. */
+export const deleteMinisRequestSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1).readonly(),
+});
+
+export type DeleteMinisRequest = z.infer<typeof deleteMinisRequestSchema>;
+
+export const deleteMinisResponseSchema = z.object({
+  /** The boxes left without any minis, gone ones included; they stay until deleted on their own. */
+  emptiedBoxIds: z.array(z.string()).readonly(),
+  /** Other minis whose recipients lost the deleted ones. */
+  minis: z.array(miniSchema).readonly(),
+});
+
+export type DeleteMinisResponse = z.infer<typeof deleteMinisResponseSchema>;
