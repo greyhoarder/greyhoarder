@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { type Box, type Mini, type Part, partKey } from '@greyhoarder/domain/hoard';
-import type { Connection, Model } from 'mongoose';
+import type { ClientSession, Connection, Model } from 'mongoose';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { BoxDbo } from './schemas/mongo-box-schema.js';
 import { MiniDbo } from './schemas/mongo-mini-schema.js';
@@ -52,6 +52,11 @@ function toMini(stored: MiniDbo): Mini {
     sprueName: stored.sprueName,
     boxId: stored.boxId,
     isOnWorkbench: stored.isOnWorkbench,
+    departure: stored.departure && {
+      reason: stored.departure.reason,
+      on: stored.departure.on,
+      recipientMiniIds: stored.departure.recipientMiniIds,
+    },
   };
 }
 
@@ -67,6 +72,11 @@ function toMiniDbo(ownerId: string, mini: Mini): MiniDbo {
     sprueName: mini.sprueName,
     boxId: mini.boxId,
     isOnWorkbench: mini.isOnWorkbench,
+    departure: mini.departure && {
+      reason: mini.departure.reason,
+      on: mini.departure.on,
+      recipientMiniIds: mini.departure.recipientMiniIds && [...mini.departure.recipientMiniIds],
+    },
   };
 }
 
@@ -132,28 +142,75 @@ export class MongoHoardRepository extends HoardRepository {
         );
       }
       // Only what a mini's owner can change; box, sprue name and creation stay as they are.
-      await this.minis.bulkWrite(
-        minis.map((mini) => {
-          const { name, factionIds, status, parts, notes, isOnWorkbench } = toMiniDbo(
-            ownerId,
-            mini,
-          );
-          return {
-            updateOne: {
-              filter: { _id: mini.id, ownerId },
-              update:
-                notes === undefined
-                  ? {
-                      $set: { name, factionIds, status, parts, isOnWorkbench },
-                      $unset: { notes: '' },
-                    }
-                  : { $set: { name, factionIds, status, parts, notes, isOnWorkbench } },
-            },
-          };
-        }),
-        { session },
-      );
+      await this.writeMinis(ownerId, minis, session);
     });
+  }
+
+  async deleteMinis(
+    ownerId: string,
+    miniIds: readonly string[],
+    changed: readonly Mini[],
+  ): Promise<void> {
+    await this.connection.transaction(async (session) => {
+      await this.minis.deleteMany({ ownerId, _id: { $in: miniIds } }, { session });
+      await this.writeMinis(ownerId, changed, session);
+    });
+  }
+
+  async deleteBox(ownerId: string, boxId: string, changed: readonly Mini[]): Promise<string[]> {
+    return this.connection.transaction(async (session) => {
+      // Read inside the transaction, so a mini added to the box meanwhile goes with it.
+      const minis = await this.minis
+        .find({ ownerId, boxId }, { _id: 1 }, { session })
+        .lean()
+        .exec();
+      const miniIds = minis.map((mini) => mini._id);
+      await this.minis.deleteMany({ ownerId, boxId }, { session });
+      await this.boxes.deleteOne({ ownerId, _id: boxId }, { session });
+      await this.writeMinis(ownerId, changed, session);
+      return miniIds;
+    });
+  }
+
+  /** Only what a mini's owner can change; box, sprue name and creation stay as they are. */
+  private async writeMinis(
+    ownerId: string,
+    minis: readonly Mini[],
+    session: ClientSession,
+  ): Promise<void> {
+    if (minis.length === 0) {
+      return;
+    }
+    await this.minis.bulkWrite(
+      minis.map((mini) => {
+        const { name, factionIds, status, parts, notes, isOnWorkbench, departure } = toMiniDbo(
+          ownerId,
+          mini,
+        );
+        const unset = {
+          ...(notes === undefined ? { notes: '' } : {}),
+          ...(departure === undefined ? { departure: '' } : {}),
+        };
+        return {
+          updateOne: {
+            filter: { _id: mini.id, ownerId },
+            update: {
+              $set: {
+                name,
+                factionIds,
+                status,
+                parts,
+                isOnWorkbench,
+                ...(notes === undefined ? {} : { notes }),
+                ...(departure === undefined ? {} : { departure }),
+              },
+              ...(Object.keys(unset).length > 0 ? { $unset: unset } : {}),
+            },
+          },
+        };
+      }),
+      { session },
+    );
   }
 
   async addBoxes(ownerId: string, boxes: readonly Box[], minis: readonly Mini[]): Promise<void> {

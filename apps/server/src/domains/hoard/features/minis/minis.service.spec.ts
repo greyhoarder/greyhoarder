@@ -20,6 +20,7 @@ const POWER_KLAW: Part = { id: 'power-klaw', name: 'Power Klaw', aliases: ['Powe
 /** A hoard with these minis and this vocabulary, which records what is stored. */
 function fakeHoard(minis: readonly Mini[], parts: readonly Part[] = [POWER_KLAW]) {
   const updateMinis = vi.fn<HoardRepository['updateMinis']>(() => Promise.resolve());
+  const deleteMinis = vi.fn<HoardRepository['deleteMinis']>(() => Promise.resolve());
   const hoard: HoardRepository = {
     findBoxes: vi.fn(),
     findMinis: vi.fn(() => Promise.resolve([...minis])),
@@ -27,8 +28,10 @@ function fakeHoard(minis: readonly Mini[], parts: readonly Part[] = [POWER_KLAW]
     findParts: vi.fn(() => Promise.resolve([...parts])),
     addBoxes: vi.fn(),
     updateMinis,
+    deleteMinis,
+    deleteBox: vi.fn(),
   };
-  return { hoard, updateMinis };
+  return { hoard, updateMinis, deleteMinis };
 }
 
 const CATALOG: CatalogKitQueries = {
@@ -143,5 +146,15 @@ describe('Minis service', () => {
 
     await expect(update).rejects.toThrow(UnknownFactionError);
     expect(updateMinis).not.toHaveBeenCalled();
+  });
+
+  it('keeps the boxes of deleted minis', async () => {
+    const { hoard, deleteMinis } = fakeHoard([{ ...BOY, boxId: 'boyz' }]);
+    const service = new MinisService(hoard, CATALOG);
+
+    const { emptiedBoxIds } = await service.delete('owner', ['boy']);
+
+    expect(deleteMinis).toHaveBeenCalledWith('owner', ['boy'], []);
+    expect(emptiedBoxIds).toEqual(['boyz']);
   });
 });

@@ -1,7 +1,15 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
-import { type HobbyStatus, type Mini, parseMini, withStatus } from '@greyhoarder/domain/hoard';
+import {
+  type Departure,
+  type HobbyStatus,
+  type Mini,
+  parseMini,
+  withDeparture,
+  withStatus,
+} from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries } from '../../../catalog/api/index.js';
+import { emptiedBoxIds, withoutDeletedRecipients } from '../../models/mini-deletion.js';
 import { type PartChange, resolveParts } from '../../models/part-changes.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { UnknownMinisError } from './errors/unknown-minis.error.js';
@@ -23,6 +31,16 @@ export interface MiniChanges {
   readonly parts?: readonly PartChange[];
   readonly notes?: string;
   readonly isOnWorkbench?: boolean;
+  /** Lets the minis leave the hoard; `null` brings them back. */
+  readonly departure?: Departure | null;
+}
+
+/** What deleting minis changed besides them. */
+export interface MinisDeletion {
+  /** The boxes left without any minis, gone ones included; they stay. */
+  readonly emptiedBoxIds: readonly string[];
+  /** Other minis that no longer name the deleted ones as recipients of their parts. */
+  readonly minis: readonly Mini[];
 }
 
 /** The minis of the signed-in user's hoard: listing them and changing several alike at once. */
@@ -60,14 +78,60 @@ export class MinisService {
     if (changes.factionIds) {
       await this.checkFactions(changes.factionIds);
     }
-    const { parts, status, ...rest } = changes;
+    const departure =
+      changes.departure && (await this.checkDeparture(ownerId, uniqueIds, changes.departure));
+    const { parts, status, departure: _checked, ...rest } = changes;
     const resolved = parts && resolveParts(await this.hoard.findParts(ownerId), parts, randomUUID);
     const changed = minis.map((mini) => {
-      const next: Mini = { ...mini, ...rest, ...(resolved ? { parts: resolved.parts } : {}) };
-      return parseMini(status === undefined ? next : withStatus(next, status));
+      let next: Mini = { ...mini, ...rest, ...(resolved ? { parts: resolved.parts } : {}) };
+      next = status === undefined ? next : withStatus(next, status);
+      next = departure === undefined ? next : withDeparture(next, departure ?? undefined);
+      return parseMini(next);
     });
     await this.hoard.updateMinis(ownerId, changed, resolved?.newParts ?? []);
     return changed;
+  }
+
+  /**
+   * Deletes the minis for good and takes them out of the recipients of other minis' parts, all or
+   * nothing; their boxes stay, also when they have no minis left.
+   *
+   * @throws UnknownMinisError when a mini is not in the owner's hoard
+   */
+  async delete(ownerId: string, ids: readonly string[]): Promise<MinisDeletion> {
+    const deleted = new Set(ids);
+    const all = await this.hoard.findMinis(ownerId);
+    const minis = all.filter((mini) => deleted.has(mini.id));
+    if (minis.length !== deleted.size) {
+      throw new UnknownMinisError();
+    }
+    const staying = all.filter((mini) => !deleted.has(mini.id));
+    const changed = withoutDeletedRecipients(staying, deleted);
+    await this.hoard.deleteMinis(ownerId, [...deleted], changed);
+    return { emptiedBoxIds: emptiedBoxIds(minis, staying), minis: changed };
+  }
+
+  /**
+   * A departure keeps recipients only for minis stripped for parts; they must be other minis of
+   * the owner's hoard.
+   *
+   * @throws UnknownMinisError when a recipient is not in the owner's hoard or is one of the minis
+   */
+  private async checkDeparture(
+    ownerId: string,
+    ids: readonly string[],
+    departure: Departure,
+  ): Promise<Departure> {
+    const recipientIds =
+      departure.reason === 'stripped' ? [...new Set(departure.recipientMiniIds ?? [])] : [];
+    if (recipientIds.length === 0) {
+      return { reason: departure.reason, on: departure.on };
+    }
+    const recipients = await this.hoard.findMinisByIds(ownerId, recipientIds);
+    if (recipients.length !== recipientIds.length || recipientIds.some((id) => ids.includes(id))) {
+      throw new UnknownMinisError();
+    }
+    return { ...departure, recipientMiniIds: recipientIds };
   }
 
   /** Factions are references into the catalog: catalog factions or whole game systems. */

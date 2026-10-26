@@ -1,5 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
+import {
+  type DepartureReason,
+  departureReasons,
+  type HobbyStatus,
+  hobbyStatuses,
+} from '@greyhoarder/domain/hoard';
 
 /** Stored form of a `MiniPart`. */
 @Schema({ _id: false })
@@ -12,6 +17,21 @@ export class MiniPartDbo {
 }
 
 const MiniPartSchema = SchemaFactory.createForClass(MiniPartDbo);
+
+/** Stored form of a `Departure`. */
+@Schema({ _id: false })
+export class DepartureDbo {
+  @Prop({ type: String, required: true, enum: [...departureReasons] })
+  reason: DepartureReason;
+
+  @Prop({ type: String, required: true })
+  on: string;
+
+  @Prop({ type: [String] })
+  recipientMiniIds?: string[];
+}
+
+const DepartureSchema = SchemaFactory.createForClass(DepartureDbo);
 
 /** Stored form of a `Mini`; its `_id` is the `Mini`'s `id`. */
 @Schema({ collection: 'minis', timestamps: true })
@@ -45,6 +65,9 @@ export class MiniDbo {
 
   @Prop({ type: Boolean, required: true })
   isOnWorkbench: boolean;
+
+  @Prop({ type: DepartureSchema })
+  departure?: DepartureDbo;
 }
 
 export const MiniSchema = SchemaFactory.createForClass(MiniDbo);
@@ -52,3 +75,4 @@ export const MiniSchema = SchemaFactory.createForClass(MiniDbo);
 MiniSchema.index({ ownerId: 1 });
 MiniSchema.index({ boxId: 1 });
 MiniSchema.index({ 'parts.partId': 1 });
+MiniSchema.index({ 'departure.recipientMiniIds': 1 });

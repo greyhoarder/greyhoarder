@@ -1,7 +1,9 @@
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
+import type { Box, Mini } from '@greyhoarder/domain/hoard';
 import type { CatalogKitQueries } from '../../../catalog/api/index.js';
 import type { HoardRepository } from '../../ports/hoard-repository.js';
 import { BoxesService } from './boxes.service.js';
+import { UnknownBoxError } from './errors/unknown-box.error.js';
 
 const BOYZ: CatalogKit = {
   id: 'games-workshop/orks/boyz-2026',
@@ -62,5 +64,55 @@ describe('Boxes', () => {
     expect(minis.map((mini) => mini.name)).toEqual([...Array<string>(9).fill('Boy'), 'Nob']);
     expect(minis.every((mini) => mini.boxId === boxes[0]?.id)).toBe(true);
     expect(addBoxes).toHaveBeenCalledWith('owner', boxes, minis);
+  });
+
+  it('deletes a box with all its minis', async () => {
+    const box: Box = { id: 'boyz', name: 'Boyz', factionIds: [], tags: [], addedOn: '2026-10-25' };
+    const minis: Mini[] = ['boy', 'nob'].map((id) => ({
+      id,
+      name: id,
+      factionIds: [],
+      status: 'sprue',
+      parts: [],
+      boxId: 'boyz',
+      isOnWorkbench: false,
+    }));
+    const deleteBox = vi.fn<HoardRepository['deleteBox']>(() => Promise.resolve(['boy', 'nob']));
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([box])),
+      findMinis: vi.fn(() => Promise.resolve(minis)),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn(),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox,
+    };
+    const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
+
+    const { deletedMiniIds } = await service.delete('owner', 'boyz');
+
+    expect(deleteBox).toHaveBeenCalledWith('owner', 'boyz', []);
+    expect(deletedMiniIds).toEqual(['boy', 'nob']);
+  });
+
+  it('refuses to delete a box that is not in the hoard', async () => {
+    const deleteBox = vi.fn<HoardRepository['deleteBox']>();
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([])),
+      findMinis: vi.fn(() => Promise.resolve([])),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn(),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox,
+    };
+    const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
+
+    const remove = service.delete('owner', 'someone-elses-box');
+
+    await expect(remove).rejects.toThrow(UnknownBoxError);
+    expect(deleteBox).not.toHaveBeenCalled();
   });
 });

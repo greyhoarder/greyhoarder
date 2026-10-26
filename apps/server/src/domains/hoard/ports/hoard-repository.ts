@@ -14,7 +14,26 @@ export abstract class HoardRepository {
   abstract findParts(ownerId: string): Promise<Part[]>;
 
   /** Stores the changed minis together with the parts they added to the vocabulary, all or nothing. */
-  abstract updateMinis(ownerId: string, minis: readonly Mini[], newParts: readonly Part[]): Promise<void>;
+  abstract updateMinis(
+    ownerId: string,
+    minis: readonly Mini[],
+    newParts: readonly Part[],
+  ): Promise<void>;
+
+  /** Deletes the minis and stores the other minis changed by it, all or nothing. */
+  abstract deleteMinis(
+    ownerId: string,
+    miniIds: readonly string[],
+    changed: readonly Mini[],
+  ): Promise<void>;
+
+  /**
+   * Deletes the box with every mini it has at that moment, gone ones included, and stores the other
+   * minis changed by it, all or nothing.
+   *
+   * @returns the ids of the deleted minis
+   */
+  abstract deleteBox(ownerId: string, boxId: string, changed: readonly Mini[]): Promise<string[]>;
 
   /** Stores the boxes together with their minis, all or nothing. */
   abstract addBoxes(ownerId: string, boxes: readonly Box[], minis: readonly Mini[]): Promise<void>;
