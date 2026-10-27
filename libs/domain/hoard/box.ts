@@ -19,4 +19,6 @@ export interface Box {
   readonly tags: readonly string[];
   /** ISO date, e.g. "2026-10-12". */
   readonly addedOn: string;
+  /** Tells boxes with the same name apart, from 1 in the order they were added (docs/domains/hoard.md). */
+  readonly number: number;
 }

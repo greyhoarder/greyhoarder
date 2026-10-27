@@ -16,9 +16,14 @@ export const MIN_BOXES = 1;
 export function newBoxes(
   kit: Kit,
   boxesToAdd: { readonly boxes: number; readonly tags: readonly string[] },
-  context: { readonly addedOn: string; readonly newId: () => string },
+  context: {
+    readonly addedOn: string;
+    readonly newId: () => string;
+    /** The number of the first new box; the others follow it. */
+    readonly firstNumber?: number;
+  },
 ): { boxes: Box[]; minis: Mini[] } {
-  const { addedOn, newId } = context;
+  const { addedOn, newId, firstNumber = 1 } = context;
   const name = boxKitName(kit);
   const kinds = sprueMinis(kit);
   if (kinds.every((kind) => kind.count === 0)) {
@@ -34,6 +39,7 @@ export function newBoxes(
       factionIds: kit.factionIds,
       tags: boxesToAdd.tags,
       addedOn,
+      number: firstNumber + index,
     };
     boxes.push(box);
     for (const kind of kinds) {

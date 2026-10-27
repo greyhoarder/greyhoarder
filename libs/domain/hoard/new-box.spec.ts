@@ -78,7 +78,8 @@ function addBoyz(boxes: number) {
 
 describe('New boxes', () => {
   it('refuses to add a box without referenced minis', () => {
-    const add = () => newBoxes(
+    const add = () =>
+      newBoxes(
         KIT_WITHOUT_SLOTS,
         { boxes: 1, tags: [] },
         { addedOn: '2026-10-24', newId: () => 'id' },
@@ -92,7 +93,9 @@ describe('New boxes', () => {
 
     expect(minis).toHaveLength(20);
     expect(minis.every((mini) => mini.status === 'sprue')).toBe(true);
-    expect(boxes.map((box) => minis.filter((mini) => mini.boxId === box.id).length)).toEqual([10, 10]);
+    expect(boxes.map((box) => minis.filter((mini) => mini.boxId === box.id).length)).toEqual([
+      10, 10,
+    ]);
   });
 
   it('records the kit and its version on each box', () => {
@@ -129,5 +132,17 @@ describe('New boxes', () => {
     const { minis } = addBoyz(1);
 
     expect(minis.map((mini) => mini.sprueName)).toEqual([...Array<string>(9).fill('Boy'), 'Nob']);
+  });
+
+  it('numbers the boxes it adds from the given number', () => {
+    let id = 0;
+
+    const { boxes } = newBoxes(
+      BOYZ,
+      { boxes: 2, tags: [] },
+      { addedOn: '2026-10-24', newId: () => `${++id}`, firstNumber: 3 },
+    );
+
+    expect(boxes.map((box) => box.number)).toEqual([3, 4]);
   });
 });
