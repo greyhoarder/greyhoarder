@@ -4,7 +4,7 @@ import { expect, test } from '../fixtures.js';
 /** Adds a box of Boyz through the API and opens it from the Boxes tab. */
 async function openBoyz(page: Page, url: string): Promise<void> {
   const response = await page.request.post(`${url}/api/hoard/boxes`, {
-    data: { kitId: 'games-workshop/orks/boyz-2026', boxes: 1, tags: [], addedOn: '2026-10-25' },
+    data: { kitId: 'games-workshop/warhammer-40000/orks/boyz-2026', boxes: 1, tags: [], addedOn: '2026-10-25' },
     headers: { Origin: url },
   });
   expect(response.ok()).toBe(true);

@@ -15,7 +15,7 @@ export const systemFileSchema = z.object({
   ),
 });
 
-/** `kits/<manufacturer>/<folder>/<kit>.yaml` */
+/** `kits/<manufacturer>/<system>/<folder>/<kit>.yaml` */
 export const kitFileSchema = z.object({
   name: z.string().min(1),
   factions: z.array(z.string().min(1)).default([]),

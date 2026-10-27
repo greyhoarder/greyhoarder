@@ -26,7 +26,7 @@ export interface BundledKit {
 
 /** A kit that a new box can be added from, as offered when searching for it. */
 export interface Kit {
-  /** For catalog kits their path in the catalog, e.g. "games-workshop/orks/boyz-2026". */
+  /** For catalog kits their path in the catalog, e.g. "games-workshop/warhammer-40000/orks/boyz-2026". */
   readonly id: string;
   /** Which version of the kit a box added from it is made from. */
   readonly version: number;

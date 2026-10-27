@@ -22,7 +22,7 @@ repository's README. This document covers what Greyhoarder does with it.
 |------|---------|
 | **Catalog** | The kits and factions of the catalog repository, as of the commit a release ships. |
 | **Snapshot** | The catalog as the server reads it from the submodule's files on startup, with a hash over its content. |
-| **Catalog kit** | A kit from the catalog. Its id is its path in the catalog repository, e.g. `games-workshop/orks/boyz-2026`. |
+| **Catalog kit** | A kit from the catalog. Its id is its path in the catalog repository, e.g. `games-workshop/warhammer-40000/orks/boyz-2026`. |
 | **Kit version** | One state of a catalog kit. A kit gets a new version whenever its content changes. |
 | **Game system** | A game that armies belong to, e.g. Warhammer 40,000. |
 | **Faction** | An army of a game system, e.g. Orks. Its id is `<system>/<faction>`. |

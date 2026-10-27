@@ -27,7 +27,7 @@ async function buildThroughApi(
 /** Adds a box of Lootas through the API, builds one of them as a Loota and opens it from its group in the hoard. */
 async function openLootas(page: Page, url: string): Promise<void> {
   const response = await page.request.post(`${url}/api/hoard/boxes`, {
-    data: { kitId: 'games-workshop/orks/lootas-2008', boxes: 1, tags: [], addedOn: '2026-10-25' },
+    data: { kitId: 'games-workshop/warhammer-40000/orks/lootas-2008', boxes: 1, tags: [], addedOn: '2026-10-25' },
     headers: { Origin: url },
   });
   expect(response.ok()).toBe(true);
@@ -70,7 +70,7 @@ test.describe('Mini', () => {
     signedIn,
   }) => {
     const response = await page.request.post(`${signedIn.url}/api/hoard/boxes`, {
-      data: { kitId: 'games-workshop/orks/lootas-2008', boxes: 1, tags: [], addedOn: '2026-10-25' },
+      data: { kitId: 'games-workshop/warhammer-40000/orks/lootas-2008', boxes: 1, tags: [], addedOn: '2026-10-25' },
       headers: { Origin: signedIn.url },
     });
     expect(response.ok()).toBe(true);

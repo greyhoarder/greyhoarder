@@ -26,7 +26,7 @@ async function buildThroughApi(
 
 /** Adds a box of Boyz and one of Lootas through the API, all Boyz and one Loota built. */
 async function addBuiltMinis(page: Page, url: string): Promise<void> {
-  for (const kitId of ['games-workshop/orks/boyz-2026', 'games-workshop/orks/lootas-2008']) {
+  for (const kitId of ['games-workshop/warhammer-40000/orks/boyz-2026', 'games-workshop/warhammer-40000/orks/lootas-2008']) {
     const response = await page.request.post(`${url}/api/hoard/boxes`, {
       data: { kitId, boxes: 1, tags: [], addedOn: '2026-10-25' },
       headers: { Origin: url },

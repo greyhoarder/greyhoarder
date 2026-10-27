@@ -32,7 +32,7 @@ export interface ContainedKit {
 
 /** A kit of the community catalog, as of one catalog commit (ADR-0020). */
 export interface CatalogKit {
-  /** Its path in the catalog repository, e.g. "games-workshop/orks/boyz-2026"; never changes. */
+  /** Its path in the catalog repository, e.g. "games-workshop/warhammer-40000/orks/boyz-2026"; never changes. */
   readonly id: string;
   /** The first folder of the id, e.g. "games-workshop". */
   readonly manufacturer: string;
