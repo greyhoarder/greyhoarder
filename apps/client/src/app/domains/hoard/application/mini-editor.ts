@@ -23,10 +23,10 @@ import { buildSuggestions, preselectedParts } from '../models/mini-build';
 import type { MiniChanges, PartChange } from '../models/mini-changes';
 import type { PartOption } from '../models/part-options';
 import { eitherOrText } from '../util/either-or';
-import { BoxesStore } from './boxes-store';
-import { FactionNamesStore } from './faction-names-store';
-import { MinisStore } from './minis-store';
-import { PartsStore } from './parts-store';
+import { BoxesStore } from '../data/boxes-store';
+import { FactionNames } from './faction-names';
+import { MinisStore } from '../data/minis-store';
+import { PartsStore } from '../data/parts-store';
 
 /** A part as the screen shows and edits it; a new part has a name but no id yet. */
 export interface PartDraft {
@@ -58,7 +58,7 @@ export class MiniEditor {
   private readonly minisStore = inject(MinisStore);
   private readonly boxesStore = inject(BoxesStore);
   private readonly partsStore = inject(PartsStore);
-  private readonly factionNames = inject(FactionNamesStore);
+  private readonly factionNames = inject(FactionNames);
   private readonly minisAdapter = inject(HttpMinisAdapter);
   private readonly catalogKits = inject(HttpKitsAdapter);
   private readonly catalogParts = inject(HttpCatalogPartsAdapter);

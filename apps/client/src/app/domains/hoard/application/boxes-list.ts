@@ -2,9 +2,9 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { matchesBoxFilter, matchesBoxSearch } from './box-filter';
 import { toBoxRows } from './box-row';
 import { sortBoxes } from './box-sort';
-import { BoxesStore } from './boxes-store';
-import { FactionNamesStore } from './faction-names-store';
-import { MinisStore } from './minis-store';
+import { BoxesStore } from '../data/boxes-store';
+import { FactionNames } from './faction-names';
+import { MinisStore } from '../data/minis-store';
 import { toggled } from '../util/selection';
 
 /**
@@ -15,7 +15,7 @@ import { toggled } from '../util/selection';
 export class BoxesList {
   private readonly boxesStore = inject(BoxesStore);
   private readonly minisStore = inject(MinisStore);
-  private readonly factionNames = inject(FactionNamesStore);
+  private readonly factionNames = inject(FactionNames);
 
   readonly boxes = computed(() =>
     toBoxRows(this.boxesStore.boxes(), this.minisStore.minis(), this.factionNames.names()),

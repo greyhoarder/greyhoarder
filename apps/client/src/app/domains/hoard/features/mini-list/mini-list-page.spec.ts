@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
-import { HoardView } from '../../data/hoard-view';
-import { MinisList } from '../../data/minis-list';
+import { HoardView } from '../../application/hoard-view';
+import { MinisList } from '../../application/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';

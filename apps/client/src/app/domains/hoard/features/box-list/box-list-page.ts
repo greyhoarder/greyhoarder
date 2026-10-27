@@ -6,14 +6,14 @@ import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
-import { BoxesList } from '../../data/boxes-list';
-import { HoardView } from '../../data/hoard-view';
+import { BoxesList } from '../../application/boxes-list';
+import { HoardView } from '../../application/hoard-view';
 import { BoxCard } from './box-card/box-card';
 import { type BoxSelection, BoxTable } from './box-table/box-table';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
 import { PROGRESS_LABELS } from '../../util/box-labels';
-import { progressOf, sprueCount } from '../../data/box-row';
-import type { BoxRow } from '../../data/box-row';
+import { progressOf, sprueCount } from '../../application/box-row';
+import type { BoxRow } from '../../application/box-row';
 
 /** The Boxes tab of the hoard: search, filters, selection and the boxes as cards or table. */
 @Component({

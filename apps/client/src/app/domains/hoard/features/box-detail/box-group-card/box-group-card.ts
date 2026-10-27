@@ -3,7 +3,7 @@ import { type HobbyStatus } from '@greyhoarder/domain/hoard';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import type { MiniGroup } from '../../../data/mini-group';
+import type { MiniGroup } from '../mini-group';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import {

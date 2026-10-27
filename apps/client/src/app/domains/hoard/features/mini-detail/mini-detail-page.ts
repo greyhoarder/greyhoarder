@@ -23,8 +23,8 @@ import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmPopoverImports } from '@spartan-ng/helm/popover';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
-import { FactionNamesStore } from '../../data/faction-names-store';
-import { MiniEditor } from '../../data/mini-editor';
+import { FactionNames } from '../../application/faction-names';
+import { MiniEditor } from '../../application/mini-editor';
 import { BuildAs } from '../../ui/build-as/build-as';
 import { BuildBar } from '../../ui/build-bar/build-bar';
 import { DeletePanel } from '../../ui/delete-panel/delete-panel';
@@ -82,7 +82,7 @@ export class MiniDetailPage {
   readonly from = input<string>();
 
   protected readonly editor = inject(MiniEditor);
-  private readonly factionNames = inject(FactionNamesStore);
+  private readonly factionNames = inject(FactionNames);
   private readonly title = inject(Title);
   private readonly router = inject(Router);
   private readonly menuButton = viewChild('menuButton', { read: ElementRef<HTMLElement> });

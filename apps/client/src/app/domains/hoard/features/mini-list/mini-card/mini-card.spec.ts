@@ -1,5 +1,5 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import type { MiniRow } from '../../../data/mini-row';
+import type { MiniRow } from '../../../application/mini-row';
 import { MiniCard } from './mini-card';
 
 const SERGEANT: MiniRow = {

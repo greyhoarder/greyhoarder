@@ -1,8 +1,8 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { hasReached, isGone } from '@greyhoarder/domain/hoard';
 import { type FactionProgress, factionProgresses } from '../models/faction-progress';
-import { FactionNamesStore } from './faction-names-store';
-import { MinisStore } from './minis-store';
+import { FactionNames } from './faction-names';
+import { MinisStore } from '../data/minis-store';
 
 /** One faction of the hoard with its names, for the overview on the dashboard. */
 export interface FactionOverview extends Omit<FactionProgress, 'factionId'> {
@@ -16,7 +16,7 @@ export interface FactionOverview extends Omit<FactionProgress, 'factionId'> {
 @Injectable({ providedIn: 'root' })
 export class HoardByFaction {
   private readonly minisStore = inject(MinisStore);
-  private readonly factionNames = inject(FactionNamesStore);
+  private readonly factionNames = inject(FactionNames);
 
   readonly isLoading = this.minisStore.isLoading;
   readonly hasFailed = this.minisStore.hasFailed;

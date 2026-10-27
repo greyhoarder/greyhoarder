@@ -16,10 +16,11 @@ const DOMAIN_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
  * every layer whose parts they publish.
  */
 const LAYER_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
-  routes: ['features', 'ui', 'data', 'models', 'infrastructure', 'util'],
-  api: ['routes', 'features', 'ui', 'data', 'models', 'infrastructure', 'util'],
-  features: ['ui', 'data', 'infrastructure', 'models', 'util'],
+  routes: ['features', 'ui', 'application', 'data', 'models', 'infrastructure', 'util'],
+  api: ['routes', 'features', 'ui', 'application', 'data', 'models', 'infrastructure', 'util'],
+  features: ['ui', 'application', 'data', 'infrastructure', 'models', 'util'],
   ui: ['models', 'util'],
+  application: ['data', 'infrastructure', 'models', 'util'],
   data: ['infrastructure', 'models', 'util'],
   infrastructure: ['models', 'util'],
   util: ['models'],
@@ -35,6 +36,7 @@ const LAYERS_USING_OTHER_DOMAINS: readonly string[] = [
   'routes',
   'features',
   'ui',
+  'application',
   'data',
   'infrastructure',
   'util',
@@ -44,6 +46,7 @@ const LAYERS_USING_SHARED: readonly string[] = [
   'api',
   'features',
   'ui',
+  'application',
   'data',
   'infrastructure',
   'util',

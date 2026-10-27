@@ -1,6 +1,6 @@
 import type { HobbyStatus, Mini } from '@greyhoarder/domain/hoard';
-import { builtGroups, groupKey } from '../models/mini-groups';
-import { factionNamesOf } from '../util/kit-labels';
+import { builtGroups, groupKey } from '../../models/mini-groups';
+import { factionNamesOf } from '../../util/kit-labels';
 
 /** Built minis of a box with the same name, parts and factions, as one card (docs/screens/box.md). */
 export interface MiniGroup {

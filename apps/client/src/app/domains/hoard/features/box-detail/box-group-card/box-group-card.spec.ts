@@ -1,5 +1,5 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import type { MiniGroup } from '../../../data/mini-group';
+import type { MiniGroup } from '../mini-group';
 import { BoxGroupCard } from './box-group-card';
 
 const NOBS: MiniGroup = {

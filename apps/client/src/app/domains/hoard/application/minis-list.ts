@@ -2,15 +2,15 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { hasReached, isGone } from '@greyhoarder/domain/hoard';
 import { toggled } from '../util/selection';
 import { MiniSelection } from './mini-selection';
-import { BoxesStore } from './boxes-store';
-import { FactionNamesStore } from './faction-names-store';
+import { BoxesStore } from '../data/boxes-store';
+import { FactionNames } from './faction-names';
 import { matchesFilter } from './mini-filter';
 import { toHoardGroups } from './hoard-group';
 import { countMinis, toSingleRows } from './mini-row';
 import { matchesSearch } from './mini-search';
 import { sortRows } from './mini-sort';
-import { MinisStore } from './minis-store';
-import { PartsStore } from './parts-store';
+import { MinisStore } from '../data/minis-store';
+import { PartsStore } from '../data/parts-store';
 
 /**
  * The minis of the hoard past the sprue as the Minis tab lists them, each as a row of its own and
@@ -21,7 +21,7 @@ import { PartsStore } from './parts-store';
 export class MinisList {
   private readonly minisStore = inject(MinisStore);
   private readonly boxesStore = inject(BoxesStore);
-  private readonly factionNames = inject(FactionNamesStore);
+  private readonly factionNames = inject(FactionNames);
   private readonly partsStore = inject(PartsStore);
 
   /** Minis on the sprue are built on their box (docs/screens/hoard.md). */

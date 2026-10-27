@@ -4,7 +4,7 @@ import type { Mini } from '@greyhoarder/domain/hoard';
 import { HttpBoxesAdapter } from '../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../infrastructure/http-minis-adapter';
 import { MinisDeletion } from './minis-deletion';
-import { MinisStore } from './minis-store';
+import { MinisStore } from '../data/minis-store';
 
 const mini = (id: string, name: string): Mini => ({
   id,

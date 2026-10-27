@@ -1,7 +1,7 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
 import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../../catalog/api';
-import type { MiniRow } from '../../../data/mini-row';
+import type { MiniRow } from '../../../application/mini-row';
 import { HttpBoxesAdapter } from '../../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../../infrastructure/http-parts-adapter';

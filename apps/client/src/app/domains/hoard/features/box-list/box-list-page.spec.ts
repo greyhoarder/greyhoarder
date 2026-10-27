@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
-import { HoardView } from '../../data/hoard-view';
+import { HoardView } from '../../application/hoard-view';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { BoxListPage } from './box-list-page';

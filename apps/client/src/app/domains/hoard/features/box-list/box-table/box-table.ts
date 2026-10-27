@@ -9,12 +9,12 @@ import {
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTableImports } from '@spartan-ng/helm/table';
 import { kitLine } from '../../../util/box-labels';
-import { miniCount, paintedCount, percentOf, progressOf, sprueCount } from '../../../data/box-row';
+import { miniCount, paintedCount, percentOf, progressOf, sprueCount } from '../../../application/box-row';
 import { hasPercent } from '../../../models/box-progress';
 import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
 import { formatDate } from '../../../util/format-date';
-import type { BoxRow } from '../../../data/box-row';
-import { type BoxSortOrder, sortBoxes } from '../../../data/box-sort';
+import type { BoxRow } from '../../../application/box-row';
+import { type BoxSortOrder, sortBoxes } from '../../../application/box-sort';
 import type { SortDirection } from '../../../util/sort-direction';
 import { ProgressBar } from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';

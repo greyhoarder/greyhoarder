@@ -1,8 +1,8 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpBoxesAdapter } from '../infrastructure/http-boxes-adapter';
 import { eitherOrText } from '../util/either-or';
-import { BoxesStore } from './boxes-store';
-import { MinisStore } from './minis-store';
+import { BoxesStore } from '../data/boxes-store';
+import { MinisStore } from '../data/minis-store';
 
 /**
  * Deleting boxes for good after asking, with all their minis: boxes left empty by deleting minis,

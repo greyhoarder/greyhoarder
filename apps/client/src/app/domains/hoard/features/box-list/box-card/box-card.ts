@@ -4,10 +4,10 @@ import { lucideEllipsisVertical } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { kitLine } from '../../../util/box-labels';
-import { percentOf, progressOf } from '../../../data/box-row';
+import { percentOf, progressOf } from '../../../application/box-row';
 import { hasPercent } from '../../../models/box-progress';
 import { formatDate } from '../../../util/format-date';
-import type { BoxRow } from '../../../data/box-row';
+import type { BoxRow } from '../../../application/box-row';
 import { STATUS_SHORT_LABELS } from '../../../util/status-labels';
 import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
 import {
