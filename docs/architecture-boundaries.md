@@ -143,8 +143,8 @@ _(derived from [ADR-0004](adr/0004-domain-slicing.md))_
 - `features` never import `infrastructure`; features never import each
   other. Code several features need moves to `models/`, `ports/` or
   `util/`.
-- Business rules belong in `models/`, or in `libs/domain` when both apps
-  need them; never in features or `infrastructure/`.
+- Business rules belong in `models/`, or in `libs/domain` by the criterion
+  under "Shared domain models"; never in features or `infrastructure/`.
 
 _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
 
@@ -246,9 +246,9 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 - `ui` never uses `application`, `data` or `infrastructure`; `application`
   never imports `features` or `ui`; `data` never imports `application`,
   `features` or `ui`; features never import each other.
-- Business rules belong in `models/`, or in `libs/domain` when both apps
-  need them; never in components, `application/`, stores or
-  `infrastructure/`.
+- Business rules belong in `models/`, or in `libs/domain` by the criterion
+  under "Shared domain models"; never in components, `application/`,
+  stores or `infrastructure/`.
 - No ports on the client.
 
 _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md))_
