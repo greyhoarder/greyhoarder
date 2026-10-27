@@ -121,7 +121,8 @@ async function deleteEveryMiniOfBoyz(page: Page, url: string): Promise<void> {
   await page.goto(`${url}/hoard/boxes`);
   await page.getByTestId('hoard-box').click();
   await expect(page.getByTestId('box-name')).toBeVisible();
-  await page.getByTestId('box-select').click();
+  await page.getByTestId('box-group-toggle').first().click();
+  await page.getByTestId('box-group-mini-check').first().click();
   await page.getByTestId('box-select-all').click();
   await page.getByTestId('box-selection-delete').click();
   await page.getByTestId('box-delete-confirm').click();

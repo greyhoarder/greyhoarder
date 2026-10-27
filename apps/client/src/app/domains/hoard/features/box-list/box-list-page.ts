@@ -11,6 +11,7 @@ import { HoardView } from '../../application/hoard-view';
 import { BoxCard } from './box-card/box-card';
 import { type BoxSelection, BoxTable } from './box-table/box-table';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
+import { LongPress } from '../../ui/long-press/long-press';
 import { PROGRESS_LABELS } from '../../util/box-labels';
 import { progressOf, sprueCount } from '../../application/boxes/box-row';
 import type { BoxRow } from '../../application/boxes/box-row';
@@ -18,7 +19,16 @@ import type { BoxRow } from '../../application/boxes/box-row';
 /** The Boxes tab of the hoard: search, filters, selection and the boxes as cards or table. */
 @Component({
   selector: 'app-box-list-page',
-  imports: [NgIcon, HlmButton, HlmInputGroupImports, HlmSkeleton, BoxCard, BoxTable, FilterChip],
+  imports: [
+    NgIcon,
+    HlmButton,
+    HlmInputGroupImports,
+    HlmSkeleton,
+    BoxCard,
+    BoxTable,
+    FilterChip,
+    LongPress,
+  ],
   providers: [provideIcons({ lucideSearch, lucideX })],
   templateUrl: './box-list-page.html',
   host: { class: '@container flex flex-col gap-3' },

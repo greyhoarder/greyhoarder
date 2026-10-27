@@ -277,4 +277,19 @@ describe('Minis page', () => {
 
     expect(inDocument('hoard-empty-boxes-dialog')?.textContent).toContain('Boyz');
   });
+
+  it('selects a mini with a long press on a touch screen', async () => {
+    await showTable();
+    const line = byTestId('hoard-row')[0];
+    vi.useFakeTimers();
+
+    line?.dispatchEvent(
+      Object.assign(new MouseEvent('pointerdown', { bubbles: true }), { pointerType: 'touch' }),
+    );
+    vi.advanceTimersByTime(500);
+    vi.useRealTimers();
+    await fixture.whenStable();
+
+    expect(textOf('hoard-selection-count')).toBe('1 mini selected');
+  });
 });

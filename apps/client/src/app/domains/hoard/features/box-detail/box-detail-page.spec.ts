@@ -403,16 +403,6 @@ describe('Box page', () => {
     await click(inDocument('box-delete-confirm'));
   };
 
-  it('starts selection mode with "Select"', async () => {
-    showBox(BOYZ.id);
-    await fixture.whenStable();
-    const before = all('box-selection-bar').length;
-
-    await click(all('box-select')[0]);
-
-    expect([before, all('box-selection-bar').length]).toEqual([0, 1]);
-  });
-
   it('selects a gone mini instead of opening it in selection mode', async () => {
     showBox(BOYZ.id, () =>
       Promise.resolve([
@@ -421,14 +411,15 @@ describe('Box page', () => {
       ]),
     );
     await fixture.whenStable();
-    await click(all('box-select')[0]);
+    await click(all('box-group-toggle')[0]);
+    await click(all('box-group-mini-check')[0]);
     await click(all('box-gone-toggle')[0]);
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
     await click(all('box-gone')[0]);
 
     expect(navigate).not.toHaveBeenCalled();
-    expect(textOf('box-selection-count')).toBe('1 mini selected');
+    expect(textOf('box-selection-count')).toBe('2 minis selected');
   });
 
   it('asks whether to delete the box once its last minis are deleted', async () => {

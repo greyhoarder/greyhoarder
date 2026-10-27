@@ -53,6 +53,8 @@
     @for (row of group().rows; track row.id) {
       <li>
         <app-mini-card
+          appLongPress
+          (longPress)="selectedChange.emit({ row, isSelected: true })"
           [row]="row"
           [isSelectionMode]="isSelectionMode()"
           [isSelected]="selectedIds().has(row.id)"

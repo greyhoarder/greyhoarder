@@ -130,6 +130,8 @@
   <div class="grid gap-4 @2xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-4">
     @for (box of store.visibleBoxes(); track box.id) {
       <app-box-card
+        appLongPress
+        (longPress)="select({ box, isSelected: true })"
         [box]="box"
         [isSelectionMode]="store.isSelecting()"
         [isSelected]="store.selectedIds().has(box.id)"

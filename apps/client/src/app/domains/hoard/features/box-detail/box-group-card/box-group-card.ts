@@ -5,6 +5,7 @@ import { lucideChevronDown } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import type { MiniGroup } from '../mini-group';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
+import { LongPress } from '../../../ui/long-press/long-press';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import {
   PROGRESS_STATUSES,
@@ -35,7 +36,7 @@ export interface MiniSelectionChange {
  */
 @Component({
   selector: 'app-box-group-card',
-  imports: [NgIcon, HlmBadge, EitherOrName, ProgressBar, RowCheck],
+  imports: [NgIcon, HlmBadge, EitherOrName, LongPress, ProgressBar, RowCheck],
   providers: [provideIcons({ lucideChevronDown })],
   templateUrl: './box-group-card.html',
   host: {

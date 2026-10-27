@@ -4,6 +4,7 @@ import { lucideChevronDown } from '@ng-icons/lucide';
 import type { HoardGroup } from '../../../application/minis/hoard-group';
 import type { MiniRow } from '../../../application/minis/mini-row';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
+import { LongPress } from '../../../ui/long-press/long-press';
 import {
   PROGRESS_STATUSES,
   ProgressBar,
@@ -24,7 +25,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'app-mini-group-card',
-  imports: [NgIcon, EitherOrName, ProgressBar, MiniCard],
+  imports: [NgIcon, EitherOrName, LongPress, ProgressBar, MiniCard],
   providers: [provideIcons({ lucideChevronDown })],
   templateUrl: './mini-group-card.html',
   host: {

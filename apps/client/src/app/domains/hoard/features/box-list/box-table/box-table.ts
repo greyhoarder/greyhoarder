@@ -9,7 +9,13 @@ import {
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTableImports } from '@spartan-ng/helm/table';
 import { kitLine } from '../../../util/box-labels';
-import { miniCount, paintedCount, percentOf, progressOf, sprueCount } from '../../../application/boxes/box-row';
+import {
+  miniCount,
+  paintedCount,
+  percentOf,
+  progressOf,
+  sprueCount,
+} from '../../../application/boxes/box-row';
 import { hasPercent } from '../../../models/box-progress';
 import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
 import { formatDate } from '../../../util/format-date';
@@ -19,6 +25,7 @@ import type { SortDirection } from '../../../util/sort-direction';
 import { ProgressBar } from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
+import { LongPress } from '../../../ui/long-press/long-press';
 
 export interface BoxSelection {
   readonly box: BoxRow;
@@ -43,7 +50,16 @@ const COLUMNS: readonly Column[] = [
 /** The boxes as a table, sorted by clicking a column header; starts with the newest. */
 @Component({
   selector: 'app-box-table',
-  imports: [EitherOrName, NgIcon, HlmButton, HlmTableImports, ProgressBadge, ProgressBar, RowCheck],
+  imports: [
+    EitherOrName,
+    NgIcon,
+    HlmButton,
+    HlmTableImports,
+    LongPress,
+    ProgressBadge,
+    ProgressBar,
+    RowCheck,
+  ],
   providers: [
     provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical }),
   ],

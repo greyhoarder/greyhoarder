@@ -1,4 +1,3 @@
-import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
   Component,
@@ -67,13 +66,13 @@ import {
 } from './box-group-card/box-group-card';
 import { BoxSprueCard, type SpruePanel } from './box-sprue-card/box-sprue-card';
 import { EitherOrName } from '../../ui/either-or-name/either-or-name';
+import { LongPress } from '../../ui/long-press/long-press';
 
 /** Everything about one box of the hoard; specified in docs/screens/box.md. */
 @Component({
   selector: 'app-box-detail-page',
   imports: [
     EitherOrName,
-    NgTemplateOutlet,
     RouterLink,
     NgIcon,
     HlmBadge,
@@ -85,6 +84,7 @@ import { EitherOrName } from '../../ui/either-or-name/either-or-name';
     BoxKitCard,
     BoxGroupCard,
     BoxSprueCard,
+    LongPress,
     RowCheck,
     SelectionBar,
     DeleteMinisDialog,

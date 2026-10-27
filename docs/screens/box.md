@@ -42,8 +42,7 @@ the sidebar, as wide as the hoard, from top to bottom:
    is narrower than about 720 px, the kit card moves below the minis.
 
 **Minis**: the minis past the sprue. The heading "Minis" with their count,
-and on its right "Select" (ghost); without built minis, "Select" sits on
-the right of the "Gone" heading instead. Below it
+Below it
 one card per group, stacked with a small gap. A group holds the built
 minis of the box with the same name, parts and factions; their status and
 workbench place may differ.
@@ -114,7 +113,6 @@ count stepper.
 | Progress percentage | {n}% |
 | Status legend | On the sprue / Built / Primed / Painted / Done, each with its count |
 | Minis heading | Minis {count of built minis} |
-| Selection button | Select |
 | Selection bar, delete dialog, empty boxes dialog | as in the [hoard](hoard.md#content) |
 | Row check (accessible name) | Select {name} |
 | Group card | {name}, {parts}; legend: {count} {status} per status the group has; ×{count} |
@@ -166,14 +164,14 @@ count stepper.
 | Building | The build button pressed | The button shows the busy stripes and "Building…" until the server answers |
 | Leaving | "Leave the hoard…" chosen in a row menu | The card open with the leave panel; "Leave the hoard" disabled until a reason is chosen |
 | Deleting | "Delete…" chosen in a row menu | The card open with the delete panel |
-| Not selecting, Selecting, Selected, Only gone selected, Confirming delete, Deleting | as in the [hoard](hoard.md#states), for the lines of open group cards and of the opened "Gone" section | as in the hoard; "Select" is disabled while selecting |
+| Not selecting, Selecting, Selected, Only gone selected, Confirming delete, Deleting | as in the [hoard](hoard.md#states), for the lines of open group cards and of the opened "Gone" section | as in the hoard |
 | Saving a status | A status of a mini was chosen | The control shows the chosen status at once; when the server does not answer, it shows the stored status again and the save-failed message appears above the minis, announced to screen readers |
 | Box | The box is loaded | Header, progress, minis and, for boxes from a kit, the kit card |
 | Without kit | The box was not added from a kit | "No kit" as the kit line; no kit card, the minis take the full width |
 | All on the sprue | Every mini of the box is on the sprue | The progress badge "Untouched", 0%, an empty bar |
 | Nothing left on the sprue | No mini of the box is on the sprue | "Take from the sprue" is not shown; no "On the sprue" section |
 | Nothing gone | No mini of the box is gone | No "Gone" section |
-| Empty | The box has no minis | The progress badge "Empty", no percentage, an empty bar; no "Minis", "On the sprue" or "Gone" section; the no-minis message in their place; no "Select" |
+| Empty | The box has no minis | The progress badge "Empty", no percentage, an empty bar; no "Minis", "On the sprue" or "Gone" section; the no-minis message in their place |
 | Boxes emptied | The minis deleted from the box were its last, gone ones included | The empty boxes dialog of the [hoard](hoard.md#states) for this box |
 | Deleting the box | "Delete box…" chosen in the box menu | The delete box dialog; "Delete box" shows the busy stripes until the server answers; when it does not, nothing is deleted and the delete-box-failed message appears in the dialog |
 | All gone | Every mini of the box is gone | The progress badge "All gone", no percentage, an empty bar; no "Minis" and no "On the sprue" section; the "Gone" section open |
@@ -281,7 +279,7 @@ count stepper.
 `box-group-mini-open`, `box-group-status` (with `data-status`),
 `box-sprue`, `box-sprue-toggle`, `box-sprue-panel`, `box-sprue-menu`,
 `box-sprue-leave`, `box-sprue-delete`, `box-gone-toggle`, `box-gone`,
-`box-select`, `box-group-mini-check`, `box-gone-check`,
+`box-group-mini-check`, `box-gone-check`,
 `box-selection-bar`, `box-selection-count`, `box-selection-edit`,
 `box-selection-leave`, `box-selection-delete`, `box-selection-menu`,
 `box-select-all`, `box-select-done`, `box-delete-dialog`,

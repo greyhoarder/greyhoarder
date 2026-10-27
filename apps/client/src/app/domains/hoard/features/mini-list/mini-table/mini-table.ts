@@ -10,6 +10,7 @@ import { RowCheck } from '../../../ui/row-check/row-check';
 import { GoneBadge } from '../../../ui/gone-badge/gone-badge';
 import { StatusBadge } from '../../../ui/status-badge/status-badge';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
+import { LongPress } from '../../../ui/long-press/long-press';
 
 interface Column {
   readonly order: MiniSortOrder;
@@ -31,7 +32,16 @@ export interface RowSelection {
 /** The minis as a table, one line each, sorted by clicking a column header; starts sorted by faction. */
 @Component({
   selector: 'app-mini-table',
-  imports: [EitherOrName, NgIcon, HlmBadge, HlmTableImports, RowCheck, GoneBadge, StatusBadge],
+  imports: [
+    EitherOrName,
+    NgIcon,
+    HlmBadge,
+    HlmTableImports,
+    LongPress,
+    RowCheck,
+    GoneBadge,
+    StatusBadge,
+  ],
   providers: [provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown })],
   templateUrl: './mini-table.html',
   host: { class: 'block rounded-xl border bg-card' },

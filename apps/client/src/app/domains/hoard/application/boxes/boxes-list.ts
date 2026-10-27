@@ -9,7 +9,7 @@ import { toggled } from '../../util/selection';
 
 /**
  * The boxes of the hoard as the Boxes tab lists them, with its search, filters and selection;
- * shared with the frame of the hoard, whose "Select" acts on the open tab.
+ * shared with the frame of the hoard, which shows the count.
  */
 @Injectable({ providedIn: 'root' })
 export class BoxesList {
@@ -51,10 +51,9 @@ export class BoxesList {
     ),
   );
 
-  /** "Select" was pressed; selecting a box by its check starts the mode as well. */
-  private readonly isSelectStarted = signal(false);
   readonly selectedIds = signal<ReadonlySet<string>>(new Set());
-  readonly isSelecting = computed(() => this.isSelectStarted() || this.selectedIds().size > 0);
+  /** Selection mode lasts while at least one box is selected. */
+  readonly isSelecting = computed(() => this.selectedIds().size > 0);
 
   resetFilters(): void {
     for (const filter of [this.factionFilter, this.progressFilter, this.tagFilter]) {
@@ -62,13 +61,8 @@ export class BoxesList {
     }
   }
 
-  startSelecting(): void {
-    this.isSelectStarted.set(true);
-  }
-
   /** Ends selection mode; nothing stays selected. */
   finishSelecting(): void {
-    this.isSelectStarted.set(false);
     this.selectedIds.set(new Set());
   }
 

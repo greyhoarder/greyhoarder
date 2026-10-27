@@ -29,8 +29,8 @@ the sidebar, from top to bottom:
    active one underlined in gold; switching tabs keeps search, filters and
    selection of both tabs, and the browser's back button returns to the
    previous tab;
-   on the right the "Select" button (ghost) for the open tab and the view
-   switch with "Cards" and "Table", which applies to both tabs.
+   on the right the view switch with "Cards" and "Table", which applies to
+   both tabs.
 3. Filter row: the search field, the filter chips "Faction", "Status" and
    "Box", then "Reset" while a filter is active. Inactive chips
    have a dashed border, active ones a solid border on the card surface.
@@ -99,7 +99,6 @@ summary line.
 | Summary | {minis} minis from {boxes} boxes · {painted} painted |
 | Add buttons | Add boxes · Add minis · Add custom |
 | Tabs | Minis {count} · Boxes {count}; while a search or filter narrows the list: Minis {shown} of {all} |
-| Selection button | Select |
 | View switch (accessible names) | Cards / Table |
 | Search placeholder | Search name, part or box |
 | Filter chips | Faction · Status · Box, each with a ⊕ icon |
@@ -156,8 +155,8 @@ summary line.
 | Filtered | Values ticked in a filter chip | Only matching minis; the chip shows up to two ticked values as badges after a divider, more as "{n} selected"; "Reset" appears |
 | Gone shown | "Gone" ticked in the Status filter | The gone rows as well, each with its gone badge in place of the status badge |
 | No results | Search and filters match nothing | The no-results message in place of the list |
-| Not selecting | Initially, or after "Done" | No checks, except on the mini under the pointer or with keyboard focus; no selection bar |
-| Selecting | "Select" pressed, or a mini's check ticked | Every mini line shows its check; the selection bar appears; "Select" is disabled; the actions are disabled while nothing is selected |
+| Not selecting | Initially, after "Done", or once the last mini is deselected | No checks, except on the mini under the pointer or with keyboard focus; no selection bar |
+| Selecting | A mini's check ticked, or a mini's line pressed long on a touch screen | Every mini line shows its check; the selection bar appears |
 | Only gone selected | Every selected mini is gone | "Leave the hoard…" is disabled |
 | Confirming delete | "Delete…" pressed | The delete dialog over the dimmed screen |
 | Deleting | "Delete {n} minis" pressed | The button shows the busy stripes until the server answers; when it does not, nothing is deleted and the delete-failed message appears in the dialog, announced to screen readers |
@@ -215,9 +214,11 @@ summary line.
   descending. Rows without a box sort after those with one.
 - Selecting works like photo apps and mail clients: hovering a mini or
   moving the keyboard focus to its check shows the check; ticking it starts
-  selection mode. "Select" starts the mode without a pointer, e.g. on touch
-  screens. Only single minis are selected, in an open group card or a
-  table line; a group card has no check of its own.
+  selection mode. On touch screens, pressing a mini's line for about half a
+  second selects it and starts the mode; the press neither opens the mini
+  nor shows the browser's menu. Selection mode lasts while at least one
+  mini is selected. Only single minis are selected, in an open group card
+  or a table line; a group card has no check of its own.
 - In selection mode a click anywhere on a mini's line selects or deselects
   it. Outside it, a click on a mini's line opens [Mini](mini.md) for that
   mini, and a click on a box opens [Box](box.md). Returning from there
@@ -281,7 +282,7 @@ summary line.
 
 `hoard-summary`, `hoard-add-boxes`, `hoard-add-minis`, `hoard-add-custom`,
 `hoard-tab-minis`, `hoard-tab-minis-count`, `hoard-tab-boxes`,
-`hoard-select`, `hoard-view-cards`, `hoard-view-table`, `hoard-search`,
+`hoard-view-cards`, `hoard-view-table`, `hoard-search`,
 `hoard-filter-faction`, `hoard-filter-status`, `hoard-filter-box`, `hoard-filter-option`, `hoard-filter-reset`,
 `hoard-table`, `hoard-sort-<column>`, `hoard-group`, `hoard-group-toggle`,
 `hoard-group-progress`, `hoard-row` (a mini's line in a group card or the
@@ -314,7 +315,6 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
   with room to tell which minis got the parts of stripped ones; it
   replaces the leave panels of [Mini](mini.md) and [Box](box.md).
 - The bulk edit view for selected minis.
-- Starting selection mode with a long press on touch screens.
 - What acting on selected boxes offers; what the box menu offers.
 - Whether the box list should count "x of y" on its tab like the minis.
 - Photos in place of the placeholder.

@@ -49,6 +49,8 @@
         class="group relative flex flex-wrap items-center gap-3 rounded-lg p-2 transition-colors"
         [class.bg-primary/5]="selectedIds().has(mini.id)"
         data-testid="box-group-mini"
+        appLongPress
+        (longPress)="selectedChange.emit({ miniId: mini.id, isSelected: true })"
       >
         <div class="relative z-10 shrink-0">
           <!-- Photos come later; until then every mini shows the same placeholder. -->

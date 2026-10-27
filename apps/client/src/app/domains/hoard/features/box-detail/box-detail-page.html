@@ -224,7 +224,6 @@
               <h2 class="font-semibold" id="box-minis-heading">
                 Minis <span class="font-normal text-muted-foreground">{{ builtCount() }}</span>
               </h2>
-              <ng-container *ngTemplateOutlet="selectButton" />
             </div>
             <div class="flex flex-col gap-2">
               @for (group of groups(); track group.id) {
@@ -280,9 +279,6 @@
                   />
                 </button>
               </h2>
-              @if (groups().length === 0) {
-                <ng-container *ngTemplateOutlet="selectButton" />
-              }
             </div>
             @if (isGoneOpen()) {
               <ul class="flex flex-col gap-2" id="box-gone-list">
@@ -290,6 +286,8 @@
                   <li
                     class="group relative flex items-center gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-muted/40"
                     [class.bg-primary/5]="selection.selectedIds().has(row.id)"
+                    appLongPress
+                    (longPress)="selection.select(row.id, true)"
                   >
                     <app-row-check
                       class="relative z-10"
@@ -317,21 +315,6 @@
             }
           </section>
         }
-
-        <!-- Beside "Minis", or beside "Gone" when nothing is built. -->
-        <ng-template #selectButton>
-          <button
-            hlmBtn
-            variant="ghost"
-            type="button"
-            class="h-8 px-2 text-sm"
-            data-testid="box-select"
-            [disabled]="selection.isSelecting()"
-            (click)="selection.start()"
-          >
-            Select
-          </button>
-        </ng-template>
       </div>
       @if (kit(); as kit) {
         <app-box-kit-card class="@[720px]:w-80 @[720px]:shrink-0" [kit]="kit" />

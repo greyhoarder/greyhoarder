@@ -32,6 +32,8 @@
           class="group cursor-pointer"
           data-testid="hoard-row"
           [class.bg-primary/5]="selectedIds().has(row.id)"
+          appLongPress
+          (longPress)="select(row, true)"
           (click)="onRowClick(row)"
         >
           <td hlmTd>

@@ -96,10 +96,6 @@ export class MinisList {
     }
   }
 
-  startSelecting(): void {
-    this.selection.start();
-  }
-
   /** Ends selection mode; nothing stays selected. */
   finishSelecting(): void {
     this.selection.finish();
