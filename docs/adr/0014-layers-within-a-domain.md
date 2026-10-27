@@ -1,7 +1,7 @@
 # ADR-0014: Layers within a domain
 
 - **Status:** Proposed
-- **Date:** 2026-10-21
+- **Date:** 2026-10-27
 
 ## Context
 
@@ -23,6 +23,15 @@ Besides its model, a server domain holds use cases, their entry points
 (controllers) and the code that talks to MongoDB, Redis or the file system.
 Use cases should not depend on that code: they must be testable without a
 database, and storage must be replaceable without touching them.
+
+A client domain holds, besides its model, pages and components, four other
+kinds of code: stores that keep what the server has, use cases that carry
+out one intention of the user (deleting boxes, editing a mini), the state of
+a screen (search, filters, selection) and the projections of the model a
+screen shows (rows, groups). A first version of this decision put
+everything several features share into one folder, `data/`. In the `hoard`
+domain only 4 of its 21 files were stores; the rest were use cases, screen
+state and projections, and stores began to write into one another.
 
 ## Decision
 
@@ -78,9 +87,10 @@ features ──▶ ports ◀── infrastructure
 ```text
 apps/client/src/app/domains/<domain>/
 ├── api/                  ← contract for other domains (ADR-0004)
-├── features/<feature>/   ← pages, smart components, their state
+├── features/<feature>/   ← pages, smart components, what only they use
 ├── ui/                   ← presentational components shared by its features (ADR-0011)
-├── data/                 ← data held locally: stores, fixed and sample data
+├── application/          ← use cases, screen state and projections shared by its features
+├── data/                 ← stores of what the server has, fixed and sample data
 ├── models/               ← model only the client needs
 ├── infrastructure/       ← access to external resources (the server)
 ├── util/
@@ -88,29 +98,43 @@ apps/client/src/app/domains/<domain>/
 ```
 
 ```text
-features ──▶ data ──▶ infrastructure        features ──▶ ui, infrastructure        all ──▶ models, util, libs/domain
+features ──▶ application ──▶ data ──▶ infrastructure        features ──▶ ui, data, infrastructure
+application ──▶ infrastructure                              all ──▶ models, util, libs/domain
 ```
 
-- A **feature** holds its pages and smart components and the
-  presentational components only it uses; **ui** holds those that several
-  features of the domain share. Keeping single-use components in their
+- A **feature** holds its pages and smart components, and everything else
+  only it uses: presentational components, the state of its screen, its use
+  cases and the projections it shows. Keeping single-use code in its
   feature lets a feature be read, changed or removed as a whole.
-- **Data** is what the client holds locally: stores with state that
-  several features of the domain share (in memory or browser storage), and
-  fixed or temporary data, such as sample data that stands in for the
-  server while a screen is built before its backend.
+- **UI** holds the presentational components that several features of the
+  domain share.
+- **Application** holds what several features of the domain share besides
+  components: use cases, screen state shared across features (e.g. a list
+  whose selection the frame around it acts on), code that combines several
+  stores, and the projections of the model they show. It corresponds to
+  the application services of DDD, which Steyer calls feature services or
+  facades. Code moves here from a feature when a second feature needs it,
+  not before.
+- **Data** holds the stores and fixed or temporary data, such as sample data
+  that stands in for the server while a screen is built before its backend.
+  A store keeps one resource as the server has it (in memory or browser
+  storage): it loads it, takes in what the server answers to changes and
+  offers it as signals. A store stands alone: it uses only `infrastructure`,
+  never another store. What combines stores, or writes to the server and
+  then updates stores, is a use case in `application` or in a feature.
 - The **model** is what the domain is, the client's types for it and the
   rules that follow from it. Stores hold the model; what lists and
-  components show is derived from it, in `data` where several features
-  share it, otherwise in the feature. The model changes slowly, what is
-  shown of it often.
+  components show is derived from it, in `application` where several
+  features share it, otherwise in the feature. The model changes slowly,
+  what is shown of it often.
 - **Infrastructure** is only the access to external resources, so local
   state never hides behind something that looks like an adapter. It maps
   responses into the model.
-- Features read and change local data through `data`; a store loads and
-  saves through `infrastructure`. Where no local state is involved,
-  features call `infrastructure` directly.
-- `data` never imports `features` or `ui`; `ui` never uses `data` or
+- Features read stores in `data` and use what `application` offers; a store
+  loads through `infrastructure`. Where no local state is involved, features
+  call `infrastructure` directly.
+- `data` never imports `application`, `features` or `ui`; `application`
+  never imports `features` or `ui`; `ui` never uses `application`, `data` or
   `infrastructure`.
 
 The client has no ports: features use `infrastructure` directly and are
@@ -135,9 +159,10 @@ without a new decision.
   criterion for what belongs there it collects services, interfaces,
   events and modules alike. `models/` has that criterion: types and rules,
   free of frameworks.
-- **`application/` plus `adapters/primary` and `adapters/secondary`**:
-  textbook hexagonal naming, but splits every use case into a use case
-  folder and a controller folder.
+- **`application/` plus `adapters/primary` and `adapters/secondary` on the
+  server**: textbook hexagonal naming, but splits every use case into a use
+  case folder and a controller folder. The client's `application/` holds
+  only what several features share; a feature keeps its own use cases.
 - **The whole model in `libs/domain`**, with a separate entry point for
   what only one app needs and a lint rule that keeps the other app out:
   one folder less, but the shared library no longer shows what is
@@ -151,12 +176,29 @@ without a new decision.
 - **Steyer's layer chain `feature → ui → data → util`**: well known and
   simple, but features depend on persistence code directly, so use cases
   cannot be tested or changed without it. The client's `data` borrows the
-  name for local data only and sits beside `infrastructure`, not in place
+  name for its stores only and sits beside `infrastructure`, not in place
   of it.
 - **Local client data in `features/`, `infrastructure/` or `util/`**: no
   extra folder, but a store shared by several features belongs to none of
   them, `infrastructure` would mix external resources with local state,
   and `util` is for helpers.
+- **Everything several client features share in `data/`** (the first
+  version of this decision): one folder less, but `data/` has no criterion
+  besides "shared". It collected use cases, screen state and projections
+  next to the stores, and gave stores a reason to call each other.
+- **Subfolders of `data/`** (`stores/`, `use-cases/`): the kinds are
+  apart, but `data/` keeps two meanings, and the boundary checks need a
+  rule per subfolder anyway.
+- **Use cases as features of their own that pages compose** (as in
+  Feature-Sliced Design, e.g. a feature `delete-minis` with its dialog):
+  each use case is one folder with its UI, but features would import each
+  other, and a feature would no longer be removable as a whole.
+- **Stores that use other stores**: no extra class, but stores form chains
+  and possibly cycles, and which store fills which becomes hidden; Steyer
+  advises against it and coordinates stores with a service above them.
+- **A store library (NgRx Signal Store)**: shared building blocks for
+  stores, but it decides how stores are written, not where code lives, and
+  adds a dependency.
 - **A model folder on the server only**: smaller change, but the client has
   the same gap, and its row types and their rules would stay in `util/`.
 - **Ports on the client as well**: symmetric, but the client has one
@@ -176,8 +218,12 @@ without a new decision.
   one implementation.
 - A type that becomes shared later moves from `models/` to `libs/domain`;
   imports change, the type does not.
-- Shared client state and sample data have one place per domain; sample
-  data is easy to find and remove once the server delivers.
+- Stores and sample data have one place per domain; sample data is easy to
+  find and remove once the server delivers.
+- `data/` stays small, and a store changes only when its resource does.
+  Combining stores costs a class in `application/` or a feature.
+- The client has one folder more, and what a feature shares must be moved
+  into `application/` when a second feature needs it.
 - Existing code that holds model in `libs/domain`, `ports/` or `util/`
   although only one app needs it moves to `models/`.
 - The folder rules are conventions until boundary checks are introduced in
