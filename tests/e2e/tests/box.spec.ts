@@ -4,7 +4,12 @@ import { expect, test } from '../fixtures.js';
 /** Adds a box of Boyz through the API and opens it from the Boxes tab. */
 async function openBoyz(page: Page, url: string): Promise<void> {
   const response = await page.request.post(`${url}/api/hoard/boxes`, {
-    data: { kitId: 'games-workshop/warhammer-40000/orks/boyz-2026', boxes: 1, tags: [], addedOn: '2026-10-25' },
+    data: {
+      kitId: 'games-workshop/warhammer-40000/orks/boyz-2026',
+      boxes: 1,
+      tags: [],
+      addedOn: '2026-10-25',
+    },
     headers: { Origin: url },
   });
   expect(response.ok()).toBe(true);
@@ -80,4 +85,56 @@ test.describe('Box', () => {
     await expect(page.getByTestId('hoard-group')).toHaveCount(1);
     await expect(page.getByTestId('hoard-group')).toContainText('×2');
   });
+
+  test('asks to delete a box once its last minis are deleted', async ({ page, signedIn }) => {
+    await deleteEveryMiniOfBoyz(page, signedIn.url);
+
+    await page.getByTestId('box-empty-boxes-delete').click();
+
+    await expect(page).toHaveURL(/\/hoard\/boxes$/);
+    await expect(page.getByTestId('hoard-box-empty')).toBeVisible();
+  });
+
+  test('keeps an empty box when asked', async ({ page, signedIn }) => {
+    await deleteEveryMiniOfBoyz(page, signedIn.url);
+
+    await page.getByTestId('box-empty-boxes-keep').click();
+
+    await expect(page.getByTestId('box-no-minis')).toBeVisible();
+    await expect(page.getByTestId('box-name')).toBeVisible();
+  });
+
+  test('deletes a box with its minis from its menu', async ({ page, signedIn }) => {
+    await openBoyz(page, signedIn.url);
+
+    await page.getByTestId('box-menu').click();
+    await page.getByTestId('box-delete').click();
+    await page.getByTestId('box-delete-box-confirm').click();
+
+    await expect(page).toHaveURL(/\/hoard\/boxes$/);
+    await expect(page.getByTestId('hoard-box-empty')).toBeVisible();
+  });
 });
+
+/** Builds every mini of a box of Boyz through the API, opens it and deletes them all after asking. */
+async function deleteEveryMiniOfBoyz(page: Page, url: string): Promise<void> {
+  const response = await page.request.post(`${url}/api/hoard/boxes`, {
+    data: {
+      kitId: 'games-workshop/warhammer-40000/orks/boyz-2026',
+      boxes: 1,
+      tags: [],
+      addedOn: '2026-10-25',
+    },
+    headers: { Origin: url },
+  });
+  expect(response.ok()).toBe(true);
+  await buildThroughApi(page, url, () => true);
+  await page.goto(`${url}/hoard/boxes`);
+  await page.getByTestId('hoard-box').click();
+  await expect(page.getByTestId('box-name')).toBeVisible();
+  await page.getByTestId('box-select').click();
+  await page.getByTestId('box-select-all').click();
+  await page.getByTestId('box-selection-delete').click();
+  await page.getByTestId('box-delete-confirm').click();
+  await expect(page.getByTestId('box-empty-boxes-dialog')).toBeVisible();
+}

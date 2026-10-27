@@ -26,7 +26,10 @@ async function buildThroughApi(
 
 /** Adds a box of Boyz and one of Lootas through the API, all Boyz and one Loota built. */
 async function addBuiltMinis(page: Page, url: string): Promise<void> {
-  for (const kitId of ['games-workshop/warhammer-40000/orks/boyz-2026', 'games-workshop/warhammer-40000/orks/lootas-2008']) {
+  for (const kitId of [
+    'games-workshop/warhammer-40000/orks/boyz-2026',
+    'games-workshop/warhammer-40000/orks/lootas-2008',
+  ]) {
     const response = await page.request.post(`${url}/api/hoard/boxes`, {
       data: { kitId, boxes: 1, tags: [], addedOn: '2026-10-25' },
       headers: { Origin: url },
@@ -61,5 +64,22 @@ test.describe('Hoard', () => {
     await page.getByTestId('hoard-search').fill('loota');
 
     await expect(page.getByTestId('hoard-group')).toHaveCount(1);
+  });
+
+  test('deletes selected minis after asking', async ({ page, signedIn }) => {
+    await addBuiltMinis(page, signedIn.url);
+    await page.goto(`${signedIn.url}/hoard/minis`);
+    await page.getByTestId('hoard-view-table').click();
+    const rows = page.getByTestId('hoard-row');
+    await expect(rows).not.toHaveCount(0);
+    const before = await rows.count();
+
+    await rows.nth(0).getByTestId('hoard-row-check').click();
+    await rows.nth(1).getByTestId('hoard-row-check').click();
+    await page.getByTestId('hoard-selection-delete').click();
+    await page.getByTestId('hoard-delete-confirm').click();
+
+    await expect(rows).toHaveCount(before - 2);
+    await expect(page.getByTestId('hoard-selection-bar')).toHaveCount(0);
   });
 });
