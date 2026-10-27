@@ -105,24 +105,13 @@
           aria-label="Box"
           *hlmPopoverPortal="let menu"
         >
-          <li role="none">
-            <a
-              role="menuitem"
-              (keydown)="moveFocus($event)"
-              routerLink="/hoard/minis"
-              class="flex w-full rounded-md px-2 py-1.5 text-sm outline-none hover:bg-accent focus-visible:bg-accent"
-              data-testid="box-show-minis"
-              (click)="filterHoardByBox(box.id); menu.close()"
-              >Show minis in hoard</a
-            >
-          </li>
-          <!-- Adding and deleting come later. -->
+          <!-- Adding a mini comes later. -->
           <li role="none">
             <button
               type="button"
               role="menuitem"
               (keydown)="moveFocus($event)"
-              tabindex="-1"
+              tabindex="0"
               class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent"
               data-testid="box-add-mini"
             >
@@ -235,10 +224,7 @@
               <h2 class="font-semibold" id="box-minis-heading">
                 Minis <span class="font-normal text-muted-foreground">{{ builtCount() }}</span>
               </h2>
-              <div class="flex items-center gap-3">
-                <ng-container *ngTemplateOutlet="selectButton" />
-                <ng-container *ngTemplateOutlet="showInHoard" />
-              </div>
+              <ng-container *ngTemplateOutlet="selectButton" />
             </div>
             <div class="flex flex-col gap-2">
               @for (group of groups(); track group.id) {
@@ -257,15 +243,10 @@
         }
         @if (sprueRows().length > 0) {
           <section class="flex flex-col gap-3" aria-labelledby="box-sprue-heading">
-            <div class="flex items-center justify-between gap-4">
-              <h2 class="font-semibold" id="box-sprue-heading">
-                On the sprue
-                <span class="font-normal text-muted-foreground">{{ sprueCount() }}</span>
-              </h2>
-              @if (groups().length === 0) {
-                <ng-container *ngTemplateOutlet="showInHoard" />
-              }
-            </div>
+            <h2 class="font-semibold" id="box-sprue-heading">
+              On the sprue
+              <span class="font-normal text-muted-foreground">{{ sprueCount() }}</span>
+            </h2>
             <div class="flex flex-col gap-2">
               @for (row of sprueRows(); track row.id) {
                 <app-box-sprue-card
@@ -350,19 +331,6 @@
           >
             Select
           </button>
-        </ng-template>
-
-        <!-- In the heading of the first section, so it is there with or without built minis. -->
-        <ng-template #showInHoard>
-          <a
-            routerLink="/hoard/minis"
-            class="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            data-testid="box-show-in-hoard"
-            (click)="filterHoardByBox(box.id)"
-          >
-            Show in hoard
-            <ng-icon name="lucideChevronRight" size="16" />
-          </a>
         </ng-template>
       </div>
       @if (kit(); as kit) {

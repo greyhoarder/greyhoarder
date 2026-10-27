@@ -26,7 +26,6 @@ import {
   lucideBox,
   lucideChevronDown,
   lucideChevronLeft,
-  lucideChevronRight,
   lucideEllipsisVertical,
 } from '@ng-icons/lucide';
 import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
@@ -45,7 +44,6 @@ import { MiniSelection } from '../../application/minis/mini-selection';
 import { MinisDeletion } from '../../application/minis/minis-deletion';
 import { countMinis, toMiniRows, toSingleRows } from '../../application/minis/mini-row';
 import { sortRows } from '../../application/minis/mini-sort';
-import { MinisList } from '../../application/minis/minis-list';
 import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
 import { hasPercent } from '../../models/box-progress';
@@ -98,7 +96,6 @@ import { EitherOrName } from '../../ui/either-or-name/either-or-name';
       lucideBox,
       lucideChevronDown,
       lucideChevronLeft,
-      lucideChevronRight,
       lucideEllipsisVertical,
     }),
     // The box menu is a menu, not a dialog; its list carries the role.
@@ -116,7 +113,6 @@ export class BoxDetailPage {
   private readonly boxes = inject(BoxesStore);
   private readonly minis = inject(MinisStore);
   private readonly factionNames = inject(FactionNames);
-  private readonly minisList = inject(MinisList);
   private readonly parts = inject(PartsStore);
   private readonly title = inject(Title);
   private readonly router = inject(Router);
@@ -353,13 +349,6 @@ export class BoxDetailPage {
         return rest;
       });
     }
-  }
-
-  /** The Minis tab shows only the minis of this box: no search, only this box ticked. */
-  protected filterHoardByBox(id: string): void {
-    this.minisList.query.set('');
-    this.minisList.resetFilters();
-    this.minisList.boxFilter.set(new Set([id]));
   }
 
   /** Arrow keys, Home and End move between the items of the box menu. */

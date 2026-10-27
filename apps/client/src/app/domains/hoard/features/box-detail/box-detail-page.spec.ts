@@ -4,7 +4,6 @@ import { Title } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import type { Box, HobbyStatus, Mini } from '@greyhoarder/domain/hoard';
 import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
-import { MinisList } from '../../application/minis/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
@@ -294,17 +293,6 @@ describe('Box page', () => {
     ]);
   });
 
-  it('leads to the minis of the box in the hoard', async () => {
-    showBox(BOYZ.id);
-    await fixture.whenStable();
-
-    all('box-show-in-hoard')[0]?.click();
-    await fixture.whenStable();
-
-    expect(TestBed.inject(Router).url).toBe('/hoard/minis');
-    expect(TestBed.inject(MinisList).boxFilter()).toEqual(new Set([BOYZ.id]));
-  });
-
   it('shows the kit the box was added from, in the version the box records', async () => {
     showBox(BOYZ.id);
 
@@ -331,13 +319,12 @@ describe('Box page', () => {
     return document.querySelector<HTMLElement>('[role="menu"]');
   }
 
-  it('offers to show the minis, add a mini and delete the box from its menu', async () => {
+  it('offers to add a mini and delete the box from its menu', async () => {
     const menu = await openMenu();
 
     const items = [...(menu?.querySelectorAll('[role="menuitem"]') ?? [])];
 
     expect(items.map((item) => item.getAttribute('data-testid'))).toEqual([
-      'box-show-minis',
       'box-add-mini',
       'box-delete',
     ]);
@@ -353,16 +340,6 @@ describe('Box page', () => {
     await fixture.whenStable();
 
     expect([before, trigger?.getAttribute('aria-expanded')]).toEqual(['false', 'true']);
-  });
-
-  it('leads to the minis of the box in the hoard from its menu', async () => {
-    const menu = await openMenu();
-
-    menu?.querySelector<HTMLElement>('[data-testid="box-show-minis"]')?.click();
-    await fixture.whenStable();
-
-    expect(TestBed.inject(Router).url).toBe('/hoard/minis');
-    expect(TestBed.inject(MinisList).boxFilter()).toEqual(new Set([BOYZ.id]));
   });
 
   it("says that the kit can't be loaded when the server does not answer for it", async () => {

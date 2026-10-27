@@ -57,17 +57,6 @@ test.describe('Box', () => {
     await expect(page).toHaveURL(`${signedIn.url}/hoard/boxes`);
   });
 
-  test('leads from a box to its built minis in the hoard', async ({ page, signedIn }) => {
-    await openBoyz(page, signedIn.url);
-    await buildThroughApi(page, signedIn.url, (name) => name === 'Boy');
-    await page.reload();
-
-    await page.getByTestId('box-show-in-hoard').click();
-
-    await expect(page).toHaveURL(`${signedIn.url}/hoard/minis`);
-    await expect(page.getByTestId('hoard-group')).not.toHaveCount(0);
-  });
-
   test('builds minis from the sprue on their box and finds them in a group of the hoard', async ({
     page,
     signedIn,

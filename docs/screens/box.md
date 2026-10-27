@@ -42,9 +42,8 @@ the sidebar, as wide as the hoard, from top to bottom:
    is narrower than about 720 px, the kit card moves below the minis.
 
 **Minis**: the minis past the sprue. The heading "Minis" with their count,
-and on its right "Select" (ghost) and the link "Show in hoard" with a
-right chevron; without built minis, "Select" sits on the right of the
-"Gone" heading instead. Below it
+and on its right "Select" (ghost); without built minis, "Select" sits on
+the right of the "Gone" heading instead. Below it
 one card per group, stacked with a small gap. A group holds the built
 minis of the box with the same name, parts and factions; their status and
 workbench place may differ.
@@ -62,8 +61,7 @@ workbench place may differ.
   lines follow the group's order: furthest status first.
 
 **On the sprue**: the minis still on the sprue, below the built ones. The
-heading "On the sprue" with their count, and on its right "Show in hoard"
-when there are no built minis; below it one card per row of alike minis
+heading "On the sprue" with their count; below it one card per row of alike minis
 ([domain](../domains/hoard.md#lists-of-minis)), at most one of them open.
 
 - Closed, a card shows the name, "×{count}", a chevron and the "⋮"
@@ -111,12 +109,11 @@ count stepper.
 | Meta line | {factions} · added {date} |
 | Buttons | Take from the sprue · Edit box |
 | Box menu button (accessible name) | More actions |
-| Box menu | Show minis in hoard · Add a mini to this box · Delete box… |
+| Box menu | Add a mini to this box · Delete box… |
 | Progress heading | Progress |
 | Progress percentage | {n}% |
 | Status legend | On the sprue / Built / Primed / Painted / Done, each with its count |
 | Minis heading | Minis {count of built minis} |
-| Hoard link | Show in hoard |
 | Selection button | Select |
 | Selection bar, delete dialog, empty boxes dialog | as in the [hoard](hoard.md#content) |
 | Row check (accessible name) | Select {name} |
@@ -241,8 +238,6 @@ count stepper.
   status controls still work. "Select all" selects every built and gone
   mini of the box, also those of closed groups and of the closed "Gone"
   section. The actions of the selection bar work as in the hoard.
-- "Show in hoard" and "Show minis in hoard" lead to the Minis tab of the
-  hoard with this box ticked in the "Box" filter.
 - The kit card shows the kit as it was when the box was added: the version
   the box records. A newer version of a catalog kit never changes it.
 - "Delete box…" opens the delete box dialog. "Delete box" deletes the box
@@ -280,7 +275,7 @@ count stepper.
 ## Test IDs
 
 `box-back`, `box-name`, `box-progress-badge`, `box-kit-line`, `box-meta`,
-`box-tag`, `box-take`, `box-edit`, `box-menu`, `box-show-minis`,
+`box-tag`, `box-take`, `box-edit`, `box-menu`,
 `box-add-mini`, `box-delete`, `box-percent`, `box-progress`, `box-status`,
 `box-group`, `box-group-toggle`, `box-group-progress`, `box-group-mini`,
 `box-group-mini-open`, `box-group-status` (with `data-status`),
@@ -295,7 +290,7 @@ count stepper.
 `box-empty-boxes-error`, `box-delete-box-dialog`, `box-delete-box-cancel`,
 `box-delete-box-confirm`, `box-delete-box-error`, `box-no-minis`;
 inside an open card on the sprue the build, leave and delete panels carry
-the test IDs of [Mini](mini.md#test-ids); `box-save-error`, `box-show-in-hoard`, `box-kit`,
+the test IDs of [Mini](mini.md#test-ids); `box-save-error`, `box-kit`,
 `box-kit-draft`, `box-kit-slot`, `box-kit-error`, `box-kit-missing`, `box-loading`, `box-not-found`, `box-error` (ADR-0013).
 
 ## Open questions
