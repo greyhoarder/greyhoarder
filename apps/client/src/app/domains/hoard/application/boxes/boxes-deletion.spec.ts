@@ -1,11 +1,11 @@
 import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
-import { HttpBoxesAdapter } from '../infrastructure/http-boxes-adapter';
-import { HttpMinisAdapter } from '../infrastructure/http-minis-adapter';
+import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
+import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { BoxesDeletion } from './boxes-deletion';
-import { BoxesStore } from '../data/boxes-store';
-import { MinisStore } from '../data/minis-store';
+import { BoxesStore } from '../../data/boxes-store';
+import { MinisStore } from '../../data/minis-store';
 
 const box = (id: string): Box => ({
   id,

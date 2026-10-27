@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
-import { MinisList } from '../../application/minis-list';
+import { MinisList } from '../../application/minis/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';

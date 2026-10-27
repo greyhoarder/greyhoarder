@@ -1,16 +1,16 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { hasReached, isGone } from '@greyhoarder/domain/hoard';
-import { toggled } from '../util/selection';
+import { toggled } from '../../util/selection';
 import { MiniSelection } from './mini-selection';
-import { BoxesStore } from '../data/boxes-store';
-import { FactionNames } from './faction-names';
+import { BoxesStore } from '../../data/boxes-store';
+import { FactionNames } from '../faction-names';
 import { matchesFilter } from './mini-filter';
 import { toHoardGroups } from './hoard-group';
 import { countMinis, toSingleRows } from './mini-row';
 import { matchesSearch } from './mini-search';
 import { sortRows } from './mini-sort';
-import { MinisStore } from '../data/minis-store';
-import { PartsStore } from '../data/parts-store';
+import { MinisStore } from '../../data/minis-store';
+import { PartsStore } from '../../data/parts-store';
 
 /**
  * The minis of the hoard past the sprue as the Minis tab lists them, each as a row of its own and

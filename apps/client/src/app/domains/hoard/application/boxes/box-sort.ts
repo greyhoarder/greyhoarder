@@ -1,7 +1,7 @@
-import { boxProgresses } from '../models/box-progress';
+import { boxProgresses } from '../../models/box-progress';
 import { paintedCount, progressOf, sprueCount } from './box-row';
 import type { BoxRow } from './box-row';
-import type { SortDirection } from '../util/sort-direction';
+import type { SortDirection } from '../../util/sort-direction';
 
 export const boxSortOrders = ['name', 'faction', 'progress', 'sprue', 'painted', 'added'] as const;
 

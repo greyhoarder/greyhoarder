@@ -1,8 +1,8 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import type { Mini } from '@greyhoarder/domain/hoard';
-import { HttpMinisAdapter } from '../infrastructure/http-minis-adapter';
-import { eitherOrText } from '../util/either-or';
-import { MinisStore } from '../data/minis-store';
+import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
+import { eitherOrText } from '../../util/either-or';
+import { MinisStore } from '../../data/minis-store';
 
 /**
  * Deleting selected minis for good after asking: what the delete dialog says about them, and the

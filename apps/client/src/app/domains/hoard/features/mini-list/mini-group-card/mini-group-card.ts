@@ -1,8 +1,8 @@
 import { Component, computed, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
-import type { HoardGroup } from '../../../application/hoard-group';
-import type { MiniRow } from '../../../application/mini-row';
+import type { HoardGroup } from '../../../application/minis/hoard-group';
+import type { MiniRow } from '../../../application/minis/mini-row';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 import {
   PROGRESS_STATUSES,

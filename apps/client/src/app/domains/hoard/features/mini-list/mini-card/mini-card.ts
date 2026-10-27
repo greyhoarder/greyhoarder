@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import type { MiniRow } from '../../../application/mini-row';
+import type { MiniRow } from '../../../application/minis/mini-row';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { GoneBadge } from '../../../ui/gone-badge/gone-badge';
 import { StatusBadge } from '../../../ui/status-badge/status-badge';

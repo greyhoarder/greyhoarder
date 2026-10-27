@@ -16,17 +16,17 @@ import {
   type Mini,
   toKit,
 } from '@greyhoarder/domain/hoard';
-import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../catalog/api';
-import { HttpMinisAdapter } from '../infrastructure/http-minis-adapter';
-import { areAlike } from '../models/mini-alikeness';
-import { buildSuggestions, preselectedParts } from '../models/mini-build';
-import type { MiniChanges, PartChange } from '../models/mini-changes';
-import type { PartOption } from '../models/part-options';
-import { eitherOrText } from '../util/either-or';
-import { BoxesStore } from '../data/boxes-store';
-import { FactionNames } from './faction-names';
-import { MinisStore } from '../data/minis-store';
-import { PartsStore } from '../data/parts-store';
+import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
+import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
+import { areAlike } from '../../models/mini-alikeness';
+import { buildSuggestions, preselectedParts } from '../../models/mini-build';
+import type { MiniChanges, PartChange } from '../../models/mini-changes';
+import type { PartOption } from '../../models/part-options';
+import { eitherOrText } from '../../util/either-or';
+import { BoxesStore } from '../../data/boxes-store';
+import { FactionNames } from '../faction-names';
+import { MinisStore } from '../../data/minis-store';
+import { PartsStore } from '../../data/parts-store';
 
 /** A part as the screen shows and edits it; a new part has a name but no id yet. */
 export interface PartDraft {

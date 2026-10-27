@@ -4,7 +4,7 @@ import { Title } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import type { Box, HobbyStatus, Mini } from '@greyhoarder/domain/hoard';
 import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
-import { MinisList } from '../../application/minis-list';
+import { MinisList } from '../../application/minis/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';

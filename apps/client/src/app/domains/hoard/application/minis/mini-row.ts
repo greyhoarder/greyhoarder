@@ -1,7 +1,7 @@
 import type { Box, Departure, HobbyStatus, Mini } from '@greyhoarder/domain/hoard';
-import { alikeKey } from '../models/mini-alikeness';
-import { groupKey } from '../models/mini-groups';
-import { factionNamesOf } from '../util/kit-labels';
+import { alikeKey } from '../../models/mini-alikeness';
+import { groupKey } from '../../models/mini-groups';
+import { factionNamesOf } from '../../util/kit-labels';
 
 /** One mini, or alike minis (same name, factions, status, parts and notes) bundled, as a row of a list. */
 export interface MiniRow {

@@ -1,4 +1,4 @@
-import { type BoxProgress, boxProgress, progressPercent } from '../models/box-progress';
+import { type BoxProgress, boxProgress, progressPercent } from '../../models/box-progress';
 import {
   type Box,
   hasReached,
@@ -7,7 +7,7 @@ import {
   isGone,
   type Mini,
 } from '@greyhoarder/domain/hoard';
-import { factionNamesOf } from '../util/kit-labels';
+import { factionNamesOf } from '../../util/kit-labels';
 
 export interface BoxKit {
   /** The kit's name with its edition, e.g. "Boyz (2026)". */

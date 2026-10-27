@@ -7,9 +7,9 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { filter, map } from 'rxjs';
-import { BoxesList } from '../../application/boxes-list';
+import { BoxesList } from '../../application/boxes/boxes-list';
 import { HoardView } from '../../application/hoard-view';
-import { MinisList } from '../../application/minis-list';
+import { MinisList } from '../../application/minis/minis-list';
 
 /**
  * The frame of the hoard: summary, add buttons, the tabs Minis and Boxes as

@@ -24,7 +24,7 @@ import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmPopoverImports } from '@spartan-ng/helm/popover';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { FactionNames } from '../../application/faction-names';
-import { MiniEditor } from '../../application/mini-editor';
+import { MiniEditor } from '../../application/minis/mini-editor';
 import { BuildAs } from '../../ui/build-as/build-as';
 import { BuildBar } from '../../ui/build-bar/build-bar';
 import { DeletePanel } from '../../ui/delete-panel/delete-panel';

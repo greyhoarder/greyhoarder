@@ -1,6 +1,6 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import type { HoardGroup } from '../../../application/hoard-group';
-import type { MiniRow } from '../../../application/mini-row';
+import type { HoardGroup } from '../../../application/minis/hoard-group';
+import type { MiniRow } from '../../../application/minis/mini-row';
 import { MiniGroupCard } from './mini-group-card';
 
 const row = (id: string, box?: string): MiniRow => ({

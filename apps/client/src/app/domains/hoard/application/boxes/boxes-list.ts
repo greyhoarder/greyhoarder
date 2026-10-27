@@ -2,10 +2,10 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { matchesBoxFilter, matchesBoxSearch } from './box-filter';
 import { toBoxRows } from './box-row';
 import { sortBoxes } from './box-sort';
-import { BoxesStore } from '../data/boxes-store';
-import { FactionNames } from './faction-names';
-import { MinisStore } from '../data/minis-store';
-import { toggled } from '../util/selection';
+import { BoxesStore } from '../../data/boxes-store';
+import { FactionNames } from '../faction-names';
+import { MinisStore } from '../../data/minis-store';
+import { toggled } from '../../util/selection';
 
 /**
  * The boxes of the hoard as the Boxes tab lists them, with its search, filters and selection;

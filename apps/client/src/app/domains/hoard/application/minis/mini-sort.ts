@@ -1,5 +1,5 @@
 import { hobbyStatuses } from '@greyhoarder/domain/hoard';
-import type { SortDirection } from '../util/sort-direction';
+import type { SortDirection } from '../../util/sort-direction';
 import type { MiniRow } from './mini-row';
 
 export const miniSortOrders = ['name', 'army', 'box', 'status'] as const;

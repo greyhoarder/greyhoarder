@@ -1,5 +1,5 @@
 import { computed, signal } from '@angular/core';
-import { toggled } from '../util/selection';
+import { toggled } from '../../util/selection';
 
 /**
  * Minis selected one by one to act on together, as in photo apps: "Select" or a ticked check starts

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import type { BoxRow } from '../../../application/box-row';
+import type { BoxRow } from '../../../application/boxes/box-row';
 import { BoxTable } from './box-table';
 
 const BOXES: BoxRow[] = [
