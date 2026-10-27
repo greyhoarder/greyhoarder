@@ -21,6 +21,12 @@ that review has not run.
      duplicated business rules. Name the smell and the refactoring that
      fits.
    - **SRP:** a class or function with more than one reason to change.
+   - **Single Level of Abstraction (Martin, Clean Code; Beck's Composed
+     Method):** a function that mixes steps of the use case with the
+     details of one of them, e.g. a component method that decides what
+     happens next and also builds a request, loops over arrays or formats
+     text. Extract the details into well-named functions, so the function
+     reads as a sequence of steps on one level.
    - **Law of Demeter:** chains through other objects' internals
      (`a.b().c().d`).
    - **Cohesion Criteria:** a module, feature or file whose parts don't
