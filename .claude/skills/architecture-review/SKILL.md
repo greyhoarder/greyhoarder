@@ -24,9 +24,18 @@ description: Review code or a planned change against greyhoarder's architecture 
    Don't repeat what they check; review what they cannot, such as whether
    something is a business rule or where a type belongs.
 4. Check each file against the rules of those guides, in particular:
-   - **Boundaries:** correct domain folder; `models/` holds what only one
-     app needs, `libs/domain` only what both need; business rules only in
-     `models/` or `libs/domain`; one Nest module per domain.
+   - **Boundaries:** correct domain folder; business rules only in
+     `models/` or `libs/domain`; `libs/domain` holds what must mean the
+     same on both sides (terms and invariants on shared types), even if
+     only one app uses it so far, never secrets or server-only state;
+     types only one app knows stay in its `models/`; one Nest module per
+     domain.
+   - **Client layers:** `application/` grouped by subject (`boxes/`,
+     `minis/`), what spans subjects at its top, no folders by kind or per
+     use case; projections, filters and sort orders are readonly types and
+     pure functions, use cases and screen state the classes that hold
+     state; features share no smart components; stores hold no search,
+     filters, selection or projections.
    - **Persistence:** every collection has a schema owned by one domain; no
      queries or `$lookup` into other domains' collections; references
      checked and indexed; multi-document writes in a transaction; reference
