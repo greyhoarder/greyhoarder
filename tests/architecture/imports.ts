@@ -1,6 +1,6 @@
 import type { FileInfo } from 'archunit';
 import { readdirSync } from 'node:fs';
-import { dirname, relative, resolve } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
 /** Packages counted as frameworks, which `models/` and `libs/domain` never import. */
@@ -35,9 +35,11 @@ export function isRelative(specifier: string): boolean {
   return specifier.startsWith('.');
 }
 
-/** Where a relative specifier of the file points, relative to `directory`. */
+/** Where a relative specifier of the file points, relative to `directory`, with `/` on every platform. */
 export function targetOf(file: FileInfo, specifier: string, directory: string): string {
-  return relative(directory, resolve(directory, dirname(file.path), specifier));
+  return relative(directory, resolve(directory, dirname(file.path), specifier))
+    .split(sep)
+    .join('/');
 }
 
 export function importsOnlyInside(directory: string, file: FileInfo): boolean {
