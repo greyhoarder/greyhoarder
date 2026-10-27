@@ -23,7 +23,8 @@ the sidebar, as wide as the hoard, from top to bottom:
      diagonal stripes and a box icon;
    - middle, stacked: the box name as the title, followed by the progress
      badge; the kit line in `muted-foreground`; a smaller line with the
-     factions and the date, followed by the tags as small outlined badges;
+     factions and the date, followed by the box's number as a small muted
+     round badge "#{n}" and the tags as small outlined badges;
    - right: "Take from the sprue" (primary), "Edit box" (outline) and the
      "⋮" button (outline, `size-10`) for the box menu. On narrow screens
      the buttons move below the middle column.
@@ -105,7 +106,7 @@ count stepper.
 | Title | {box name} |
 | Progress badge | Untouched / Started / Done / All gone / Empty |
 | Kit line | {kit name} · {product code, if any}; "No kit" for boxes without one |
-| Meta line | {factions} · added {date} |
+| Meta line | {factions} · added {date}, then the number badge #{number} |
 | Buttons | Take from the sprue · Edit box |
 | Box menu button (accessible name) | More actions |
 | Box menu | Add a mini to this box · Delete box… |
@@ -273,6 +274,7 @@ count stepper.
 ## Test IDs
 
 `box-back`, `box-name`, `box-progress-badge`, `box-kit-line`, `box-meta`,
+`box-number`,
 `box-tag`, `box-take`, `box-edit`, `box-menu`,
 `box-add-mini`, `box-delete`, `box-percent`, `box-progress`, `box-status`,
 `box-group`, `box-group-toggle`, `box-group-progress`, `box-group-mini`,

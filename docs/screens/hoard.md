@@ -82,9 +82,11 @@ button on its top right; below it the box name with the kit line under it
 and the progress percentage on the right, the progress bar with a status
 line under it in one line (a colored dot and the count for built, primed,
 painted and done, also 0), and a line with factions and date followed by
-the tags as small outlined badges.
+the tags as small outlined badges, with the box's number "#{n}" in muted
+text at its right end.
 
-**Table**: the round check, Box (name, kit line below in small text), Faction, Progress
+**Table**: the round check, Box (name followed by its number "#{n}" in
+muted text, kit line below in small text), Faction, Progress
 (bar with the percentage on its right), On the sprue, Painted ("{n} of
 {all}"), Added and the "⋮" button. Sorted by Added, newest first; every
 header except the menu sorts it like the minis table. Below the table a
@@ -116,7 +118,9 @@ summary line.
 | Group origin line (cards) | {factions} · {box, "{n} boxes" or "Without box"} |
 | Group legend | {count} {status} per status the group has |
 | Group toggle (accessible name) | {name} |
-| Mini line (cards) | {name}, Workbench; below: {box or "Without box"} |
+| Mini line (cards) | {name}, Workbench; below: {box} #{number} or "Without box" |
+| Box of a mini (table) | {box} #{number}, or "Without box" |
+| Box number | #{number}, on box cards and in the boxes table |
 | Workbench tag | Workbench |
 | Status badge | On the sprue / Built / Primed / Painted / Done |
 | Gone badge | Sold · Given away · Stripped for parts · Lost or broken, in place of the status badge |
@@ -211,7 +215,9 @@ summary line.
 - Only the table sorts. Cards always show the groups sorted by army. The
   table starts sorted by faction; a click on a new column header sorts it
   ascending, a click on the current one switches between ascending and
-  descending. Rows without a box sort after those with one.
+  descending. Rows without a box sort after those with one. Boxes with the
+  same name sort by their number, in the Minis tab's Box column as in the
+  boxes table.
 - Selecting works like photo apps and mail clients: hovering a mini or
   moving the keyboard focus to its check shows the check; ticking it starts
   selection mode. On touch screens, pressing a mini's line for about half a
@@ -296,7 +302,7 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 `hoard-no-results`, `hoard-box-search`, `hoard-box-filter-faction`,
 `hoard-box-filter-progress`, `hoard-box-filter-tag`,
 `hoard-box-filter-option`, `hoard-box-filter-reset`, `hoard-box`,
-`hoard-box-progress`, `hoard-box-percent`, `hoard-box-statuses`,
+`hoard-box-progress`, `hoard-box-percent`, `hoard-box-statuses`, `hoard-box-number`,
 `hoard-box-menu`, `hoard-box-selection-bar`, `hoard-box-selection-count`,
 `hoard-box-select-all`, `hoard-box-select-done`, `hoard-box-table`,
 `hoard-box-sort-<column>`, `hoard-box-summary`, `hoard-box-no-results`,

@@ -88,6 +88,11 @@ exactly one user, and users see only their own hoard.
   new version of a catalog kit.
 - A box records the day it was added (by default the day it is entered).
   It records no price.
+- Boxes with the same name are numbered from 1, in the order they were
+  added, to tell them apart. A box keeps its number when others are
+  deleted; a new box gets the highest number of its name plus one, so the
+  number of a deleted box can come again only when it was the highest.
+  Lists sort boxes with the same name by their number.
 - A box can carry any number of the user's tags. Each user has their own
   tags; renaming a tag renames it on every box.
 - A box's progress is derived from its minis that are not gone, never
@@ -221,6 +226,8 @@ Filtering by faction depends on what the list is for:
 - Painting recipes and paints.
 
 ## Open questions
+
+- What happens to a box's number when editing it changes its name.
 
 - How tags are stored and managed (renaming, deleting); they have no data
   model yet.

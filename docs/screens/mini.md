@@ -98,7 +98,7 @@ on the right; on narrow content widths the box card moves below them.
    "From the box"; the box's photo placeholder (48 × 48, muted with
    stripes) with the kit's name and year and below it the manufacturer and
    product code, the whole line a link with a right chevron; below it
-   "Added {date} · box at {percent}%". After a border, "The kit suggests
+   "Added {date} · box #{number} at {percent}%". After a border, "The kit suggests
    for a {name}" with the parts the kit's slots for the name to build
    offer as small muted chips; after another border the muted note "Kits
    only suggest. What you add here counts." Without a kit the card shows
@@ -171,7 +171,7 @@ muted line, the "or" is plain.
 | Notes placeholder | Kitbash sources, loadout ideas, what is still to do |
 | Box card label | From the box |
 | Box card link | {kit name} · {year}, below: {manufacturer} · {product code}; without a kit: {box name} |
-| Box card progress | Added {date} · box at {percent}% |
+| Box card progress | Added {date} · box #{number} at {percent}% |
 | Box card parts | The kit suggests for a {name} |
 | Box card note | Kits only suggest. What you add here counts. |
 | Without box | Without box |
