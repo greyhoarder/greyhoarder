@@ -1,13 +1,12 @@
 import { Routes } from '@angular/router';
 import { signedInGuard } from './domains/auth/api';
-import { AppShell } from './shell/app-shell';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   { path: '', loadChildren: () => import('./domains/auth/auth.routes') },
   {
     path: '',
-    component: AppShell,
+    loadComponent: async () => (await import('./shell/app-shell')).AppShell,
     canActivate: [signedInGuard],
     runGuardsAndResolvers: 'always',
     children: [
