@@ -60,9 +60,26 @@ describe('Shell', () => {
     toggle?.click();
     await fixture.whenStable();
 
-    expect(collapsed).toEqual({ label: 'Expand navigation', expanded: 'false', tooltip: 'Dashboard' });
+    expect(collapsed).toEqual({
+      label: 'Expand navigation',
+      expanded: 'false',
+      tooltip: 'Dashboard',
+    });
     expect(toggle?.getAttribute('aria-label')).toBe('Collapse navigation');
     expect(toggle?.getAttribute('aria-expanded')).toBe('true');
     expect(dashboard?.hasAttribute('title')).toBe(false);
+  });
+
+  it('marks entries whose screen does not exist yet as not available', () => {
+    const [workbench, hoard] = ['shell-nav-workbench', 'shell-nav-hoard'].map((testId) =>
+      shell.querySelector<HTMLElement>(`[data-testid="${testId}"]`),
+    );
+
+    expect(workbench?.tagName).not.toBe('A');
+    expect(workbench?.getAttribute('aria-disabled')).toBe('true');
+    expect(workbench?.textContent).toContain('not available yet');
+    expect(workbench?.querySelector('[data-testid="shell-nav-lock"]')).not.toBeNull();
+    expect(hoard?.tagName).toBe('A');
+    expect(hoard?.querySelector('[data-testid="shell-nav-lock"]')).toBeNull();
   });
 });

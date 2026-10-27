@@ -9,16 +9,40 @@
       class="flex shrink-0 items-center gap-3 rounded-lg px-3.75 py-2 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       <ng-icon [name]="entry.icon" size="18" class="shrink-0" />
-      <span class="transition-opacity duration-200" [class.md:opacity-0]="collapsed()">{{ entry.label }}</span>
+      <span class="transition-opacity duration-200" [class.md:opacity-0]="collapsed()">{{
+        entry.label
+      }}</span>
     </a>
   } @else {
     <span
       aria-disabled="true"
-      [attr.title]="collapsed() ? entry.label : null"
-      class="flex shrink-0 cursor-not-allowed items-center gap-3 rounded-lg px-3.75 py-2 text-sm whitespace-nowrap text-muted-foreground opacity-60"
+      [attr.title]="entry.label + ': not available yet'"
+      [attr.data-testid]="'shell-nav-' + entry.label.toLowerCase()"
+      class="flex shrink-0 cursor-not-allowed items-center gap-3 rounded-lg px-3.75 py-2 text-sm whitespace-nowrap text-muted-foreground/60"
     >
-      <ng-icon [name]="entry.icon" size="18" class="shrink-0" />
-      <span class="transition-opacity duration-200" [class.md:opacity-0]="collapsed()">{{ entry.label }}</span>
+      <span class="relative shrink-0">
+        <ng-icon [name]="entry.icon" size="18" class="block" />
+        <!-- Collapsed, the lock sits on the icon's corner instead of after the label. -->
+        @if (collapsed()) {
+          <ng-icon
+            name="lucideLock"
+            size="10"
+            class="absolute -right-1.5 -bottom-1 hidden rounded-full bg-sidebar md:block"
+            aria-hidden="true"
+          />
+        }
+      </span>
+      <span class="flex-1 transition-opacity duration-200" [class.md:opacity-0]="collapsed()"
+        >{{ entry.label }}<span class="sr-only">: not available yet</span></span
+      >
+      <ng-icon
+        name="lucideLock"
+        size="14"
+        class="shrink-0 transition-opacity duration-200"
+        [class.md:opacity-0]="collapsed()"
+        aria-hidden="true"
+        data-testid="shell-nav-lock"
+      />
     </span>
   }
 </ng-template>
@@ -33,12 +57,18 @@
     [class.md:[&_span]:opacity-0]="collapsed()"
   />
 
-  <nav aria-label="Main" class="flex gap-1 overflow-x-auto md:flex-1 md:flex-col md:overflow-visible">
+  <nav
+    aria-label="Main"
+    class="flex gap-1 overflow-x-auto md:flex-1 md:flex-col md:overflow-visible"
+  >
     @for (item of mainEntries; track item.label) {
       <ng-container [ngTemplateOutlet]="entry" [ngTemplateOutletContext]="{ $implicit: item }" />
     }
     <div class="flex gap-1 md:mt-auto md:flex-col">
-      <ng-container [ngTemplateOutlet]="entry" [ngTemplateOutletContext]="{ $implicit: settingsEntry }" />
+      <ng-container
+        [ngTemplateOutlet]="entry"
+        [ngTemplateOutletContext]="{ $implicit: settingsEntry }"
+      />
       <button
         type="button"
         aria-label="Sign out"
@@ -48,7 +78,9 @@
         (click)="signOut()"
       >
         <ng-icon name="lucideLogOut" size="18" class="shrink-0" />
-        <span class="transition-opacity duration-200" [class.md:opacity-0]="collapsed()">Sign out</span>
+        <span class="transition-opacity duration-200" [class.md:opacity-0]="collapsed()"
+          >Sign out</span
+        >
       </button>
     </div>
   </nav>
@@ -77,7 +109,9 @@
           class="flex min-w-0 flex-1 flex-col transition-opacity duration-200"
           [class.md:opacity-0]="collapsed()"
         >
-          <span class="truncate font-medium" data-testid="shell-username">{{ signedIn.username }}</span>
+          <span class="truncate font-medium" data-testid="shell-username">{{
+            signedIn.username
+          }}</span>
           <span class="text-sm text-muted-foreground">{{ roleLabels[signedIn.role] }}</span>
         </div>
       </div>

@@ -54,7 +54,7 @@ Each entry has an outline icon before its label.
 | State | When | What the user sees |
 |-------|------|--------------------|
 | Current entry | Its page is open | Entry on the accent background, icon in gold |
-| Not available yet | The entry's screen does not exist | Entry dimmed, not a link (currently all but Dashboard and Hoard) |
+| Not available yet | The entry's screen does not exist | Entry dimmed with a small lock after its label (collapsed: on the corner of its icon), not a link; its tooltip and screen readers say "{label}: not available yet" (currently all but Dashboard and Hoard) |
 | Collapsed | Collapse button pressed (wide screens only) | Only icons; each entry shows its label as a tooltip; the sidebar stays collapsed until it is expanded or the page is reloaded |
 | Signed out | "Sign out" pressed | The session ends and the user is taken to the [login](login.md) |
 
