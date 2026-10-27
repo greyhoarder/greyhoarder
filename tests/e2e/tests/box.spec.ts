@@ -103,6 +103,27 @@ test.describe('Box', () => {
     await expect(page).toHaveURL(/\/hoard\/boxes$/);
     await expect(page.getByTestId('hoard-box-empty')).toBeVisible();
   });
+
+  test('numbers boxes with the same name', async ({ page, signedIn }) => {
+    const response = await page.request.post(`${signedIn.url}/api/hoard/boxes`, {
+      data: {
+        kitId: 'games-workshop/warhammer-40000/orks/boyz-2026',
+        boxes: 2,
+        tags: [],
+        addedOn: '2026-10-25',
+      },
+      headers: { Origin: signedIn.url },
+    });
+    expect(response.ok()).toBe(true);
+
+    await page.goto(`${signedIn.url}/hoard/boxes`);
+
+    await expect(page.getByTestId('hoard-box-number')).toHaveCount(2);
+    expect((await page.getByTestId('hoard-box-number').allTextContents()).sort()).toEqual([
+      '#1',
+      '#2',
+    ]);
+  });
 });
 
 /** Builds every mini of a box of Boyz through the API, opens it and deletes them all after asking. */
