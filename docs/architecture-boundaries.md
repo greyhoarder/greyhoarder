@@ -314,11 +314,16 @@ _(derived from [ADR-0016](adr/0016-in-process-events-between-domains.md))_
 
 ## Shared domain models
 
-- Types and rules needed by both client and server belong in
-  `libs/domain`, not duplicated in the apps.
-- Types and rules only one app needs belong in that app's `models/`, not in
-  `libs/domain`. They move to `libs/domain` once the other app needs them,
-  not in advance.
+- `libs/domain` holds the types both apps use, the terms of the domain
+  language defined on them (`isGone`, `hasReached`) and the invariants both
+  sides check (`parseMini`, `newBoxes`), never duplicated in the apps.
+- A pure function that works only on shared types and defines a term or an
+  invariant of the domain belongs in `libs/domain`, even if only one app
+  uses it so far.
+- Types only one app knows, and the rules on them, belong in that app's
+  `models/`. They move to `libs/domain` once the other app needs them, not
+  in advance. Secrets and server-only state (e.g. a password hash) never
+  do.
 - `libs/domain` imports nothing from Angular, NestJS, Mongoose, RxJS or
   other frameworks.
 - `libs/domain/<domain>/` uses the same domain names and boundary rules as

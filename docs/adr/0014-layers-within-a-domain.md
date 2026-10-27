@@ -45,8 +45,16 @@ code that talks to the outside world implements them (ports and adapters).
 - `models/` holds the types, value objects and business rules of the domain
   that only this app needs. It is plain TypeScript, free of frameworks like
   `libs/domain`, and depends on nothing in the domain; `util/` may use it.
-- Model that both apps need lives in `libs/domain` instead. A part of
-  `models/` moves there once the other app needs it as well, not before.
+- Model that both apps need lives in `libs/domain` instead: the types both
+  apps use, the terms of the domain language defined on them and the
+  invariants both sides check. The criterion is whether something must mean
+  the same on both sides, not who imports it today: a rule on a shared type
+  lives there even if only one app uses it so far, since it changes
+  together with that type (Martin's Common Closure Principle), and a rule
+  each app writes on its own drifts apart (ADR-0006).
+- Types that only one app knows, and the rules on them, stay in that app's
+  `models/`; they move to `libs/domain` once the other app needs them, not
+  before. Secrets and server-only state never move there.
 - Business rules live in `models/` or `libs/domain`, never in use cases,
   entry points, stores or components.
 
