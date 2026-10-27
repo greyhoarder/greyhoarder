@@ -41,7 +41,8 @@ export class MiniBoxCard {
     return kit && kitMeta(kit);
   });
   protected readonly added = computed(
-    () => `Added ${formatDate(this.box().addedOn)} · box at ${this.percent()}%`,
+    () =>
+      `Added ${formatDate(this.box().addedOn)} · box #${this.box().number} at ${this.percent()}%`,
   );
   protected readonly suggestedParts = computed(() => {
     const kit = this.kit();

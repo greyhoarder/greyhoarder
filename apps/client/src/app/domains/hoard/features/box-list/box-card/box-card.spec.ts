@@ -9,6 +9,7 @@ const BOYZ: BoxRow = {
   factions: ['Orks'],
   minis: { sprue: 7, built: 3 },
   addedOn: '2026-10-12',
+  number: 1,
   tags: [],
 };
 
@@ -41,5 +42,11 @@ describe('Box card', () => {
       'Empty',
     );
     expect(card.querySelector('[data-testid="hoard-box-percent"]')).toBeNull();
+  });
+
+  it('shows the number of the box', async () => {
+    const card = await render({ ...BOYZ, number: 2 });
+
+    expect(card.querySelector('[data-testid="hoard-box-number"]')?.textContent?.trim()).toBe('#2');
   });
 });

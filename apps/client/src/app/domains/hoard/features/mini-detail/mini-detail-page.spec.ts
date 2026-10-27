@@ -17,6 +17,7 @@ const LOOTAS_BOX: Box = {
   factionIds: [ORKS],
   tags: [],
   addedOn: '2026-10-25',
+  number: 1,
 };
 
 const slot = (count: number, buildsAs: string[], parts: string[]) => ({

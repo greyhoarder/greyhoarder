@@ -5,7 +5,7 @@ const ORKS = 'warhammer-40000/orks';
 const NAMES = new Map([[ORKS, 'Orks']]);
 
 function box(id: string, factionIds: readonly string[] = [ORKS]): Box {
-  return { id, name: `Box ${id}`, factionIds, tags: [], addedOn: '2026-10-24' };
+  return { id, name: `Box ${id}`, factionIds, tags: [], addedOn: '2026-10-24', number: 1 };
 }
 
 function mini(id: string, mini: Pick<Mini, 'status'> & Partial<Mini>): Mini {

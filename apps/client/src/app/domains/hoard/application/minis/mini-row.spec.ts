@@ -7,8 +7,8 @@ const NAMES = new Map([
   ['warhammer-40000/space-marines', 'Space Marines'],
 ]);
 const BOXES: Box[] = [
-  { id: 'a', name: 'Boyz (2026)', factionIds: [ORKS], tags: [], addedOn: '2026-10-24' },
-  { id: 'b', name: 'Boyz (2021)', factionIds: [ORKS], tags: [], addedOn: '2026-10-24' },
+  { id: 'a', name: 'Boyz (2026)', factionIds: [ORKS], tags: [], addedOn: '2026-10-24', number: 1 },
+  { id: 'b', name: 'Boyz (2021)', factionIds: [ORKS], tags: [], addedOn: '2026-10-24', number: 1 },
 ];
 
 function boy(id: string, differs: Partial<Mini> = {}): Mini {
@@ -58,9 +58,8 @@ describe('Mini rows', () => {
 
     const rows = toMiniRows(minis, BOXES, NAMES);
 
-    expect(rows.map((row) => `${row.count}× ${row.isOnWorkbench ? 'on the workbench' : 'off it'}`)).toEqual([
-      '1× on the workbench',
-      '2× off it',
-    ]);
+    expect(
+      rows.map((row) => `${row.count}× ${row.isOnWorkbench ? 'on the workbench' : 'off it'}`),
+    ).toEqual(['1× on the workbench', '2× off it']);
   });
 });

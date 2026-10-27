@@ -22,7 +22,11 @@ const LOOTAS: Kit = {
   isDraft: false,
   variants: [
     { name: 'Lootas', slots: [slot(4, ['Loota'], ['Deffgun']), slot(1, ['Spanner'])], minis: 5 },
-    { name: 'Burna Boyz', slots: [slot(4, ['Burna Boy'], ['Burna']), slot(1, ['Spanner'])], minis: 5 },
+    {
+      name: 'Burna Boyz',
+      slots: [slot(4, ['Burna Boy'], ['Burna']), slot(1, ['Spanner'])],
+      minis: 5,
+    },
   ],
   minis: 5,
   contains: [],
@@ -35,6 +39,7 @@ const BOX: Box = {
   factionIds: ['warhammer-40000/orks'],
   tags: [],
   addedOn: '2026-10-12',
+  number: 1,
 };
 
 describe('Mini box card', () => {
@@ -78,7 +83,7 @@ describe('Mini box card', () => {
     const card = await render({ percent: 27 });
 
     expect(textOf(card.querySelector('[data-testid="mini-box-added"]'))).toBe(
-      'Added 12 Oct 2026 · box at 27%',
+      'Added 12 Oct 2026 · box #1 at 27%',
     );
   });
 
@@ -93,6 +98,9 @@ describe('Mini box card', () => {
     const cards = [await render({ name: '' }), await render({ name: 'Spanner' })];
 
     expect(cards.map((card) => suggestedParts(card))).toEqual([[], []]);
-    expect(cards.map((card) => textOf(card).includes('The kit suggests for'))).toEqual([false, false]);
+    expect(cards.map((card) => textOf(card).includes('The kit suggests for'))).toEqual([
+      false,
+      false,
+    ]);
   });
 });

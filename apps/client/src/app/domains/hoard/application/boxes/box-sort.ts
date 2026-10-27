@@ -8,7 +8,7 @@ export const boxSortOrders = ['name', 'faction', 'progress', 'sprue', 'painted',
 export type BoxSortOrder = (typeof boxSortOrders)[number];
 
 const COMPARERS: Record<BoxSortOrder, (a: BoxRow, b: BoxRow) => number> = {
-  name: (a, b) => a.name.localeCompare(b.name),
+  name: (a, b) => a.name.localeCompare(b.name) || a.number - b.number,
   faction: (a, b) => a.factions.join().localeCompare(b.factions.join()),
   progress: (a, b) => boxProgresses.indexOf(progressOf(a)) - boxProgresses.indexOf(progressOf(b)),
   sprue: (a, b) => sprueCount(a) - sprueCount(b),

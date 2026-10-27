@@ -63,7 +63,9 @@
             }
           </td>
           <td hlmTd class="text-muted-foreground">{{ row.factions.join(', ') }}</td>
-          <td hlmTd class="text-muted-foreground">{{ row.box ?? 'Without box' }}</td>
+          <td hlmTd class="text-muted-foreground">
+            {{ row.box === undefined ? 'Without box' : boxLabel(row.box, row.boxNumber) }}
+          </td>
           <td hlmTd>
             @if (row.departure; as departure) {
               <app-gone-badge [reason]="departure.reason" />

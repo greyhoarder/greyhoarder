@@ -6,14 +6,14 @@ export const miniSortOrders = ['name', 'army', 'box', 'status'] as const;
 
 export type MiniSortOrder = (typeof miniSortOrders)[number];
 
-/** Rows without a box sort after those with one. */
-const byOptionalText = (a: string | undefined, b: string | undefined): number =>
-  (a ?? '￿').localeCompare(b ?? '￿');
+/** By box name, boxes with the same name by number; rows without a box after those with one. */
+export const byBox = (a: MiniRow, b: MiniRow): number =>
+  (a.box ?? '￿').localeCompare(b.box ?? '￿') || (a.boxNumber ?? 0) - (b.boxNumber ?? 0);
 
 const COMPARERS: Record<MiniSortOrder, (a: MiniRow, b: MiniRow) => number> = {
   name: (a, b) => a.name.localeCompare(b.name),
   army: (a, b) => a.factions.join().localeCompare(b.factions.join()),
-  box: (a, b) => byOptionalText(a.box, b.box),
+  box: byBox,
   status: (a, b) => hobbyStatuses.indexOf(a.status) - hobbyStatuses.indexOf(b.status),
 };
 

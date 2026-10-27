@@ -11,6 +11,11 @@ export const PROGRESS_LABELS: Readonly<Record<BoxProgress, string>> = {
   empty: 'Empty',
 };
 
+/** A box's name with its number among boxes of that name, e.g. "Boyz (2026) #2". */
+export function boxLabel(name: string, number: number | undefined): string {
+  return number === undefined ? name : `${name} #${number}`;
+}
+
 /** E.g. "Boyz (2026) · 50-80"; "No kit" for boxes without one. */
 export function kitLine(box: {
   readonly kit?: { readonly name: string; readonly sku?: string };

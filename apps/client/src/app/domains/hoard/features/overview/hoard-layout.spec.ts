@@ -10,8 +10,8 @@ import { HoardLayout } from './hoard-layout';
 const ORKS = 'warhammer-40000/orks';
 
 const BOXES: Box[] = [
-  { id: 'b1', name: 'Boyz (2026)', factionIds: [ORKS], tags: [], addedOn: '2026-10-12' },
-  { id: 'b2', name: 'Boyz (2021)', factionIds: [ORKS], tags: [], addedOn: '2026-09-30' },
+  { id: 'b1', name: 'Boyz (2026)', factionIds: [ORKS], tags: [], addedOn: '2026-10-12', number: 1 },
+  { id: 'b2', name: 'Boyz (2021)', factionIds: [ORKS], tags: [], addedOn: '2026-09-30', number: 1 },
 ];
 
 const mini = (id: string, overrides: Partial<Mini>): Mini => ({

@@ -16,6 +16,7 @@ const BOYZ: Box = {
   factionIds: [ORKS],
   tags: [],
   addedOn: '2026-10-12',
+  number: 1,
 };
 
 const BOYZ_KIT = {

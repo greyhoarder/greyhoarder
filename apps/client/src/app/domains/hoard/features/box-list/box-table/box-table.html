@@ -47,12 +47,19 @@
           </td>
           <td hlmTd class="max-w-56">
             <!-- A click bubbles to the line, which opens or selects it; the button lets keyboards do the same. -->
-            <button
-              type="button"
-              class="block max-w-full truncate rounded-sm text-left font-medium focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            >
-              <app-either-or-name [name]="box.name" />
-            </button>
+            <div class="flex min-w-0 items-baseline gap-1.5">
+              <button
+                type="button"
+                class="min-w-0 truncate rounded-sm text-left font-medium focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              >
+                <app-either-or-name [name]="box.name" />
+              </button>
+              <span
+                class="shrink-0 text-muted-foreground tabular-nums"
+                data-testid="hoard-box-number"
+                >#{{ box.number }}</span
+              >
+            </div>
             <div class="truncate text-xs text-muted-foreground">{{ kitLine(box) }}</div>
           </td>
           <td hlmTd class="max-w-48 truncate">{{ box.factions.join(', ') }}</td>

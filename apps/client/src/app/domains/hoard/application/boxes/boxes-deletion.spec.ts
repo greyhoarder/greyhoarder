@@ -13,6 +13,7 @@ const box = (id: string): Box => ({
   factionIds: [],
   tags: [],
   addedOn: '2026-10-25',
+  number: 1,
 });
 
 const mini = (id: string, boxId: string, overrides: Partial<Mini> = {}): Mini => ({

@@ -12,9 +12,14 @@ const box = (id: string, tags: string[]): Box => ({
   factionIds: [],
   tags,
   addedOn: '2026-10-12',
+  number: 1,
 });
 
-const BOXES: Box[] = [box('b1', ['Second hand']), box('b2', []), box('b3', ['Second hand', 'Gift'])];
+const BOXES: Box[] = [
+  box('b1', ['Second hand']),
+  box('b2', []),
+  box('b3', ['Second hand', 'Gift']),
+];
 
 const MINIS: Mini[] = BOXES.map((each) => ({
   id: `m-${each.id}`,
@@ -37,7 +42,13 @@ describe('Boxes page', () => {
         },
         {
           provide: HttpMinisAdapter,
-          useValue: { list: vi.fn(async () => ({ minis: MINIS, factionNames: new Map(), systemNames: new Map() })) },
+          useValue: {
+            list: vi.fn(async () => ({
+              minis: MINIS,
+              factionNames: new Map(),
+              systemNames: new Map(),
+            })),
+          },
         },
       ],
     });
@@ -78,7 +89,9 @@ describe('Boxes page', () => {
     const fixture = TestBed.createComponent(BoxListPage);
     await fixture.whenStable();
 
-    (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-testid="hoard-box"]')?.click();
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLElement>('[data-testid="hoard-box"]')
+      ?.click();
 
     expect(navigate).toHaveBeenCalledWith(['/hoard/boxes', 'b1']);
   });
@@ -89,7 +102,9 @@ describe('Boxes page', () => {
     const fixture = TestBed.createComponent(BoxListPage);
     await fixture.whenStable();
 
-    (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-testid="hoard-box"]')?.click();
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLElement>('[data-testid="hoard-box"]')
+      ?.click();
 
     expect(navigate).toHaveBeenCalledWith(['/hoard/boxes', expect.stringMatching(/^b[123]$/)]);
   });

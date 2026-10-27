@@ -15,7 +15,7 @@ const BOYZ_2026: Kit = {
 };
 
 function box(kit?: Box['kit']): Box {
-  return { id: '1', name: 'Boyz', kit, factionIds: [], tags: [], addedOn: '2026-10-24' };
+  return { id: '1', name: 'Boyz', kit, factionIds: [], tags: [], addedOn: '2026-10-24', number: 1 };
 }
 
 describe('Box', () => {
@@ -28,7 +28,10 @@ describe('Box', () => {
   });
 
   it('does not count a box from another kit or without a kit', () => {
-    const boxes = [box({ id: 'games-workshop/orks/boyz-2021', version: 1, name: 'Boyz (2021)' }), box()];
+    const boxes = [
+      box({ id: 'games-workshop/orks/boyz-2021', version: 1, name: 'Boyz (2021)' }),
+      box(),
+    ];
 
     const counted = boxes.map((other) => isFromKit(other, BOYZ_2026));
 

@@ -18,6 +18,8 @@ export interface MiniRow {
   readonly box?: string;
   /** Id of the origin box, which tells boxes with the same name apart. */
   readonly boxId?: string;
+  /** Number of the origin box among those with its name, e.g. 2 for "Boyz (2026) #2". */
+  readonly boxNumber?: number;
   /** The names of the parts. */
   readonly parts: readonly string[];
   readonly status: HobbyStatus;
@@ -62,14 +64,15 @@ function rowOf(
   factionNames: ReadonlyMap<string, string>,
   partNames: ReadonlyMap<string, string>,
 ): (mini: Mini) => MiniRow {
-  const boxNames = new Map(boxes.map((box) => [box.id, box.name]));
+  const byId = new Map(boxes.map((box) => [box.id, box]));
   return (mini) => ({
     id: mini.id,
     groupId: groupKey(mini),
     name: mini.name,
     factions: factionNamesOf(mini.factionIds, factionNames),
-    box: mini.boxId === undefined ? undefined : boxNames.get(mini.boxId),
+    box: mini.boxId === undefined ? undefined : byId.get(mini.boxId)?.name,
     boxId: mini.boxId,
+    boxNumber: mini.boxId === undefined ? undefined : byId.get(mini.boxId)?.number,
     parts: mini.parts.flatMap((part) => partNames.get(part.partId) ?? []),
     status: mini.status,
     isOnWorkbench: mini.isOnWorkbench,

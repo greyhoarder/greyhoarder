@@ -27,6 +27,9 @@
   <span class="truncate text-sm text-muted-foreground">
     @if (row().box; as box) {
       <app-either-or-name [name]="box" />
+      @if (row().boxNumber; as number) {
+        #{{ number }}
+      }
     } @else {
       Without box
     }

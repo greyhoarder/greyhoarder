@@ -186,6 +186,7 @@ describe('Minis page', () => {
       factionIds: [],
       tags: [],
       addedOn,
+      number: 1,
     });
     const BOXES = [box('b1', '2026-10-12'), box('b2', '2026-09-30')];
 
@@ -268,7 +269,14 @@ describe('Minis page', () => {
   });
 
   it('asks whether to delete boxes left without minis', async () => {
-    const boyz: Box = { id: 'boyz', name: 'Boyz', factionIds: [], tags: [], addedOn: '2026-10-25' };
+    const boyz: Box = {
+      id: 'boyz',
+      name: 'Boyz',
+      factionIds: [],
+      tags: [],
+      addedOn: '2026-10-25',
+      number: 1,
+    };
     showPage(() => Promise.resolve([mini('m2', { status: 'built', boxId: 'boyz' })]), [boyz]);
     await fixture.whenStable();
     deleteMinis.mockResolvedValue({ emptiedBoxIds: ['boyz'], minis: [] });

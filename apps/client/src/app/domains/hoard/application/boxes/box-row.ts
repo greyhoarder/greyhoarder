@@ -30,6 +30,8 @@ export interface BoxRow {
   /** ISO date, e.g. "2026-10-12". */
   readonly addedOn: string;
   readonly tags: readonly string[];
+  /** Tells boxes with the same name apart, e.g. 2 for "Boyz (2026) #2". */
+  readonly number: number;
 }
 
 /** One row per box, counting the minis that came out of it; factions without a known name are left out. */
@@ -61,6 +63,7 @@ export function toBoxRows(
     goneCount: goneCounts.get(box.id) ?? 0,
     addedOn: box.addedOn,
     tags: box.tags,
+    number: box.number,
   }));
 }
 

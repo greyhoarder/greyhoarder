@@ -51,4 +51,15 @@ describe('Groups of the Minis tab', () => {
       'built',
     ]);
   });
+
+  it('counts minis from two boxes with the same name as from two boxes', () => {
+    const rows = [
+      row('m1', { boxId: 'b1', boxNumber: 1 }),
+      row('m2', { boxId: 'b2', boxNumber: 2 }),
+    ];
+
+    const [group] = toHoardGroups(rows);
+
+    expect(group?.boxes).toEqual(['Boyz (2026) #1', 'Boyz (2026) #2']);
+  });
 });

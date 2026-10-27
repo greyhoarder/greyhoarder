@@ -10,6 +10,7 @@ import { RowCheck } from '../../../ui/row-check/row-check';
 import { GoneBadge } from '../../../ui/gone-badge/gone-badge';
 import { StatusBadge } from '../../../ui/status-badge/status-badge';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
+import { boxLabel } from '../../../util/box-labels';
 import { LongPress } from '../../../ui/long-press/long-press';
 
 interface Column {
@@ -57,6 +58,7 @@ export class MiniTable {
   readonly opened = output<MiniRow>();
 
   protected readonly columns = COLUMNS;
+  protected readonly boxLabel = boxLabel;
   protected readonly sortOrder = signal<MiniSortOrder>('army');
   protected readonly sortDirection = signal<SortDirection>('ascending');
   protected readonly sortedRows = computed(() =>

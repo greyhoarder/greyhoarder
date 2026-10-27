@@ -61,4 +61,10 @@ describe('Mini card', () => {
     expect(selected).toHaveBeenCalledWith(true);
     expect(opened).not.toHaveBeenCalled();
   });
+
+  it('shows the box of a mini with its number', async () => {
+    const row = await render({ ...SERGEANT, boxNumber: 2 });
+
+    expect(row.textContent?.replace(/\s+/g, ' ')).toContain('Intercessors #2');
+  });
 });

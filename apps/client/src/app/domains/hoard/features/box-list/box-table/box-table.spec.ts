@@ -9,6 +9,7 @@ const BOXES: BoxRow[] = [
     factions: ['Orks'],
     minis: { sprue: 10 },
     addedOn: '2026-10-12',
+    number: 1,
     tags: [],
   },
   {
@@ -17,6 +18,7 @@ const BOXES: BoxRow[] = [
     factions: ['Space Marines'],
     minis: { sprue: 10 },
     addedOn: '2026-09-30',
+    number: 1,
     tags: [],
   },
   {
@@ -25,6 +27,7 @@ const BOXES: BoxRow[] = [
     factions: ['Orks'],
     minis: { primed: 1 },
     addedOn: '2025-12-24',
+    number: 1,
     tags: [],
   },
 ];

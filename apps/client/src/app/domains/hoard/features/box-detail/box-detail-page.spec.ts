@@ -19,6 +19,7 @@ const BOYZ: Box = {
   factionIds: [ORKS],
   tags: ['Gift', 'Second hand'],
   addedOn: '2026-10-12',
+  number: 1,
 };
 
 const mini = (id: string, status: HobbyStatus, overrides: Partial<Mini> = {}): Mini => ({
@@ -38,6 +39,7 @@ const LOOSE: Box = {
   factionIds: [ORKS],
   tags: [],
   addedOn: '2026-10-01',
+  number: 1,
 };
 
 const BOYZ_KIT = {
@@ -456,5 +458,13 @@ describe('Box page', () => {
 
     expect(inDocument('box-delete-box-dialog')).not.toBeNull();
     expect(deleteBox).not.toHaveBeenCalled();
+  });
+
+  it('shows the number of the box beside the date', async () => {
+    showBox(BOYZ.id);
+
+    await fixture.whenStable();
+
+    expect(textOf('box-number')).toBe('#1');
   });
 });

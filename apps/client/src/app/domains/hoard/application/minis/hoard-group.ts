@@ -1,5 +1,7 @@
 import { type HobbyStatus, hobbyStatuses, isGone } from '@greyhoarder/domain/hoard';
+import { boxLabel } from '../../util/box-labels';
 import type { MiniRow } from './mini-row';
+import { byBox } from './mini-sort';
 
 /**
  * Minis past the sprue with the same name, factions and parts from any box, as one card of the
@@ -11,7 +13,10 @@ export interface HoardGroup {
   readonly factions: readonly string[];
   /** The names of the parts. */
   readonly parts: readonly string[];
-  /** The names of the boxes its minis come from, once each; undefined for minis without a box. */
+  /**
+   * The boxes its minis come from, once each, by name and number ("Boyz (2026) #2"); undefined
+   * for minis without a box.
+   */
   readonly boxes: readonly (string | undefined)[];
   /** One row per mini, furthest status first, gone ones last, then by box. */
   readonly rows: readonly MiniRow[];
@@ -42,7 +47,14 @@ export function toHoardGroups(rows: readonly MiniRow[]): HoardGroup[] {
       name: first.name,
       factions: first.factions,
       parts: first.parts,
-      boxes: [...new Set(members.map((row) => row.box))],
+      boxes: [
+        ...new Map(
+          members.map((row) => [
+            row.boxId ?? row.box,
+            row.box === undefined ? undefined : boxLabel(row.box, row.boxNumber),
+          ]),
+        ).values(),
+      ],
       rows: [...members].sort(byFurthestStatus),
       counts,
     };
@@ -53,6 +65,6 @@ function byFurthestStatus(a: MiniRow, b: MiniRow): number {
   return (
     Number(isGone(a)) - Number(isGone(b)) ||
     hobbyStatuses.indexOf(b.status) - hobbyStatuses.indexOf(a.status) ||
-    (a.box ?? '￿').localeCompare(b.box ?? '￿')
+    byBox(a, b)
   );
 }
