@@ -35,7 +35,7 @@ export class MinisList {
   );
 
   /** The rows of minis that are not gone. */
-  readonly presentRows = computed(() => this.rows().filter((row) => !row.departure));
+  readonly presentRows = computed(() => this.rows().filter((row) => !isGone(row)));
 
   readonly isLoading = computed(() => this.minisStore.isLoading() || this.boxesStore.isLoading());
   readonly hasFailed = computed(() => this.minisStore.hasFailed() || this.boxesStore.hasFailed());

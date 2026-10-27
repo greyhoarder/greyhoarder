@@ -90,7 +90,10 @@ export class MiniEditor {
       : [mini];
   });
   readonly rowSize = computed(() => this.row().length);
-  readonly isGone = computed(() => this.mini()?.departure !== undefined);
+  readonly isGone = computed(() => {
+    const mini = this.mini();
+    return mini !== undefined && isGone(mini);
+  });
   /**
    * On the sprue and in the hoard: what is chosen waits for building. Gone minis on the sprue are
    * not built; their changes are saved at once.

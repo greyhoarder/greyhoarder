@@ -1,4 +1,4 @@
-import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
+import { type HobbyStatus, hobbyStatuses, isGone } from '@greyhoarder/domain/hoard';
 import type { MiniRow } from './mini-row';
 
 /**
@@ -32,9 +32,9 @@ export function toHoardGroups(rows: readonly MiniRow[]): HoardGroup[] {
       return [];
     }
     const counts: Partial<Record<HobbyStatus, number>> = {};
-    for (const { status, departure, count } of members) {
-      if (!departure) {
-        counts[status] = (counts[status] ?? 0) + count;
+    for (const row of members) {
+      if (!isGone(row)) {
+        counts[row.status] = (counts[row.status] ?? 0) + row.count;
       }
     }
     return {
@@ -51,7 +51,7 @@ export function toHoardGroups(rows: readonly MiniRow[]): HoardGroup[] {
 
 function byFurthestStatus(a: MiniRow, b: MiniRow): number {
   return (
-    Number(a.departure !== undefined) - Number(b.departure !== undefined) ||
+    Number(isGone(a)) - Number(isGone(b)) ||
     hobbyStatuses.indexOf(b.status) - hobbyStatuses.indexOf(a.status) ||
     (a.box ?? '￿').localeCompare(b.box ?? '￿')
   );

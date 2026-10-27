@@ -1,3 +1,4 @@
+import { isGone } from '@greyhoarder/domain/hoard';
 import type { MiniRow } from './mini-row';
 
 /** The filter value for minis without a box. */
@@ -16,12 +17,12 @@ export interface MiniFilter {
 }
 
 export function matchesFilter(row: MiniRow, filter: MiniFilter): boolean {
-  if (row.departure && !filter.statuses.has(GONE)) {
+  if (isGone(row) && !filter.statuses.has(GONE)) {
     return false;
   }
   return (
     matchesAny(filter.factions, row.factions) &&
-    matchesAny(filter.statuses, [row.departure ? GONE : row.status]) &&
+    matchesAny(filter.statuses, [isGone(row) ? GONE : row.status]) &&
     matchesAny(filter.boxes, [row.boxId ?? NONE])
   );
 }

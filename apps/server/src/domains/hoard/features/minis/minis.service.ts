@@ -4,6 +4,7 @@ import {
   type Departure,
   type HobbyStatus,
   type Mini,
+  parseDeparture,
   parseMini,
   withDeparture,
   withStatus,
@@ -112,8 +113,7 @@ export class MinisService {
   }
 
   /**
-   * A departure keeps recipients only for minis stripped for parts; they must be other minis of
-   * the owner's hoard.
+   * A departure by the rules whose recipients are other minis of the owner's hoard.
    *
    * @throws UnknownMinisError when a recipient is not in the owner's hoard or is one of the minis
    */
@@ -122,16 +122,16 @@ export class MinisService {
     ids: readonly string[],
     departure: Departure,
   ): Promise<Departure> {
-    const recipientIds =
-      departure.reason === 'stripped' ? [...new Set(departure.recipientMiniIds ?? [])] : [];
+    const parsed = parseDeparture(departure);
+    const recipientIds = parsed.recipientMiniIds ?? [];
     if (recipientIds.length === 0) {
-      return { reason: departure.reason, on: departure.on };
+      return parsed;
     }
     const recipients = await this.hoard.findMinisByIds(ownerId, recipientIds);
     if (recipients.length !== recipientIds.length || recipientIds.some((id) => ids.includes(id))) {
       throw new UnknownMinisError();
     }
-    return { ...departure, recipientMiniIds: recipientIds };
+    return parsed;
   }
 
   /** Factions are references into the catalog: catalog factions or whole game systems. */

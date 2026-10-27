@@ -1,11 +1,12 @@
+import { InvalidMiniError } from './errors/invalid-mini.error.js';
 import type { HobbyStatus } from './hobby-status.js';
+import type { Departure } from './mini-departure.js';
 
 /** A part on a mini: one of the user's vocabulary, glued or swappable (magnetised). */
 export interface MiniPart {
   readonly partId: string;
   readonly isSwappable: boolean;
 }
-import { InvalidMiniError } from './errors/invalid-mini.error.js';
 
 /** One physical miniature, built or still on the sprue (docs/domains/hoard.md). */
 export interface Mini {
@@ -30,20 +31,6 @@ export interface Mini {
   readonly departure?: Departure;
 }
 
-/** Why a mini left the hoard (docs/domains/hoard.md, Leaving the hoard). */
-export const departureReasons = ['sold', 'given-away', 'stripped', 'lost'] as const;
-
-export type DepartureReason = (typeof departureReasons)[number];
-
-/** How a mini left the hoard. */
-export interface Departure {
-  readonly reason: DepartureReason;
-  /** ISO date, e.g. "2026-10-12". */
-  readonly on: string;
-  /** For minis stripped for parts: the minis that got them. */
-  readonly recipientMiniIds?: readonly string[];
-}
-
 /**
  * A mini by the rules: a name without surrounding spaces.
  *
@@ -65,11 +52,6 @@ export function leavesWorkbench(status: HobbyStatus): boolean {
 /** A mini with a new status; once done, it leaves the workbench. */
 export function withStatus(mini: Mini, status: HobbyStatus): Mini {
   return { ...mini, status, isOnWorkbench: leavesWorkbench(status) ? false : mini.isOnWorkbench };
-}
-
-/** A gone mini left the hoard; its record stays. */
-export function isGone(mini: Mini): boolean {
-  return mini.departure !== undefined;
 }
 
 /** A mini that left the hoard, off the workbench; without a departure, one back in the hoard. */

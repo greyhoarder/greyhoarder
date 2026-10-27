@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { hobbyStatuses } from '@greyhoarder/domain/hoard';
+import { hobbyStatuses, isGone } from '@greyhoarder/domain/hoard';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -64,7 +64,7 @@ export class MiniListPage {
     {
       value: GONE,
       label: 'Gone',
-      count: countMinis(this.store.rows().filter((row) => row.departure)),
+      count: countMinis(this.store.rows().filter(isGone)),
     },
   ]);
   /** By box, so boxes with the same name stay apart. */
@@ -80,7 +80,7 @@ export class MiniListPage {
 
   /** Gone minis can't leave again; the others among the selected can. */
   protected readonly canLeave = computed(() =>
-    this.store.rows().some((row) => this.store.selectedIds().has(row.id) && !row.departure),
+    this.store.rows().some((row) => this.store.selectedIds().has(row.id) && !isGone(row)),
   );
 
   protected async deleteSelected(): Promise<void> {
