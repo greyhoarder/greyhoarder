@@ -18,6 +18,7 @@ export const boxSchema = z.object({
   factionIds: z.array(z.string()).readonly(),
   tags: z.array(z.string()).readonly(),
   addedOn: isoDateSchema,
+  number: z.number().int().min(1),
 });
 
 /** Every box of the signed-in user's hoard. */
