@@ -115,6 +115,19 @@ application ──▶ infrastructure                              all ──▶ 
   the application services of DDD, which Steyer calls feature services or
   facades. Code moves here from a feature when a second feature needs it,
   not before.
+- Application is grouped by subject: one folder per subject its use cases
+  work on (`boxes/`, `minis/`), holding those use cases together with the
+  projections, filters and sort orders they share; what spans several
+  subjects stays at its top. What changes together lies together (Martin's
+  Common Closure Principle), and the folder shows the domain's use cases
+  rather than kinds of code.
+- Projections, filters and sort orders are data and pure functions; use
+  cases and screen state are objects that hold state and use them. Features
+  share data, pure functions and presentational components freely, since
+  these change only with the model. They never share smart components:
+  state and behavior that several features need are shared only as a use
+  case in `application`, and each feature builds its own component around
+  it.
 - **Data** holds the stores and fixed or temporary data, such as sample data
   that stands in for the server while a screen is built before its backend.
   A store keeps one resource as the server has it (in memory or browser
@@ -193,6 +206,16 @@ without a new decision.
   Feature-Sliced Design, e.g. a feature `delete-minis` with its dialog):
   each use case is one folder with its UI, but features would import each
   other, and a feature would no longer be removable as a whole.
+- **Shared smart components** (a layer of widgets that several pages
+  embed): no duplicated wiring of dialogs, but features become coupled
+  through shared state and lifecycle, the part of the client that changes
+  most often. Duplicated wiring is cheaper.
+- **`application/` grouped by kind** (`use-cases/`, `state/`,
+  `projections/`): the kinds are apart, but what changes together lies in
+  three folders, as it did in the first version of `data/`.
+- **A folder per use case in `application/`** (`boxes/list/`): finest
+  slicing, but projections and sort orders shared by a list and a detail
+  page belong to no single use case.
 - **Stores that use other stores**: no extra class, but stores form chains
   and possibly cycles, and which store fills which becomes hidden; Steyer
   advises against it and coordinates stores with a service above them.
@@ -224,6 +247,10 @@ without a new decision.
   Combining stores costs a class in `application/` or a feature.
 - The client has one folder more, and what a feature shares must be moved
   into `application/` when a second feature needs it.
+- `application/` shows the domain's subjects at a glance; a new subject
+  costs a folder.
+- Features that offer the same use case each wire its components
+  themselves; that wiring is duplicated on purpose.
 - Existing code that holds model in `libs/domain`, `ports/` or `util/`
   although only one app needs it moves to `models/`.
 - The folder rules are conventions until boundary checks are introduced in

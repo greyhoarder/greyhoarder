@@ -197,6 +197,19 @@ _(derived from [ADR-0014](adr/0014-layers-within-a-domain.md),
 
   Code moves there from a feature when a second feature needs it, never in
   advance.
+- `application/` is grouped by subject: one folder per subject its use
+  cases work on, named in the plural (`application/boxes/`,
+  `application/minis/`), holding those use cases and the projections,
+  filters and sort orders they share. What spans several subjects stays at
+  the top (`faction-names.ts`, `hoard-view.ts`). No folders by kind
+  (`use-cases/`, `projections/`) and no folder per single use case.
+- Projections, filters and sort orders are readonly types and pure
+  functions, not services; use cases and screen state are the classes that
+  hold state and use them.
+- Features share data, pure functions and presentational components, never
+  smart components. When several features need the same state and
+  behavior, it is a use case in `application/`, and each feature wires its
+  own components to it.
 - `data/` holds only stores and fixed or temporary data, e.g. sample data
   named `sample-<subject>.ts` that stands in for the server until its
   adapter exists.
