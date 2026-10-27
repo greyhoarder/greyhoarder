@@ -1,7 +1,15 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
-import { type Box, type Mini, newBoxes, parseTags, toKit } from '@greyhoarder/domain/hoard';
+import {
+  type Box,
+  boxKitName,
+  type Mini,
+  newBoxes,
+  parseTags,
+  toKit,
+} from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries, findContainedKits } from '../../../catalog/api/index.js';
+import { nextBoxNumber } from '../../models/box-numbers.js';
 import { withoutDeletedRecipients } from '../../models/mini-deletion.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { UnknownBoxError } from './errors/unknown-box.error.js';
@@ -70,7 +78,11 @@ export class BoxesService {
     const { boxes, minis } = newBoxes(
       kit,
       { boxes: request.boxes, tags: parseTags(request.tags) },
-      { addedOn: request.addedOn, newId: randomUUID },
+      {
+        addedOn: request.addedOn,
+        newId: randomUUID,
+        firstNumber: nextBoxNumber(await this.hoard.findBoxes(ownerId), boxKitName(kit)),
+      },
     );
     await this.hoard.addBoxes(ownerId, boxes, minis);
     return { boxes, minis };

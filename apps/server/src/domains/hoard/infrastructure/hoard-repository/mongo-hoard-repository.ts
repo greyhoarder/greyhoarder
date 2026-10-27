@@ -8,7 +8,7 @@ import { MiniDbo } from './schemas/mongo-mini-schema.js';
 import { PartDbo } from './schemas/mongo-part-schema.js';
 
 /** Copies only the fields of `Box`, so the owner, `__v` and timestamps never leave this adapter. */
-function toBox(stored: BoxDbo): Box {
+function toBox(stored: BoxDbo, number: number): Box {
   return {
     id: stored._id,
     name: stored.name,
@@ -21,6 +21,7 @@ function toBox(stored: BoxDbo): Box {
     factionIds: stored.factionIds,
     tags: stored.tags,
     addedOn: stored.addedOn,
+    number,
   };
 }
 
@@ -38,6 +39,7 @@ function toBoxDbo(ownerId: string, box: Box): BoxDbo {
     factionIds: [...box.factionIds],
     tags: [...box.tags],
     addedOn: box.addedOn,
+    number: box.number,
   };
 }
 
@@ -108,7 +110,47 @@ export class MongoHoardRepository extends HoardRepository {
 
   async findBoxes(ownerId: string): Promise<Box[]> {
     const stored = await this.boxes.find({ ownerId }).lean().exec();
-    return stored.map(toBox);
+    const missing = await this.numberUnnumbered(ownerId, stored);
+    return stored.map((box) => toBox(box, box.number ?? missing.get(box._id) ?? 0));
+  }
+
+  /**
+   * Stands in for a migration (ADR-0023) until migrations exist: boxes stored before boxes were
+   * numbered get the next numbers of their name, in the order they were added, and keep them.
+   *
+   * @returns the numbers given, by box id
+   */
+  private async numberUnnumbered(
+    ownerId: string,
+    stored: readonly BoxDbo[],
+  ): Promise<ReadonlyMap<string, number>> {
+    const unnumbered = stored
+      .filter((box) => box.number === undefined)
+      .sort((a, b) => a.addedOn.localeCompare(b.addedOn));
+    if (unnumbered.length === 0) {
+      return new Map();
+    }
+    const highest = new Map<string, number>();
+    for (const { name, number } of stored) {
+      if (number !== undefined) {
+        highest.set(name, Math.max(highest.get(name) ?? 0, number));
+      }
+    }
+    const given = new Map<string, number>();
+    for (const box of unnumbered) {
+      const number = (highest.get(box.name) ?? 0) + 1;
+      highest.set(box.name, number);
+      given.set(box._id, number);
+    }
+    await this.boxes.bulkWrite(
+      [...given].map(([id, number]) => ({
+        updateOne: {
+          filter: { _id: id, ownerId, number: { $exists: false } },
+          update: { $set: { number } },
+        },
+      })),
+    );
+    return given;
   }
 
   async findMinis(ownerId: string): Promise<Mini[]> {

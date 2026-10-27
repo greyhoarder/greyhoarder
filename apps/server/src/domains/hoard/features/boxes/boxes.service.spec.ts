@@ -42,7 +42,7 @@ describe('Boxes', () => {
   it('adds boxes of the latest version of a catalog kit, each with the minis it puts on the sprue', async () => {
     const addBoxes = vi.fn<HoardRepository['addBoxes']>(() => Promise.resolve());
     const hoard = {
-      findBoxes: vi.fn(),
+      findBoxes: vi.fn(() => Promise.resolve([])),
       findMinis: vi.fn(),
       findMinisByIds: vi.fn(),
       findParts: vi.fn(),
@@ -67,7 +67,14 @@ describe('Boxes', () => {
   });
 
   it('deletes a box with all its minis', async () => {
-    const box: Box = { id: 'boyz', name: 'Boyz', factionIds: [], tags: [], addedOn: '2026-10-25' };
+    const box: Box = {
+      id: 'boyz',
+      name: 'Boyz',
+      factionIds: [],
+      tags: [],
+      addedOn: '2026-10-25',
+      number: 1,
+    };
     const minis: Mini[] = ['boy', 'nob'].map((id) => ({
       id,
       name: id,
@@ -114,5 +121,36 @@ describe('Boxes', () => {
 
     await expect(remove).rejects.toThrow(UnknownBoxError);
     expect(deleteBox).not.toHaveBeenCalled();
+  });
+
+  it('numbers new boxes after the boxes of the same name', async () => {
+    const existing: Box = {
+      id: 'boyz-2',
+      name: 'Boyz (2026)',
+      factionIds: [],
+      tags: [],
+      addedOn: '2026-10-01',
+      number: 2,
+    };
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([existing])),
+      findMinis: vi.fn(),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn<HoardRepository['addBoxes']>(() => Promise.resolve()),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox: vi.fn(),
+    };
+    const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
+
+    const { boxes } = await service.add('owner', {
+      kitId: BOYZ.id,
+      boxes: 2,
+      tags: [],
+      addedOn: '2026-10-25',
+    });
+
+    expect(boxes.map((box) => box.number)).toEqual([3, 4]);
   });
 });

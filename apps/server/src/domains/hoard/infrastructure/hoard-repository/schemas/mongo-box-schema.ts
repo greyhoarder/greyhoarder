@@ -40,6 +40,10 @@ export class BoxDbo {
   /** ISO date, e.g. "2026-10-12". */
   @Prop({ type: String, required: true })
   addedOn: string;
+
+  /** Missing on boxes stored before boxes were numbered; `findBoxes` fills it in. */
+  @Prop({ type: Number })
+  number?: number;
 }
 
 export const BoxSchema = SchemaFactory.createForClass(BoxDbo);
