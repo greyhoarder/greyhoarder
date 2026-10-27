@@ -1,7 +1,15 @@
 import { projectFiles } from 'archunit';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { domainsIn, FRAMEWORKS, importsAny, importsOnlyInside, PROTOCOL } from './imports.js';
+import {
+  domainsIn,
+  FRAMEWORKS,
+  importedModules,
+  importsAny,
+  importsOnlyInside,
+  isRelative,
+  PROTOCOL,
+} from './imports.js';
 
 const CLIENT_DIR = fileURLToPath(new URL('../../apps/client', import.meta.url));
 // The build config, so spec files are not checked (ADR-0024).
@@ -40,6 +48,22 @@ describe('Client architecture', () => {
       .inPath('src/app/domains/*/models/**')
       .should()
       .adhereTo((file) => !importsAny(file, FRAMEWORKS), 'imports no framework');
+
+    await expect(rule).toPassAsync();
+  });
+
+  // architecture-boundaries.md, "Layers inside a client domain"
+  it('keeps every store independent of other stores', async () => {
+    const rule = projectFiles(TSCONFIG)
+      .inPath('src/app/domains/*/data/**')
+      .should()
+      .adhereTo(
+        (file) =>
+          !importedModules(file)
+            .filter(isRelative)
+            .some((specifier) => specifier.endsWith('-store')),
+        'imports no other store',
+      );
 
     await expect(rule).toPassAsync();
   });
