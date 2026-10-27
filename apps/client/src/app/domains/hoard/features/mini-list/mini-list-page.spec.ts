@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
 import { HoardView } from '../../application/hoard-view';
+import { GONE } from '../../application/minis/mini-filter';
 import { MinisList } from '../../application/minis/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
@@ -36,8 +37,12 @@ describe('Minis page', () => {
   let fixture: ComponentFixture<MiniListPage>;
   let page: HTMLElement;
 
+  /** What the server answers when minis are deleted. */
+  let deleteMinis = vi.fn<HttpMinisAdapter['delete']>();
+
   /** A fresh page whose hoard holds what `loadMinis` answers, and these boxes. */
   function showPage(loadMinis: () => Promise<readonly Mini[]>, boxes: readonly Box[] = []): void {
+    deleteMinis = vi.fn(async () => ({ emptiedBoxIds: [], minis: [] }));
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
@@ -54,6 +59,7 @@ describe('Minis page', () => {
               factionNames: new Map(),
               systemNames: new Map(),
             })),
+            delete: vi.fn((ids: readonly string[]) => deleteMinis(ids)),
           },
         },
       ],
@@ -214,5 +220,61 @@ describe('Minis page', () => {
         expect.stringContaining('Nob'),
       ]);
     });
+  });
+
+  /** Dialogs open in an overlay outside the page. */
+  const inDocument = (testId: string): HTMLElement | null =>
+    document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+
+  const click = async (element: HTMLElement | null | undefined): Promise<void> => {
+    element?.click();
+    await fixture.whenStable();
+  };
+
+  /** Ticks the first table line and deletes its mini after asking. */
+  const deleteFirstLine = async (): Promise<void> => {
+    await showTable();
+    await click(byTestId('hoard-row-check')[0]);
+    await click(byTestId('hoard-selection-delete')[0]);
+    await click(inDocument('hoard-delete-confirm'));
+  };
+
+  it('deletes the selected minis after asking and ends selection mode', async () => {
+    await showTable();
+    const before = byTestId('hoard-row').length;
+
+    await deleteFirstLine();
+
+    expect(deleteMinis).toHaveBeenCalledOnce();
+    expect(byTestId('hoard-row')).toHaveLength(before - 1);
+    expect(byTestId('hoard-selection-bar')).toHaveLength(0);
+  });
+
+  it('offers no leaving when only gone minis are selected', async () => {
+    showPage(() =>
+      Promise.resolve([
+        mini('gone', { status: 'built', departure: { reason: 'sold', on: '2026-10-20' } }),
+      ]),
+    );
+    await fixture.whenStable();
+    TestBed.inject(MinisList).statusFilter.set(new Set([GONE]));
+    await showTable();
+
+    await click(byTestId('hoard-row-check')[0]);
+
+    expect((byTestId('hoard-selection-leave')[0] as HTMLButtonElement | undefined)?.disabled).toBe(
+      true,
+    );
+  });
+
+  it('asks whether to delete boxes left without minis', async () => {
+    const boyz: Box = { id: 'boyz', name: 'Boyz', factionIds: [], tags: [], addedOn: '2026-10-25' };
+    showPage(() => Promise.resolve([mini('m2', { status: 'built', boxId: 'boyz' })]), [boyz]);
+    await fixture.whenStable();
+    deleteMinis.mockResolvedValue({ emptiedBoxIds: ['boyz'], minis: [] });
+
+    await deleteFirstLine();
+
+    expect(inDocument('hoard-empty-boxes-dialog')?.textContent).toContain('Boyz');
   });
 });

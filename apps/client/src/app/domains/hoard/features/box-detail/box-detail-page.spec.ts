@@ -74,11 +74,17 @@ describe('Box page', () => {
     factionNames: new Map(),
   }));
 
+  /** What the server answers when minis or a box are deleted. */
+  let deleteMinis = vi.fn<HttpMinisAdapter['delete']>();
+  let deleteBox = vi.fn<HttpBoxesAdapter['delete']>();
+
   /** A fresh page for the box with this id, whose hoard holds what `loadMinis` answers. */
   function showBox(
     id: string,
     loadMinis: () => Promise<readonly Mini[]> = () => Promise.resolve(MINIS),
   ): void {
+    deleteMinis = vi.fn(async () => ({ emptiedBoxIds: [BOYZ.id], minis: [] }));
+    deleteBox = vi.fn(async () => ({ deletedMiniIds: [], minis: [] }));
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'hoard/minis', component: MinisTab }]),
@@ -89,6 +95,7 @@ describe('Box page', () => {
               boxes: [BOYZ, LOOSE],
               factionNames: new Map([[ORKS, 'Orks']]),
             })),
+            delete: deleteBox,
           },
         },
         { provide: HttpKitsAdapter, useValue: { find: findKit } },
@@ -102,6 +109,7 @@ describe('Box page', () => {
               factionNames: new Map([[FREEBOOTERZ, 'Freebooterz']]),
               systemNames: new Map(),
             })),
+            delete: deleteMinis,
           },
         },
       ],
@@ -397,5 +405,88 @@ describe('Box page', () => {
     await fixture.whenStable();
 
     expect(all('box-sprue-panel')).toHaveLength(1);
+  });
+
+  /** Dialogs open in an overlay outside the page. */
+  const inDocument = (testId: string): HTMLElement | null =>
+    document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+
+  const click = async (element: HTMLElement | null | undefined): Promise<void> => {
+    element?.click();
+    await fixture.whenStable();
+  };
+
+  /** Selects the built mini of a box holding only it, and deletes it after asking. */
+  const deleteLastMini = async (): Promise<void> => {
+    showBox(BOYZ.id, () => Promise.resolve([mini('m3', 'built')]));
+    await fixture.whenStable();
+    await click(all('box-group-toggle')[0]);
+    await click(all('box-group-mini-check')[0]);
+    await click(all('box-selection-delete')[0]);
+    await click(inDocument('box-delete-confirm'));
+  };
+
+  it('starts selection mode with "Select"', async () => {
+    showBox(BOYZ.id);
+    await fixture.whenStable();
+    const before = all('box-selection-bar').length;
+
+    await click(all('box-select')[0]);
+
+    expect([before, all('box-selection-bar').length]).toEqual([0, 1]);
+  });
+
+  it('selects a gone mini instead of opening it in selection mode', async () => {
+    showBox(BOYZ.id, () =>
+      Promise.resolve([
+        mini('m3', 'built'),
+        mini('m5', 'built', { departure: { reason: 'sold', on: '2026-10-20' } }),
+      ]),
+    );
+    await fixture.whenStable();
+    await click(all('box-select')[0]);
+    await click(all('box-gone-toggle')[0]);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    await click(all('box-gone')[0]);
+
+    expect(navigate).not.toHaveBeenCalled();
+    expect(textOf('box-selection-count')).toBe('1 mini selected');
+  });
+
+  it('asks whether to delete the box once its last minis are deleted', async () => {
+    await deleteLastMini();
+
+    expect(deleteMinis).toHaveBeenCalledWith(['m3']);
+    expect(inDocument('box-empty-boxes-dialog')).not.toBeNull();
+  });
+
+  it('leads to the Boxes tab once the box is deleted', async () => {
+    await deleteLastMini();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    await click(inDocument('box-empty-boxes-delete'));
+
+    expect(deleteBox).toHaveBeenCalledWith(BOYZ.id);
+    expect(navigate).toHaveBeenCalledWith(['/hoard/boxes'], { replaceUrl: true });
+  });
+
+  it('says that the box has no minis', async () => {
+    showBox(BOYZ.id, () => Promise.resolve([]));
+
+    await fixture.whenStable();
+
+    expect(all('box-no-minis')).toHaveLength(1);
+  });
+
+  it('asks before deleting the box from its menu', async () => {
+    showBox(BOYZ.id);
+    await fixture.whenStable();
+    await click(all('box-menu')[0]);
+
+    await click(document.querySelector<HTMLElement>('[data-testid="box-delete"]'));
+
+    expect(inDocument('box-delete-box-dialog')).not.toBeNull();
+    expect(deleteBox).not.toHaveBeenCalled();
   });
 });

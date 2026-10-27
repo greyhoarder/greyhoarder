@@ -33,4 +33,13 @@ describe('Box card', () => {
 
     expect(card.textContent).toContain('Boyz (2026) · 50-80');
   });
+
+  it('names a box without any minis empty', async () => {
+    const card = await render({ ...BOYZ, minis: {}, goneCount: 0 });
+
+    expect(card.querySelector('[data-testid="hoard-box-progress"]')?.textContent?.trim()).toBe(
+      'Empty',
+    );
+    expect(card.querySelector('[data-testid="hoard-box-percent"]')).toBeNull();
+  });
 });

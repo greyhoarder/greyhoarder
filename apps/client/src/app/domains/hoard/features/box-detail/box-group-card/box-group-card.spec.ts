@@ -113,4 +113,45 @@ describe('Group card of a box', () => {
 
     expect(chosen).not.toHaveBeenCalled();
   });
+
+  it('selects a mini by its check', async () => {
+    const card = await render();
+    await open(card);
+    const selected = vi.fn();
+    fixture.componentInstance.selectedChange.subscribe(selected);
+
+    all(card, 'box-group-mini-check')[1]?.click();
+
+    expect(selected).toHaveBeenCalledExactlyOnceWith({ miniId: 'm2', isSelected: true });
+  });
+
+  it('selects a mini by a click on its line in selection mode', async () => {
+    const card = await render();
+    fixture.componentRef.setInput('isSelectionMode', true);
+    await open(card);
+    const selected = vi.fn();
+    const opened = vi.fn();
+    fixture.componentInstance.selectedChange.subscribe(selected);
+    fixture.componentInstance.miniOpened.subscribe(opened);
+
+    all(card, 'box-group-mini-open')[0]?.click();
+
+    expect(selected).toHaveBeenCalledExactlyOnceWith({ miniId: 'm1', isSelected: true });
+    expect(opened).not.toHaveBeenCalled();
+  });
+
+  it('saves a status in selection mode without selecting the mini', async () => {
+    const card = await render();
+    fixture.componentRef.setInput('isSelectionMode', true);
+    await open(card);
+    const selected = vi.fn();
+    const chosen = vi.fn();
+    fixture.componentInstance.selectedChange.subscribe(selected);
+    fixture.componentInstance.statusChosen.subscribe(chosen);
+
+    statusButton(all(card, 'box-group-mini')[1], 'primed')?.click();
+
+    expect(chosen).toHaveBeenCalledExactlyOnceWith({ miniId: 'm2', status: 'primed' });
+    expect(selected).not.toHaveBeenCalled();
+  });
 });
