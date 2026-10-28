@@ -1,5 +1,6 @@
 {
   "name": "greyhoarder",
+  "version": "0.0.0",
   "private": true,
   "license": "AGPL-3.0-only",
   "workspaces": [
@@ -14,9 +15,14 @@
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "e2e": "npm run e2e -w @greyhoarder/e2e",
-    "check:specs": "node scripts/checks/component-specs.mjs"
+    "check:specs": "node scripts/checks/component-specs.mjs",
+    "release": "release-it"
   },
   "overrides": {
     "@nestjs/common": "^12.0.1"
+  },
+  "devDependencies": {
+    "@release-it/conventional-changelog": "^12.0.2",
+    "release-it": "^21.1.1"
   }
 }

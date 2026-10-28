@@ -1,0 +1,31 @@
+{
+  "$schema": "https://unpkg.com/release-it@21/schema/release-it.json",
+  "git": {
+    "requireBranch": "main",
+    "commitMessage": "chore(release): v${version}",
+    "tagName": "v${version}",
+    "tagAnnotation": "Release v${version}"
+  },
+  "npm": {
+    "publish": false
+  },
+  "hooks": {
+    "before:init": ["npm run lint", "npm test", "npm run build"],
+    "after:bump": "npm version ${version} --no-git-tag-version --workspace @greyhoarder/client --workspace @greyhoarder/server"
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "infile": "CHANGELOG.md",
+      "header": "# Changelog",
+      "preset": {
+        "name": "conventionalcommits",
+        "preMajor": true,
+        "types": [
+          { "type": "feat", "section": "Features" },
+          { "type": "fix", "section": "Fixes" },
+          { "type": "chore", "scope": "catalog", "section": "Catalog" }
+        ]
+      }
+    }
+  }
+}
