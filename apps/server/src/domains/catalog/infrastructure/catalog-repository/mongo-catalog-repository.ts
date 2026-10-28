@@ -4,6 +4,7 @@ import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import type { ClientSession, Connection, Model } from 'mongoose';
 import type { CatalogFaction } from '../../models/catalog-faction.js';
 import type { CatalogImport } from '../../models/catalog-import.js';
+import type { MiniSearchWord } from '../../models/catalog-mini.js';
 import type { CatalogUpdate } from '../../models/catalog-update.js';
 import type { ImportedCatalog } from '../../models/imported-catalog.js';
 import type { VersionedEntry } from '../../models/versioned-entry.js';
@@ -88,10 +89,21 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
-  async searchKitsByMini(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]> {
-    const contains = new RegExp(escapeRegExp(text), 'i');
+  async searchKitsByMini(words: readonly MiniSearchWord[], limit: number): Promise<VersionedEntry<CatalogKit>[]> {
+    const eachWord = words.map((word) => {
+      const contains = new RegExp(escapeRegExp(word.text), 'i');
+      const factionIds = [...word.factionIds];
+      return {
+        $or: [
+          { name: contains },
+          { 'variants.slots.buildsAs': contains },
+          { factionIds: { $in: factionIds } },
+          { 'variants.slots.factionIds': { $in: factionIds } },
+        ],
+      };
+    });
     const kits = await this.kits
-      .find({ ...LATEST, isRemoved: false, $or: [{ name: contains }, { 'variants.slots.buildsAs': contains }] })
+      .find({ ...LATEST, isRemoved: false, $and: eachWord })
       .sort({ name: 1, kitId: 1 })
       .limit(limit)
       .lean()

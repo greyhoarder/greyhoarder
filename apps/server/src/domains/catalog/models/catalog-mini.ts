@@ -27,22 +27,59 @@ interface SlotMini {
   readonly kit: CatalogMiniKit;
 }
 
-/**
- * The minis of the kits whose name, or the kit's name, contains the text, ignoring case: one per
- * name and faction, whatever kit it comes from; in the order they first come.
- */
-export function catalogMinisOf(kits: readonly CatalogKit[], text: string): CatalogMini[] {
-  const needle = text.trim().toLowerCase();
-  return mergeByNameAndFaction(kits.flatMap((kit) => matchingSlotMinis(kit, needle)));
+/** One word of a search for minis, with the factions whose name contains it. */
+export interface MiniSearchWord {
+  readonly text: string;
+  readonly factionIds: readonly string[];
 }
 
-/** Every name of the kit's slots for each faction; only matching names unless the kit's name matches. */
-function matchingSlotMinis(kit: CatalogKit, needle: string): SlotMini[] {
-  const isKitMatch = kit.name.toLowerCase().includes(needle);
+/**
+ * The minis of the kits for which every word is in their name, the kit's name or the name of their
+ * faction, ignoring case: one per name and faction, whatever kit it comes from; in the order they
+ * first come.
+ */
+export function catalogMinisOf(kits: readonly CatalogKit[], words: readonly MiniSearchWord[]): CatalogMini[] {
+  const needles = words.map((word) => ({ text: word.text.toLowerCase(), factionIds: new Set(word.factionIds) }));
+  return mergeByNameAndFaction(kits.flatMap((kit) => matchingSlotMinis(kit, needles)));
+}
+
+/**
+ * How well the mini matches the words, higher first: per word 4 when a word of its name starts with
+ * it, 3 when its name contains it, 2 when it is its faction's, 1 when only a kit's name contains it.
+ */
+export function relevanceOf(mini: CatalogMini, words: readonly MiniSearchWord[]): number {
+  const name = mini.name.toLowerCase();
+  const nameWords = name.split(/\s+/);
+  return words.reduce((sum, word) => {
+    const text = word.text.toLowerCase();
+    const score = nameWords.some((nameWord) => nameWord.startsWith(text))
+      ? 4
+      : name.includes(text)
+        ? 3
+        : mini.factionId !== undefined && word.factionIds.includes(mini.factionId)
+          ? 2
+          : 1;
+    return sum + score;
+  }, 0);
+}
+
+/** Every name of the kit's slots for each faction that matches every word. */
+function matchingSlotMinis(
+  kit: CatalogKit,
+  needles: readonly { readonly text: string; readonly factionIds: ReadonlySet<string> }[],
+): SlotMini[] {
+  const kitName = kit.name.toLowerCase();
   return kit.variants
     .flatMap((variant) => variant.slots)
     .flatMap((slot) => slotMinis(kit, slot))
-    .filter((mini) => isKitMatch || mini.name.toLowerCase().includes(needle));
+    .filter((mini) =>
+      needles.every(
+        (needle) =>
+          kitName.includes(needle.text) ||
+          mini.name.toLowerCase().includes(needle.text) ||
+          (mini.factionId !== undefined && needle.factionIds.has(mini.factionId)),
+      ),
+    );
 }
 
 /** The slot's names for the slot's factions, or else for each of its kit's; without any, for none. */

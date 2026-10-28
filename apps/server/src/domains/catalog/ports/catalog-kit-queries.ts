@@ -1,5 +1,6 @@
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import type { CatalogFaction } from '../models/catalog-faction.js';
+import type { MiniSearchWord } from '../models/catalog-mini.js';
 import type { VersionedEntry } from '../models/versioned-entry.js';
 
 /** Read-only access to the latest catalog kits, without side effects (CQS); never add a writing method here. */
@@ -11,10 +12,11 @@ export abstract class CatalogKitQueries {
   abstract searchKits(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]>;
 
   /**
-   * The latest version of every kit that is not removed and whose name, or a name its slots can be
-   * built as, contains the text, ignoring case; at most `limit`, sorted by name.
+   * The latest version of every kit that is not removed and that has, for every word, the word in
+   * its name or a name its slots can be built as, ignoring case, or one of the word's factions for
+   * itself or a slot; at most `limit`, sorted by name.
    */
-  abstract searchKitsByMini(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]>;
+  abstract searchKitsByMini(words: readonly MiniSearchWord[], limit: number): Promise<VersionedEntry<CatalogKit>[]>;
 
   /** The latest factions that are not removed and whose name contains the text, ignoring case; at most `limit`, sorted by name. */
   abstract searchFactions(text: string, limit: number): Promise<CatalogFaction[]>;

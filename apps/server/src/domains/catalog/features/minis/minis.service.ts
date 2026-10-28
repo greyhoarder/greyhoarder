@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { type CatalogMini, catalogMinisOf } from '../../models/catalog-mini.js';
+import { type CatalogMini, catalogMinisOf, type MiniSearchWord, relevanceOf } from '../../models/catalog-mini.js';
 import { CatalogKitQueries } from '../../ports/catalog-kit-queries.js';
 
 /** Enough to choose a mini; a narrower search finds the rest. */
 const SEARCH_LIMIT = 50;
 /** The kits the minis are taken from; far more than the minis of a search need. */
 const KIT_LIMIT = 500;
+/** The factions a word of a search can mean; far more than share a word. */
+const FACTION_LIMIT = 100;
 
 /** Catalog minis found by a search, with the names it takes to show them. */
 export interface CatalogMiniSearchResult {
@@ -21,12 +23,16 @@ export interface CatalogMiniSearchResult {
 export class MinisService {
   constructor(private readonly catalog: CatalogKitQueries) {}
 
-  /** The minis whose name, or the name of a kit they come from, contains the text; sorted by name, then faction. */
+  /**
+   * The minis for which every word of the text is in their name, the name of a kit they come from or
+   * the name of their faction, e.g. "Ork Boy"; the best matches first, then by name and faction.
+   */
   async search(text: string): Promise<CatalogMiniSearchResult> {
-    const kits = await this.catalog.searchKitsByMini(text, KIT_LIMIT);
+    const words = await this.wordsOf(text);
+    const kits = await this.catalog.searchKitsByMini(words, KIT_LIMIT);
     const minis = catalogMinisOf(
       kits.map(({ entry }) => entry),
-      text,
+      words,
     );
     const factionIds = [...new Set(minis.flatMap((mini) => (mini.factionId === undefined ? [] : [mini.factionId])))];
     const [factionNames, systemNames] = await Promise.all([
@@ -36,8 +42,24 @@ export class MinisService {
     const factionOf = (mini: CatalogMini) =>
       mini.factionId === undefined ? '' : (factionNames.get(mini.factionId) ?? mini.factionId);
     const sorted = [...minis]
-      .sort((a, b) => a.name.localeCompare(b.name) || factionOf(a).localeCompare(factionOf(b)))
+      .sort(
+        (a, b) =>
+          relevanceOf(b, words) - relevanceOf(a, words) ||
+          a.name.localeCompare(b.name) ||
+          factionOf(a).localeCompare(factionOf(b)),
+      )
       .slice(0, SEARCH_LIMIT);
     return { minis: sorted, factionNames, systemNames };
+  }
+
+  /** The words of the text, each with the factions whose name contains it. */
+  private async wordsOf(text: string): Promise<MiniSearchWord[]> {
+    const words = text.trim().split(/\s+/).filter((word) => word !== '');
+    return Promise.all(
+      words.map(async (word) => ({
+        text: word,
+        factionIds: (await this.catalog.searchFactions(word, FACTION_LIMIT)).map((faction) => faction.id),
+      })),
+    );
   }
 }
