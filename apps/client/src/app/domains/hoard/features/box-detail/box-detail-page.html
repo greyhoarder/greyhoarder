@@ -168,35 +168,6 @@
     </ul>
   </section>
 
-  <app-delete-minis-dialog
-    screen="box"
-    [isOpen]="deletion.isAsking()"
-    [count]="deletion.count()"
-    [names]="deletion.names()"
-    [isDeleting]="deletion.isDeleting()"
-    [hasFailed]="deletion.hasFailed()"
-    (confirmed)="deleteSelected()"
-    (closed)="deletion.cancel()"
-  />
-  <app-empty-boxes-dialog
-    screen="box"
-    [isOpen]="boxesDeletion.isAsking() && boxQuestion() === 'emptied'"
-    [names]="boxesDeletion.names()"
-    [isDeleting]="boxesDeletion.isDeleting()"
-    [hasFailed]="boxesDeletion.hasFailed()"
-    (confirmed)="deleteBox()"
-    (closed)="boxesDeletion.cancel()"
-  />
-  <app-delete-box-dialog
-    [isOpen]="boxesDeletion.isAsking() && boxQuestion() === 'delete'"
-    [name]="boxesDeletion.names()[0] ?? ''"
-    [miniCount]="boxesDeletion.miniCount()"
-    [isDeleting]="boxesDeletion.isDeleting()"
-    [hasFailed]="boxesDeletion.hasFailed()"
-    (confirmed)="deleteBox()"
-    (closed)="boxesDeletion.cancel()"
-  />
-
   <div class="@container">
     <div class="flex flex-col gap-6 @[720px]:flex-row @[720px]:items-start">
       <div class="flex min-w-0 flex-1 flex-col gap-8">
@@ -352,6 +323,36 @@
       }
     </div>
   </div>
+
+  <!-- Last, so the dialogs add no gap between the sections. -->
+  <app-delete-minis-dialog
+    screen="box"
+    [isOpen]="deletion.isAsking()"
+    [count]="deletion.count()"
+    [names]="deletion.names()"
+    [isDeleting]="deletion.isDeleting()"
+    [hasFailed]="deletion.hasFailed()"
+    (confirmed)="deleteSelected()"
+    (closed)="deletion.cancel()"
+  />
+  <app-empty-boxes-dialog
+    screen="box"
+    [isOpen]="boxesDeletion.isAsking() && boxQuestion() === 'emptied'"
+    [names]="boxesDeletion.names()"
+    [isDeleting]="boxesDeletion.isDeleting()"
+    [hasFailed]="boxesDeletion.hasFailed()"
+    (confirmed)="deleteBox()"
+    (closed)="boxesDeletion.cancel()"
+  />
+  <app-delete-box-dialog
+    [isOpen]="boxesDeletion.isAsking() && boxQuestion() === 'delete'"
+    [name]="boxesDeletion.names()[0] ?? ''"
+    [miniCount]="boxesDeletion.miniCount()"
+    [isDeleting]="boxesDeletion.isDeleting()"
+    [hasFailed]="boxesDeletion.hasFailed()"
+    (confirmed)="deleteBox()"
+    (closed)="boxesDeletion.cancel()"
+  />
 } @else {
   <p class="text-muted-foreground" role="alert" data-testid="box-not-found">
     This box isn't in your hoard.
