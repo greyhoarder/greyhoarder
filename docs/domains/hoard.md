@@ -44,20 +44,25 @@ exactly one user, and users see only their own hoard.
   Any status can be set, also backwards (a mistake, a stripped mini).
 - A mini may exist without a box (bought loose, second hand, already
   painted, 3D printed, kitbashed) and may start with any status.
-- A mini has at most one box as its origin. Further origins of a kitbash
+- A mini has at most one box as its origin; a mini without a box added
+  from the catalog has the catalog kit as its origin instead, recorded
+  like a box's kit. Further origins of a kitbash
   go into its notes; minis stripped for its parts are named as its
   sources of parts.
 - Minis without a box are added in two ways:
-  - **From the catalog:** a name that slots of catalog kits can be built
-    as, with its faction, in any status, on the sprue as well.
+  - **From the catalog:** a name that the slots of one catalog kit can be
+    built as, with its faction, in any status, on the sprue as well. The
+    mini records the kit, in the version it was found in; it suggests
+    what the mini is built as and its parts like a box's kit, without
+    counting what is left.
   - **Custom:** a mini the user put together (kitbash, conversion, 3D
     print, another manufacturer) with any name, factions, parts and notes.
     It starts built or further.
 
   Several alike minis are added at once; minis of the same kind in
-  different states are added one after the other. Neither way records
-  where the mini came from, and names, factions and parts can be changed
-  later like on any mini.
+  different states are added one after the other. Names, factions and
+  parts can be changed later like on any mini; the kit stays. Minis
+  added before kits were recorded have none.
 
 ### Boxes and kits
 
@@ -137,12 +142,17 @@ exactly one user, and users see only their own hoard.
   any number of aliases (older names, other spellings) for search and
   input.
 - Minis refer to terms, so renaming a term renames it on every mini.
+- A term no mini carries any more, gone ones included, leaves the
+  vocabulary.
 - A part on a mini can be marked as swappable (magnetised).
 - When choosing parts, the parts its kit suggests for the mini come first,
   then the rest of the vocabulary, then the parts of the catalog kits of
   its factions and the factions they are part of; a new term can be typed
   at any time. A part suggested by a catalog kit becomes a term of the
   user's vocabulary when it is first used.
+- The user's own parts are the terms no catalog kit offers a part of the
+  same name, ignoring case; the others count as parts of the catalog,
+  also when the user typed them.
 
 ### Workbench
 

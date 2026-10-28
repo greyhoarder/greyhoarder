@@ -35,8 +35,8 @@ header is one button that opens the card.
 - Left: a 72 × 72 image tile with rounded corners, muted with diagonal
   stripes.
 - Middle, stacked: the name in semibold, followed by a dashed "Not checked"
-  badge when every kit it comes from is a draft; the faction with its game
-  system; a smaller muted line with the kits it comes from.
+  badge when its kit is a draft; the faction with its game system; a
+  smaller muted line with the kit it comes from.
 - Right: if the user already has minis of this name and faction that are
   not gone, how many, in gold.
 
@@ -71,12 +71,12 @@ border:
 | Mini name | {name}, e.g. "Nob" |
 | Draft badge | Not checked |
 | Faction line | {faction} · {game system}, e.g. "Orks · Warhammer 40,000" |
-| Kits line | From {kit} · {year}, joined with ", ", e.g. "From Boyz · 2026, Nobz · 2009"; more than three: the first three and "+{n} more" |
+| Kit line | From {kit} · {year}, e.g. "From Boyz · 2026" |
 | Minis in the hoard | {n} in your hoard |
 | Status label | Status |
 | Status chips | On the sprue · Built · Primed · Painted · Done |
 | Add part button | Add a part |
-| Suggestion group | From the kit · {kits as in the kits line, without "From"}, e.g. "From the kit · Boyz · 2026, Nobz · 2009" |
+| Suggestion group | From the kit · {kit as in the kit line, without "From"}, e.g. "From the kit · Boyz · 2026" |
 | Vocabulary group | Your parts |
 | Range group | {faction} range, e.g. Orks range |
 | Mini stepper | − {n} minis +, "1 mini"; buttons: One mini less, One mini more |
@@ -103,11 +103,12 @@ border:
 - The server searches the catalog minis
   ([catalog](../domains/catalog.md#using-catalog-kits)); the search ignores
   case and needs no confirmation. Removed catalog kits are not offered.
-- A catalog mini is a name that slots of catalog kits can be built as, for
-  one faction: the slot's faction, or else each of its kit's factions. The
-  same name for the same faction is one mini, whatever kit it comes from;
-  its suggested parts are those of all these slots, each once, in the order
-  they first come.
+- A catalog mini is a name that the slots of one catalog kit can be built
+  as, for one faction: the slot's faction, or else each of its kit's
+  factions. The same name for the same faction from another kit is
+  another mini, so every kit is a result of its own ("Boy · Boyz · 2026",
+  "Boy · Boyz · 2008"); its suggested parts are those of all its slots
+  with that name, each once, in the order they first come.
 - Only one card is open at a time; opening one closes the other, and
   opening it again closes it. A newly opened card starts with one mini,
   the status "Built" and no parts.
@@ -118,7 +119,7 @@ border:
   term becomes a term of the user's vocabulary when the minis are added
   ([domain](../domains/hoard.md#parts)).
 - Adding creates as many minis as counted, without a box, with the name,
-  the faction, the chosen status and parts, off the workbench
+  the faction, the kit, the chosen status and parts, off the workbench
   ([domain](../domains/hoard.md#minis)). Minis on the sprue without a box
   are listed in the Minis tab of the [hoard](hoard.md) like the others.
 - After adding, the card stays open with what was chosen, so the same mini

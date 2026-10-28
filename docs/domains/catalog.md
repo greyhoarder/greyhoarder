@@ -84,15 +84,16 @@ repository's README. This document covers what Greyhoarder does with it.
   any variant, product code or barcode, ignoring case. A search returns at most 50 kits, sorted by
   name; removed kits are not part of it.
 - Every signed-in user can search the minis of the catalog: the names the
-  slots of catalog kits can be built as, each once per faction (the
-  slot's faction, or else each of its kit's factions), ignoring case, with
-  the kits they come from and the parts those slots offer. A search
-  matches a mini when every word of it is in the mini's name, the name of
-  a kit it comes from or the name of its faction ("Ork Boy"), returns at
+  slots of a catalog kit can be built as, each once per faction (the
+  slot's faction, or else each of its kit's factions) and kit, ignoring
+  case, with the kit in its latest version and the parts those slots
+  offer. A search matches a mini when every word of it is in the mini's
+  name, the name of its kit or the name of its faction ("Ork Boy"), returns at
   most 50 minis and leaves out removed kits. The best matches come first:
   a word counts most when a word of the mini's name starts with it, less
   when the name only contains it, less again when it names the faction,
-  and least when only a kit's name contains it; then by name and faction.
+  and least when only a kit's name contains it; then by name, faction
+  and the newest kit.
 - Every signed-in user can search the catalog factions by name, ignoring
   case, each with its game system.
 - Adding a box from a catalog kit records the kit's id and version on the

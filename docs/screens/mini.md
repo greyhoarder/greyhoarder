@@ -76,8 +76,9 @@ on the right; on narrow content widths the box card moves below them.
    - a filter input with a search icon;
    - the group "From the kit · {box name}": the parts the box's kit offers
      the minis' slot, as chips "+ {part}", in the kit's order;
-   - the group "Your parts": the other terms of the user's vocabulary as
-     the same chips, by name;
+   - the group "Your parts": the user's own terms of the vocabulary, those
+     no catalog kit offers ([domain](../domains/hoard.md#parts)), as the
+     same chips, by name;
    - while filtering, the group "{faction} range": parts of the catalog
      kits of the minis' range, as the same chips;
    - a chip matching through an alias shows a muted "also {alias}" after
@@ -102,8 +103,10 @@ on the right; on narrow content widths the box card moves below them.
    for a {name}" with the parts the kit's slots for the name to build
    offer as small muted chips; after another border the muted note "Kits
    only suggest. What you add here counts." Without a kit the card shows
-   the box's name and neither the parts nor the note; a mini without a
-   box shows a card reading "Without box".
+   the box's name and neither the parts nor the note. A mini without a box
+   added from the catalog shows the same card with the label "From the
+   kit" for its kit, without link and without the "Added" line; a mini
+   without a box and without a kit shows a card reading "Without box".
 
    Below it, only for minis that got the parts of stripped minis, a card
    "Parts from": one line per source mini, its name as a link and below
@@ -169,7 +172,7 @@ muted line, the "or" is plain.
 | Create hint | Becomes a part of your own, usable on every mini. |
 | Notes heading | Notes |
 | Notes placeholder | Kitbash sources, loadout ideas, what is still to do |
-| Box card label | From the box |
+| Box card label | From the box; for a mini without a box: From the kit |
 | Box card link | {kit name} · {year}, below: {manufacturer} · {product code}; without a kit: {box name} |
 | Box card progress | Added {date} · box #{number} at {percent}% |
 | Box card parts | The kit suggests for a {name} |
@@ -190,7 +193,7 @@ muted line, the "or" is plain.
 | On the sprue | The mini is on the sprue | The status "On the sprue", "Build as" with the mini's name chosen when it is a suggestion, else nothing chosen, parts preselected (see Behavior), the build bar; the save note says nothing is saved |
 | Building | "Build mini" pressed | The button shows the busy stripes and "Building…"; the bar stays until the server answers |
 | Built | The mini is past the sprue | No build bar; every change is saved at once, the save note says so |
-| Without kit | The mini has no box, or its box no kit, or the kit can't be loaded | No suggestion tiles, only "Your own name"; no "Suggested by"; the part picker has no kit group; the box card without kit, parts and note |
+| Without kit | The mini has no box and no kit, or its box no kit, or the kit can't be loaded | No suggestion tiles, only "Your own name", except for a mini on the sprue without a box, which is offered its own name as a tile; no "Suggested by"; the part picker has no kit group; the box card without kit, parts and note |
 | Picker open | "Add a part" pressed | The part picker below the part tiles |
 | Not found | No mini with this id in the user's hoard, also one of another user | The not-found message below the back link |
 | Load failed | The server does not answer | The load-failed message in `destructive` below the back link, announced to screen readers |
@@ -227,6 +230,9 @@ muted line, the "or" is plain.
   leaves one Burna Boy fewer as well. With none
   left, the line reads "None left in this box" and the tile is greyed out;
   it can still be chosen. Nothing is blocked: kits only suggest.
+  A mini without a box added from a catalog kit is offered the names of
+  the kit's slots that offer its name ("Suggested by {kit name}"), without
+  a line below them: there is no box to count in.
 - Typing an own name chooses its tile; choosing a suggestion empties it.
   A mini built under an own name uses up the suggestion it had on the
   sprue.
@@ -260,11 +266,14 @@ muted line, the "or" is plain.
   place; the minis alike to it stay on the sprue. Afterwards the screen
   shows the built mini.
 - **Past the sprue** every change is saved at once: name, parts,
-  workbench and the faction removals as soon as they are made, the notes
+  workbench and the factions added or removed as soon as they are made, the notes
   when the text area loses focus. Each change applies to this mini only;
   a new name, new parts or factions move it into another group of the
   [hoard](hoard.md).
-- A faction chip's "×" removes the faction from the minis.
+- A faction chip's "×" removes the faction from the minis. "+ Faction"
+  opens a search over the catalog factions in a popover below it, as on
+  [Add custom](add-custom.md); choosing one adds it to the minis and
+  closes the search. Factions already chosen are not offered.
 - The box card's link opens [Box](box.md). Its parts follow the name to
   build: the chosen or typed one, else the minis' name; without parts for
   it the part line is left out.
@@ -292,8 +301,7 @@ muted line, the "or" is plain.
   Deleted minis disappear from the recipients and sources of others.
 - A source in the "Parts from" card and a name in "Parts went to" open
   this screen for that mini.
-- "+ Faction", "Add photo" and "Change origin box…" have
-  no function yet.
+- "Add photo" and "Change origin box…" have no function yet.
 - The screen has no field for "counts as"; the data model keeps it.
 
 ## Accessibility
@@ -321,7 +329,8 @@ muted line, the "or" is plain.
 ## Test IDs
 
 `mini-back`, `mini-save-note`, `mini-name`, `mini-status-badge`,
-`mini-faction`, `mini-add-faction`, `mini-workbench`,
+`mini-faction`, `mini-add-faction`, `mini-faction-search`,
+`mini-faction-result`, `mini-workbench`,
 `mini-menu`, `mini-change-origin`, `mini-leave`, `mini-delete`,
 `mini-leave-panel`, `mini-leave-reason` (with `data-reason`: `sold`,
 `given-away`, `stripped` or `lost`), `mini-leave-date`, `mini-leave-less`,
@@ -347,7 +356,7 @@ muted line, the "or" is plain.
 
 ## Open questions
 
-- What adding a faction offers; own factions have no data model yet.
+- Adding own factions; they have no data model yet.
 - Photos: how many per mini, and where files are stored.
 - How the status is changed past the sprue, and set back; the bar only
   shows it.

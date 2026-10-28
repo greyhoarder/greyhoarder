@@ -45,8 +45,9 @@ the sidebar, from top to bottom:
 gap, built like the group cards of [Box](box.md#layout):
 
 - Closed, a card shows a square photo placeholder with diagonal stripes;
-  the name, below it a line with the factions and the box (or "{n} boxes"
-  when its minis come from several), and below that the parts as small
+  the name, below it a line with the factions and the box, or for minis
+  without a box the kit they were added from (several counted: "{n}
+  boxes", "{n} kits" or "{n} boxes, {n} kits"), and below that the parts as small
   muted chips (none if there are none); on the right a small progress bar
   of the group's minis with a legend of the statuses the group has, each a
   colored dot, the count and the status; then "×{count}" and a chevron.
@@ -115,11 +116,11 @@ summary line.
 | Delete failed | Can't delete right now. Try again in a moment. |
 | Empty boxes dialog | {box name} has no minis left. Delete the box as well? — several: {n} boxes have no minis left: {box names}. Delete them as well? |
 | Empty boxes buttons | Keep box · Delete box — several: Keep boxes · Delete boxes |
-| Group origin line (cards) | {factions} · {box, "{n} boxes" or "Without box"} |
+| Group origin line (cards) | {factions} · {box, kit, "{n} boxes", "{n} kits", "{n} boxes, {n} kits" or "Without box"}; one: "1 box", "1 kit" |
 | Group legend | {count} {status} per status the group has |
 | Group toggle (accessible name) | {name} |
-| Mini line (cards) | {name}, Workbench; below: {box} #{number} or "Without box" |
-| Box of a mini (table) | {box} #{number}, or "Without box" |
+| Mini line (cards) | {name}, Workbench; below: {box} #{number}, the kit of a mini without a box, or "Without box" |
+| Box of a mini (table) | {box} #{number}, the kit of a mini without a box, or "Without box" |
 | Box number | #{number}, on box cards and in the boxes table |
 | Workbench tag | Workbench |
 | Status badge | On the sprue / Built / Primed / Painted / Done |
