@@ -10,6 +10,7 @@ import {
   signal,
   viewChildren,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -72,6 +73,7 @@ import { LongPress } from '../../ui/long-press/long-press';
 @Component({
   selector: 'app-box-detail-page',
   imports: [
+    NgTemplateOutlet,
     EitherOrName,
     RouterLink,
     NgIcon,
@@ -263,11 +265,6 @@ export class BoxDetailPage {
   protected readonly statusColor = STATUS_COLORS;
 
   protected readonly minisLabel = minisLabel;
-
-  /** Every built and gone mini, also those of closed groups and of the closed "Gone" section. */
-  protected selectAll(): void {
-    this.selection.selectAll(this.selectableMinis().map((mini) => mini.id));
-  }
 
   protected selectMini({ miniId, isSelected }: MiniSelectionChange): void {
     this.selection.select(miniId, isSelected);

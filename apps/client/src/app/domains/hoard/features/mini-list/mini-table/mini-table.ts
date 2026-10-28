@@ -54,10 +54,15 @@ export class MiniTable {
   readonly selectedIds = input<ReadonlySet<string>>(new Set());
 
   readonly selectedChange = output<RowSelection>();
+  /** The check in the header selects every line, or none once all are selected. */
+  readonly allSelectedChange = output<boolean>();
   /** Outside selection mode a click on a line opens its mini. */
   readonly opened = output<MiniRow>();
 
   protected readonly columns = COLUMNS;
+  protected readonly isAllSelected = computed(
+    () => this.rows().length > 0 && this.rows().every((line) => this.selectedIds().has(line.id)),
+  );
   protected readonly boxLabel = boxLabel;
   protected readonly sortOrder = signal<MiniSortOrder>('army');
   protected readonly sortDirection = signal<SortDirection>('ascending');

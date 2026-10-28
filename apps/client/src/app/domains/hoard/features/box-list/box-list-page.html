@@ -1,84 +1,79 @@
-<div class="mb-1 flex flex-wrap items-center gap-3">
-  <div hlmInputGroup class="h-10 w-full sm:w-80">
-    <div hlmInputGroupAddon>
-      <ng-icon name="lucideSearch" size="18" />
-    </div>
-    <input
-      hlmInputGroupInput
-      type="search"
-      placeholder="Search boxes"
-      aria-label="Search the boxes"
-      data-testid="hoard-box-search"
-      [value]="store.query()"
-      (input)="search($event)"
-    />
-  </div>
-
-  <app-filter-chip
-    label="Faction"
-    testIdPrefix="hoard-box-filter"
-    [options]="factionOptions()"
-    [selected]="store.factionFilter()"
-    (selectedChange)="store.factionFilter.set($event)"
-  />
-  <app-filter-chip
-    label="Progress"
-    testIdPrefix="hoard-box-filter"
-    [options]="progressOptions()"
-    [selected]="store.progressFilter()"
-    (selectedChange)="store.progressFilter.set($event)"
-  />
-  <app-filter-chip
-    label="Tag"
-    testIdPrefix="hoard-box-filter"
-    [options]="tagOptions()"
-    [selected]="store.tagFilter()"
-    (selectedChange)="store.tagFilter.set($event)"
-  />
-  @if (store.isFiltered()) {
-    <button
-      hlmBtn
-      variant="ghost"
-      type="button"
-      class="h-10 px-3 text-sm text-muted-foreground"
-      data-testid="hoard-box-filter-reset"
-      (click)="store.resetFilters()"
-    >
-      Reset
-      <ng-icon name="lucideX" size="16" />
-    </button>
-  }
-</div>
-
+<!-- While boxes are selected, the selection bar takes the place of the filters, so nothing moves. -->
 @if (store.isSelecting()) {
   <!-- Actions on the selection come with the backend. -->
-  <div
-    class="sticky top-0 z-10 flex items-center gap-3 rounded-xl border border-primary/60 bg-card p-2 pl-4"
-    data-testid="hoard-box-selection-bar"
-  >
-    <span class="flex-1 text-sm font-medium" data-testid="hoard-box-selection-count">
-      {{ store.selectedIds().size }} {{ store.selectedIds().size === 1 ? 'box' : 'boxes' }} selected
-    </span>
-    <button
-      hlmBtn
-      variant="ghost"
-      type="button"
-      class="h-9 text-sm"
-      data-testid="hoard-box-select-all"
-      (click)="store.selectAll()"
-    >
-      Select all
-    </button>
-    <button
-      hlmBtn
-      variant="secondary"
-      type="button"
-      class="h-9 text-sm"
-      data-testid="hoard-box-select-done"
-      (click)="store.finishSelecting()"
-    >
-      Done
-    </button>
+  <div class="sticky top-0 z-10 mb-3 bg-background" data-testid="hoard-box-selection-bar">
+    <div class="flex min-h-13 items-center gap-2">
+      <span
+        class="min-w-0 truncate px-1 text-sm font-semibold"
+        data-testid="hoard-box-selection-count"
+      >
+        {{ store.selectedIds().size }}
+        {{ store.selectedIds().size === 1 ? 'box' : 'boxes' }} selected
+      </span>
+      <button
+        hlmBtn
+        variant="ghost"
+        type="button"
+        class="h-10 px-3 text-sm text-muted-foreground hover:bg-transparent hover:text-foreground dark:hover:bg-transparent"
+        data-testid="hoard-box-select-done"
+        (click)="store.finishSelecting()"
+      >
+        Reset
+        <ng-icon name="lucideX" size="16" />
+      </button>
+    </div>
+  </div>
+} @else {
+  <div class="mb-3 flex min-h-13 flex-wrap items-center gap-3">
+    <div hlmInputGroup class="h-10 w-full sm:w-80">
+      <div hlmInputGroupAddon>
+        <ng-icon name="lucideSearch" size="18" />
+      </div>
+      <input
+        hlmInputGroupInput
+        type="search"
+        placeholder="Search boxes"
+        aria-label="Search the boxes"
+        data-testid="hoard-box-search"
+        [value]="store.query()"
+        (input)="search($event)"
+      />
+    </div>
+
+    <app-filter-chip
+      label="Faction"
+      testIdPrefix="hoard-box-filter"
+      [options]="factionOptions()"
+      [selected]="store.factionFilter()"
+      (selectedChange)="store.factionFilter.set($event)"
+    />
+    <app-filter-chip
+      label="Progress"
+      testIdPrefix="hoard-box-filter"
+      [options]="progressOptions()"
+      [selected]="store.progressFilter()"
+      (selectedChange)="store.progressFilter.set($event)"
+    />
+    <app-filter-chip
+      label="Tag"
+      testIdPrefix="hoard-box-filter"
+      [options]="tagOptions()"
+      [selected]="store.tagFilter()"
+      (selectedChange)="store.tagFilter.set($event)"
+    />
+    @if (store.isFiltered()) {
+      <button
+        hlmBtn
+        variant="ghost"
+        type="button"
+        class="h-10 px-3 text-sm text-muted-foreground"
+        data-testid="hoard-box-filter-reset"
+        (click)="store.resetFilters()"
+      >
+        Reset
+        <ng-icon name="lucideX" size="16" />
+      </button>
+    }
   </div>
 }
 
@@ -123,6 +118,7 @@
     [isSelectionMode]="store.isSelecting()"
     [selectedIds]="store.selectedIds()"
     (selectedChange)="select($event)"
+    (allSelectedChange)="$event ? store.selectAll() : store.finishSelecting()"
     (opened)="open($event)"
   />
   <p class="mt-1 text-sm text-muted-foreground" data-testid="hoard-box-summary">{{ summary() }}</p>

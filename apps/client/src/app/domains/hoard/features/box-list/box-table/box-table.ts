@@ -72,10 +72,15 @@ export class BoxTable {
   readonly isSelectionMode = input(false);
   readonly selectedIds = input<ReadonlySet<string>>(new Set());
   readonly selectedChange = output<BoxSelection>();
+  /** The check in the header selects every line, or none once all are selected. */
+  readonly allSelectedChange = output<boolean>();
   /** Outside selection mode a click on a line opens its box. */
   readonly opened = output<BoxRow>();
 
   protected readonly columns = COLUMNS;
+  protected readonly isAllSelected = computed(
+    () => this.boxes().length > 0 && this.boxes().every((line) => this.selectedIds().has(line.id)),
+  );
   protected readonly sortOrder = signal<BoxSortOrder>('added');
   protected readonly sortDirection = signal<SortDirection>('descending');
   protected readonly sortedBoxes = computed(() =>

@@ -4,27 +4,46 @@
   autoFocus="[data-slot=alert-dialog-cancel]"
   (closed)="closed.emit()"
 >
-  <hlm-alert-dialog-content *hlmAlertDialogPortal [attr.data-testid]="screen() + '-delete-dialog'">
-    <hlm-alert-dialog-header>
-      <h2 hlmAlertDialogTitle>
+  <hlm-alert-dialog-content
+    *hlmAlertDialogPortal
+    class="relative gap-0 overflow-hidden rounded-2xl p-0 shadow-2xl ring-border data-[size=default]:max-w-none sm:w-120 data-[size=default]:sm:max-w-120"
+    [attr.data-testid]="screen() + '-delete-dialog'"
+  >
+    <div
+      class="flex flex-col items-center gap-3 border-b bg-background/40 px-6 pt-7 pb-5.5 text-center sm:px-12"
+    >
+      <span class="flex size-12 items-center justify-center rounded-xl bg-primary/18 text-primary">
+        <ng-icon name="lucideBox" size="22" />
+      </span>
+      <h2 hlmAlertDialogTitle class="text-lg font-semibold">
         {{
           count() === 1 ? 'Delete this mini for good?' : 'Delete ' + count() + ' minis for good?'
         }}
       </h2>
-      <p hlmAlertDialogDescription>{{ names() }}. This can't be undone.</p>
-    </hlm-alert-dialog-header>
-    @if (hasFailed()) {
+      <p hlmAlertDialogDescription>This can't be undone.</p>
+    </div>
+    <div class="flex flex-col gap-3 px-6 pt-6 pb-5">
       <p
-        class="text-sm text-destructive"
-        role="alert"
-        [attr.data-testid]="screen() + '-delete-error'"
+        class="flex min-h-24 items-center justify-center rounded-lg bg-muted px-4 py-3 text-center text-sm"
       >
-        Can't delete right now. Try again in a moment.
+        {{ names() }}
       </p>
-    }
-    <hlm-alert-dialog-footer>
+      @if (hasFailed()) {
+        <p
+          class="text-sm text-destructive"
+          role="alert"
+          [attr.data-testid]="screen() + '-delete-error'"
+        >
+          Can't delete right now. Try again in a moment.
+        </p>
+      }
+    </div>
+    <hlm-alert-dialog-footer
+      class="m-0 grid grid-cols-2 gap-3 rounded-none border-0 bg-transparent px-6 pt-0 pb-6"
+    >
       <button
         hlmAlertDialogCancel
+        class="h-11"
         [disabled]="isDeleting()"
         [attr.data-testid]="screen() + '-delete-cancel'"
       >
@@ -33,7 +52,7 @@
       <button
         hlmAlertDialogAction
         variant="destructive"
-        class="font-semibold"
+        class="h-11 font-semibold"
         [disabled]="isDeleting()"
         [attr.aria-busy]="isDeleting()"
         [attr.data-testid]="screen() + '-delete-confirm'"
@@ -42,5 +61,16 @@
         {{ count() === 1 ? 'Delete mini' : 'Delete ' + count() + ' minis' }}
       </button>
     </hlm-alert-dialog-footer>
+    <!-- Last, so the focus starts on "Cancel" and not here. -->
+    <button
+      hlmAlertDialogCancel
+      variant="ghost"
+      size="icon"
+      class="absolute top-3 right-3 size-9 border-0 text-muted-foreground hover:text-foreground"
+      aria-label="Close"
+      [disabled]="isDeleting()"
+    >
+      <ng-icon name="lucideX" size="18" />
+    </button>
   </hlm-alert-dialog-content>
 </hlm-alert-dialog>

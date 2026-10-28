@@ -52,7 +52,7 @@
         appLongPress
         (longPress)="selectedChange.emit({ miniId: mini.id, isSelected: true })"
       >
-        <div class="relative z-10 shrink-0">
+        <div class="group/check relative z-10 shrink-0">
           <!-- Photos come later; until then every mini shows the same placeholder. -->
           <div class="size-10 rounded-md bg-muted bg-busy-stripes" aria-hidden="true"></div>
           <app-row-check

@@ -168,16 +168,6 @@
     </ul>
   </section>
 
-  @if (selection.isSelecting()) {
-    <app-selection-bar
-      screen="box"
-      [count]="selectedCount()"
-      [canLeave]="canLeave()"
-      (allSelected)="selectAll()"
-      (finished)="selection.finish()"
-      (deleteChosen)="deletion.ask(selection.selectedIds())"
-    />
-  }
   <app-delete-minis-dialog
     screen="box"
     [isOpen]="deletion.isAsking()"
@@ -223,12 +213,34 @@
             No minis in this box.
           </p>
         }
+        <ng-template #selectionBar>
+          <app-selection-bar
+            class="flex-1"
+            screen="box"
+            [count]="selectedCount()"
+            [canLeave]="canLeave()"
+            (finished)="selection.finish()"
+            (deleteChosen)="deletion.ask(selection.selectedIds())"
+          />
+        </ng-template>
+        <!-- Without built minis there is no heading to take the place of. -->
+        @if (groups().length === 0 && selection.isSelecting()) {
+          <ng-container *ngTemplateOutlet="selectionBar" />
+        }
         @if (groups().length > 0) {
           <section class="flex flex-col gap-3" aria-labelledby="box-minis-heading">
-            <div class="flex items-center justify-between gap-4">
-              <h2 class="font-semibold" id="box-minis-heading">
+            <!-- While minis are selected, the selection bar takes the place of the heading, so nothing moves. -->
+            <div class="flex min-h-13 items-center justify-between gap-4">
+              <h2
+                class="font-semibold"
+                id="box-minis-heading"
+                [class.sr-only]="selection.isSelecting()"
+              >
                 Minis <span class="font-normal text-muted-foreground">{{ builtCount() }}</span>
               </h2>
+              @if (selection.isSelecting()) {
+                <ng-container *ngTemplateOutlet="selectionBar" />
+              }
             </div>
             <div class="flex flex-col gap-2">
               @for (group of groups(); track group.id) {

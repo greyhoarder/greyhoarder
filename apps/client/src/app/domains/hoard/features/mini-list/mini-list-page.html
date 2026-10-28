@@ -1,82 +1,63 @@
-<div class="mb-1 flex flex-wrap items-center gap-3">
-  <div hlmInputGroup class="h-10 w-full sm:w-80">
-    <div hlmInputGroupAddon>
-      <ng-icon name="lucideSearch" size="18" />
-    </div>
-    <input
-      hlmInputGroupInput
-      type="search"
-      placeholder="Search name, part or box"
-      aria-label="Search the hoard"
-      data-testid="hoard-search"
-      [value]="store.query()"
-      (input)="search($event)"
-    />
-  </div>
-
-  <app-filter-chip
-    label="Faction"
-    [options]="factionOptions()"
-    [selected]="store.factionFilter()"
-    (selectedChange)="store.factionFilter.set($event)"
-  />
-  <app-filter-chip
-    label="Status"
-    [options]="statusOptions()"
-    [selected]="store.statusFilter()"
-    (selectedChange)="store.statusFilter.set($event)"
-  />
-  <app-filter-chip
-    label="Box"
-    [options]="boxOptions()"
-    [selected]="store.boxFilter()"
-    (selectedChange)="store.boxFilter.set($event)"
-  />
-  @if (store.isFiltered()) {
-    <button
-      hlmBtn
-      variant="ghost"
-      type="button"
-      class="h-10 px-3 text-sm text-muted-foreground"
-      data-testid="hoard-filter-reset"
-      (click)="store.resetFilters()"
-    >
-      Reset
-      <ng-icon name="lucideX" size="16" />
-    </button>
-  }
-</div>
-
+<!-- While minis are selected, the selection bar takes the place of the filters, so nothing moves. -->
 @if (store.isSelecting()) {
   <app-selection-bar
+    class="mb-3"
     screen="hoard"
     [count]="store.selectedCount()"
     [canLeave]="canLeave()"
-    (allSelected)="store.selectAll()"
     (finished)="store.finishSelecting()"
     (deleteChosen)="deletion.ask(store.selectedIds())"
   />
-}
-<app-delete-minis-dialog
-  screen="hoard"
-  [isOpen]="deletion.isAsking()"
-  [count]="deletion.count()"
-  [names]="deletion.names()"
-  [isDeleting]="deletion.isDeleting()"
-  [hasFailed]="deletion.hasFailed()"
-  (confirmed)="deleteSelected()"
-  (closed)="deletion.cancel()"
-/>
-<app-empty-boxes-dialog
-  screen="hoard"
-  [isOpen]="boxesDeletion.isAsking()"
-  [names]="boxesDeletion.names()"
-  [isDeleting]="boxesDeletion.isDeleting()"
-  [hasFailed]="boxesDeletion.hasFailed()"
-  (confirmed)="deleteEmptyBoxes()"
-  (closed)="boxesDeletion.cancel()"
-/>
+} @else {
+  <div class="mb-3 flex min-h-13 flex-wrap items-center gap-3">
+    <div hlmInputGroup class="h-10 w-full sm:w-80">
+      <div hlmInputGroupAddon>
+        <ng-icon name="lucideSearch" size="18" />
+      </div>
+      <input
+        hlmInputGroupInput
+        type="search"
+        placeholder="Search name, part or box"
+        aria-label="Search the hoard"
+        data-testid="hoard-search"
+        [value]="store.query()"
+        (input)="search($event)"
+      />
+    </div>
 
+    <app-filter-chip
+      label="Faction"
+      [options]="factionOptions()"
+      [selected]="store.factionFilter()"
+      (selectedChange)="store.factionFilter.set($event)"
+    />
+    <app-filter-chip
+      label="Status"
+      [options]="statusOptions()"
+      [selected]="store.statusFilter()"
+      (selectedChange)="store.statusFilter.set($event)"
+    />
+    <app-filter-chip
+      label="Box"
+      [options]="boxOptions()"
+      [selected]="store.boxFilter()"
+      (selectedChange)="store.boxFilter.set($event)"
+    />
+    @if (store.isFiltered()) {
+      <button
+        hlmBtn
+        variant="ghost"
+        type="button"
+        class="h-10 px-3 text-sm text-muted-foreground"
+        data-testid="hoard-filter-reset"
+        (click)="store.resetFilters()"
+      >
+        Reset
+        <ng-icon name="lucideX" size="16" />
+      </button>
+    }
+  </div>
+}
 @if (store.isLoading()) {
   <div
     class="flex flex-col gap-3"
@@ -120,6 +101,7 @@
     [isSelectionMode]="store.isSelecting()"
     [selectedIds]="store.selectedIds()"
     (selectedChange)="select($event)"
+    (allSelectedChange)="$event ? store.selectAll() : store.finishSelecting()"
     (opened)="open($event)"
   />
 } @else {
@@ -135,3 +117,24 @@
     />
   }
 }
+
+<!-- Last, so the dialogs add no gap between the filters and the minis. -->
+<app-delete-minis-dialog
+  screen="hoard"
+  [isOpen]="deletion.isAsking()"
+  [count]="deletion.count()"
+  [names]="deletion.names()"
+  [isDeleting]="deletion.isDeleting()"
+  [hasFailed]="deletion.hasFailed()"
+  (confirmed)="deleteSelected()"
+  (closed)="deletion.cancel()"
+/>
+<app-empty-boxes-dialog
+  screen="hoard"
+  [isOpen]="boxesDeletion.isAsking()"
+  [names]="boxesDeletion.names()"
+  [isDeleting]="boxesDeletion.isDeleting()"
+  [hasFailed]="boxesDeletion.hasFailed()"
+  (confirmed)="deleteEmptyBoxes()"
+  (closed)="boxesDeletion.cancel()"
+/>

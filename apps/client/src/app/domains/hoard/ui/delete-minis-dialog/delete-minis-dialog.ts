@@ -1,10 +1,13 @@
 import { Component, input, output } from '@angular/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideBox, lucideX } from '@ng-icons/lucide';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 
 /** Asks before selected minis are deleted for good, naming them (docs/screens/hoard.md, Behavior). */
 @Component({
   selector: 'app-delete-minis-dialog',
-  imports: [HlmAlertDialogImports],
+  imports: [HlmAlertDialogImports, NgIcon],
+  providers: [provideIcons({ lucideBox, lucideX })],
   templateUrl: './delete-minis-dialog.html',
 })
 export class DeleteMinisDialog {

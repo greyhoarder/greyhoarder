@@ -55,4 +55,35 @@ describe('Mini table', () => {
     expect(ascending).toBe('On the sprue');
     expect(firstStatus()).toBe('Done');
   });
+
+  describe('with the check in the header', () => {
+    const render = async (selectedIds: string[]) => {
+      const fixture = TestBed.createComponent(MiniTable);
+      fixture.componentRef.setInput('rows', ROWS);
+      fixture.componentRef.setInput('selectedIds', new Set(selectedIds));
+      await fixture.whenStable();
+      const allSelectedChange = vi.fn();
+      fixture.componentInstance.allSelectedChange.subscribe(allSelectedChange);
+      const check = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+        '[data-testid="hoard-select-all"]',
+      );
+      return { check, allSelectedChange };
+    };
+
+    it('selects every mini with the check in the header', async () => {
+      const { check, allSelectedChange } = await render(['1']);
+
+      check?.click();
+
+      expect(allSelectedChange).toHaveBeenCalledExactlyOnceWith(true);
+    });
+
+    it('selects no mini with the check in the header once all are selected', async () => {
+      const { check, allSelectedChange } = await render(['1', '2', '3']);
+
+      check?.click();
+
+      expect(allSelectedChange).toHaveBeenCalledExactlyOnceWith(false);
+    });
+  });
 });

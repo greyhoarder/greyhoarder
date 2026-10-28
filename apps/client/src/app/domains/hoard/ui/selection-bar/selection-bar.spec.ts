@@ -55,17 +55,25 @@ describe('Selection bar', () => {
     expect(deleteChosen).toHaveBeenCalledOnce();
   });
 
-  it('offers to select all, let the minis leave and delete them from its menu', async () => {
+  it('ends the selection with "Reset"', async () => {
+    const { fixture, find } = await render();
+    const finished = vi.fn();
+    fixture.componentInstance.finished.subscribe(finished);
+    const reset = find('hoard-select-done');
+
+    reset?.click();
+
+    expect(reset?.textContent?.trim()).toBe('Reset');
+    expect(finished).toHaveBeenCalledOnce();
+  });
+
+  it('offers to let the minis leave and delete them from its menu', async () => {
     const { fixture, find } = await render();
     find('hoard-selection-menu')?.click();
     await fixture.whenStable();
 
     const items = [...document.querySelectorAll('[role="menu"] [role="menuitem"]')];
 
-    expect(items.map((item) => item.textContent?.trim())).toEqual([
-      'Select all',
-      'Leave the hoard…',
-      'Delete…',
-    ]);
+    expect(items.map((item) => item.textContent?.trim())).toEqual(['Leave the hoard…', 'Delete']);
   });
 });

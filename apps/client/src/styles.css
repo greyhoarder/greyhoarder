@@ -8,6 +8,12 @@
 @import '@fontsource-variable/geist/wght.css';
 
 /*
+ * A pointer resting on the element, also on devices that report a touch screen as well as a
+ * mouse, where Tailwind's `hover` does not apply.
+ */
+@custom-variant pointer-over (&:hover);
+
+/*
  * Greyhoarder theme. The single source of color, font and shape values;
  * components use these tokens only (docs/design-system.md).
  * Neutral grey surfaces with gold as the only accent.

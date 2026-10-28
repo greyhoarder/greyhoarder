@@ -1,15 +1,27 @@
-<div class="flex items-center gap-2 rounded-xl border border-primary/60 bg-card p-2 pl-4">
+<div class="flex min-h-13 items-center gap-2">
   <span
-    class="flex-1 truncate text-sm font-medium"
+    class="min-w-0 truncate px-1 text-sm font-semibold"
     [attr.data-testid]="screen() + '-selection-count'"
   >
     {{ count() }} {{ count() === 1 ? 'mini' : 'minis' }} selected
   </span>
   <button
     hlmBtn
+    variant="ghost"
+    type="button"
+    class="h-10 px-3 text-sm text-muted-foreground hover:bg-transparent hover:text-foreground dark:hover:bg-transparent"
+    [attr.data-testid]="screen() + '-select-done'"
+    (click)="finished.emit()"
+  >
+    Reset
+    <ng-icon name="lucideX" size="16" />
+  </button>
+  <span class="flex-1"></span>
+  <button
+    hlmBtn
     variant="outline"
     type="button"
-    class="h-9 text-sm"
+    class="h-10 px-3.5 text-sm"
     [disabled]="count() === 0"
     [attr.data-testid]="screen() + '-selection-edit'"
     (click)="editChosen.emit()"
@@ -20,44 +32,34 @@
     hlmBtn
     variant="outline"
     type="button"
-    class="hidden h-9 text-sm @2xl:inline-flex"
+    class="hidden h-10 px-3.5 text-sm @xl:inline-flex"
     [disabled]="!canLeave()"
     [attr.data-testid]="screen() + '-selection-leave'"
     (click)="leaveChosen.emit()"
   >
     Leave the hoard…
   </button>
+  <span class="mx-1 hidden h-6 w-px bg-border @xl:block" aria-hidden="true"></span>
   <button
     hlmBtn
     variant="outline"
     type="button"
-    class="hidden h-9 text-sm text-destructive @2xl:inline-flex"
+    class="hidden h-10 border-destructive/50 px-3.5 text-sm text-destructive hover:text-destructive @xl:inline-flex dark:border-destructive/50"
     [disabled]="count() === 0"
     [attr.data-testid]="screen() + '-selection-delete'"
     (click)="deleteChosen.emit()"
   >
-    Delete…
-  </button>
-  <span class="mx-1 hidden h-6 w-px bg-border @2xl:block" aria-hidden="true"></span>
-  <button
-    hlmBtn
-    variant="ghost"
-    type="button"
-    class="hidden h-9 text-sm @2xl:inline-flex"
-    [attr.data-testid]="screen() + '-select-all'"
-    (click)="allSelected.emit()"
-  >
-    Select all
+    Delete
   </button>
 
-  <hlm-popover class="@2xl:hidden" align="end" sideOffset="6">
+  <hlm-popover class="@xl:hidden" align="end" sideOffset="6">
     <button
       hlmPopoverTrigger
       hlmBtn
-      variant="outline"
+      variant="ghost"
       size="icon"
       type="button"
-      class="size-9"
+      class="size-10"
       aria-label="More actions for the selection"
       [attr.aria-haspopup]="'menu'"
       [attr.data-testid]="screen() + '-selection-menu'"
@@ -88,15 +90,4 @@
       }
     </ul>
   </hlm-popover>
-
-  <button
-    hlmBtn
-    variant="secondary"
-    type="button"
-    class="h-9 text-sm"
-    [attr.data-testid]="screen() + '-select-done'"
-    (click)="finished.emit()"
-  >
-    Done
-  </button>
 </div>

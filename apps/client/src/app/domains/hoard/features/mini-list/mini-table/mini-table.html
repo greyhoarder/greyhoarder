@@ -2,7 +2,15 @@
   <table hlmTable data-testid="hoard-table">
     <thead hlmTHead>
       <tr hlmTr>
-        <th hlmTh class="w-10"><span class="sr-only">Selection</span></th>
+        <th hlmTh class="group/check w-10">
+          <app-row-check
+            testId="hoard-select-all"
+            label="Select all minis"
+            [isSelected]="isAllSelected()"
+            [isVisible]="isSelectionMode()"
+            (selectedChange)="allSelectedChange.emit($event)"
+          />
+        </th>
         @for (column of columns; track column.order) {
           <th hlmTh [attr.aria-sort]="ariaSort(column)">
             <button
@@ -36,7 +44,7 @@
           (longPress)="select(row, true)"
           (click)="onRowClick(row)"
         >
-          <td hlmTd>
+          <td hlmTd class="group/check">
             <app-row-check
               [label]="'Select ' + row.name"
               [isSelected]="selectedIds().has(row.id)"
