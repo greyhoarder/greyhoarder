@@ -23,8 +23,11 @@ import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmPopoverImports } from '@spartan-ng/helm/popover';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
+import type { FoundFaction } from '../../../catalog/api';
 import { FactionNames } from '../../application/faction-names';
+import { FactionSearch } from '../../application/faction-search';
 import { MiniEditor } from '../../application/minis/mini-editor';
+import { AddFaction } from '../../ui/add-faction/add-faction';
 import { BuildAs } from '../../ui/build-as/build-as';
 import { BuildBar } from '../../ui/build-bar/build-bar';
 import { DeletePanel } from '../../ui/delete-panel/delete-panel';
@@ -46,6 +49,7 @@ import { EitherOrName } from '../../ui/either-or-name/either-or-name';
 @Component({
   selector: 'app-mini-detail-page',
   imports: [
+    AddFaction,
     EitherOrName,
     RouterLink,
     NgIcon,
@@ -62,6 +66,7 @@ import { EitherOrName } from '../../ui/either-or-name/either-or-name';
   ],
   providers: [
     MiniEditor,
+    FactionSearch,
     provideIcons({
       lucideBrush,
       lucideCamera,
@@ -82,6 +87,7 @@ export class MiniDetailPage {
   readonly from = input<string>();
 
   protected readonly editor = inject(MiniEditor);
+  protected readonly factionSearch = inject(FactionSearch);
   private readonly factionNames = inject(FactionNames);
   private readonly title = inject(Title);
   private readonly router = inject(Router);
@@ -95,8 +101,17 @@ export class MiniDetailPage {
       : { link: ['/hoard/minis'], label: 'Hoard' };
   });
 
+  /** Gives the faction to the minis and closes the search. */
+  protected chooseFaction(faction: FoundFaction): void {
+    this.editor.addFaction(faction);
+    this.factionSearch.close();
+  }
+
   protected readonly factions = computed(() =>
-    this.editor.factionIds().map((id) => ({ id, name: this.factionNames.names().get(id) ?? id })),
+    this.editor.factionIds().map((id) => ({
+      id,
+      name: this.editor.addedFactionNames().get(id) ?? this.factionNames.names().get(id) ?? id,
+    })),
   );
   /** How far the mini is, 0 to 100, weighted like a box's progress. */
   protected readonly percent = computed(() => progressPercent([this.editor.status()]));

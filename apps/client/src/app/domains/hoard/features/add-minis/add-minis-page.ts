@@ -55,9 +55,10 @@ export class AddMinisPage {
       return;
     }
     this.openKey.set(key);
-    const { name, factionId, parts } = mini;
+    const { name, factionId, parts, kit } = mini;
     this.addition.start({
       name,
+      kit: { id: kit.id, version: kit.version },
       ...(factionId === undefined
         ? {}
         : { faction: { id: factionId, name: factionName ?? factionId } }),

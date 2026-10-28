@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-/** The catalog kit a box was added from, as it was then. */
+/** The catalog kit a box or a mini without a box was added from, as it was then. */
 @Schema({ _id: false })
-class BoxKitDbo {
+export class BoxKitDbo {
   @Prop({ type: String, required: true })
   kitId: string;
 

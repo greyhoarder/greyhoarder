@@ -1,4 +1,10 @@
-import { type HobbyStatus, type Mini, type MiniPart, parseMini } from '@greyhoarder/domain/hoard';
+import {
+  type BoxKitReference,
+  type HobbyStatus,
+  type Mini,
+  type MiniPart,
+  parseMini,
+} from '@greyhoarder/domain/hoard';
 
 /** Alike minis to add without a box, from the catalog or put together by the user. */
 export interface LooseMinis {
@@ -7,6 +13,8 @@ export interface LooseMinis {
   readonly status: HobbyStatus;
   readonly parts: readonly MiniPart[];
   readonly notes?: string;
+  /** The catalog kit they come from; none for minis the user put together. */
+  readonly kit?: BoxKitReference;
   readonly count: number;
 }
 

@@ -1,6 +1,6 @@
 import { isGone, type Mini } from '@greyhoarder/domain/hoard';
 import type { CatalogMini, CatalogMiniSearchResult } from '../../../catalog/api';
-import { catalogMiniKey, factionText, kitsText } from './catalog-mini-labels';
+import { catalogMiniKey, factionText, kitText } from './catalog-mini-labels';
 
 /** A catalog mini as its card offers it to be added. */
 export interface MiniOffer {
@@ -11,8 +11,8 @@ export interface MiniOffer {
   readonly faction: string;
   /** The faction's name alone, e.g. "Orks". */
   readonly factionName?: string;
-  /** The kits it comes from, e.g. "Boyz · 2026, Nobz · 2009". */
-  readonly kits: string;
+  /** The kit it comes from, e.g. "Boyz · 2026". */
+  readonly kit: string;
   /** Minis of the hoard with this name, ignoring case, and faction that are not gone. */
   readonly owned: number;
 }
@@ -26,7 +26,7 @@ export function toMiniOffers(result: CatalogMiniSearchResult, hoard: readonly Mi
       mini,
       key: catalogMiniKey(mini),
       faction: factionText(mini, factionNames, systemNames),
-      kits: kitsText(mini),
+      kit: kitText(mini),
       owned: owned.get(ownedKey(mini.name, mini.factionId)) ?? 0,
     };
     return mini.factionId === undefined

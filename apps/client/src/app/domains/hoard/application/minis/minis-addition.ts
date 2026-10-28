@@ -5,7 +5,7 @@ import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import type { PartChange } from '../../models/mini-changes';
-import { MIN_MINIS, type MinisToAdd } from '../../models/minis-to-add';
+import { type KitVersion, MIN_MINIS, type MinisToAdd } from '../../models/minis-to-add';
 import type { PartOption } from '../../models/part-options';
 import { suggestionKit } from './suggestion-kit';
 import { minisLabel } from '../../util/kit-labels';
@@ -24,6 +24,8 @@ export interface AdditionStart {
   readonly faction?: ChosenFaction;
   /** The parts the catalog suggests for the name; offered first by the part picker. */
   readonly suggestedParts?: readonly string[];
+  /** The catalog kit the minis come from. */
+  readonly kit?: KitVersion;
 }
 
 /**
@@ -49,6 +51,7 @@ export class MinisAddition {
   readonly notes = signal('');
   readonly isPickerOpen = signal(false);
   private readonly suggestedParts = signal<readonly string[]>([]);
+  private readonly kit = signal<KitVersion | undefined>(undefined);
 
   readonly isAdding = signal(false);
   readonly hasAddFailed = signal(false);
@@ -79,6 +82,7 @@ export class MinisAddition {
     this.name.set(start.name ?? '');
     this.factions.set(start.faction ? [start.faction] : []);
     this.suggestedParts.set(start.suggestedParts ?? []);
+    this.kit.set(start.kit);
     this.status.set('built');
     this.count.set(MIN_MINIS);
     this.parts.set([]);
@@ -155,7 +159,9 @@ export class MinisAddition {
 
   private minisToAdd(): MinisToAdd {
     const notes = this.notes().trim();
+    const kit = this.kit();
     return {
+      ...(kit === undefined ? {} : { kit }),
       name: this.name().trim(),
       factionIds: this.factionIds(),
       status: this.status(),

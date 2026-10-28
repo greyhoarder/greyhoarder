@@ -1,4 +1,4 @@
-import { type Kit, type Mini, type MiniPart, sprueMinis } from '@greyhoarder/domain/hoard';
+import { isGone, type Kit, type Mini, type MiniPart, sprueMinis } from '@greyhoarder/domain/hoard';
 import { slotsOf, sprueOffer } from './kit-slots';
 
 // Building minis that were on the sprue (docs/screens/mini.md).
@@ -6,7 +6,8 @@ import { slotsOf, sprueOffer } from './kit-slots';
 /** A name the kit of a box suggests, and how many minis of the box are left for it. */
 export interface BuildSuggestion {
   readonly name: string;
-  readonly left: number;
+  /** Left out without a box to count them in. */
+  readonly left?: number;
 }
 
 /**
@@ -37,6 +38,22 @@ export function buildSuggestions(
     ).length;
     return { name, left: Math.max(0, provided(kit, name) - usedUp) };
   });
+}
+
+/**
+ * What a mini without a box can be built as: added from a catalog kit, the names of the kit's slots
+ * that offer its name, each once in the kit's order, or without one every name of the kit; without
+ * a kit, its own name while it is on the sprue. Nothing is left to count without a box.
+ */
+export function looseSuggestions(mini: Mini, kit: Kit | undefined): BuildSuggestion[] {
+  const name = mini.sprueName ?? mini.name;
+  if (kit === undefined) {
+    return mini.status === 'sprue' && !isGone(mini) ? [{ name }] : [];
+  }
+  const slots = slotsOf(kit);
+  const offering = slots.filter((slot) => slot.names.includes(name));
+  const names = (offering.length > 0 ? offering : slots).flatMap((slot) => slot.names);
+  return [...new Set(names)].map((suggested) => ({ name: suggested }));
 }
 
 /**

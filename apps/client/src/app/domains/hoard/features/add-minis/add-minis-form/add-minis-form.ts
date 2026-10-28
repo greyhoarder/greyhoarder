@@ -24,7 +24,7 @@ import { StatusChoice } from '../../../ui/status-choice/status-choice';
       [parts]="addition.parts()"
       [isPickerOpen]="addition.isPickerOpen()"
       [source]="addition.partSource()"
-      [boxName]="kits()"
+      [boxName]="kit()"
       [rangeName]="addition.rangeName()"
       (removed)="addition.removePart($event)"
       (swappableToggled)="addition.toggleSwappable($event)"
@@ -54,8 +54,8 @@ import { StatusChoice } from '../../../ui/status-choice/status-choice';
 export class AddMinisForm {
   protected readonly addition = inject(MinisAddition);
 
-  /** The kits the mini comes from, for "From the kit · {kits}" in the part picker. */
-  readonly kits = input.required<string>();
+  /** The kit the mini comes from, for "From the kit · {kit}" in the part picker. */
+  readonly kit = input.required<string>();
 
   protected readonly statuses = hobbyStatuses;
 }

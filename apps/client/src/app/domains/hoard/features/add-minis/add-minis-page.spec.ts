@@ -14,7 +14,7 @@ const catalogMini = (name: string): CatalogMini => ({
   name,
   factionId: 'warhammer-40000/orks',
   parts: [],
-  kits: [{ id: 'boyz-2026', name: 'Boyz', year: 2026, isDraft: false }],
+  kit: { id: 'boyz-2026', version: 1, name: 'Boyz', year: 2026, isDraft: false },
 });
 
 const found = (minis: readonly CatalogMini[]): CatalogMiniSearchResult => ({

@@ -2,9 +2,9 @@ import { TestBed } from '@angular/core/testing';
 import type { FoundFaction } from '../../../../catalog/api';
 import { FactionPicker } from './faction-picker';
 
-const ORKS: FoundFaction = {
-  id: 'warhammer-40000/orks',
-  name: 'Orks',
+const SPACE_MARINES: FoundFaction = {
+  id: 'warhammer-40000/space-marines',
+  name: 'Space Marines',
   systemName: 'Warhammer 40,000',
 };
 
@@ -46,13 +46,13 @@ describe('Faction picker', () => {
   });
 
   it('adds a faction found by the search', async () => {
-    const { fixture, find } = await render({ isOpen: true, results: [ORKS] });
+    const { fixture, find } = await render({ isOpen: true, results: [SPACE_MARINES] });
     const added = vi.fn();
     fixture.componentInstance.added.subscribe(added);
 
     find('add-custom-faction-result')[0]?.click();
 
-    expect(added).toHaveBeenCalledExactlyOnceWith(ORKS);
+    expect(added).toHaveBeenCalledExactlyOnceWith(SPACE_MARINES);
   });
 
   it('closes the search with Escape', async () => {

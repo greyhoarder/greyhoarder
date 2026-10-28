@@ -1,4 +1,5 @@
 import { type CatalogKit, oldestYear } from '../catalog/index.js';
+import type { BoxKitReference } from './box.js';
 
 /** A slot of a kit's variant: how many minis, what they can be built as, which parts come with them. */
 export interface KitSlot {
@@ -99,4 +100,9 @@ export function kitName(kit: Kit): string {
 /** The name a box of the kit gets, with its edition: "Boyz (2026)". */
 export function boxKitName(kit: Kit): string {
   return kit.year === undefined ? kitName(kit) : `${kitName(kit)} (${kit.year})`;
+}
+
+/** The kit as a box or a mini without a box records it: its name with the edition and its product code. */
+export function kitReferenceOf(kit: Kit): BoxKitReference {
+  return { id: kit.id, version: kit.version, name: boxKitName(kit), sku: kit.sku };
 }

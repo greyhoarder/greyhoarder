@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, resource } from '@angular/core';
-import type { Part } from '@greyhoarder/domain/hoard';
 import { HttpPartsAdapter } from '../infrastructure/http-parts-adapter';
+import type { VocabularyPart } from '../models/part-options';
 
 /** The user's vocabulary of parts as the server has it, which names the parts of every mini. */
 @Injectable({ providedIn: 'root' })
@@ -10,7 +10,7 @@ export class PartsStore {
   private readonly loaded = resource({ loader: () => this.adapter.list() });
 
   /** Empty until loaded, and when it can't be loaded: minis then show no part names. */
-  readonly parts = computed<readonly Part[]>(() =>
+  readonly parts = computed<readonly VocabularyPart[]>(() =>
     this.loaded.hasValue() ? this.loaded.value() : [],
   );
   /** The name of each part, by id. */

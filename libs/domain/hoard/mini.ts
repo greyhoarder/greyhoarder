@@ -1,4 +1,5 @@
 import { InvalidMiniError } from './errors/invalid-mini.error.js';
+import type { BoxKitReference } from './box.js';
 import type { HobbyStatus } from './hobby-status.js';
 import type { Departure } from './mini-departure.js';
 
@@ -26,6 +27,11 @@ export interface Mini {
   readonly sprueName?: string;
   /** The box it came out of; minis bought loose have none. */
   readonly boxId?: string;
+  /**
+   * The catalog kit a mini without a box was added from, as it was then; minis of a box have their
+   * box's, and minis put together by the user have none.
+   */
+  readonly kit?: BoxKitReference;
   readonly isOnWorkbench: boolean;
   /** Set once the mini left the hoard while its record stays; deleted minis are gone for good. */
   readonly departure?: Departure;

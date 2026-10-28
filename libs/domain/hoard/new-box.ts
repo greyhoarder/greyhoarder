@@ -1,6 +1,6 @@
 import type { Box } from './box.js';
 import { EmptyBoxError } from './errors/empty-box.error.js';
-import { boxKitName, type Kit } from './kit.js';
+import { boxKitName, type Kit, kitReferenceOf } from './kit.js';
 import { type Mini, parseMini } from './mini.js';
 import { sprueMinis } from './sprue-minis.js';
 
@@ -35,7 +35,7 @@ export function newBoxes(
     const box: Box = {
       id: newId(),
       name,
-      kit: { id: kit.id, version: kit.version, name, sku: kit.sku },
+      kit: kitReferenceOf(kit),
       factionIds: kit.factionIds,
       tags: boxesToAdd.tags,
       addedOn,

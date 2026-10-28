@@ -6,7 +6,8 @@ let nextId = 0;
 /** A name the kit suggests and how many the box has left for it. */
 export interface NameSuggestion {
   readonly name: string;
-  readonly left: number;
+  /** Left out without a box to count them in; the tile then says nothing below the name. */
+  readonly left?: number;
 }
 
 /**
@@ -38,6 +39,9 @@ export class BuildAs {
   protected readonly tiles = computed(() =>
     this.suggestions().map(({ name, left }) => {
       const isChosen = !this.hasOwnName() && name === this.name();
+      if (left === undefined) {
+        return { name, isChosen, isEmpty: false, isWarning: false, hint: '' };
+      }
       const isTooMany = isChosen && this.count() > left;
       return {
         name,

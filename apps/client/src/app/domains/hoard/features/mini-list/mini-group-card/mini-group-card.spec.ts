@@ -20,6 +20,7 @@ const group = (rows: MiniRow[]): HoardGroup => ({
   factions: ['Orks'],
   parts: ['Slugga', 'Choppa'],
   boxes: [...new Set(rows.map((each) => each.box))],
+  kits: [],
   rows,
   counts: { built: rows.length },
 });

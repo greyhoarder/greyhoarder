@@ -12,7 +12,7 @@ import type { CatalogMiniSearchResult } from '../models/catalog-mini-search-resu
 export class HttpCatalogMinisAdapter {
   private readonly http = inject(HttpClient);
 
-  /** The catalog minis whose name, or the name of a kit they come from, contains the text, ignoring case. */
+  /** The catalog minis for which every word of the text is in their name, a kit's or their faction's, best first. */
   async search(text: string): Promise<CatalogMiniSearchResult> {
     const params: CatalogMiniSearchRequest = { search: text };
     const response = await firstValueFrom(

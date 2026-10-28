@@ -19,12 +19,18 @@ import {
 import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { areAlike } from '../../models/mini-alikeness';
-import { buildSuggestions, preselectedParts } from '../../models/mini-build';
+import {
+  type BuildSuggestion,
+  buildSuggestions,
+  looseSuggestions,
+  preselectedParts,
+} from '../../models/mini-build';
 import type { MiniChanges, PartChange } from '../../models/mini-changes';
 import type { PartOption } from '../../models/part-options';
 import { eitherOrText } from '../../util/either-or';
 import { BoxesStore } from '../../data/boxes-store';
 import { FactionNames } from '../faction-names';
+import { HoardChanges } from '../hoard-changes';
 import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
 
@@ -58,6 +64,7 @@ export class MiniEditor {
   private readonly minisStore = inject(MinisStore);
   private readonly boxesStore = inject(BoxesStore);
   private readonly partsStore = inject(PartsStore);
+  private readonly hoardChanges = inject(HoardChanges);
   private readonly factionNames = inject(FactionNames);
   private readonly minisAdapter = inject(HttpMinisAdapter);
   private readonly catalogKits = inject(HttpKitsAdapter);
@@ -106,19 +113,24 @@ export class MiniEditor {
       ? undefined
       : this.boxesStore.boxes().find((box) => box.id === boxId);
   });
+  /** The kit of the minis' box, or else the catalog kit a mini without a box was added from. */
+  private readonly kitReference = computed(() => {
+    const mini = this.mini();
+    return mini?.boxId === undefined ? mini?.kit : this.box()?.kit;
+  });
   private readonly loadedKit = resource({
-    params: () => this.box()?.kit,
+    params: () => this.kitReference(),
     loader: async ({ params: { id, version } }): Promise<Kit | undefined> => {
       const { kits, containedKits } = await this.catalogKits.find(id, version);
       return kits[0] && toKit(kits[0], containedKits);
     },
   });
-  /** The kit of the minis' box; left out while loading, when it can't be loaded and without a box. */
+  /** The kit of the minis' box or of a mini without one; left out while loading, when it can't be loaded and without a kit. */
   readonly kit = computed(() => (this.loadedKit.hasValue() ? this.loadedKit.value() : undefined));
-  /** The box's name as plain text, e.g. for "Suggested by {box name}". */
-  readonly boxName = computed(() => {
-    const box = this.box();
-    return box && eitherOrText(box.name);
+  /** The name of the box, or else of the kit, as plain text, e.g. for "Suggested by {name}". */
+  readonly originName = computed(() => {
+    const name = this.box()?.name ?? this.kitReference()?.name;
+    return name && eitherOrText(name);
   });
 
   /** The parts of the catalog kits of the minis' factions and those they are part of. */
@@ -153,9 +165,16 @@ export class MiniEditor {
       : this.minisStore.minis().filter((mini) => mini.boxId === boxId);
   });
 
-  readonly suggestions = computed(() => {
+  readonly suggestions = computed((): readonly BuildSuggestion[] => {
+    const mini = this.mini();
     const kit = this.kit();
-    return kit ? buildSuggestions(kit, this.minisOfBox(), this.mini()?.sprueName) : [];
+    if (mini === undefined) {
+      return [];
+    }
+    if (mini.boxId === undefined) {
+      return looseSuggestions(mini, kit);
+    }
+    return kit ? buildSuggestions(kit, this.minisOfBox(), mini.sprueName) : [];
   });
   private readonly suggestedNames = computed(() =>
     this.suggestions().map((suggestion) => suggestion.name),
@@ -281,6 +300,22 @@ export class MiniEditor {
     }
   }
 
+  /** The names of the factions given here; the hoard knows only those its minis and boxes have. */
+  readonly addedFactionNames = signal<ReadonlyMap<string, string>>(new Map());
+
+  addFaction({ id, name }: { readonly id: string; readonly name: string }): void {
+    this.addedFactionNames.update((names) => new Map([...names, [id, name]]));
+    if (this.factionIds().includes(id)) {
+      return;
+    }
+    const factionIds = [...this.factionIds(), id];
+    if (this.isOnSprue()) {
+      this.chosenFactionIds.set(factionIds);
+      return;
+    }
+    void this.save({ factionIds });
+  }
+
   removeFaction(id: string): void {
     const factionIds = this.factionIds().filter((factionId) => factionId !== id);
     if (this.isOnSprue()) {
@@ -340,7 +375,7 @@ export class MiniEditor {
         notes: this.notes(),
         isOnWorkbench: this.chosenWorkbench(),
       });
-      this.afterSave(changed, this.parts());
+      this.afterSave(changed);
     } catch {
       this.saveState.set('failed');
     } finally {
@@ -353,7 +388,7 @@ export class MiniEditor {
     const ids = this.firstOfRow(count);
     this.saveState.set('saving');
     try {
-      this.afterSave(await this.minisAdapter.update(ids, { departure }), []);
+      this.afterSave(await this.minisAdapter.update(ids, { departure }));
       return true;
     } catch {
       this.saveState.set('failed');
@@ -378,8 +413,7 @@ export class MiniEditor {
     this.saveState.set('saving');
     try {
       const { emptiedBoxIds, minis } = await this.minisAdapter.delete(ids);
-      this.minisStore.remove(ids);
-      this.minisStore.apply(minis);
+      this.hoardChanges.removed(ids, minis);
       this.saveState.set('saved');
       return { isDeleted: true, emptiedBoxIds };
     } catch {
@@ -411,19 +445,16 @@ export class MiniEditor {
         this.row().map((mini) => mini.id),
         changes,
       );
-      this.afterSave(changed, changes.parts ?? []);
+      this.afterSave(changed);
     } catch {
       this.saveState.set('failed');
     }
   }
 
-  /** Shows what the server stored; the vocabulary loads anew only when parts were added to it by name. */
-  private afterSave(changed: readonly Mini[], parts: readonly (PartDraft | PartChange)[]): void {
+  /** Shows what the server stored. */
+  private afterSave(changed: readonly Mini[]): void {
     this.saveState.set('saved');
-    this.minisStore.apply(changed);
-    if (parts.some((part) => !('partId' in part) || part.partId === undefined)) {
-      this.partsStore.reload();
-    }
+    this.hoardChanges.changed(changed);
   }
 
   private links(minis: readonly Mini[]): MiniLink[] {

@@ -5,7 +5,7 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
 import type { CatalogMini } from '../../../../catalog/api';
 
 /**
- * One catalog mini to add: a header with its name, faction and the kits it comes from, which opens
+ * One catalog mini to add: a header with its name, faction and the kit it comes from, which opens
  * the form projected into it below.
  */
 @Component({
@@ -45,7 +45,7 @@ import type { CatalogMini } from '../../../../catalog/api';
         </span>
         <span class="truncate text-sm" data-testid="add-minis-mini-faction">{{ faction() }}</span>
         <span class="truncate text-xs text-muted-foreground" data-testid="add-minis-mini-kits"
-          >From {{ kits() }}</span
+          >From {{ kit() }}</span
         >
       </span>
       @if (owned() > 0) {
@@ -67,8 +67,8 @@ export class CatalogMiniCard {
   readonly mini = input.required<CatalogMini>();
   /** "{faction} · {game system}". */
   readonly faction = input.required<string>();
-  /** The kits it comes from, e.g. "Boyz · 2026, Nobz · 2009". */
-  readonly kits = input.required<string>();
+  /** The kit it comes from, e.g. "Boyz · 2026". */
+  readonly kit = input.required<string>();
   /** Only one card of the list is open at a time. */
   readonly isOpen = input(false);
   /** Minis of this name and faction in the hoard that are not gone. */
@@ -77,6 +77,6 @@ export class CatalogMiniCard {
   readonly formId = input.required<string>();
   readonly toggled = output();
 
-  /** Not checked while every kit it comes from is a draft. */
-  protected readonly isDraft = computed(() => this.mini().kits.every((kit) => kit.isDraft));
+  /** Not checked while its kit is a draft. */
+  protected readonly isDraft = computed(() => this.mini().kit.isDraft);
 }

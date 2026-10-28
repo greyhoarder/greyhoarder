@@ -39,6 +39,9 @@ export abstract class CatalogKitQueries {
    */
   abstract findKitParts(factionIds: readonly string[]): Promise<string[]>;
 
+  /** Those of the names that a slot of a latest kit that is not removed offers as a part, ignoring case. */
+  abstract findOfferedPartNames(names: readonly string[]): Promise<string[]>;
+
   /** The names of the game systems of the latest factions with these ids, by faction id. */
   abstract findSystemNames(factionIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
 }

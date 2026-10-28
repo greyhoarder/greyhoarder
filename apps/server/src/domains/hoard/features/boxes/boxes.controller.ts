@@ -23,7 +23,7 @@ import { CurrentUser } from '../../../../shared/auth/current-user.decorator.js';
 import { BoxesService } from './boxes.service.js';
 import { AddBoxesRequestDto } from './dtos/add-boxes-request.dto.js';
 import { UnknownBoxError } from './errors/unknown-box.error.js';
-import { UnknownKitError } from './errors/unknown-kit.error.js';
+import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 
 /**
  * The boxes of the signed-in user's hoard: list them (GET), add boxes of a catalog kit (POST),

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { type Box, type Mini, type Part, partKey } from '@greyhoarder/domain/hoard';
 import type { ClientSession, Connection, Model } from 'mongoose';
+import type { HoardChange } from '../../models/hoard-change.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { BoxDbo } from './schemas/mongo-box-schema.js';
 import { MiniDbo } from './schemas/mongo-mini-schema.js';
@@ -53,6 +54,12 @@ function toMini(stored: MiniDbo): Mini {
     notes: stored.notes,
     sprueName: stored.sprueName,
     boxId: stored.boxId,
+    kit: stored.kit && {
+      id: stored.kit.kitId,
+      version: stored.kit.version,
+      name: stored.kit.name,
+      sku: stored.kit.sku,
+    },
     isOnWorkbench: stored.isOnWorkbench,
     departure: stored.departure && {
       reason: stored.departure.reason,
@@ -73,6 +80,12 @@ function toMiniDbo(ownerId: string, mini: Mini): MiniDbo {
     notes: mini.notes,
     sprueName: mini.sprueName,
     boxId: mini.boxId,
+    kit: mini.kit && {
+      kitId: mini.kit.id,
+      version: mini.kit.version,
+      name: mini.kit.name,
+      sku: mini.kit.sku,
+    },
     isOnWorkbench: mini.isOnWorkbench,
     departure: mini.departure && {
       reason: mini.departure.reason,
@@ -171,11 +184,7 @@ export class MongoHoardRepository extends HoardRepository {
     return stored.map(toPart);
   }
 
-  async updateMinis(
-    ownerId: string,
-    minis: readonly Mini[],
-    newParts: readonly Part[],
-  ): Promise<void> {
+  async updateMinis(ownerId: string, { changed, newParts = [], droppedPartIds }: HoardChange): Promise<void> {
     await this.connection.transaction(async (session) => {
       if (newParts.length > 0) {
         await this.parts.insertMany(
@@ -184,22 +193,24 @@ export class MongoHoardRepository extends HoardRepository {
         );
       }
       // Only what a mini's owner can change; box, sprue name and creation stay as they are.
-      await this.writeMinis(ownerId, minis, session);
+      await this.writeMinis(ownerId, changed, session);
+      await this.deleteDroppedParts(ownerId, droppedPartIds, session);
     });
   }
 
   async deleteMinis(
     ownerId: string,
     miniIds: readonly string[],
-    changed: readonly Mini[],
+    { changed, droppedPartIds }: HoardChange,
   ): Promise<void> {
     await this.connection.transaction(async (session) => {
       await this.minis.deleteMany({ ownerId, _id: { $in: miniIds } }, { session });
       await this.writeMinis(ownerId, changed, session);
+      await this.deleteDroppedParts(ownerId, droppedPartIds, session);
     });
   }
 
-  async deleteBox(ownerId: string, boxId: string, changed: readonly Mini[]): Promise<string[]> {
+  async deleteBox(ownerId: string, boxId: string, { changed, droppedPartIds }: HoardChange): Promise<string[]> {
     return this.connection.transaction(async (session) => {
       // Read inside the transaction, so a mini added to the box meanwhile goes with it.
       const minis = await this.minis
@@ -210,9 +221,28 @@ export class MongoHoardRepository extends HoardRepository {
       await this.minis.deleteMany({ ownerId, boxId }, { session });
       await this.boxes.deleteOne({ ownerId, _id: boxId }, { session });
       await this.writeMinis(ownerId, changed, session);
+      await this.deleteDroppedParts(ownerId, droppedPartIds, session);
       return miniIds;
     });
   }
+
+  /** Deletes the dropped terms, but none a mini still refers to: they may be carried elsewhere. */
+  private async deleteDroppedParts(
+    ownerId: string,
+    droppedPartIds: readonly string[],
+    session: ClientSession,
+  ): Promise<void> {
+    if (droppedPartIds.length === 0) {
+      return;
+    }
+    const stillCarried: unknown[] = await this.minis
+      .distinct('parts.partId', { ownerId, 'parts.partId': { $in: droppedPartIds } })
+      .session(session)
+      .exec();
+    const carriedIds = stillCarried.filter((id): id is string => typeof id === 'string');
+    await this.parts.deleteMany({ ownerId, _id: { $in: droppedPartIds, $nin: carriedIds } }, { session });
+  }
+
 
   /** Only what a mini's owner can change; box, sprue name and creation stay as they are. */
   private async writeMinis(

@@ -9,6 +9,7 @@ export {
   type KitSlot,
   type KitVariant,
   kitName,
+  kitReferenceOf,
   toKit,
 } from './kit.js';
 export {

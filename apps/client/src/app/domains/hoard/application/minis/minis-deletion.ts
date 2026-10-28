@@ -3,6 +3,7 @@ import type { Mini } from '@greyhoarder/domain/hoard';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { eitherOrText } from '../../util/either-or';
 import { MinisStore } from '../../data/minis-store';
+import { HoardChanges } from '../hoard-changes';
 
 /**
  * Deleting selected minis for good after asking: what the delete dialog says about them, and the
@@ -11,6 +12,7 @@ import { MinisStore } from '../../data/minis-store';
 @Injectable()
 export class MinisDeletion {
   private readonly minisStore = inject(MinisStore);
+  private readonly hoardChanges = inject(HoardChanges);
   private readonly adapter = inject(HttpMinisAdapter);
 
   /**
@@ -59,8 +61,7 @@ export class MinisDeletion {
     this.hasFailed.set(false);
     try {
       const { emptiedBoxIds, minis } = await this.adapter.delete(ids);
-      this.minisStore.remove(ids);
-      this.minisStore.apply(minis);
+      this.hoardChanges.removed(ids, minis);
       this.isAsking.set(false);
       return { isDeleted: true, emptiedBoxIds };
     } catch {

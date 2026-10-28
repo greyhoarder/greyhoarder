@@ -16,6 +16,8 @@ export interface MiniRow {
   readonly factions: readonly string[];
   /** Name of the origin box; minis without a box have none. */
   readonly box?: string;
+  /** The catalog kit a mini without a box was added from, e.g. "Boyz (2026)". */
+  readonly kit?: string;
   /** Id of the origin box, which tells boxes with the same name apart. */
   readonly boxId?: string;
   /** Number of the origin box among those with its name, e.g. 2 for "Boyz (2026) #2". */
@@ -71,6 +73,7 @@ function rowOf(
     name: mini.name,
     factions: factionNamesOf(mini.factionIds, factionNames),
     box: mini.boxId === undefined ? undefined : byId.get(mini.boxId)?.name,
+    kit: mini.boxId === undefined ? mini.kit?.name : undefined,
     boxId: mini.boxId,
     boxNumber: mini.boxId === undefined ? undefined : byId.get(mini.boxId)?.number,
     parts: mini.parts.flatMap((part) => partNames.get(part.partId) ?? []),

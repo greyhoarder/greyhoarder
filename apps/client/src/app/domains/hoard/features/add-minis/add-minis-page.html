@@ -61,14 +61,14 @@
           <app-catalog-mini-card
             [mini]="offer.mini"
             [faction]="offer.faction"
-            [kits]="offer.kits"
+            [kit]="offer.kit"
             [isOpen]="openKey() === offer.key"
             [owned]="offer.owned"
             [formId]="formId"
             (toggled)="toggle(offer)"
           >
             @if (openKey() === offer.key) {
-              <app-add-minis-form [id]="formId" [kits]="offer.kits" />
+              <app-add-minis-form [id]="formId" [kit]="offer.kit" />
             }
           </app-catalog-mini-card>
         </li>

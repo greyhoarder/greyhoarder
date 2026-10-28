@@ -2,7 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import type { Box, Mini, Part } from '@greyhoarder/domain/hoard';
-import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
+import {
+  HttpCatalogFactionsAdapter,
+  HttpCatalogPartsAdapter,
+  HttpKitsAdapter,
+} from '../../../catalog/api';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
@@ -81,6 +85,7 @@ describe('Mini page', () => {
   let fixture: ComponentFixture<MiniDetailPage>;
   let update: ReturnType<typeof vi.fn>;
   let list: ReturnType<typeof vi.fn>;
+  let listParts: ReturnType<typeof vi.fn>;
 
   /** A fresh page for the mini with this id, whose hoard holds what `loadMinis` answers. */
   function showMini(
@@ -107,7 +112,7 @@ describe('Mini page', () => {
             update,
           },
         },
-        { provide: HttpPartsAdapter, useValue: { list: vi.fn(async () => PARTS) } },
+        { provide: HttpPartsAdapter, useValue: { list: (listParts = vi.fn(async () => PARTS)) } },
         {
           provide: HttpKitsAdapter,
           useValue: {
@@ -119,6 +124,18 @@ describe('Mini page', () => {
           },
         },
         { provide: HttpCatalogPartsAdapter, useValue: { rangeParts: vi.fn(async () => []) } },
+        {
+          provide: HttpCatalogFactionsAdapter,
+          useValue: {
+            search: vi.fn(async () => [
+              {
+                id: 'warhammer-40000/space-marines',
+                name: 'Space Marines',
+                systemName: 'Warhammer 40,000',
+              },
+            ]),
+          },
+        },
       ],
     });
     fixture = TestBed.createComponent(MiniDetailPage);
@@ -194,6 +211,51 @@ describe('Mini page', () => {
     ]);
   });
 
+  it('offers a mini on the sprue without a box its own name, chosen', async () => {
+    const loose: Mini = {
+      id: 'n1',
+      name: 'Nob',
+      factionIds: [ORKS],
+      status: 'sprue',
+      parts: [],
+      sprueName: 'Nob',
+      isOnWorkbench: false,
+    };
+    showMini('n1', () => Promise.resolve([loose]));
+
+    await fixture.whenStable();
+
+    const tiles = all('mini-build-as').map((tile) => [
+      tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim(),
+      tile.getAttribute('aria-pressed'),
+    ]);
+    expect(tiles).toEqual([['Nob', 'true']]);
+  });
+
+  it("offers a mini without a box what its kit's slot can build it as", async () => {
+    const loose: Mini = {
+      id: 'l1',
+      name: 'Loota',
+      factionIds: [ORKS],
+      status: 'sprue',
+      parts: [],
+      sprueName: 'Loota',
+      kit: { id: LOOTAS_KIT.id, version: 1, name: 'Lootas / Burna Boyz (2008)' },
+      isOnWorkbench: false,
+    };
+    showMini('l1', () => Promise.resolve([loose]));
+
+    await fixture.whenStable();
+
+    const tiles = all('mini-build-as').map((tile) => [
+      tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim(),
+      tile.querySelector('[data-testid="mini-name-left"]'),
+      tile.getAttribute('aria-pressed'),
+    ]);
+    expect(tiles).toEqual([['Loota', null, 'true']]);
+    expect(fixture.nativeElement.textContent).toContain('Suggested by Lootas or Burna Boyz (2008)');
+  });
+
   it('preselects the parts for the chosen name', async () => {
     showMini('m1');
     await fixture.whenStable();
@@ -257,6 +319,35 @@ describe('Mini page', () => {
     await click(all('mini-workbench')[0]);
 
     expect(update).toHaveBeenCalledWith(['m1'], { isOnWorkbench: true });
+  });
+
+  it('gives a built mini a faction found by the search', async () => {
+    showMini('m1', () => Promise.resolve(BUILT));
+    await fixture.whenStable();
+    await click(all('mini-add-faction')[0]);
+    // The search opens in a popover outside the page.
+    const field = document.querySelector<HTMLInputElement>('[data-testid="mini-faction-search"]');
+    if (field) {
+      field.value = 'space';
+      field.dispatchEvent(new Event('input'));
+    }
+    await fixture.whenStable();
+
+    document.querySelector<HTMLElement>('[data-testid="mini-faction-result"]')?.click();
+    await fixture.whenStable();
+
+    expect(update).toHaveBeenCalledWith(['m1'], {
+      factionIds: [ORKS, 'warhammer-40000/space-marines'],
+    });
+  });
+
+  it('loads the vocabulary anew after a change of parts', async () => {
+    showMini('m1', () => Promise.resolve(BUILT));
+    await fixture.whenStable();
+
+    await click(all('mini-part-remove')[0]);
+
+    expect(listParts).toHaveBeenCalledTimes(2);
   });
 
   it('shows what the server stored after a change without loading the hoard again', async () => {

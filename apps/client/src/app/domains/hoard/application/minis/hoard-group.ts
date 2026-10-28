@@ -18,6 +18,8 @@ export interface HoardGroup {
    * for minis without a box.
    */
   readonly boxes: readonly (string | undefined)[];
+  /** The catalog kits its minis without a box were added from, once each. */
+  readonly kits: readonly string[];
   /** One row per mini, furthest status first, gone ones last, then by box. */
   readonly rows: readonly MiniRow[];
   /** How many of the minis that are not gone stand at each status. */
@@ -49,12 +51,16 @@ export function toHoardGroups(rows: readonly MiniRow[]): HoardGroup[] {
       parts: first.parts,
       boxes: [
         ...new Map(
-          members.map((row) => [
-            row.boxId ?? row.box,
-            row.box === undefined ? undefined : boxLabel(row.box, row.boxNumber),
-          ]),
+          members
+            // A mini added from a kit counts among the kits, not as one without a box.
+            .filter((row) => row.box !== undefined || row.kit === undefined)
+            .map((row) => [
+              row.boxId ?? row.box,
+              row.box === undefined ? undefined : boxLabel(row.box, row.boxNumber),
+            ]),
         ).values(),
       ],
+      kits: [...new Set(members.flatMap((row) => row.kit ?? []))],
       rows: [...members].sort(byFurthestStatus),
       counts,
     };

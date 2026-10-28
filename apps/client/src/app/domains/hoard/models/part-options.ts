@@ -1,6 +1,11 @@
 import { findPart, type Kit, type Part, partKey } from '@greyhoarder/domain/hoard';
 import { sprueOffer } from './kit-slots';
 
+/** A term of the user's vocabulary, and whether a catalog kit offers a part of its name. */
+export interface VocabularyPart extends Part {
+  readonly isFromCatalog?: boolean;
+}
+
 /** A part the picker offers: one of the vocabulary, or a catalog part not yet in it. */
 export interface PartOption {
   readonly name: string;
@@ -25,8 +30,9 @@ export const RANGE_LIMIT = 20;
 /**
  * What the part picker offers for a filter text (docs/screens/mini.md): the parts the kit offers for
  * the minis' sprue name first, then
- * the rest of the vocabulary by name, and while filtering the parts of the range not offered above;
- * never the parts the minis already carry. A part matches when its name or an alias contains the
+ * the user's own terms of the vocabulary by name, and while filtering the parts of the range not
+ * offered above, those of the vocabulary that come from the catalog included; never the parts the
+ * minis already carry. A part matches when its name or an alias contains the
  * text, ignoring case.
  */
 export function partOptions(
@@ -35,7 +41,7 @@ export function partOptions(
     readonly kit?: Kit;
     /** Offers the kit's parts for minis with this sprue name only. */
     readonly sprueName?: string;
-    readonly vocabulary: readonly Part[];
+    readonly vocabulary: readonly VocabularyPart[];
     readonly range: readonly string[];
     readonly carried: readonly string[];
   },
@@ -66,7 +72,8 @@ export function partOptions(
   const fromKit = kitOptions
     .filter((part) => !isCarried(part.name))
     .flatMap((part) => matching(part) ?? []);
-  const fromVocabulary = vocabulary
+  const ownTerms = vocabulary.filter((known) => known.isFromCatalog !== true);
+  const fromVocabulary = ownTerms
     .filter(
       (known) => !kitOptions.some((part) => part.partId === known.id) && !isCarried(known.name),
     )
@@ -74,15 +81,19 @@ export function partOptions(
     .sort((a, b) => a.name.localeCompare(b.name))
     .flatMap((part) => matching(part) ?? []);
   const isOffered = (name: string) =>
-    [...kitOptions, ...vocabulary].some((part) => partKey(part.name) === partKey(name)) ||
-    findPart(vocabulary, name) !== undefined;
+    [...kitOptions, ...ownTerms].some((part) => partKey(part.name) === partKey(name)) ||
+    findPart(ownTerms, name) !== undefined;
   const fromRange =
     needle === ''
       ? []
       : parts.range
           .filter((name) => !isOffered(name) && !isCarried(name) && partKey(name).includes(needle))
           .slice(0, RANGE_LIMIT)
-          .map((name) => ({ name }));
+          .map((name) => {
+            // A catalog part used before is its term of the vocabulary.
+            const known = findPart(vocabulary, name);
+            return known ? { name: known.name, partId: known.id } : { name };
+          });
   const isKnown =
     findPart(vocabulary, filter) !== undefined ||
     [...kitParts, ...parts.range, ...carried].some((name) => partKey(name) === needle);

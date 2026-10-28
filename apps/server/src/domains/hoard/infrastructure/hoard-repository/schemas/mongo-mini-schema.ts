@@ -5,6 +5,7 @@ import {
   type HobbyStatus,
   hobbyStatuses,
 } from '@greyhoarder/domain/hoard';
+import { BoxKitDbo } from './mongo-box-schema.js';
 
 /** Stored form of a `MiniPart`. */
 @Schema({ _id: false })
@@ -32,6 +33,7 @@ export class DepartureDbo {
 }
 
 const DepartureSchema = SchemaFactory.createForClass(DepartureDbo);
+const KitSchema = SchemaFactory.createForClass(BoxKitDbo);
 
 /** Stored form of a `Mini`; its `_id` is the `Mini`'s `id`. */
 @Schema({ collection: 'minis', timestamps: true })
@@ -63,6 +65,9 @@ export class MiniDbo {
   @Prop({ type: String })
   boxId?: string;
 
+  @Prop({ type: KitSchema })
+  kit?: BoxKitDbo;
+
   @Prop({ type: Boolean, required: true })
   isOnWorkbench: boolean;
 
@@ -74,5 +79,6 @@ export const MiniSchema = SchemaFactory.createForClass(MiniDbo);
 
 MiniSchema.index({ ownerId: 1 });
 MiniSchema.index({ boxId: 1 });
+MiniSchema.index({ 'kit.kitId': 1 });
 MiniSchema.index({ 'parts.partId': 1 });
 MiniSchema.index({ 'departure.recipientMiniIds': 1 });

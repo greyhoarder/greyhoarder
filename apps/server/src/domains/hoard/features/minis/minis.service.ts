@@ -1,17 +1,22 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import {
+  type BoxKitReference,
   type Departure,
   type HobbyStatus,
+  kitReferenceOf,
   type Mini,
   parseDeparture,
   parseMini,
+  toKit,
   withDeparture,
   withStatus,
 } from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries } from '../../../catalog/api/index.js';
 import { type LooseMinis, looseMinis } from '../../models/loose-minis.js';
 import { emptiedBoxIds, withoutDeletedRecipients } from '../../models/mini-deletion.js';
+import { droppedParts } from '../../models/dropped-parts.js';
+import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 import { type PartChange, resolveParts } from '../../models/part-changes.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { UnknownMinisError } from './errors/unknown-minis.error.js';
@@ -38,7 +43,11 @@ export interface MiniChanges {
 }
 
 /** Alike minis to add without a box; parts as in changes. */
-export type MinisToAdd = Omit<LooseMinis, 'parts'> & { readonly parts: readonly PartChange[] };
+export type MinisToAdd = Omit<LooseMinis, 'parts' | 'kit'> & {
+  readonly parts: readonly PartChange[];
+  /** The catalog kit in the version the search found. */
+  readonly kit?: { readonly id: string; readonly version: number };
+};
 
 /** What deleting minis changed besides them. */
 export interface MinisDeletion {
@@ -72,13 +81,31 @@ export class MinisService {
    *
    * @throws UnknownPartError when a part refers to an id that is not in the owner's vocabulary
    * @throws UnknownFactionError when a faction is neither a catalog faction nor a game system
+   * @throws UnknownKitError when the catalog has no such version of the kit
    */
   async add(ownerId: string, minis: MinisToAdd): Promise<Mini[]> {
     await this.checkFactions(minis.factionIds);
+    const { kit: wanted, ...alike } = minis;
+    const kit = wanted && (await this.kitReference(wanted));
     const { parts, newParts } = resolveParts(await this.hoard.findParts(ownerId), minis.parts, randomUUID);
-    const added = looseMinis({ ...minis, parts }, randomUUID);
+    const added = looseMinis({ ...alike, parts, ...(kit ? { kit } : {}) }, randomUUID);
     await this.hoard.addMinis(ownerId, added, newParts);
     return added;
+  }
+
+  /** The kit in that version, as a box records it. */
+  private async kitReference({
+    id,
+    version,
+  }: {
+    readonly id: string;
+    readonly version: number;
+  }): Promise<BoxKitReference> {
+    const found = await this.catalog.findKitVersion(id, version);
+    if (found === undefined) {
+      throw new UnknownKitError(id);
+    }
+    return kitReferenceOf(toKit({ ...found.entry, version: found.version }, new Map()));
   }
 
   /**
@@ -108,7 +135,11 @@ export class MinisService {
       next = departure === undefined ? next : withDeparture(next, departure ?? undefined);
       return parseMini(next);
     });
-    await this.hoard.updateMinis(ownerId, changed, resolved?.newParts ?? []);
+    await this.hoard.updateMinis(ownerId, {
+      changed,
+      newParts: resolved?.newParts ?? [],
+      droppedPartIds: droppedParts(minis, changed),
+    });
     return changed;
   }
 
@@ -127,7 +158,7 @@ export class MinisService {
     }
     const staying = all.filter((mini) => !deleted.has(mini.id));
     const changed = withoutDeletedRecipients(staying, deleted);
-    await this.hoard.deleteMinis(ownerId, [...deleted], changed);
+    await this.hoard.deleteMinis(ownerId, [...deleted], { changed, droppedPartIds: droppedParts(minis, []) });
     return { emptiedBoxIds: emptiedBoxIds(minis, staying), minis: changed };
   }
 

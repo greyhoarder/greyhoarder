@@ -30,6 +30,8 @@
       @if (row().boxNumber; as number) {
         #{{ number }}
       }
+    } @else if (row().kit; as kit) {
+      <app-either-or-name [name]="kit" />
     } @else {
       Without box
     }

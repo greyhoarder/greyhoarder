@@ -90,4 +90,98 @@ test.describe('Mini', () => {
     await expect(page).toHaveURL(boxUrl);
     await expect(page.getByTestId('box-name')).toBeVisible();
   });
+
+  test('builds a mini added on the sprue without a box', async ({ page, signedIn }) => {
+    await page.goto(`${signedIn.url}/hoard/add/minis`);
+    await page.getByTestId('add-minis-search').fill('Nob');
+    await page
+      .getByTestId('add-minis-mini')
+      .filter({ has: page.getByTestId('add-minis-mini-name').getByText('Nob', { exact: true }) })
+      .first()
+      .click();
+    await page.getByTestId('add-minis-status').filter({ hasText: 'On the sprue' }).click();
+    await page.getByTestId('add-minis-submit').click();
+    await page.getByTestId('add-minis-added-show').click();
+    await page.getByTestId('hoard-group-toggle').click();
+    await page.getByTestId('hoard-row').click();
+
+    await page.getByTestId('mini-build').click();
+
+    await expect(page.getByTestId('mini-status-badge')).toHaveText('Built');
+    await expect(page.getByTestId('mini-build-as').filter({ hasText: 'Nob' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(page.getByTestId('mini-box')).toContainText('From the kit');
+  });
+
+  test('gives a built mini another faction', async ({ page, signedIn }) => {
+    await openLootas(page, signedIn.url);
+
+    await page.getByTestId('mini-add-faction').click();
+    await page.getByTestId('mini-faction-search').fill('space');
+    await page
+      .getByTestId('mini-faction-result')
+      .filter({ hasText: 'Space Marines' })
+      .first()
+      .click();
+    await expect(page.getByTestId('mini-faction')).toHaveCount(2);
+    await page.reload();
+
+    await expect(page.getByTestId('mini-faction')).toHaveText(['Orks', 'Space Marines']);
+  });
+
+  test("offers only the user's own parts under \"Your parts\"", async ({ page, signedIn }) => {
+    const add = (name: string, parts: readonly string[]) =>
+      page.request.post(`${signedIn.url}/api/hoard/minis`, {
+        data: {
+          name,
+          factionIds: ['warhammer-40000/orks'],
+          status: 'built',
+          parts: parts.map((part) => ({ name: part, isSwappable: false })),
+          count: 1,
+        },
+        headers: { Origin: signedIn.url },
+      });
+    expect((await add('Loota', ['Deffgun', 'Grot Banner'])).ok()).toBe(true);
+    const nob = await add('Nob', []);
+    const [{ id }] = ((await nob.json()) as { minis: { id: string }[] }).minis;
+    await page.goto(`${signedIn.url}/hoard/minis/${id}`);
+
+    await page.getByTestId('mini-add-part').click();
+
+    await expect(
+      page.locator('[data-testid="mini-part-group"][data-group="vocabulary"] [data-testid="mini-part-option"]'),
+    ).toHaveText(['+ Grot Banner']);
+  });
+
+  test("removes a part of the user's own from the vocabulary once no mini carries it", async ({
+    page,
+    signedIn,
+  }) => {
+    const add = async (name: string, parts: readonly string[]) => {
+      const added = await page.request.post(`${signedIn.url}/api/hoard/minis`, {
+        data: {
+          name,
+          factionIds: ['warhammer-40000/orks'],
+          status: 'built',
+          parts: parts.map((part) => ({ name: part, isSwappable: false })),
+          count: 1,
+        },
+        headers: { Origin: signedIn.url },
+      });
+      expect(added.ok()).toBe(true);
+      return ((await added.json()) as { minis: { id: string }[] }).minis[0]?.id;
+    };
+    const loota = await add('Loota', ['Grot Banner']);
+    const nob = await add('Nob', []);
+    await page.goto(`${signedIn.url}/hoard/minis/${loota}`);
+    await page.getByTestId('mini-part-remove').click();
+    await expect(page.getByTestId('mini-part')).toHaveCount(0);
+    await page.goto(`${signedIn.url}/hoard/minis/${nob}`);
+
+    await page.getByTestId('mini-add-part').click();
+
+    await expect(page.locator('[data-testid="mini-part-group"][data-group="vocabulary"]')).toHaveCount(0);
+  });
 });

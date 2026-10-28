@@ -10,10 +10,11 @@ import {
 } from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries, findContainedKits } from '../../../catalog/api/index.js';
 import { nextBoxNumber } from '../../models/box-numbers.js';
+import { droppedParts } from '../../models/dropped-parts.js';
 import { withoutDeletedRecipients } from '../../models/mini-deletion.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { UnknownBoxError } from './errors/unknown-box.error.js';
-import { UnknownKitError } from './errors/unknown-kit.error.js';
+import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 
 export interface BoxList {
   readonly boxes: readonly Box[];
@@ -100,12 +101,16 @@ export class BoxesService {
       throw new UnknownBoxError();
     }
     const all = await this.hoard.findMinis(ownerId);
-    const deleted = new Set(all.filter((mini) => mini.boxId === boxId).map((mini) => mini.id));
+    const minisOfBox = all.filter((mini) => mini.boxId === boxId);
+    const deleted = new Set(minisOfBox.map((mini) => mini.id));
     const changed = withoutDeletedRecipients(
       all.filter((mini) => !deleted.has(mini.id)),
       deleted,
     );
-    const deletedMiniIds = await this.hoard.deleteBox(ownerId, boxId, changed);
+    const deletedMiniIds = await this.hoard.deleteBox(ownerId, boxId, {
+      changed,
+      droppedPartIds: droppedParts(minisOfBox, []),
+    });
     return { deletedMiniIds, minis: changed };
   }
 }

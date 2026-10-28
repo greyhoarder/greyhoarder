@@ -84,15 +84,16 @@
             </li>
           }
         </ul>
-        <!-- Adding factions comes with own factions. -->
-        <button
-          type="button"
-          class="inline-flex h-8 items-center rounded-full border border-dashed border-muted-foreground/60 px-3 text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-          aria-label="Add a faction"
-          data-testid="mini-add-faction"
-        >
-          + Faction
-        </button>
+        <app-add-faction
+          testId="mini"
+          [chosenIds]="editor.factionIds()"
+          [isOpen]="factionSearch.isOpen()"
+          [query]="factionSearch.query()"
+          [results]="factionSearch.results()"
+          (queryChange)="factionSearch.query.set($event)"
+          (added)="chooseFaction($event)"
+          (toggled)="factionSearch.toggle()"
+        />
       </div>
     </div>
 
@@ -234,7 +235,7 @@
           [suggestions]="editor.suggestions()"
           [name]="editor.name()"
           [ownName]="editor.ownName()"
-          [boxName]="editor.boxName()"
+          [boxName]="editor.originName()"
           [count]="editor.isOnSprue() ? 1 : 0"
           (nameChosen)="editor.chooseName($event)"
           (ownNameChange)="editor.ownName.set($event)"
@@ -246,7 +247,7 @@
           [hint]="partsHint()"
           [isPickerOpen]="isPickerOpen()"
           [source]="editor.partSource()"
-          [boxName]="editor.boxName()"
+          [boxName]="editor.originName()"
           [rangeName]="editor.rangeName()"
           (removed)="editor.removePart($event)"
           (swappableToggled)="editor.toggleSwappable($event)"
@@ -274,6 +275,12 @@
             [box]="box"
             [kit]="editor.kit()"
             [percent]="boxPercent()"
+            [name]="editor.buildName() || editor.name()"
+          />
+        } @else if (editor.mini()?.kit; as kitReference) {
+          <app-mini-box-card
+            [kit]="editor.kit()"
+            [kitReference]="kitReference"
             [name]="editor.buildName() || editor.name()"
           />
         } @else {

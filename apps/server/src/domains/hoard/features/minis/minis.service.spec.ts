@@ -76,7 +76,7 @@ describe('Minis service', () => {
 
     expect(updateMinis).toHaveBeenCalledOnce();
     const [, stored] = updateMinis.mock.calls[0] ?? [];
-    expect(stored?.map(({ id, name, status, parts }) => ({ id, name, status, parts }))).toEqual(
+    expect(stored?.changed.map(({ id, name, status, parts }) => ({ id, name, status, parts }))).toEqual(
       ['boy', 'boy-2'].map((id) => ({
         id,
         name: 'Boss Nob',
@@ -93,7 +93,7 @@ describe('Minis service', () => {
     const [mini] = await service.update('owner', ['boy'], { parts: [{ name: 'power claw', isSwappable: false }] });
 
     expect(mini?.parts).toEqual([{ partId: 'power-klaw', isSwappable: false }]);
-    expect(updateMinis).toHaveBeenCalledWith('owner', expect.anything(), []);
+    expect(updateMinis).toHaveBeenCalledWith('owner', expect.objectContaining({ newParts: [] }));
   });
 
   it('adds a name the vocabulary does not know to it, once', async () => {
@@ -104,7 +104,8 @@ describe('Minis service', () => {
       parts: [{ name: 'Grot Banner', isSwappable: false }],
     });
 
-    const [, , newParts] = updateMinis.mock.calls[0] ?? [];
+    const [, change] = updateMinis.mock.calls[0] ?? [];
+    const newParts = change?.newParts;
     expect(newParts?.map((part) => part.name)).toEqual(['Grot Banner']);
     expect(minis.map((mini) => mini.parts[0]?.partId)).toEqual([newParts?.[0]?.id, newParts?.[0]?.id]);
   });
@@ -154,7 +155,49 @@ describe('Minis service', () => {
 
     const { emptiedBoxIds } = await service.delete('owner', ['boy']);
 
-    expect(deleteMinis).toHaveBeenCalledWith('owner', ['boy'], []);
+    expect(deleteMinis).toHaveBeenCalledWith('owner', ['boy'], expect.objectContaining({ changed: [] }));
     expect(emptiedBoxIds).toEqual(['boyz']);
+  });
+
+  it('records the catalog kit the minis are added from', async () => {
+    const addMinis = vi.fn<HoardRepository['addMinis']>(() => Promise.resolve());
+    const { hoard } = fakeHoard([]);
+    hoard.addMinis = addMinis;
+    const catalog = {
+      findFactionNames: () => Promise.resolve(new Map([['warhammer-40000/orks', 'Orks']])),
+      findKitVersion: () =>
+        Promise.resolve({
+          entry: {
+            id: 'games-workshop/orks/boyz-2026',
+            manufacturer: 'games-workshop',
+            name: 'Boyz',
+            factionIds: ['warhammer-40000/orks'],
+            releases: [{ year: 2026, sku: '50-80' }],
+            minis: 10,
+            isDraft: false,
+            contains: [],
+            variants: [],
+          },
+          version: 1,
+          isRemoved: false,
+        }),
+    } as unknown as CatalogKitQueries;
+    const service = new MinisService(hoard, catalog);
+
+    const [added] = await service.add('owner', {
+      name: 'Boy',
+      factionIds: ['warhammer-40000/orks'],
+      status: 'sprue',
+      parts: [],
+      kit: { id: 'games-workshop/orks/boyz-2026', version: 1 },
+      count: 1,
+    });
+
+    expect(added?.kit).toEqual({
+      id: 'games-workshop/orks/boyz-2026',
+      version: 1,
+      name: 'Boyz (2026)',
+      sku: '50-80',
+    });
   });
 });

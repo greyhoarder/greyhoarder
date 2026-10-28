@@ -3,6 +3,7 @@ import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { eitherOrText } from '../../util/either-or';
 import { BoxesStore } from '../../data/boxes-store';
 import { MinisStore } from '../../data/minis-store';
+import { HoardChanges } from '../hoard-changes';
 
 /**
  * Deleting boxes for good after asking, with all their minis: boxes left empty by deleting minis,
@@ -12,6 +13,7 @@ import { MinisStore } from '../../data/minis-store';
 @Injectable()
 export class BoxesDeletion {
   private readonly minisStore = inject(MinisStore);
+  private readonly hoardChanges = inject(HoardChanges);
   private readonly boxesStore = inject(BoxesStore);
   private readonly adapter = inject(HttpBoxesAdapter);
 
@@ -62,8 +64,7 @@ export class BoxesDeletion {
     try {
       for (const id of this.ids()) {
         const { deletedMiniIds, minis } = await this.adapter.delete(id);
-        this.minisStore.remove(deletedMiniIds);
-        this.minisStore.apply(minis);
+        this.hoardChanges.removed(deletedMiniIds, minis);
         this.boxesStore.remove([id]);
         this.ids.update((ids) => ids.filter((asked) => asked !== id));
       }

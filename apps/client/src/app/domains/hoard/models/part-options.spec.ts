@@ -71,4 +71,23 @@ describe('Part options', () => {
 
     expect([newPart.create, alias.create]).toEqual(['Grot Banner', undefined]);
   });
+
+  it("offers only the own terms of the vocabulary under the user's parts, not those from the catalog", () => {
+    const vocabulary = [
+      { id: 'deffgun', name: 'Deffgun', aliases: [], isFromCatalog: true },
+      { id: 'grot-banner', name: 'Grot Banner', aliases: [], isFromCatalog: false },
+    ];
+
+    const options = partOptions({ vocabulary, range: [], carried: [] }, '');
+
+    expect(names(options.fromVocabulary)).toEqual(['Grot Banner']);
+  });
+
+  it('offers a catalog part used before in the range as its term', () => {
+    const vocabulary = [{ id: 'deffgun', name: 'Deffgun', aliases: [], isFromCatalog: true }];
+
+    const options = partOptions({ vocabulary, range: ['Deffgun'], carried: [] }, 'deff');
+
+    expect(options.fromRange).toEqual([{ name: 'Deffgun', partId: 'deffgun' }]);
+  });
 });

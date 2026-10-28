@@ -99,7 +99,7 @@ describe('Boxes', () => {
 
     const { deletedMiniIds } = await service.delete('owner', 'boyz');
 
-    expect(deleteBox).toHaveBeenCalledWith('owner', 'boyz', []);
+    expect(deleteBox).toHaveBeenCalledWith('owner', 'boyz', expect.objectContaining({ changed: [] }));
     expect(deletedMiniIds).toEqual(['boy', 'nob']);
   });
 

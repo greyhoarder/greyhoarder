@@ -11,6 +11,7 @@ import { GoneBadge } from '../../../ui/gone-badge/gone-badge';
 import { StatusBadge } from '../../../ui/status-badge/status-badge';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 import { boxLabel } from '../../../util/box-labels';
+import { eitherOrText } from '../../../util/either-or';
 import { LongPress } from '../../../ui/long-press/long-press';
 
 interface Column {
@@ -64,6 +65,7 @@ export class MiniTable {
     () => this.rows().length > 0 && this.rows().every((line) => this.selectedIds().has(line.id)),
   );
   protected readonly boxLabel = boxLabel;
+  protected readonly eitherOrText = eitherOrText;
   protected readonly sortOrder = signal<MiniSortOrder>('army');
   protected readonly sortDirection = signal<SortDirection>('ascending');
   protected readonly sortedRows = computed(() =>

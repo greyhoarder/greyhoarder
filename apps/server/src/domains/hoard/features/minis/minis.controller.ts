@@ -26,6 +26,7 @@ import { AddMinisRequestDto } from './dtos/add-minis-request.dto.js';
 import { DeleteMinisRequestDto } from './dtos/delete-minis-request.dto.js';
 import { UpdateMinisRequestDto } from './dtos/update-minis-request.dto.js';
 import { UnknownMinisError } from './errors/unknown-minis.error.js';
+import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 import { UnknownPartError } from '../../models/errors/unknown-part.error.js';
 import { UnknownFactionError } from './errors/unknown-faction.error.js';
 import { MinisService } from './minis.service.js';
@@ -55,7 +56,11 @@ export class MinisController {
     try {
       return { minis: await this.minis.add(user.id, body) };
     } catch (error) {
-      if (error instanceof UnknownPartError || error instanceof UnknownFactionError) {
+      if (
+        error instanceof UnknownPartError ||
+        error instanceof UnknownFactionError ||
+        error instanceof UnknownKitError
+      ) {
         throw new NotFoundException(error.message);
       }
       if (error instanceof InvalidMiniError) {

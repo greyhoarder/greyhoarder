@@ -35,7 +35,7 @@ describe('Add minis form', () => {
       faction: { id: 'warhammer-40000/orks', name: 'Orks' },
     });
     fixture = TestBed.createComponent(AddMinisForm);
-    fixture.componentRef.setInput('kits', 'Boyz · 2026');
+    fixture.componentRef.setInput('kit', 'Boyz · 2026');
     await fixture.whenStable();
   });
 

@@ -1,6 +1,6 @@
 <div class="flex flex-wrap items-baseline justify-between gap-2">
   <h2 class="font-semibold" [id]="headingId">Build as</h2>
-  @if (tiles().length > 0) {
+  @if (tiles().length > 0 && boxName()) {
     <span class="text-sm text-muted-foreground">Suggested by {{ boxName() }}</span>
   }
 </div>
@@ -17,15 +17,17 @@
       (click)="nameChosen.emit(tile.name)"
     >
       <span class="font-semibold" data-testid="mini-build-as-name">{{ tile.name }}</span>
-      <span
-        class="text-xs"
-        [class.text-destructive]="tile.isWarning"
-        [class.text-muted-foreground]="!tile.isWarning"
-        [attr.data-warning]="tile.isWarning"
-        [attr.data-empty]="tile.isEmpty"
-        data-testid="mini-name-left"
-        >{{ tile.hint }}</span
-      >
+      @if (tile.hint) {
+        <span
+          class="text-xs"
+          [class.text-destructive]="tile.isWarning"
+          [class.text-muted-foreground]="!tile.isWarning"
+          [attr.data-warning]="tile.isWarning"
+          [attr.data-empty]="tile.isEmpty"
+          data-testid="mini-name-left"
+          >{{ tile.hint }}</span
+        >
+      }
     </button>
   }
   <label

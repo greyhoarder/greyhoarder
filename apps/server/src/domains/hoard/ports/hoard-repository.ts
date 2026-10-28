@@ -1,4 +1,5 @@
 import type { Box, Mini, Part } from '@greyhoarder/domain/hoard';
+import type { HoardChange } from '../models/hoard-change.js';
 
 /** The boxes and minis of each user's hoard; every method is scoped to one owner (ADR-0010). */
 export abstract class HoardRepository {
@@ -13,27 +14,19 @@ export abstract class HoardRepository {
   /** The owner's vocabulary of parts. */
   abstract findParts(ownerId: string): Promise<Part[]>;
 
-  /** Stores the changed minis together with the parts they added to the vocabulary, all or nothing. */
-  abstract updateMinis(
-    ownerId: string,
-    minis: readonly Mini[],
-    newParts: readonly Part[],
-  ): Promise<void>;
+  /** Stores the change: the changed minis, the parts they added and the terms they dropped. */
+  abstract updateMinis(ownerId: string, change: HoardChange): Promise<void>;
 
-  /** Deletes the minis and stores the other minis changed by it, all or nothing. */
-  abstract deleteMinis(
-    ownerId: string,
-    miniIds: readonly string[],
-    changed: readonly Mini[],
-  ): Promise<void>;
+  /** Deletes the minis and stores the change it makes to other minis and the vocabulary, all or nothing. */
+  abstract deleteMinis(ownerId: string, miniIds: readonly string[], change: HoardChange): Promise<void>;
 
   /**
-   * Deletes the box with every mini it has at that moment, gone ones included, and stores the other
-   * minis changed by it, all or nothing.
+   * Deletes the box with every mini it has at that moment, gone ones included, and stores the change
+   * it makes to other minis and the vocabulary, all or nothing.
    *
    * @returns the ids of the deleted minis
    */
-  abstract deleteBox(ownerId: string, boxId: string, changed: readonly Mini[]): Promise<string[]>;
+  abstract deleteBox(ownerId: string, boxId: string, change: HoardChange): Promise<string[]>;
 
   /** Stores new minis together with the parts they added to the vocabulary, all or nothing. */
   abstract addMinis(ownerId: string, minis: readonly Mini[], newParts: readonly Part[]): Promise<void>;

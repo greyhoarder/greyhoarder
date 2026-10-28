@@ -25,15 +25,13 @@ export class MinisService {
 
   /**
    * The minis for which every word of the text is in their name, the name of a kit they come from or
-   * the name of their faction, e.g. "Ork Boy"; the best matches first, then by name and faction.
+   * the name of their faction, e.g. "Ork Boy", one per kit; the best matches first, then by name, faction
+   * and the newest kit.
    */
   async search(text: string): Promise<CatalogMiniSearchResult> {
     const words = await this.wordsOf(text);
     const kits = await this.catalog.searchKitsByMini(words, KIT_LIMIT);
-    const minis = catalogMinisOf(
-      kits.map(({ entry }) => entry),
-      words,
-    );
+    const minis = catalogMinisOf(kits, words);
     const factionIds = [...new Set(minis.flatMap((mini) => (mini.factionId === undefined ? [] : [mini.factionId])))];
     const [factionNames, systemNames] = await Promise.all([
       this.catalog.findFactionNames(factionIds),
@@ -46,7 +44,10 @@ export class MinisService {
         (a, b) =>
           relevanceOf(b, words) - relevanceOf(a, words) ||
           a.name.localeCompare(b.name) ||
-          factionOf(a).localeCompare(factionOf(b)),
+          factionOf(a).localeCompare(factionOf(b)) ||
+          // The newest kit first.
+          (b.kit.year ?? 0) - (a.kit.year ?? 0) ||
+          a.kit.name.localeCompare(b.kit.name),
       )
       .slice(0, SEARCH_LIMIT);
     return { minis: sorted, factionNames, systemNames };

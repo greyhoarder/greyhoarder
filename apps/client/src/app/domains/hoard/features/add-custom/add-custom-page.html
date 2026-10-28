@@ -44,7 +44,7 @@
     [query]="factionSearch.query()"
     [results]="factionSearch.results()"
     (queryChange)="factionSearch.query.set($event)"
-    (added)="factionSearch.choose($event)"
+    (added)="chooseFaction($event)"
     (removed)="addition.removeFaction($event)"
     (toggled)="factionSearch.toggle()"
   />

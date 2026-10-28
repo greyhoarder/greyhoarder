@@ -72,7 +72,13 @@
           </td>
           <td hlmTd class="text-muted-foreground">{{ row.factions.join(', ') }}</td>
           <td hlmTd class="text-muted-foreground">
-            {{ row.box === undefined ? 'Without box' : boxLabel(row.box, row.boxNumber) }}
+            {{
+              row.box !== undefined
+                ? boxLabel(row.box, row.boxNumber)
+                : row.kit !== undefined
+                  ? eitherOrText(row.kit)
+                  : 'Without box'
+            }}
           </td>
           <td hlmTd>
             @if (row.departure; as departure) {

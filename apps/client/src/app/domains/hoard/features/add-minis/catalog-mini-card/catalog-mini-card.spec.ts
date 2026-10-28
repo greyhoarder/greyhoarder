@@ -6,7 +6,7 @@ const BOY: CatalogMini = {
   name: 'Boy',
   factionId: 'warhammer-40000/orks',
   parts: [],
-  kits: [{ id: 'boyz-2026', name: 'Boyz', year: 2026, isDraft: false }],
+  kit: { id: 'boyz-2026', version: 1, name: 'Boyz', year: 2026, isDraft: false },
 };
 
 describe('Catalog mini card', () => {
@@ -14,7 +14,7 @@ describe('Catalog mini card', () => {
     const fixture = TestBed.createComponent(CatalogMiniCard);
     fixture.componentRef.setInput('mini', BOY);
     fixture.componentRef.setInput('faction', 'Orks · Warhammer 40,000');
-    fixture.componentRef.setInput('kits', 'Boyz · 2026');
+    fixture.componentRef.setInput('kit', 'Boyz · 2026');
     fixture.componentRef.setInput('owned', owned);
     fixture.componentRef.setInput('formId', 'add-minis-form');
     await fixture.whenStable();

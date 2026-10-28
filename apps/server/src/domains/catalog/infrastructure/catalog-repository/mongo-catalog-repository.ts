@@ -158,6 +158,21 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
     return parts.filter((part): part is string => typeof part === 'string');
   }
 
+  async findOfferedPartNames(names: readonly string[]): Promise<string[]> {
+    if (names.length === 0) {
+      return [];
+    }
+    // Surrounding spaces don't tell parts apart.
+    const exactly = names.map((name) => new RegExp(`^\\s*${escapeRegExp(name.trim())}\\s*$`, 'i'));
+    const parts: unknown[] = await this.kits
+      .distinct('variants.slots.parts', { ...LATEST, isRemoved: false, 'variants.slots.parts': { $in: exactly } })
+      .exec();
+    const offered = new Set(
+      parts.filter((part): part is string => typeof part === 'string').map((part) => part.trim().toLowerCase()),
+    );
+    return names.filter((name) => offered.has(name.trim().toLowerCase()));
+  }
+
   async findSystemNames(factionIds: readonly string[]): Promise<ReadonlyMap<string, string>> {
     const factions = await this.factions.find({ ...LATEST, factionId: { $in: factionIds } }).lean().exec();
     const systemIds = [...new Set(factions.map((faction) => faction.systemId))];

@@ -1,6 +1,6 @@
 import { departureReasons, hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { z } from 'zod';
-import { isoDateSchema } from './boxes.js';
+import { isoDateSchema, kitReferenceSchema } from './boxes.js';
 
 /** A part on a mini as `MiniPart` describes it. */
 const miniPartSchema = z.object({
@@ -25,6 +25,7 @@ export const miniSchema = z.object({
   notes: z.string().optional(),
   sprueName: z.string().optional(),
   boxId: z.string().optional(),
+  kit: kitReferenceSchema.optional(),
   isOnWorkbench: z.boolean(),
   departure: departureSchema.optional(),
 });
@@ -75,6 +76,8 @@ export type UpdateMinisResponse = z.infer<typeof updateMinisResponseSchema>;
 /** Alike minis to add without a box: from the catalog or put together by the user. */
 export const addMinisRequestSchema = z.object({
   name: z.string().trim().min(1).max(100),
+  /** The catalog kit the minis come from, in the version the search found; none for the user's own. */
+  kit: z.object({ id: z.string().min(1), version: z.number().int().min(1) }).optional(),
   factionIds: z.array(z.string()).readonly(),
   status: z.enum(hobbyStatuses),
   parts: z.array(partChangeSchema).readonly(),
