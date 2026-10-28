@@ -1,4 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideTrash2, lucideX } from '@ng-icons/lucide';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 
 /**
@@ -7,7 +9,8 @@ import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
  */
 @Component({
   selector: 'app-empty-boxes-dialog',
-  imports: [HlmAlertDialogImports],
+  imports: [HlmAlertDialogImports, NgIcon],
+  providers: [provideIcons({ lucideTrash2, lucideX })],
   templateUrl: './empty-boxes-dialog.html',
 })
 export class EmptyBoxesDialog {

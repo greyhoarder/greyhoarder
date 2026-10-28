@@ -1,10 +1,13 @@
 import { Component, computed, input, output } from '@angular/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideTrash2, lucideX } from '@ng-icons/lucide';
 import { HlmAlertDialogImports } from '@spartan-ng/helm/alert-dialog';
 
 /** Asks before a box is deleted for good with all its minis (docs/screens/box.md, Behavior). */
 @Component({
   selector: 'app-delete-box-dialog',
-  imports: [HlmAlertDialogImports],
+  imports: [HlmAlertDialogImports, NgIcon],
+  providers: [provideIcons({ lucideTrash2, lucideX })],
   templateUrl: './delete-box-dialog.html',
 })
 export class DeleteBoxDialog {

@@ -9,11 +9,14 @@
     [attr.data-testid]="screen() + '-empty-boxes-dialog'"
   >
     <hlm-alert-dialog-header>
+      <hlm-alert-dialog-media class="bg-destructive/15 text-destructive">
+        <ng-icon name="lucideTrash2" size="22" />
+      </hlm-alert-dialog-media>
       <h2 hlmAlertDialogTitle>{{ question() }}</h2>
     </hlm-alert-dialog-header>
     @if (hasFailed()) {
       <p
-        class="text-sm text-destructive"
+        class="px-6 pt-5 text-sm text-destructive"
         role="alert"
         [attr.data-testid]="screen() + '-empty-boxes-error'"
       >
@@ -40,5 +43,16 @@
         {{ isOne() ? 'Delete box' : 'Delete boxes' }}
       </button>
     </hlm-alert-dialog-footer>
+    <!-- Last, so the focus starts on "Keep box" and not here. -->
+    <button
+      hlmAlertDialogCancel
+      variant="ghost"
+      size="icon"
+      class="absolute top-3 right-3 size-9 border-0 text-muted-foreground hover:text-foreground"
+      aria-label="Close"
+      [disabled]="isDeleting()"
+    >
+      <ng-icon name="lucideX" size="18" />
+    </button>
   </hlm-alert-dialog-content>
 </hlm-alert-dialog>

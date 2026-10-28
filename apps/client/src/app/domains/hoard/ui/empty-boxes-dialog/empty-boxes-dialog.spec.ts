@@ -65,6 +65,20 @@ describe('Empty boxes dialog', () => {
     expect(confirmed).not.toHaveBeenCalled();
   });
 
+  it('keeps the boxes when closed with the × in its corner', async () => {
+    const { fixture } = await render();
+    const confirmed = vi.fn();
+    const closed = vi.fn();
+    fixture.componentInstance.confirmed.subscribe(confirmed);
+    fixture.componentInstance.closed.subscribe(closed);
+
+    document.querySelector<HTMLButtonElement>('[aria-label="Close"]')?.click();
+    await fixture.whenStable();
+
+    expect(closed).toHaveBeenCalledOnce();
+    expect(confirmed).not.toHaveBeenCalled();
+  });
+
   it('says that deleting failed', async () => {
     const { find } = await render({ hasFailed: true });
 

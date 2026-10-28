@@ -10,7 +10,7 @@ export class HlmAlertDialogHeader {
   constructor() {
     classes(
       () =>
-        'grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-4 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-start sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr]',
+        'relative flex flex-col items-center justify-center gap-1 border-b bg-background/40 px-14 py-5 text-center has-data-[slot=alert-dialog-media]:min-h-22 has-data-[slot=alert-dialog-media]:pr-12 has-data-[slot=alert-dialog-media]:pl-20 sm:has-data-[slot=alert-dialog-media]:px-20',
     );
   }
 }

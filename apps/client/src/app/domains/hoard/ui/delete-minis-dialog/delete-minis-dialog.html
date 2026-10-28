@@ -4,25 +4,19 @@
   autoFocus="[data-slot=alert-dialog-cancel]"
   (closed)="closed.emit()"
 >
-  <hlm-alert-dialog-content
-    *hlmAlertDialogPortal
-    class="relative gap-0 overflow-hidden rounded-2xl p-0 shadow-2xl ring-border data-[size=default]:max-w-none sm:w-120 data-[size=default]:sm:max-w-120"
-    [attr.data-testid]="screen() + '-delete-dialog'"
-  >
-    <div
-      class="flex flex-col items-center gap-3 border-b bg-background/40 px-6 pt-7 pb-5.5 text-center sm:px-12"
-    >
-      <span class="flex size-12 items-center justify-center rounded-xl bg-primary/18 text-primary">
-        <ng-icon name="lucideBox" size="22" />
-      </span>
-      <h2 hlmAlertDialogTitle class="text-lg font-semibold">
+  <hlm-alert-dialog-content *hlmAlertDialogPortal [attr.data-testid]="screen() + '-delete-dialog'">
+    <hlm-alert-dialog-header>
+      <hlm-alert-dialog-media class="bg-destructive/15 text-destructive">
+        <ng-icon name="lucideTrash2" size="22" />
+      </hlm-alert-dialog-media>
+      <h2 hlmAlertDialogTitle>
         {{
           count() === 1 ? 'Delete this mini for good?' : 'Delete ' + count() + ' minis for good?'
         }}
       </h2>
       <p hlmAlertDialogDescription>This can't be undone.</p>
-    </div>
-    <div class="flex flex-col gap-3 px-6 pt-6 pb-5">
+    </hlm-alert-dialog-header>
+    <div class="flex flex-col gap-3 px-6 pt-6">
       <p
         class="flex min-h-24 items-center justify-center rounded-lg bg-muted px-4 py-3 text-center text-sm"
       >
@@ -38,12 +32,9 @@
         </p>
       }
     </div>
-    <hlm-alert-dialog-footer
-      class="m-0 grid grid-cols-2 gap-3 rounded-none border-0 bg-transparent px-6 pt-0 pb-6"
-    >
+    <hlm-alert-dialog-footer>
       <button
         hlmAlertDialogCancel
-        class="h-11"
         [disabled]="isDeleting()"
         [attr.data-testid]="screen() + '-delete-cancel'"
       >
@@ -52,7 +43,7 @@
       <button
         hlmAlertDialogAction
         variant="destructive"
-        class="h-11 font-semibold"
+        class="font-semibold"
         [disabled]="isDeleting()"
         [attr.aria-busy]="isDeleting()"
         [attr.data-testid]="screen() + '-delete-confirm'"

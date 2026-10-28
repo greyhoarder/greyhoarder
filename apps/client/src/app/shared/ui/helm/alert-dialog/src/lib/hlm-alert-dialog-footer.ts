@@ -8,9 +8,6 @@ import { classes } from '@spartan-ng/helm/utils';
 })
 export class HlmAlertDialogFooter {
   constructor() {
-    classes(
-      () =>
-        'bg-muted/50 -mx-4 -mb-4 rounded-b-xl border-t p-4 flex flex-col-reverse gap-2 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end',
-    );
+    classes(() => 'grid grid-cols-2 gap-3 px-6 pt-5 pb-6 *:h-11');
   }
 }
