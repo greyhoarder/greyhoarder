@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import type { Mini } from '@greyhoarder/domain/hoard';
 import type {
+  AddMinisRequest,
+  AddMinisResponse,
   DeleteMinisRequest,
   DeleteMinisResponse,
   MinisResponse,
@@ -10,6 +12,7 @@ import type {
 } from '@greyhoarder/protocol/hoard';
 import { firstValueFrom } from 'rxjs';
 import type { MiniChanges } from '../models/mini-changes';
+import type { MinisToAdd } from '../models/minis-to-add';
 
 /** Talks to `hoard/minis` on the server. */
 @Injectable({ providedIn: 'root' })
@@ -29,6 +32,15 @@ export class HttpMinisAdapter {
       factionNames: new Map(Object.entries(response.factionNames)),
       systemNames: new Map(Object.entries(response.systemNames)),
     };
+  }
+
+  /** Adds alike minis without a box; part names the vocabulary lacks are added to it. */
+  async add(minis: MinisToAdd): Promise<readonly Mini[]> {
+    const body: AddMinisRequest = minis;
+    const response = await firstValueFrom(
+      this.http.post<AddMinisResponse>('/api/hoard/minis', body),
+    );
+    return response.minis;
   }
 
   /** Applies the changes to every given mini alike; part names the vocabulary lacks are added to it. */

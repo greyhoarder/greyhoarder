@@ -24,10 +24,10 @@ export class MinisList {
   private readonly factionNames = inject(FactionNames);
   private readonly partsStore = inject(PartsStore);
 
-  /** Minis on the sprue are built on their box (docs/screens/hoard.md). */
+  /** Minis on the sprue of a box are built on their box; those without a box are listed (docs/domains/hoard.md). */
   readonly rows = computed(() =>
     toSingleRows(
-      this.minisStore.minis().filter((mini) => mini.status !== 'sprue'),
+      this.minisStore.minis().filter((mini) => mini.status !== 'sprue' || mini.boxId === undefined),
       this.boxesStore.boxes(),
       this.factionNames.names(),
       this.partsStore.names(),

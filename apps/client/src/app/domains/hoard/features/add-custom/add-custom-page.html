@@ -1,0 +1,99 @@
+<header class="flex flex-col gap-2">
+  <a
+    routerLink="/hoard/minis"
+    class="inline-flex w-fit items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    data-testid="add-custom-back"
+  >
+    <ng-icon name="lucideChevronLeft" size="16" />
+    Hoard
+  </a>
+  <h1 class="text-2xl font-semibold">Add custom minis</h1>
+</header>
+
+@if (addition.hasAddFailed()) {
+  <p class="text-sm text-destructive" role="alert" data-testid="add-custom-add-error">
+    Can't add the minis right now. Try again in a moment.
+  </p>
+}
+
+<div role="status" class="empty:hidden">
+  @if (addition.added(); as message) {
+    <app-added-bar
+      testId="add-custom-added"
+      link="/hoard/minis"
+      linkLabel="Show minis"
+      [message]="message"
+      (dismissed)="addition.added.set(undefined)"
+    />
+  }
+</div>
+
+<div class="flex flex-col gap-6 rounded-xl border bg-card p-4 sm:p-5">
+  <app-name-field
+    [value]="addition.name()"
+    [ownNames]="ownNames()"
+    [catalogNames]="catalogNames()"
+    [isMissing]="isNameMissing()"
+    (valueChange)="changeName($event)"
+  />
+
+  <app-faction-picker
+    [chosen]="addition.factions()"
+    [isOpen]="factionSearch.isOpen()"
+    [query]="factionSearch.query()"
+    [results]="factionSearch.results()"
+    (queryChange)="factionSearch.query.set($event)"
+    (added)="factionSearch.choose($event)"
+    (removed)="addition.removeFaction($event)"
+    (toggled)="factionSearch.toggle()"
+  />
+
+  <app-status-choice
+    testId="add-custom-status"
+    [statuses]="statuses"
+    [chosen]="addition.status()"
+    (chose)="addition.status.set($event)"
+  />
+
+  <app-part-tiles
+    [parts]="addition.parts()"
+    [isPickerOpen]="addition.isPickerOpen()"
+    [source]="addition.partSource()"
+    [rangeName]="addition.rangeName()"
+    (removed)="addition.removePart($event)"
+    (swappableToggled)="addition.toggleSwappable($event)"
+    (added)="addition.addPart($event)"
+    (pickerToggled)="addition.togglePicker()"
+  />
+
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-semibold" for="add-custom-notes">Notes</label>
+    <textarea
+      id="add-custom-notes"
+      rows="3"
+      placeholder="Kitbash sources, what is still to do"
+      class="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      data-testid="add-custom-notes"
+      [value]="addition.notes()"
+      (input)="changeNotes($event)"
+    ></textarea>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3 border-t pt-4">
+    <app-minis-stepper
+      testId="add-custom"
+      [count]="addition.count()"
+      (changed)="addition.changeCount($event)"
+    />
+    <button
+      hlmBtn
+      type="button"
+      class="ml-auto h-10 text-sm font-semibold"
+      data-testid="add-custom-submit"
+      [disabled]="addition.isAdding()"
+      (click)="add()"
+    >
+      {{ addition.addLabel() }}
+    </button>
+  </div>
+</div>

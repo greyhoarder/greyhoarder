@@ -1,0 +1,81 @@
+<header class="flex flex-col gap-2">
+  <a
+    routerLink="/hoard/minis"
+    class="inline-flex w-fit items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    data-testid="add-minis-back"
+  >
+    <ng-icon name="lucideChevronLeft" size="16" />
+    Hoard
+  </a>
+  <h1 class="text-2xl font-semibold">Add minis</h1>
+</header>
+
+<div hlmInputGroup class="h-10">
+  <div hlmInputGroupAddon>
+    <ng-icon name="lucideSearch" size="18" />
+  </div>
+  <input
+    hlmInputGroupInput
+    type="search"
+    placeholder="Name of the mini or its kit"
+    aria-label="Search minis"
+    data-testid="add-minis-search"
+    [value]="query()"
+    (input)="search($event)"
+  />
+</div>
+
+@if (addition.hasAddFailed()) {
+  <p class="text-sm text-destructive" role="alert" data-testid="add-minis-add-error">
+    Can't add the minis right now. Try again in a moment.
+  </p>
+}
+
+<div role="status" class="empty:hidden">
+  @if (addition.added(); as message) {
+    <app-added-bar
+      testId="add-minis-added"
+      link="/hoard/minis"
+      linkLabel="Show minis"
+      [message]="message"
+      (dismissed)="addition.added.set(undefined)"
+    />
+  }
+</div>
+
+@if (!isSearching()) {
+  <p class="py-8 text-center text-muted-foreground" data-testid="add-minis-hint">
+    Search the catalog for a mini by its name or the kit it comes in.
+  </p>
+} @else if (matches.error()) {
+  <p class="py-8 text-center text-destructive" role="alert" data-testid="add-minis-error">
+    Can't search the catalog right now. Try again in a moment.
+  </p>
+} @else if (offers().length > 0) {
+  <div class="flex flex-col gap-3">
+    <h2 class="text-muted-foreground">Matching minis</h2>
+    <ul class="flex flex-col gap-2">
+      @for (offer of offers(); track offer.key) {
+        <li>
+          <app-catalog-mini-card
+            [mini]="offer.mini"
+            [faction]="offer.faction"
+            [kits]="offer.kits"
+            [isOpen]="openKey() === offer.key"
+            [owned]="offer.owned"
+            [formId]="formId"
+            (toggled)="toggle(offer)"
+          >
+            @if (openKey() === offer.key) {
+              <app-add-minis-form [id]="formId" [kits]="offer.kits" />
+            }
+          </app-catalog-mini-card>
+        </li>
+      }
+    </ul>
+  </div>
+} @else if (matches.status() === 'resolved') {
+  <p class="py-8 text-center text-muted-foreground" data-testid="add-minis-no-results">
+    No minis match "{{ query().trim() }}".
+  </p>
+}

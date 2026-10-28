@@ -7,6 +7,16 @@ export default [
     loadComponent: async () => (await import('./features/add-box/add-box-page')).AddBoxPage,
   },
   {
+    path: 'hoard/add/minis',
+    title: 'Add minis · Greyhoarder',
+    loadComponent: async () => (await import('./features/add-minis/add-minis-page')).AddMinisPage,
+  },
+  {
+    path: 'hoard/add/custom',
+    title: 'Add custom · Greyhoarder',
+    loadComponent: async () => (await import('./features/add-custom/add-custom-page')).AddCustomPage,
+  },
+  {
     path: 'hoard/minis/:id',
     title: 'Mini · Greyhoarder',
     loadComponent: async () => (await import('./features/mini-detail/mini-detail-page')).MiniDetailPage,
