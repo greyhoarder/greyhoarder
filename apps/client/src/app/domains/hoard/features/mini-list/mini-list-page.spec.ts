@@ -28,7 +28,7 @@ const PARTS = [
 ];
 
 const MINIS: Mini[] = [
-  mini('m1', {}),
+  mini('m1', { boxId: 'boyz' }),
   mini('m2', { parts: [glued('slugga'), glued('choppa')], status: 'built' }),
   mini('m3', { name: 'Nob', parts: [glued('power-klaw')], status: 'built' }),
 ];
@@ -147,9 +147,12 @@ describe('Minis page', () => {
     expect(navigate).toHaveBeenCalledWith(['/hoard/minis', expect.stringMatching(/^m[23]$/)]);
   });
 
-  it('leaves out minis still on the sprue', async () => {
+  it('leaves out minis still on the sprue of a box', async () => {
     showPage(() =>
-      Promise.resolve([mini('s1', { name: 'Grot' }), mini('b1', { name: 'Nob', status: 'built' })]),
+      Promise.resolve([
+        mini('s1', { name: 'Grot', boxId: 'boyz' }),
+        mini('b1', { name: 'Nob', status: 'built' }),
+      ]),
     );
     await fixture.whenStable();
 
@@ -157,6 +160,17 @@ describe('Minis page', () => {
 
     expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([
       expect.stringContaining('Nob'),
+    ]);
+  });
+
+  it('lists minis on the sprue without a box', async () => {
+    showPage(() => Promise.resolve([mini('s1', { name: 'Grot' })]));
+    await fixture.whenStable();
+
+    await showTable();
+
+    expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([
+      expect.stringContaining('Grot'),
     ]);
   });
 
