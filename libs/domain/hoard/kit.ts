@@ -1,4 +1,4 @@
-import type { CatalogKit } from '../catalog/index.js';
+import { type CatalogKit, oldestYear } from '../catalog/index.js';
 
 /** A slot of a kit's variant: how many minis, what they can be built as, which parts come with them. */
 export interface KitSlot {
@@ -99,10 +99,4 @@ export function kitName(kit: Kit): string {
 /** The name a box of the kit gets, with its edition: "Boyz (2026)". */
 export function boxKitName(kit: Kit): string {
   return kit.year === undefined ? kitName(kit) : `${kitName(kit)} (${kit.year})`;
-}
-
-/** Releases may be listed in any order in the catalog. */
-function oldestYear(kit: CatalogKit): number | undefined {
-  const years = kit.releases.flatMap((release) => (release.year === undefined ? [] : [release.year]));
-  return years.length > 0 ? Math.min(...years) : undefined;
 }

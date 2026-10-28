@@ -49,3 +49,12 @@ export interface CatalogKit {
   readonly contains: readonly ContainedKit[];
   readonly variants: readonly KitVariant[];
 }
+
+/**
+ * The year the kit first went on sale: that of its oldest release, if any has a year. Releases
+ * may be listed in any order in the catalog.
+ */
+export function oldestYear(kit: CatalogKit): number | undefined {
+  const years = kit.releases.flatMap((release) => (release.year === undefined ? [] : [release.year]));
+  return years.length > 0 ? Math.min(...years) : undefined;
+}

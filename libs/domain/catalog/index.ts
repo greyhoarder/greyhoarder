@@ -1,1 +1,8 @@
-export type { CatalogKit, ContainedKit, KitRelease, KitSlot, KitVariant } from './catalog-kit.js';
+export {
+  type CatalogKit,
+  type ContainedKit,
+  type KitRelease,
+  type KitSlot,
+  type KitVariant,
+  oldestYear,
+} from './catalog-kit.js';
