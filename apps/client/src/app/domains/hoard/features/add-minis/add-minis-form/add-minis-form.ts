@@ -49,7 +49,7 @@ import { StatusChoice } from '../../../ui/status-choice/status-choice';
       </button>
     </div>
   `,
-  host: { class: 'flex flex-col gap-4 px-3 pb-4 sm:px-5' },
+  host: { class: '@container/main flex flex-col gap-4 px-3 pb-4 sm:px-5' },
 })
 export class AddMinisForm {
   protected readonly addition = inject(MinisAddition);

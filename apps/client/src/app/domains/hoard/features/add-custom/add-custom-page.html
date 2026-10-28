@@ -16,7 +16,8 @@
   </p>
 }
 
-<div role="status" class="empty:hidden">
+<!-- Sticks to the top, so what was added stays in sight while scrolling. -->
+<div role="status" class="sticky top-0 z-20 -my-2 bg-background py-2 empty:hidden">
   @if (addition.added(); as message) {
     <app-added-bar
       testId="add-custom-added"
@@ -28,7 +29,7 @@
   }
 </div>
 
-<div class="flex flex-col gap-6 rounded-xl border bg-card p-4 sm:p-5">
+<div class="@container/main flex flex-col gap-6 rounded-xl border bg-card p-4 sm:p-5">
   <app-name-field
     [value]="addition.name()"
     [ownNames]="ownNames()"

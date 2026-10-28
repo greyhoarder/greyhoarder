@@ -17,7 +17,7 @@
   <input
     hlmInputGroupInput
     type="search"
-    placeholder="Name of the mini or its kit"
+    placeholder="Name of the mini, its kit or faction"
     aria-label="Search minis"
     data-testid="add-minis-search"
     [value]="query()"
@@ -31,7 +31,8 @@
   </p>
 }
 
-<div role="status" class="empty:hidden">
+<!-- Sticks to the top, so what was added stays in sight while scrolling. -->
+<div role="status" class="sticky top-0 z-20 -my-2 bg-background py-2 empty:hidden">
   @if (addition.added(); as message) {
     <app-added-bar
       testId="add-minis-added"
@@ -45,7 +46,7 @@
 
 @if (!isSearching()) {
   <p class="py-8 text-center text-muted-foreground" data-testid="add-minis-hint">
-    Search the catalog for a mini by its name or the kit it comes in.
+    Search the catalog for a mini by its name, the kit it comes in or its faction.
   </p>
 } @else if (matches.error()) {
   <p class="py-8 text-center text-destructive" role="alert" data-testid="add-minis-error">
