@@ -64,9 +64,9 @@ border:
 | Browser tab title | Add minis · Greyhoarder |
 | Back link | Hoard |
 | Title | Add minis |
-| Search placeholder | Name of the mini or its kit |
+| Search placeholder | Name of the mini, its kit or faction |
 | Search (accessible name) | Search minis |
-| Hint | Search the catalog for a mini by its name or the kit it comes in. |
+| Hint | Search the catalog for a mini by its name, the kit it comes in or its faction. |
 | List label | Matching minis |
 | Mini name | {name}, e.g. "Nob" |
 | Draft badge | Not checked |
@@ -91,7 +91,7 @@ border:
 | State | When | What the user sees |
 |-------|------|--------------------|
 | Empty | The search field is empty | The hint in place of the list |
-| Searching | Text in the search field | The catalog minis whose name, or the name of a kit they come from, contains the text, at most 50, sorted by name, then faction |
+| Searching | Text in the search field | The catalog minis for which every word of the text is in their name, the name of a kit they come from or the name of their faction ("Ork Boy"), at most 50, the best matches first (see [catalog](../domains/catalog.md#using-catalog-kits)), then by name and faction |
 | No results | The search matches no mini | The no-results message in place of the list |
 | Failed | The server does not answer the search | The search-failed message in `destructive`, announced to screen readers |
 | Open | A mini card was opened | Its form below its header; every other card is closed |

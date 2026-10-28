@@ -27,7 +27,8 @@ the sidebar, as wide as the hoard, from top to bottom:
       with the groups "Your minis" and "From the catalog".
    2. The factions: the chosen factions as chips with a "×" each, and a
       dashed chip "+ Faction", which opens a search over the catalog
-      factions below the chips.
+      factions in a popover below it: the search field, and below it the
+      factions found, one per line.
    3. The status: one toggle chip per status, "Built" to "Done"; exactly
       one is chosen.
    4. The parts: the chosen parts as tiles like on [Mini](mini.md), then
@@ -53,6 +54,8 @@ the sidebar, as wide as the hoard, from top to bottom:
 | Add faction chip | + Faction |
 | Faction search placeholder | Search factions |
 | Faction result | {faction} · {game system} |
+| Faction search empty | Type a faction name. |
+| No factions found | No factions match. |
 | Status label | Status |
 | Status chips | Built · Primed · Painted · Done |
 | Parts label | Parts |
@@ -73,7 +76,7 @@ the sidebar, as wide as the hoard, from top to bottom:
 |-------|------|--------------------|
 | New | The screen is opened | An empty name, no factions, the status "Built", no parts, no notes, one mini |
 | Suggesting | Text in the name field | The suggestions whose name contains the text, at most 10 per group; a group without matches is left out |
-| Choosing a faction | "+ Faction" pressed | The faction search below the chips, the field focused |
+| Choosing a faction | "+ Faction" pressed | The faction search in a popover below "+ Faction", the field focused; Escape or a click outside closes it |
 | Name missing | "Add" pressed with an empty name | The name-missing message below the name field, announced to screen readers; nothing is added |
 | Added | Minis were added | The status bar above the card; the form keeps what was chosen |
 | Add failed | The server does not add the minis | The add-failed message in `destructive` above the card, announced to screen readers; the form keeps what was chosen |
