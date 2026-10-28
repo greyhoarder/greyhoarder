@@ -35,6 +35,9 @@ export abstract class HoardRepository {
    */
   abstract deleteBox(ownerId: string, boxId: string, changed: readonly Mini[]): Promise<string[]>;
 
+  /** Stores new minis together with the parts they added to the vocabulary, all or nothing. */
+  abstract addMinis(ownerId: string, minis: readonly Mini[], newParts: readonly Part[]): Promise<void>;
+
   /** Stores the boxes together with their minis, all or nothing. */
   abstract addBoxes(ownerId: string, boxes: readonly Box[], minis: readonly Mini[]): Promise<void>;
 }

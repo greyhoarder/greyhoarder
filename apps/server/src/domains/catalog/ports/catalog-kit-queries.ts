@@ -10,6 +10,15 @@ export abstract class CatalogKitQueries {
    */
   abstract searchKits(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]>;
 
+  /**
+   * The latest version of every kit that is not removed and whose name, or a name its slots can be
+   * built as, contains the text, ignoring case; at most `limit`, sorted by name.
+   */
+  abstract searchKitsByMini(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]>;
+
+  /** The latest factions that are not removed and whose name contains the text, ignoring case; at most `limit`, sorted by name. */
+  abstract searchFactions(text: string, limit: number): Promise<CatalogFaction[]>;
+
   /** The latest version of the kits with these ids, removed ones included. */
   abstract findKits(ids: readonly string[]): Promise<VersionedEntry<CatalogKit>[]>;
 

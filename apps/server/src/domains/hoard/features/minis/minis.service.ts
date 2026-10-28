@@ -10,6 +10,7 @@ import {
   withStatus,
 } from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries } from '../../../catalog/api/index.js';
+import { type LooseMinis, looseMinis } from '../../models/loose-minis.js';
 import { emptiedBoxIds, withoutDeletedRecipients } from '../../models/mini-deletion.js';
 import { type PartChange, resolveParts } from '../../models/part-changes.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
@@ -36,6 +37,9 @@ export interface MiniChanges {
   readonly departure?: Departure | null;
 }
 
+/** Alike minis to add without a box; parts as in changes. */
+export type MinisToAdd = Omit<LooseMinis, 'parts'> & { readonly parts: readonly PartChange[] };
+
 /** What deleting minis changed besides them. */
 export interface MinisDeletion {
   /** The boxes left without any minis, gone ones included; they stay. */
@@ -44,7 +48,7 @@ export interface MinisDeletion {
   readonly minis: readonly Mini[];
 }
 
-/** The minis of the signed-in user's hoard: listing them and changing several alike at once. */
+/** The minis of the signed-in user's hoard: listing them, adding them without a box and changing several alike at once. */
 @Injectable()
 export class MinisService {
   constructor(
@@ -60,6 +64,21 @@ export class MinisService {
       this.catalog.findSystemNames(factionIds),
     ]);
     return { minis, factionNames, systemNames };
+  }
+
+  /**
+   * Adds alike minis without a box, adding part names the vocabulary does not know to it; all or
+   * nothing. Whether the name is one of the catalog is not checked: kits only suggest.
+   *
+   * @throws UnknownPartError when a part refers to an id that is not in the owner's vocabulary
+   * @throws UnknownFactionError when a faction is neither a catalog faction nor a game system
+   */
+  async add(ownerId: string, minis: MinisToAdd): Promise<Mini[]> {
+    await this.checkFactions(minis.factionIds);
+    const { parts, newParts } = resolveParts(await this.hoard.findParts(ownerId), minis.parts, randomUUID);
+    const added = looseMinis({ ...minis, parts }, randomUUID);
+    await this.hoard.addMinis(ownerId, added, newParts);
+    return added;
   }
 
   /**

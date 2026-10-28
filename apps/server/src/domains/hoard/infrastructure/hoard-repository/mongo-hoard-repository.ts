@@ -255,6 +255,21 @@ export class MongoHoardRepository extends HoardRepository {
     );
   }
 
+  async addMinis(ownerId: string, minis: readonly Mini[], newParts: readonly Part[]): Promise<void> {
+    await this.connection.transaction(async (session) => {
+      if (newParts.length > 0) {
+        await this.parts.insertMany(
+          newParts.map((part) => toPartDbo(ownerId, part)),
+          { session },
+        );
+      }
+      await this.minis.insertMany(
+        minis.map((mini) => toMiniDbo(ownerId, mini)),
+        { session },
+      );
+    });
+  }
+
   async addBoxes(ownerId: string, boxes: readonly Box[], minis: readonly Mini[]): Promise<void> {
     await this.connection.transaction(async (session) => {
       await this.boxes.insertMany(

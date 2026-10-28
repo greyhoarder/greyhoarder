@@ -88,6 +88,27 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
+  async searchKitsByMini(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]> {
+    const contains = new RegExp(escapeRegExp(text), 'i');
+    const kits = await this.kits
+      .find({ ...LATEST, isRemoved: false, $or: [{ name: contains }, { 'variants.slots.buildsAs': contains }] })
+      .sort({ name: 1, kitId: 1 })
+      .limit(limit)
+      .lean()
+      .exec();
+    return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
+  }
+
+  async searchFactions(text: string, limit: number): Promise<CatalogFaction[]> {
+    const factions = await this.factions
+      .find({ ...LATEST, isRemoved: false, name: new RegExp(escapeRegExp(text), 'i') })
+      .sort({ name: 1, factionId: 1 })
+      .limit(limit)
+      .lean()
+      .exec();
+    return factions.map(toCatalogFaction);
+  }
+
   async findKits(ids: readonly string[]): Promise<VersionedEntry<CatalogKit>[]> {
     const kits = await this.kits.find({ ...LATEST, kitId: { $in: ids } }).lean().exec();
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));

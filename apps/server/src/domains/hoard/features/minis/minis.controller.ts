@@ -5,11 +5,14 @@ import {
   Get,
   NotFoundException,
   Patch,
+  Post,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InvalidMiniError } from '@greyhoarder/domain/hoard';
 import type { User } from '@greyhoarder/domain/users';
 import {
+  type AddMinisResponse,
+  addMinisResponseSchema,
   type DeleteMinisResponse,
   deleteMinisResponseSchema,
   type MinisResponse,
@@ -19,6 +22,7 @@ import {
 } from '@greyhoarder/protocol/hoard';
 import { ZodSerializerDto } from 'nestjs-zod';
 import { CurrentUser } from '../../../../shared/auth/current-user.decorator.js';
+import { AddMinisRequestDto } from './dtos/add-minis-request.dto.js';
 import { DeleteMinisRequestDto } from './dtos/delete-minis-request.dto.js';
 import { UpdateMinisRequestDto } from './dtos/update-minis-request.dto.js';
 import { UnknownMinisError } from './errors/unknown-minis.error.js';
@@ -27,8 +31,8 @@ import { UnknownFactionError } from './errors/unknown-faction.error.js';
 import { MinisService } from './minis.service.js';
 
 /**
- * The minis of the signed-in user's hoard: list them (GET), change several alike at once (PATCH),
- * delete them for good (DELETE).
+ * The minis of the signed-in user's hoard: list them (GET), add alike ones without a box (POST),
+ * change several alike at once (PATCH), delete them for good (DELETE).
  */
 @Controller('hoard/minis')
 export class MinisController {
@@ -43,6 +47,22 @@ export class MinisController {
       factionNames: Object.fromEntries(factionNames),
       systemNames: Object.fromEntries(systemNames),
     };
+  }
+
+  @Post()
+  @ZodSerializerDto(addMinisResponseSchema)
+  async add(@CurrentUser() user: User, @Body() body: AddMinisRequestDto): Promise<AddMinisResponse> {
+    try {
+      return { minis: await this.minis.add(user.id, body) };
+    } catch (error) {
+      if (error instanceof UnknownPartError || error instanceof UnknownFactionError) {
+        throw new NotFoundException(error.message);
+      }
+      if (error instanceof InvalidMiniError) {
+        throw new UnprocessableEntityException(error.message);
+      }
+      throw error;
+    }
   }
 
   @Patch()
