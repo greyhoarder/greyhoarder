@@ -142,9 +142,14 @@ async function deleteEveryMiniOfBoyz(page: Page, url: string): Promise<void> {
   await page.goto(`${url}/hoard/boxes`);
   await page.getByTestId('hoard-box').click();
   await expect(page.getByTestId('box-name')).toBeVisible();
-  await page.getByTestId('box-group-toggle').first().click();
-  await page.getByTestId('box-group-mini-check').first().click();
-  await page.getByTestId('box-select-all').click();
+  for (const toggle of await page.getByTestId('box-group-toggle').all()) {
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  }
+  for (const check of await page.getByTestId('box-group-mini-check').all()) {
+    await check.click();
+    await expect(check).toBeChecked();
+  }
   await page.getByTestId('box-selection-delete').click();
   await page.getByTestId('box-delete-confirm').click();
   await expect(page.getByTestId('box-empty-boxes-dialog')).toBeVisible();
