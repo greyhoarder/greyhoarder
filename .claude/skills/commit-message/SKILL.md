@@ -15,6 +15,14 @@ Suggest the subject line only: no body, no bullet points.
    - Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`.
    - Scope only when one workspace is affected: `client`, `server`,
      `domain`, `protocol`, `e2e`. Docs and repo-wide changes have no scope.
+   - A commit that only moves the catalog submodule is
+     `chore(catalog): …`; it makes a patch release.
+   - Mark a breaking change with `!` after type and scope, e.g.
+     `feat(protocol)!: drop the tags of boxes`. Breaking is what makes a
+     major version in `docs/architecture-releases.md` ("What goes up"):
+     a broken update path, a changed instance configuration, a removed or
+     changed feature, or a broken HTTP API. Never add a `BREAKING CHANGE`
+     footer; the message is one line.
    - Lower case, imperative mood ("add", not "added"), no period at the
      end, at most 72 characters.
    - Describe what the change achieves, not the files it touches.
