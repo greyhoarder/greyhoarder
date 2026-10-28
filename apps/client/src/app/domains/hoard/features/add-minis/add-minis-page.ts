@@ -12,7 +12,7 @@ import { CatalogMiniCard } from './catalog-mini-card/catalog-mini-card';
 import { type MiniOffer, toMiniOffers } from './mini-offer';
 
 /**
- * Adding minis without their box: finding a mini the catalog knows by its name or its kit, and
+ * Adding minis without their box: finding a mini the catalog knows by its name, kit or faction, and
  * adding alike ones of it in a state from its opened card. Specified in docs/screens/add-minis.md.
  */
 @Component({
