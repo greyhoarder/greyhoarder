@@ -35,3 +35,5 @@ update the guide.
 | 0022 | [Self-updating instances](0022-self-updating-instances.md)                                               | Proposed |
 | 0023 | [Startup sequence and migrations](0023-startup-sequence-and-migrations.md)                               | Proposed |
 | 0024 | [Architecture tests with Sheriff and ArchUnitTS](0024-architecture-tests-with-sheriff-and-archunitts.md) | Proposed |
+| 0025 | [Semantic versioning of releases](0025-semantic-versioning-of-releases.md)                               | Proposed |
+| 0026 | [Local releases with release-it](0026-local-releases-with-release-it.md)                                 | Proposed |

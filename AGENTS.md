@@ -40,6 +40,8 @@ your task, and only those:
   [docs/screens/](docs/screens/README.md), if there is one
 - **Writing or changing tests**:
   [architecture-testing.md](docs/architecture-testing.md)
+- **Releases** (versions, breaking changes, commit types):
+  [architecture-releases.md](docs/architecture-releases.md)
 
 If a task conflicts with these rules, stop and ask. An architecture rule
 changes only through a new ADR; the coding guidelines and the design system
