@@ -1,4 +1,10 @@
 export {
+  type FactionSearchRequest,
+  factionSearchRequestSchema,
+  type FactionSearchResponse,
+  factionSearchResponseSchema,
+} from './factions.js';
+export {
   type KitsRequest,
   kitsRequestSchema,
   type KitVersionRequest,
@@ -8,6 +14,12 @@ export {
   type KitSearchResponse,
   kitSearchResponseSchema,
 } from './kits.js';
+export {
+  type CatalogMiniSearchRequest,
+  catalogMiniSearchRequestSchema,
+  type CatalogMiniSearchResponse,
+  catalogMiniSearchResponseSchema,
+} from './minis.js';
 export {
   type RangePartsRequest,
   rangePartsRequestSchema,

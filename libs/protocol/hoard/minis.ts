@@ -72,6 +72,24 @@ export const updateMinisResponseSchema = z.object({
 
 export type UpdateMinisResponse = z.infer<typeof updateMinisResponseSchema>;
 
+/** Alike minis to add without a box: from the catalog or put together by the user. */
+export const addMinisRequestSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  factionIds: z.array(z.string()).readonly(),
+  status: z.enum(hobbyStatuses),
+  parts: z.array(partChangeSchema).readonly(),
+  notes: z.string().max(5000).optional(),
+  count: z.number().int().min(1).max(100),
+});
+
+export type AddMinisRequest = z.infer<typeof addMinisRequestSchema>;
+
+export const addMinisResponseSchema = z.object({
+  minis: z.array(miniSchema).readonly(),
+});
+
+export type AddMinisResponse = z.infer<typeof addMinisResponseSchema>;
+
 /** Minis to delete for good. */
 export const deleteMinisRequestSchema = z.object({
   ids: z.array(z.string().min(1)).min(1).readonly(),
