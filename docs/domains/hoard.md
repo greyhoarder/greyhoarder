@@ -47,6 +47,17 @@ exactly one user, and users see only their own hoard.
 - A mini has at most one box as its origin. Further origins of a kitbash
   go into its notes; minis stripped for its parts are named as its
   sources of parts.
+- Minis without a box are added in two ways:
+  - **From the catalog:** a name that slots of catalog kits can be built
+    as, with its faction, in any status, on the sprue as well.
+  - **Custom:** a mini the user put together (kitbash, conversion, 3D
+    print, another manufacturer) with any name, factions, parts and notes.
+    It starts built or further.
+
+  Several alike minis are added at once; minis of the same kind in
+  different states are added one after the other. Neither way records
+  where the mini came from, and names, factions and parts can be changed
+  later like on any mini.
 
 ### Boxes and kits
 
@@ -189,8 +200,10 @@ or parts change, it belongs to another group. A table lists every mini on its ow
 line. The origin box is shown as a detail of each mini and can be used as
 a filter, never as a level to navigate through.
 
-Minis on the sprue are not listed with the others: they are taken from
-the sprue on their box. There, minis on the sprue that are alike (same
+Minis on the sprue of a box are not listed with the others: they are
+taken from the sprue on their box. Minis on the sprue without a box are
+listed with the others and built one by one, like any mini. On a box,
+minis on the sprue that are alike (same
 name, factions, parts and notes) share a row with a count, from which the
 user picks how many to build, to let depart or to delete. Minis past the
 sprue and gone minis are acted on several at once by selecting them, one

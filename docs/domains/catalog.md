@@ -83,6 +83,14 @@ repository's README. This document covers what Greyhoarder does with it.
 - Every signed-in user can search the catalog kits by name, the name of
   any variant, product code or barcode, ignoring case. A search returns at most 50 kits, sorted by
   name; removed kits are not part of it.
+- Every signed-in user can search the minis of the catalog: the names the
+  slots of catalog kits can be built as, each once per faction (the
+  slot's faction, or else each of its kit's factions), ignoring case, with
+  the kits they come from and the parts those slots offer. A search
+  matches the name or the name of a kit, returns at most 50 minis sorted
+  by name, then faction, and leaves out removed kits.
+- Every signed-in user can search the catalog factions by name, ignoring
+  case, each with its game system.
 - Adding a box from a catalog kit records the kit's id and version on the
   box. From then on the box and its minis follow the rules of the
   [hoard](hoard.md); a new kit version never changes them.

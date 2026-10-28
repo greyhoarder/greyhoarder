@@ -1,7 +1,7 @@
 # Screen: Add box
 
-- **Route:** `/hoard/add/box`; adding minis and custom boxes get their own
-  routes under `/hoard/add/` later
+- **Route:** `/hoard/add/box`; minis without a box are added on
+  [Add minis](add-minis.md) and [Add custom](add-custom.md)
 - **Domain:** `hoard`
 - **Related:** [Hoard](hoard.md), [Domain: hoard](../domains/hoard.md),
   [Domain: catalog](../domains/catalog.md), [Shell](shell.md)
