@@ -68,9 +68,9 @@ on the right; on narrow content widths the box card moves below them.
 5. The "Parts" section: the heading "Parts" with their count in muted text,
    and on its right a muted hint; below it one tile per part, each with
    the part's name, a "×" button to remove it and below the name the
-   swappable toggle, a small rounded button reading "Glued" with a droplet
-   icon or "Swappable" with a magnet icon (outlined and `muted` surface
-   when swappable).
+   swappable toggle, a small outlined rounded button reading "Glued" with a
+   droplet icon or "Swappable" with a magnet icon. It looks the same in both
+   states; only its icon and its label change.
    The last tile is the dashed "Add a part" tile with a plus. It opens the
    part picker below the tiles, separated by a border:
    - a filter input with a search icon;
@@ -271,9 +271,12 @@ muted line, the "or" is plain.
   a new name, new parts or factions move it into another group of the
   [hoard](hoard.md).
 - A faction chip's "×" removes the faction from the minis. "+ Faction"
-  opens a search over the catalog factions in a popover below it, as on
-  [Add custom](add-custom.md); choosing one adds it to the minis and
-  closes the search. Factions already chosen are not offered.
+  opens a search over the user's own and the catalog factions in a
+  popover below it, with "New faction" for a typed name no faction found
+  has, as on [Add custom](add-custom.md); choosing or creating one adds it
+  to the minis and closes the search. Factions already chosen are not
+  offered. A new own faction is saved like any other change: on the sprue
+  with building, past it at once.
 - The box card's link opens [Box](box.md). Its parts follow the name to
   build: the chosen or typed one, else the minis' name; without parts for
   it the part line is left out.
@@ -330,7 +333,7 @@ muted line, the "or" is plain.
 
 `mini-back`, `mini-save-note`, `mini-name`, `mini-status-badge`,
 `mini-faction`, `mini-add-faction`, `mini-faction-search`,
-`mini-faction-result`, `mini-workbench`,
+`mini-faction-result`, `mini-faction-create`, `mini-workbench`,
 `mini-menu`, `mini-change-origin`, `mini-leave`, `mini-delete`,
 `mini-leave-panel`, `mini-leave-reason` (with `data-reason`: `sold`,
 `given-away`, `stripped` or `lost`), `mini-leave-date`, `mini-leave-less`,
@@ -356,7 +359,6 @@ muted line, the "or" is plain.
 
 ## Open questions
 
-- Adding own factions; they have no data model yet.
 - Photos: how many per mini, and where files are stored.
 - How the status is changed past the sprue, and set back; the bar only
   shows it.

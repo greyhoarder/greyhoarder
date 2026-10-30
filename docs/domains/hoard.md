@@ -133,6 +133,9 @@ exactly one user, and users see only their own hoard.
   it is part of (a catalog faction or another own faction), e.g. a
   successor chapter that is part of the Dark Angels.
 - Renaming an own faction renames it on every mini.
+- A new own faction is given to minis by its name; it is created when the
+  minis are saved, one per name ignoring case. An own faction no mini
+  carries any more, gone ones included, is deleted.
 
 ### Parts
 

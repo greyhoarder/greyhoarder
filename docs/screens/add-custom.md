@@ -26,9 +26,11 @@ the sidebar, as wide as the hoard, from top to bottom:
    1. The name: a text field; while typing, a list of suggestions below it
       with the groups "Your minis" and "From the catalog".
    2. The factions: the chosen factions as chips with a "×" each, and a
-      dashed chip "+ Faction", which opens a search over the catalog
-      factions in a popover below it: the search field, and below it the
-      factions found, one per line.
+      dashed chip "+ Faction", which opens a search over the user's own
+      and the catalog factions in a popover below it: the search field,
+      below it the factions found, one per line, the user's own first;
+      then, separated by a border, the group "New faction" with a dashed
+      chip to create the typed name and a hint below it.
    3. The status: one toggle chip per status, "Built" to "Done"; exactly
       one is chosen.
    4. The parts: the chosen parts as tiles like on [Mini](mini.md), then
@@ -53,9 +55,12 @@ the sidebar, as wide as the hoard, from top to bottom:
 | Faction chip | {faction} |
 | Add faction chip | + Faction |
 | Faction search placeholder | Search factions |
-| Faction result | {faction} · {game system} |
+| Faction result | {faction} · {game system}; own factions: {faction} · Your own |
 | Faction search empty | Type a faction name. |
 | No factions found | No factions match. |
+| New faction group | New faction |
+| Create faction chip | Create “{typed name}” |
+| Create faction hint | Becomes a faction of your own. |
 | Status label | Status |
 | Status chips | Built · Primed · Painted · Done |
 | Parts label | Parts |
@@ -90,6 +95,10 @@ the sidebar, as wide as the hoard, from top to bottom:
 - The faction search ignores case and matches the faction's name; choosing
   a faction adds it as a chip and closes the search. A mini may have no
   faction ([domain](../domains/hoard.md#minis)).
+- "New faction" is offered for any typed name that no faction found has,
+  ignoring case. Creating it adds it as a chip and closes the search; it
+  becomes one of the user's own factions when the minis are added
+  ([domain](../domains/hoard.md#factions)).
 - Custom minis start built or further: what the user put together is no
   longer on the sprue ([domain](../domains/hoard.md#minis)).
 - Parts are chosen as on [Mini](mini.md): from the vocabulary, from the
@@ -118,7 +127,7 @@ the sidebar, as wide as the hoard, from top to bottom:
 `add-custom-back`, `add-custom-name`, `add-custom-name-suggestion`,
 `add-custom-name-missing`, `add-custom-faction`, `add-custom-faction-remove`,
 `add-custom-add-faction`, `add-custom-faction-search`,
-`add-custom-faction-result`, `add-custom-status`, `add-custom-add-part`,
+`add-custom-faction-result`, `add-custom-faction-create`, `add-custom-status`, `add-custom-add-part`,
 `add-custom-notes`, `add-custom-less`, `add-custom-count`,
 `add-custom-more`, `add-custom-submit`, `add-custom-added`,
 `add-custom-added-show`, `add-custom-added-dismiss`, `add-custom-add-error`
@@ -126,6 +135,5 @@ the sidebar, as wide as the hoard, from top to bottom:
 
 ## Open questions
 
-- Offering the user's own factions once they have a data model.
 - Whether added minis can be put on the workbench right away.
 - Photos of custom minis.
