@@ -9,6 +9,7 @@ use case you build or change; how its screens look is in
 | ID | Use case | Status |
 |----|----------|--------|
 | `ADD-MINIS` | [Add minis from the catalog](add-minis.md) | Draft |
+| `SIGN-IN` | [Sign in and out](sign-in-and-out.md) | Draft |
 
 ## When a spec is needed
 

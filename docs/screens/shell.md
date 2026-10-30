@@ -3,6 +3,7 @@
 - **Route:** every route behind the login; not the [login](login.md) or
   the [setup](setup.md)
 - **Domain:** app level (`apps/client/src/app/shell/`)
+- **Use cases:** [Sign in and out](../use-cases/sign-in-and-out.md)
 - **Related:** [Dashboard](dashboard.md),
   [ADR-0009](../adr/0009-sessions-with-redis.md)
 

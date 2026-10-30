@@ -4,6 +4,7 @@
   signed out, once the [setup](setup.md) is done. Signed-in users who open
   it are taken to the [dashboard](dashboard.md)
 - **Domain:** `auth`
+- **Use cases:** [Sign in and out](../use-cases/sign-in-and-out.md)
 - **Related:** [ADR-0007](../adr/0007-local-user-accounts.md),
   [ADR-0009](../adr/0009-sessions-with-redis.md)
 
