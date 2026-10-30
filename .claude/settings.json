@@ -1,6 +1,14 @@
 {
   "permissions": {
-    "ask": ["Edit(**/*.spec.ts)", "Write(**/*.spec.ts)"]
+    "ask": ["Edit(**/*.spec.ts)", "Write(**/*.spec.ts)"],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Write(**/.env)",
+      "Write(**/.env.*)"
+    ]
   },
   "hooks": {
     "PostToolUse": [
