@@ -413,6 +413,36 @@ describe('Mini page', () => {
     expect(all('mini-save-error')).toHaveLength(1);
   });
 
+  it("shows a part the user added even when it can't be saved", async () => {
+    showMini(
+      'm1',
+      () => Promise.resolve(BUILT),
+      () => Promise.reject(new Error('offline')),
+    );
+    await fixture.whenStable();
+    await click(all('mini-add-part')[0]);
+
+    await click(all('mini-part-option').find((option) => option.textContent?.includes('Burna')));
+
+    expect(partNames()).toEqual(['Deffgun', 'Burna']);
+    expect(all('mini-save-error')).toHaveLength(1);
+  });
+
+  it("shows a faction the user added even when it can't be saved", async () => {
+    showMini(
+      'm1',
+      () => Promise.resolve(BUILT),
+      () => Promise.reject(new Error('offline')),
+    );
+    await fixture.whenStable();
+    await searchFactions('space');
+
+    await click(inPopover('mini-faction-result'));
+
+    expect(textsOf('mini-faction')).toEqual(['Orks', 'Space Marines']);
+    expect(all('mini-save-error')).toHaveLength(1);
+  });
+
   it('leads back to the box when opened from it', async () => {
     showMini('m1', () => Promise.resolve(BUILT));
     fixture.componentRef.setInput('from', 'box');

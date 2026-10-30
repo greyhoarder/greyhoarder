@@ -6,6 +6,7 @@ import {
   isGone,
   type Kit,
   type Mini,
+  type MiniPart,
   toKit,
 } from '@greyhoarder/domain/hoard';
 import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
@@ -191,6 +192,15 @@ export class MiniEditor {
     source: () => this.mini()?.id,
     computation: () => true,
   });
+  // What was entered past the sprue; it stays when saving fails, until the stored minis change.
+  private readonly enteredParts = linkedSignal<readonly MiniPart[], readonly PartDraft[] | undefined>({
+    source: () => this.mini()?.parts ?? [],
+    computation: () => undefined,
+  });
+  private readonly enteredFactions = linkedSignal<readonly string[], readonly FactionDraft[] | undefined>({
+    source: () => this.mini()?.factionIds ?? [],
+    computation: () => undefined,
+  });
   /** How many minis of the row to build. */
   readonly count = linkedSignal({ source: () => this.mini()?.id, computation: () => 1 });
   readonly notes = linkedSignal(() => this.mini()?.notes ?? '');
@@ -205,14 +215,16 @@ export class MiniEditor {
   readonly status = computed(() => this.mini()?.status ?? 'sprue');
   /** On the sprue also the new own factions chosen, which have no id yet. */
   readonly factions = computed(() =>
-    this.isOnSprue() ? this.chosenFactions() : this.toFactionDrafts(this.mini()?.factionIds ?? []),
+    this.isOnSprue()
+      ? this.chosenFactions()
+      : (this.enteredFactions() ?? this.toFactionDrafts(this.mini()?.factionIds ?? [])),
   );
   readonly factionIds = computed(() => idsOf(this.factions()));
   readonly isOnWorkbench = computed(() =>
     this.isOnSprue() ? this.chosenWorkbench() : (this.mini()?.isOnWorkbench ?? false),
   );
   readonly parts = computed(() =>
-    this.isOnSprue() ? this.chosenParts() : this.toPartDrafts(this.mini()?.parts ?? []),
+    this.isOnSprue() ? this.chosenParts() : (this.enteredParts() ?? this.toPartDrafts(this.mini()?.parts ?? [])),
   );
 
   /** For a gone mini stripped for parts: the minis that got them. */
@@ -301,6 +313,7 @@ export class MiniEditor {
       this.chosenFactions.set(factions);
       return;
     }
+    this.enteredFactions.set(factions);
     void this.save({ factions: factions.map(toFactionChange) });
   }
 
@@ -409,6 +422,7 @@ export class MiniEditor {
       this.partsChanged.set(true);
       return;
     }
+    this.enteredParts.set(parts);
     void this.save({ parts: parts.map(toPartChange) });
   }
 
