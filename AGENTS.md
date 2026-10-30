@@ -39,6 +39,9 @@ your task, and only those:
   [design-system.md](docs/design-system.md)
 - **Working in a domain** (its terms, rules and data): its doc in
   [docs/domains/](docs/domains/README.md), if there is one
+- **Building or changing a feature** (what a user can do): its use case in
+  [docs/use-cases/](docs/use-cases/README.md); write or update it and have
+  it approved before tests and code
 - **Building or changing a screen**: its spec in
   [docs/screens/](docs/screens/README.md), if there is one
 - **Writing or changing tests**:

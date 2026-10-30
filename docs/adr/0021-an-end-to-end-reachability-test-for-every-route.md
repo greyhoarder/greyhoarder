@@ -1,4 +1,4 @@
-# ADR-0021: An end-to-end test for every route
+# ADR-0021: An end-to-end reachability test for every route
 
 - **Status:** Proposed
 - **Date:** 2026-10-23
@@ -16,21 +16,27 @@ browser. A page can pass all its unit tests and still be unreachable or
 blank.
 
 New pages are added often while the client grows, and mostly by agents.
+Agents meet a rule per page literally: a test that a page opens and shows
+its heading satisfies it. Such a test shows that the page can be reached,
+not that what the user does there works; that is what the acceptance
+criteria of its use cases are tested against (ADR-0027).
 
 ## Decision
 
 - **Every route that loads a component of its own**, nested routes
-  included, has at least one end-to-end test that reaches it and checks
-  that its component is rendered.
+  included, has at least one end-to-end reachability test: a test that
+  reaches the route and checks that its component is rendered.
 - Reaching the route through the navigation a user would take (a link or
   button) is preferred over opening its address directly, so the way in is
   tested as well.
 - "Rendered" is checked through an element of the page's own component, by
   its `data-testid` (ADR-0013); the address alone does not count.
-- This is the minimum; the main path of a screen (ADR-0013) still needs its
-  own tests. One test can cover several routes it passes through.
-- Adding a route includes adding this test, with the test cases approved by
-  the user as for every test (ADR-0012).
+- A reachability test says nothing about the behavior of the page. It does
+  not count as a test of a use case or of a screen's main path (ADR-0013),
+  which need tests of their own; one test of those may reach several
+  routes and so serve as their reachability test as well.
+- Adding a route includes adding its reachability test, with the test
+  cases approved by the user as for every test (ADR-0012).
 
 ### Alternatives considered
 
@@ -47,6 +53,8 @@ New pages are added often while the client grows, and mostly by agents.
 
 - A route that cannot be reached, or a page that stays blank, fails in
   Chromium, Firefox and WebKit before it is noticed by hand.
+- A passing reachability test means a page opens, not that its use cases
+  work; coverage of behavior is not measured by routes.
 - Every routed page component needs at least one `data-testid` that the
   test can wait for.
 - Each new page adds an end-to-end test and so a little run time in three

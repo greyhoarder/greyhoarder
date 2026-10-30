@@ -31,9 +31,10 @@ update the guide.
 | 0018 | [End-to-end tests with an instance per worker](0018-end-to-end-tests-with-an-instance-per-worker.md)     | Proposed |
 | 0019 | [Hobby data model](0019-hobby-data-model.md)                                                             | Proposed |
 | 0020 | [Community kit catalog](0020-community-kit-catalog.md)                                                   | Proposed |
-| 0021 | [An end-to-end test for every route](0021-an-end-to-end-test-for-every-route.md)                         | Proposed |
+| 0021 | [An end-to-end reachability test for every route](0021-an-end-to-end-reachability-test-for-every-route.md) | Proposed |
 | 0022 | [Self-updating instances](0022-self-updating-instances.md)                                               | Proposed |
 | 0023 | [Startup sequence and migrations](0023-startup-sequence-and-migrations.md)                               | Proposed |
 | 0024 | [Architecture tests with Sheriff and ArchUnitTS](0024-architecture-tests-with-sheriff-and-archunitts.md) | Proposed |
 | 0025 | [Semantic versioning of releases](0025-semantic-versioning-of-releases.md)                               | Proposed |
 | 0026 | [Local releases with release-it](0026-local-releases-with-release-it.md)                                 | Proposed |
+| 0027 | [Use-case specs with acceptance criteria](0027-use-case-specs-with-acceptance-criteria.md)               | Proposed |

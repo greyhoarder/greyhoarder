@@ -2,6 +2,7 @@
 
 - **Route:** `/hoard/add/minis`
 - **Domain:** `hoard`
+- **Use cases:** [Add minis from the catalog](../use-cases/add-minis.md)
 - **Related:** [Hoard](hoard.md), [Add box](add-box.md),
   [Add custom](add-custom.md), [Domain: hoard](../domains/hoard.md),
   [Domain: catalog](../domains/catalog.md), [Shell](shell.md)
