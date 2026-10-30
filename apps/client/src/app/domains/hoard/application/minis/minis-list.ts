@@ -6,7 +6,8 @@ import { BoxesStore } from '../../data/boxes-store';
 import { FactionNames } from '../faction-names';
 import { matchesFilter } from './mini-filter';
 import { toHoardGroups } from './hoard-group';
-import { countMinis, toSingleRows } from './mini-row';
+import { countMinis, type MiniRow, toSingleRows } from './mini-row';
+import { factionLineage } from '../../models/faction-lineage';
 import { matchesSearch } from './mini-search';
 import { sortRows } from './mini-sort';
 import { MinisStore } from '../../data/minis-store';
@@ -58,6 +59,7 @@ export class MinisList {
           matchesSearch(row, this.query()) &&
           matchesFilter(row, {
             factions: this.factionFilter(),
+            partOf: this.factionNames.partOfByName(),
             statuses: this.statusFilter(),
             boxes: this.boxFilter(),
           }),
@@ -77,6 +79,11 @@ export class MinisList {
   readonly paintedCount = computed(() =>
     countMinis(this.presentRows().filter((row) => hasReached(row.status, 'painted'))),
   );
+
+  /** The factions a row counts for in the faction filter: its own and those they are part of. */
+  factionLineageOf(row: MiniRow): string[] {
+    return factionLineage(row.factions, this.factionNames.partOfByName());
+  }
 
   /** Group cards stay open while the search or the filters change, and when coming back. */
   readonly openGroupIds = signal<ReadonlySet<string>>(new Set());

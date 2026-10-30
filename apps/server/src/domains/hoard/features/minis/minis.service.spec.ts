@@ -83,6 +83,44 @@ describe('Minis service', () => {
     expect(factionNames.get('own/crimson-wolves')).toBe('Crimson Wolves');
   });
 
+  it("lists the factions the minis' factions are part of, up the whole chain, with their names", async () => {
+    const wolf = { ...BOY, factionIds: ['warhammer-40000/crimson-wolves'] };
+    const { hoard } = fakeHoard([wolf]);
+    const factions = [
+      { id: 'warhammer-40000/crimson-wolves', partOfId: 'warhammer-40000/dark-angels', name: 'Crimson Wolves' },
+      { id: 'warhammer-40000/dark-angels', partOfId: 'warhammer-40000/space-marines', name: 'Dark Angels' },
+      { id: 'warhammer-40000/space-marines', name: 'Space Marines' },
+    ];
+    const catalog: CatalogKitQueries = {
+      searchKits: () => Promise.resolve([]),
+      findKits: () => Promise.resolve([]),
+      findKitVersion: () => Promise.resolve(undefined),
+      findKitParts: () => Promise.resolve([]),
+      findSystemNames: () => Promise.resolve(new Map()),
+      findFactions: (ids) =>
+        Promise.resolve(
+          factions
+            .filter((faction) => ids.includes(faction.id))
+            .map(({ name: _name, ...faction }) => ({ ...faction, systemId: 'warhammer-40000' })),
+        ),
+      findFactionNames: (ids) =>
+        Promise.resolve(
+          new Map(factions.filter((faction) => ids.includes(faction.id)).map((faction) => [faction.id, faction.name])),
+        ),
+    };
+    const service = new MinisService(hoard, catalog);
+
+    const { partOf, factionNames } = await service.list('owner');
+
+    expect(partOf).toEqual(
+      new Map([
+        ['warhammer-40000/crimson-wolves', 'warhammer-40000/dark-angels'],
+        ['warhammer-40000/dark-angels', 'warhammer-40000/space-marines'],
+      ]),
+    );
+    expect([...factionNames.values()]).toEqual(['Crimson Wolves', 'Dark Angels', 'Space Marines']);
+  });
+
   it('applies the changes to every given mini', async () => {
     const { hoard, updateMinis } = fakeHoard([BOY, { ...BOY, id: 'boy-2' }]);
     const service = new MinisService(hoard, CATALOG);

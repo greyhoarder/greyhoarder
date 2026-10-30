@@ -26,12 +26,15 @@ export class HttpMinisAdapter {
     readonly factionNames: ReadonlyMap<string, string>;
     /** By faction id. */
     readonly systemNames: ReadonlyMap<string, string>;
+    /** The faction each faction is part of, up the whole chain, by faction id. */
+    readonly partOf: ReadonlyMap<string, string>;
   }> {
     const response = await firstValueFrom(this.http.get<MinisResponse>('/api/hoard/minis'));
     return {
       minis: response.minis,
       factionNames: new Map(Object.entries(response.factionNames)),
       systemNames: new Map(Object.entries(response.systemNames)),
+      partOf: new Map(Object.entries(response.partOf)),
     };
   }
 

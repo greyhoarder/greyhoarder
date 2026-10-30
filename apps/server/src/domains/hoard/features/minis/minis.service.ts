@@ -14,7 +14,7 @@ import {
   withDeparture,
   withStatus,
 } from '@greyhoarder/domain/hoard';
-import { CatalogKitQueries } from '../../../catalog/api/index.js';
+import { CatalogKitQueries, findFactionLineage } from '../../../catalog/api/index.js';
 import { type LooseMinis, looseMinis } from '../../models/loose-minis.js';
 import { ownFactionNamesOf } from '../../models/own-faction-names.js';
 import { emptiedBoxIds, withoutDeletedRecipients } from '../../models/mini-deletion.js';
@@ -34,6 +34,11 @@ export interface MiniList {
   readonly factionNames: ReadonlyMap<string, string>;
   /** The names of the game systems of the catalog factions, by faction id. */
   readonly systemNames: ReadonlyMap<string, string>;
+  /**
+   * The catalog faction each of the minis' catalog factions is part of, up the whole chain, by
+   * faction id; the names of those factions are in `factionNames` as well.
+   */
+  readonly partOf: ReadonlyMap<string, string>;
 }
 
 /** Minis as a change stored them. */
@@ -81,13 +86,20 @@ export class MinisService {
 
   async list(ownerId: string): Promise<MiniList> {
     const minis = await this.hoard.findMinis(ownerId);
-    const catalogIds = [...new Set(minis.flatMap((mini) => mini.factionIds))].filter((id) => !isOwnFaction(id));
+    const factionIds = [...new Set(minis.flatMap((mini) => mini.factionIds))].filter((id) => !isOwnFaction(id));
+    const partOf = await findFactionLineage(factionIds, (ids) => this.catalog.findFactions(ids));
+    const catalogIds = [...new Set([...factionIds, ...partOf.values()])];
     const [catalogNames, systemNames, ownFactions] = await Promise.all([
       this.catalog.findFactionNames(catalogIds),
       this.catalog.findSystemNames(catalogIds),
       this.hoard.findOwnFactions(ownerId),
     ]);
-    return { minis, factionNames: new Map([...catalogNames, ...ownFactionNamesOf(minis, ownFactions)]), systemNames };
+    return {
+      minis,
+      factionNames: new Map([...catalogNames, ...ownFactionNamesOf(minis, ownFactions)]),
+      systemNames,
+      partOf,
+    };
   }
 
   /**

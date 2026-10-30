@@ -19,6 +19,10 @@ export class MinisStore {
   readonly systemNames = computed<ReadonlyMap<string, string>>(() =>
     this.loaded.hasValue() ? this.loaded.value().systemNames : new Map(),
   );
+  /** The faction each faction is part of, up the whole chain, by faction id. */
+  readonly partOf = computed<ReadonlyMap<string, string>>(() =>
+    this.loaded.hasValue() ? this.loaded.value().partOf : new Map(),
+  );
   /** Only the first load; a reload keeps showing what was there. */
   readonly isLoading = computed(() => this.loaded.status() === 'loading');
   readonly hasFailed = computed(() => this.loaded.error() !== undefined);

@@ -111,5 +111,3 @@ loaded, instead of showing factions.
 
 - Whether a faction leads to the hoard filtered by it.
 - Where the user's own factions get their game system from.
-- The app counts a mini only for the factions it carries yet
-  (OVERVIEW-09 is new).

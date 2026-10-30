@@ -18,6 +18,21 @@ describe('Faction progress', () => {
     ]);
   });
 
+  it('counts a mini also under every faction its factions are part of', () => {
+    const spaceMarines = 'warhammer-40000/space-marines';
+    const darkAngels = 'warhammer-40000/dark-angels';
+    const minis = [...Array<string>(4).fill(spaceMarines), ...Array<string>(2).fill(darkAngels)].map((factionId) =>
+      mini('built', factionId),
+    );
+
+    const progresses = factionProgresses(minis, new Map([[darkAngels, spaceMarines]]));
+
+    expect(progresses.map(({ factionId, miniCount }) => ({ factionId, miniCount }))).toEqual([
+      { factionId: spaceMarines, miniCount: 6 },
+      { factionId: darkAngels, miniCount: 2 },
+    ]);
+  });
+
   it('puts minis without a faction into a group of their own', () => {
     const progresses = factionProgresses([mini('sprue'), mini('built', ORKS), mini('primed')]);
 

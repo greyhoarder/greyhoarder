@@ -30,6 +30,7 @@ const HOARD: MinisResponse = {
   ],
   factionNames: { [ORKS]: 'Orks', [NECRONS]: 'Necrons' },
   systemNames: { [ORKS]: 'Warhammer 40,000', [NECRONS]: 'Warhammer 40,000' },
+  partOf: {},
 };
 
 describe('Dashboard page', () => {
@@ -79,6 +80,28 @@ describe('Dashboard page', () => {
     await fixture.whenStable();
 
     expect(textsOf('dashboard-hoard-faction-name').slice(0, 2)).toEqual(['Orks', 'Necrons']);
+  });
+
+  it('shows a card for a faction with the minis of the factions that are part of it', async () => {
+    const spaceMarines = 'warhammer-40000/space-marines';
+    const darkAngels = 'warhammer-40000/dark-angels';
+    showDashboard(
+      of({
+        minis: [
+          mini('m1', { name: 'Deathwing Knight', factionIds: [darkAngels] }),
+          mini('m2', { name: 'Deathwing Knight', factionIds: [darkAngels] }),
+        ],
+        factionNames: { [spaceMarines]: 'Space Marines', [darkAngels]: 'Dark Angels' },
+        systemNames: { [spaceMarines]: 'Warhammer 40,000', [darkAngels]: 'Warhammer 40,000' },
+        partOf: { [darkAngels]: spaceMarines },
+      }),
+    );
+
+    await fixture.whenStable();
+
+    expect(textsOf('dashboard-hoard-faction-name')).toEqual(['Dark Angels', 'Space Marines']);
+    expect(textsOf('dashboard-hoard-faction-count')).toEqual(['2 minis · 0 painted', '2 minis · 0 painted']);
+    expect(textsOf('dashboard-hoard-summary')).toEqual(['2 minis · 0 painted']);
   });
 
   it('says the game system of each faction', async () => {
@@ -144,7 +167,7 @@ describe('Dashboard page', () => {
   });
 
   it('says "No minis yet. Add a box and its minis appear here." when the hoard is empty', async () => {
-    showDashboard(of({ minis: [], factionNames: {}, systemNames: {} }));
+    showDashboard(of({ minis: [], factionNames: {}, systemNames: {}, partOf: {} }));
 
     await fixture.whenStable();
 

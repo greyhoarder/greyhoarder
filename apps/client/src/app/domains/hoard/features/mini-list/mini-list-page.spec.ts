@@ -40,8 +40,15 @@ describe('Minis page', () => {
   /** What the server answers when minis are deleted. */
   let deleteMinis = vi.fn<HttpMinisAdapter['delete']>();
 
-  /** A fresh page whose hoard holds what `loadMinis` answers, and these boxes. */
-  function showPage(loadMinis: () => Promise<readonly Mini[]>, boxes: readonly Box[] = []): void {
+  /** A fresh page whose hoard holds what `loadMinis` answers, these boxes and these factions. */
+  function showPage(
+    loadMinis: () => Promise<readonly Mini[]>,
+    boxes: readonly Box[] = [],
+    factions: { names: ReadonlyMap<string, string>; partOf: ReadonlyMap<string, string> } = {
+      names: new Map(),
+      partOf: new Map(),
+    },
+  ): void {
     deleteMinis = vi.fn(async () => ({ emptiedBoxIds: [], minis: [] }));
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -56,8 +63,9 @@ describe('Minis page', () => {
           useValue: {
             list: vi.fn(async () => ({
               minis: await loadMinis(),
-              factionNames: new Map(),
+              factionNames: factions.names,
               systemNames: new Map(),
+              partOf: factions.partOf,
             })),
             delete: vi.fn((ids: readonly string[]) => deleteMinis(ids)),
           },
@@ -182,6 +190,68 @@ describe('Minis page', () => {
     await fixture.whenStable();
 
     expect(byTestId('hoard-group-toggle')[0]?.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  describe('with factions that are part of others', () => {
+    const SPACE_MARINES = 'warhammer-40000/space-marines';
+    const DARK_ANGELS = 'warhammer-40000/dark-angels';
+    const ORKS = 'warhammer-40000/orks';
+    const FACTIONS = {
+      names: new Map([
+        [SPACE_MARINES, 'Space Marines'],
+        [DARK_ANGELS, 'Dark Angels'],
+        [ORKS, 'Orks'],
+      ]),
+      partOf: new Map([[DARK_ANGELS, SPACE_MARINES]]),
+    };
+
+    const optionTexts = (): string[] =>
+      [...document.querySelectorAll('[data-testid="hoard-filter-option"]')].map((option) =>
+        [option.querySelector('label'), option.lastElementChild]
+          .map((element) => element?.textContent?.trim() ?? '')
+          .join(' '),
+      );
+
+    it('shows the minis of every faction that is part of the ticked one', async () => {
+      showPage(
+        () =>
+          Promise.resolve([
+            mini('m1', { name: 'Intercessor', factionIds: [SPACE_MARINES], status: 'built' }),
+            mini('m2', { name: 'Deathwing Knight', factionIds: [DARK_ANGELS], status: 'built' }),
+            mini('m3', { name: 'Boy', factionIds: [ORKS], status: 'built' }),
+          ]),
+        [],
+        FACTIONS,
+      );
+      await fixture.whenStable();
+      await showTable();
+
+      TestBed.inject(MinisList).factionFilter.set(new Set(['Space Marines']));
+      await fixture.whenStable();
+
+      const shown = byTestId('hoard-row').map((row) => row.textContent ?? '');
+      expect(shown.some((row) => row.includes('Intercessor'))).toBe(true);
+      expect(shown.some((row) => row.includes('Deathwing Knight'))).toBe(true);
+      expect(shown.some((row) => row.includes('Boy'))).toBe(false);
+    });
+
+    it('offers a faction in the faction filter that only factions part of it reach, with their minis counted', async () => {
+      showPage(
+        () =>
+          Promise.resolve([
+            mini('m1', { name: 'Deathwing Knight', factionIds: [DARK_ANGELS], status: 'built' }),
+            mini('m2', { name: 'Deathwing Knight', factionIds: [DARK_ANGELS], status: 'built' }),
+          ]),
+        [],
+        FACTIONS,
+      );
+      await fixture.whenStable();
+
+      byTestId('hoard-filter-faction')[0]?.click();
+      await fixture.whenStable();
+
+      expect(optionTexts()).toEqual(['Dark Angels 2', 'Space Marines 2']);
+    });
   });
 
   describe('with two boxes of the same name', () => {

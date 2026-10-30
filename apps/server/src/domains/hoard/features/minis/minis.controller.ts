@@ -42,11 +42,12 @@ export class MinisController {
   @Get()
   @ZodSerializerDto(minisResponseSchema)
   async list(@CurrentUser() user: User): Promise<MinisResponse> {
-    const { minis, factionNames, systemNames } = await this.minis.list(user.id);
+    const { minis, factionNames, systemNames, partOf } = await this.minis.list(user.id);
     return {
       minis,
       factionNames: Object.fromEntries(factionNames),
       systemNames: Object.fromEntries(systemNames),
+      partOf: Object.fromEntries(partOf),
     };
   }
 

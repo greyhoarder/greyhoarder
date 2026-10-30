@@ -1,4 +1,5 @@
 import { hasReached, type HobbyStatus, type Mini } from '@greyhoarder/domain/hoard';
+import { factionLineage } from './faction-lineage';
 
 /** How far the minis of one faction have come (docs/screens/dashboard.md). */
 export interface FactionProgress {
@@ -14,13 +15,16 @@ export interface FactionProgress {
 
 /**
  * The progress of every faction the minis belong to. A mini counts under
- * each of its factions; minis without one form a group without a faction id,
- * after the factions. The factions come in the order the minis name them.
+ * each of its factions and every faction they are part of, once each;
+ * minis without one form a group without a faction id, after the factions. The factions come in the order the minis name them.
  */
-export function factionProgresses(minis: readonly Pick<Mini, 'factionIds' | 'status'>[]): FactionProgress[] {
+export function factionProgresses(
+  minis: readonly Pick<Mini, 'factionIds' | 'status'>[],
+  partOf: ReadonlyMap<string, string> = new Map(),
+): FactionProgress[] {
   const statusesByFaction = new Map<string | undefined, HobbyStatus[]>();
   for (const mini of minis) {
-    for (const factionId of mini.factionIds) {
+    for (const factionId of factionLineage(mini.factionIds, partOf)) {
       statusesByFaction.set(factionId, [...(statusesByFaction.get(factionId) ?? []), mini.status]);
     }
   }

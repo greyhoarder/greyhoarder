@@ -163,8 +163,6 @@ The system SHALL tell the user when the hoard can't be loaded.
 - The app lists minis on the sprue without a box among the others and
   its status filter has no On the sprue yet (BROWSE-02 changed,
   BROWSE-14 is new).
-- The app's faction filter matches the chosen faction only yet
-  (BROWSE-13 is new).
 - The search also matches the kit of a mini without a box; the hoard screen
   names only name, part and box.
 - Boxes can be selected, but the selection has no actions yet.
