@@ -70,7 +70,9 @@ Each card is a bordered card on the card surface with rounded corners:
 - Every navigation asks the server whether the session is still valid.
 - Gone minis ([domain](../domains/hoard.md#leaving-the-hoard)) are not
   counted.
-- A mini counts under each of its factions; the summary counts it once.
+- A mini counts under each of its factions and under every faction they
+  are part of, up the whole chain: a Dark Angels mini counts for the
+  Space Marines as well. The summary counts it once.
   Minis without a faction count under "No faction".
 - The cards are sorted by their number of minis, most first, then by name;
   "No faction" always comes last.
