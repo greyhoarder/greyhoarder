@@ -1,7 +1,7 @@
 # Architecture: Angular
 
 Rules for Angular code in the client. Where client code lives is covered in
-[architecture-boundaries.md](architecture-boundaries.md), components and
+[architecture-boundaries-client.md](architecture-boundaries-client.md), components and
 styling in [architecture-ui.md](architecture-ui.md).
 
 ## Modern Angular only

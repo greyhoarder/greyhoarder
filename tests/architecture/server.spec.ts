@@ -50,7 +50,7 @@ describe('Server architecture', () => {
     await expect(rule).toPassAsync();
   });
 
-  // architecture-boundaries.md, "Layers inside a server domain"
+  // architecture-boundaries-server.md, "Layers inside a server domain"
   it('keeps the model of a domain free of frameworks', async () => {
     const rule = projectFiles(TSCONFIG)
       .inPath('src/domains/*/models/**')
@@ -70,7 +70,7 @@ describe('Server architecture', () => {
     await expect(rule).toPassAsync();
   });
 
-  // architecture-boundaries.md, "Layers inside a server domain"
+  // architecture-boundaries-server.md, "Layers inside a server domain"
   it('keeps only controllers and services directly in a feature folder', async () => {
     const rule = projectFiles(TSCONFIG)
       .inPath('src/domains/*/features/*/*.ts')
@@ -80,7 +80,7 @@ describe('Server architecture', () => {
     await expect(rule).toPassAsync();
   });
 
-  // architecture-boundaries.md, "Layers inside a server domain"
+  // architecture-boundaries-server.md, "Layers inside a server domain"
   it('organizes infrastructure by port, as <technology>-<port>.ts or in a folder named after the port', async () => {
     const rule = projectFiles(TSCONFIG)
       .inPath('src/domains/*/infrastructure/**')
@@ -90,7 +90,7 @@ describe('Server architecture', () => {
     await expect(rule).toPassAsync();
   });
 
-  // architecture-boundaries.md, "Layers inside a server domain"
+  // architecture-boundaries-server.md, "Layers inside a server domain"
   it("keeps adapter schemas in a schemas folder inside their port's folder", async () => {
     const rule = projectFiles(TSCONFIG)
       .inPath('src/domains/**')
@@ -103,7 +103,7 @@ describe('Server architecture', () => {
     await expect(rule).toPassAsync();
   });
 
-  // architecture-boundaries.md, "Server modules and data ownership"
+  // architecture-boundaries-server.md, "Server modules and data ownership"
   it('never refers to another module through forwardRef()', async () => {
     const rule = projectFiles(TSCONFIG)
       .inPath('src/**')
@@ -113,7 +113,7 @@ describe('Server architecture', () => {
     await expect(rule).toPassAsync();
   });
 
-  // architecture-boundaries.md, "Layers inside a server domain"
+  // architecture-boundaries-server.md, "Layers inside a server domain"
   it('uses no strings as injection tokens', async () => {
     const rule = projectFiles(TSCONFIG)
       .inPath('src/**')

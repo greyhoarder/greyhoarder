@@ -11,7 +11,7 @@ const DOMAIN_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
 };
 
 /**
- * docs/architecture-boundaries.md, "Layers inside a server domain": layers of
+ * docs/architecture-boundaries-server.md, "Layers inside a server domain": layers of
  * its own domain each layer may use. `api/` and `<domain>.module.ts` may use
  * every layer whose parts they publish or bind.
  */
@@ -26,8 +26,9 @@ const LAYER_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
 };
 
 /**
- * docs/architecture-boundaries.md, "Public API", "App level on the server" and
- * "Shared code": app-level code and other domains' `api/` each layer may use.
+ * docs/architecture-boundaries.md, "Public API" and "Shared code", and
+ * docs/architecture-boundaries-server.md, "App level on the server": app-level
+ * code and other domains' `api/` each layer may use.
  * `api/` re-exports only its own domain, `models/` uses only
  * `@greyhoarder/domain`, ports use only `models/`.
  */
@@ -37,8 +38,9 @@ const LAYERS_USING_CONFIG: readonly string[] = ['module', 'features', 'infrastru
 const LAYERS_USING_PLATFORM: readonly string[] = ['module', 'infrastructure'];
 
 /**
- * docs/architecture-boundaries.md, "App level on the server" and "Shared
- * code": app-level code each app-level part may use. `root` is the
+ * docs/architecture-boundaries-server.md, "App level on the server", and
+ * docs/architecture-boundaries.md, "Shared code": app-level code each
+ * app-level part may use. `root` is the
  * composition root besides `config/`: `main.ts`, `app.module.ts` and the
  * modules next to them.
  */
@@ -50,7 +52,7 @@ const APP_LEVEL_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
 };
 
 /**
- * docs/architecture-boundaries.md, "App level on the server": the parts of a
+ * docs/architecture-boundaries-server.md, "App level on the server": the parts of a
  * domain the app level may use. `shared/` uses no domain.
  */
 const APP_LEVEL_USING_DOMAINS: readonly string[] = ['root', 'config', 'platform'];

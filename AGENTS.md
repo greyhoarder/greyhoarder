@@ -21,10 +21,13 @@ Binding architecture rules live in `docs/`, the reasoning behind them in
 your task, and only those:
 
 - **Any change to app or library code** (domains, folders, imports, Nest modules):
-  [architecture-boundaries.md](docs/architecture-boundaries.md)
+  [architecture-boundaries.md](docs/architecture-boundaries.md), and for code
+  in one app also
+  [architecture-boundaries-server.md](docs/architecture-boundaries-server.md)
+  or [architecture-boundaries-client.md](docs/architecture-boundaries-client.md)
 - **Writing or changing code**:
   [coding-guidelines.md](docs/coding-guidelines.md)
-- **Schemas, queries, MongoDB**:
+- **Schemas, queries, MongoDB, migrations**:
   [architecture-persistence.md](docs/architecture-persistence.md)
 - **Accounts, login, sessions, guards, user-owned data, hosting**:
   [architecture-security.md](docs/architecture-security.md)

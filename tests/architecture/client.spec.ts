@@ -39,7 +39,7 @@ describe('Client architecture', () => {
     await expect(rule).toPassAsync();
   });
 
-  // architecture-boundaries.md, "Layers inside a client domain"
+  // architecture-boundaries-client.md, "Layers inside a client domain"
   it('keeps the model of a domain free of frameworks', async () => {
     const rule = projectFiles(TSCONFIG)
       .inPath('src/app/domains/*/models/**')
@@ -49,7 +49,7 @@ describe('Client architecture', () => {
     await expect(rule).toPassAsync();
   });
 
-  // architecture-boundaries.md, "Layers inside a client domain"
+  // architecture-boundaries-client.md, "Layers inside a client domain"
   it('keeps every store independent of other stores', async () => {
     const rule = projectFiles(TSCONFIG)
       .inPath('src/app/domains/*/data/**')

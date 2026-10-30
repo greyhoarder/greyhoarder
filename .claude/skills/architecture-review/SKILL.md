@@ -10,7 +10,10 @@ description: Review code or a planned change against greyhoarder's architecture 
 2. Read the guides that match the scope, as routed in `AGENTS.md`. They are
    the source of truth; the ADRs in `docs/adr/` explain the reasoning.
    - Always: `docs/architecture-boundaries.md`
-   - Schemas, queries, MongoDB: `docs/architecture-persistence.md`
+   - Server code: `docs/architecture-boundaries-server.md`
+   - Client code: `docs/architecture-boundaries-client.md`
+   - Schemas, queries, MongoDB, migrations:
+     `docs/architecture-persistence.md`
    - Accounts, sessions, guards, user-owned data, hosting:
      `docs/architecture-security.md`
    - Angular code in the client: `docs/architecture-angular.md`

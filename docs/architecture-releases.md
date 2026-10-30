@@ -4,8 +4,7 @@ Rules for the versions of Greyhoarder's releases, the commits they are
 derived from and how a release is made. How images and apps are built and
 published is not covered yet. How an instance updates its
 database between versions is covered in
-[ADR-0022](adr/0022-self-updating-instances.md) and
-[ADR-0023](adr/0023-startup-sequence-and-migrations.md).
+[architecture-persistence.md](architecture-persistence.md), "Migrations".
 
 ## Versions
 

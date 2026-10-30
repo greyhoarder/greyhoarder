@@ -11,7 +11,7 @@ const DOMAIN_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
 };
 
 /**
- * docs/architecture-boundaries.md, "Layers inside a client domain": layers of
+ * docs/architecture-boundaries-client.md, "Layers inside a client domain": layers of
  * its own domain each layer may use. `api/` and `<domain>.routes.ts` may use
  * every layer whose parts they publish.
  */
@@ -53,8 +53,9 @@ const LAYERS_USING_SHARED: readonly string[] = [
 ];
 
 /**
- * docs/architecture-boundaries.md, "App level on the client" and "Shared code":
- * app-level code each app-level part may use. `root` is `main.ts`, `app.ts`,
+ * docs/architecture-boundaries-client.md, "App level on the client", and
+ * docs/architecture-boundaries.md, "Shared code": app-level code each
+ * app-level part may use. `root` is `main.ts`, `app.ts`,
  * `app.config.ts` and `app.routes.ts`.
  */
 const APP_LEVEL_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
@@ -64,7 +65,7 @@ const APP_LEVEL_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
 };
 
 /**
- * docs/architecture-boundaries.md, "App level on the client": the parts of a
+ * docs/architecture-boundaries-client.md, "App level on the client": the parts of a
  * domain the app level may use. `shared/` uses no domain.
  */
 const APP_LEVEL_USING_DOMAINS: readonly string[] = ['root', 'shell'];
