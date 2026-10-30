@@ -97,7 +97,10 @@ exactly one user, and users see only their own hoard.
 - A box is created with at least one mini, but it can become empty.
   Deleting minis never deletes their box: when a box has no minis left,
   gone ones included, the user is asked whether to delete it as well.
-- Deleting a box deletes all its minis for good, gone ones included.
+- Deleting a box asks whether its minis go too: either the box and all
+  its minis, gone ones included, are deleted for good, or only the box,
+  and its minis stay in the hoard without a box, keeping the box's kit
+  as their kit.
 - Kits only suggest. Any name and any part can be given to any mini, and a
   box may end up with more, fewer or other minis than its kit describes.
 - Changing a kit never changes existing boxes or minis; neither does a
@@ -121,8 +124,6 @@ exactly one user, and users see only their own hoard.
   in equal steps: on the sprue 0, built 25, primed 50, painted 75, done
   100; the box gets the rounded average. The rule lives in the client's
   `hoard/models/` as well.
-- Deleting a box asks whether its minis go too. Minis that stay lose
-  their origin and remain in the hoard.
 
 ### Factions
 

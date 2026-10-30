@@ -144,8 +144,8 @@ count stepper.
 | Kit note | Kits only suggest. Changing the kit never changes this box. |
 | No minis | No minis in this box. |
 | Delete box dialog | Delete {box name} for good? |
-| Delete box text | Its {n} minis are deleted with it, gone ones included. — one: Its mini is deleted with it. — none: leaves the sentence out. This can't be undone. |
-| Delete box buttons | Cancel · Delete box |
+| Delete box text | Its {n} minis can stay in your hoard without a box, or be deleted with it, gone ones included. — one: Its mini can stay in your hoard without a box, or be deleted with it. — none: leaves the sentence out. This can't be undone. |
+| Delete box buttons | Cancel · Keep minis · Delete with minis; for a box without minis: Cancel · Delete box |
 | Delete box failed | Can't delete right now. Try again in a moment. |
 | Not found | This box isn't in your hoard. |
 | Load failed | Can't load this box right now. Try again in a moment. |
@@ -174,7 +174,7 @@ count stepper.
 | Nothing gone | No mini of the box is gone | No "Gone" section |
 | Empty | The box has no minis | The progress badge "Empty", no percentage, an empty bar; no "Minis", "On the sprue" or "Gone" section; the no-minis message in their place |
 | Boxes emptied | The minis deleted from the box were its last, gone ones included | The empty boxes dialog of the [hoard](hoard.md#states) for this box |
-| Deleting the box | "Delete box…" chosen in the box menu | The delete box dialog; "Delete box" shows the busy stripes until the server answers; when it does not, nothing is deleted and the delete-box-failed message appears in the dialog |
+| Deleting the box | "Delete box…" chosen in the box menu | The delete box dialog; the chosen button shows the busy stripes until the server answers; when it does not, nothing is deleted and the delete-box-failed message appears in the dialog |
 | All gone | Every mini of the box is gone | The progress badge "All gone", no percentage, an empty bar; no "Minis" and no "On the sprue" section; the "Gone" section open |
 | Not found | No box with this id in the user's hoard, also one of another user | The not-found message below the back link |
 | Load failed | The server does not answer | The load-failed message in `destructive` below the back link, announced to screen readers |
@@ -239,10 +239,13 @@ count stepper.
   section. The actions of the selection bar work as in the hoard.
 - The kit card shows the kit as it was when the box was added: the version
   the box records. A newer version of a catalog kit never changes it.
-- "Delete box…" opens the delete box dialog. "Delete box" deletes the box
-  and all its minis for good, gone ones included
-  ([domain](../domains/hoard.md#boxes-and-kits)), and leads to the Boxes
-  tab of the hoard; "Cancel" and Escape close the dialog.
+- "Delete box…" opens the delete box dialog
+  ([domain](../domains/hoard.md#boxes-and-kits)). "Delete with minis"
+  deletes the box and all its minis for good, gone ones included; "Keep
+  minis" deletes only the box, and its minis stay in the hoard without a
+  box, with the box's kit; a box without minis offers "Delete box". Each
+  leads to the Boxes tab of the hoard; "Cancel" and Escape close the
+  dialog.
 - "Edit box" and "Add a mini to this box" have no function yet.
 
 ## Accessibility
@@ -288,7 +291,7 @@ count stepper.
 `box-delete-cancel`, `box-delete-confirm`, `box-delete-error`,
 `box-empty-boxes-dialog`, `box-empty-boxes-keep`, `box-empty-boxes-delete`,
 `box-empty-boxes-error`, `box-delete-box-dialog`, `box-delete-box-cancel`,
-`box-delete-box-confirm`, `box-delete-box-error`, `box-no-minis`;
+`box-delete-box-confirm`, `box-delete-box-keep-minis`, `box-delete-box-error`, `box-no-minis`;
 inside an open card on the sprue the build, leave and delete panels carry
 the test IDs of [Mini](mini.md#test-ids); `box-save-error`, `box-kit`,
 `box-kit-draft`, `box-kit-slot`, `box-kit-error`, `box-kit-missing`, `box-loading`, `box-not-found`, `box-error` (ADR-0013).
