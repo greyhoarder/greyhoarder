@@ -37,9 +37,7 @@ describe('Build bar', () => {
   it('shows the count only for rows of more than one mini', async () => {
     const bars = [await render(), await render({ rowSize: 5 })];
 
-    expect(
-      bars.map((bar) => bar.querySelector('[data-testid="mini-build-count"]') !== null),
-    ).toEqual([false, true]);
+    expect(bars.map((bar) => bar.querySelector('[data-testid="mini-build-count"]') !== null)).toEqual([false, true]);
   });
 
   it('offers to build only once a name is chosen', async () => {

@@ -1,10 +1,5 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import {
-  ApplicationConfig,
-  inject,
-  provideAppInitializer,
-  provideBrowserGlobalErrorListeners,
-} from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import {
   PreloadAllModules,
   provideRouter,

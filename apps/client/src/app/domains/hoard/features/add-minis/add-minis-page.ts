@@ -59,9 +59,7 @@ export class AddMinisPage {
     this.addition.start({
       name,
       kit: { id: kit.id, version: kit.version },
-      ...(factionId === undefined
-        ? {}
-        : { faction: { id: factionId, name: factionName ?? factionId } }),
+      ...(factionId === undefined ? {} : { faction: { id: factionId, name: factionName ?? factionId } }),
       suggestedParts: parts,
     });
   }

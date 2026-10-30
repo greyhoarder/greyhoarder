@@ -50,9 +50,7 @@ export class HlmFieldError implements OnDestroy {
   /** Forces the error message to be visible regardless of the control's validation state. */
   public readonly forceShow = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-  protected readonly _display = computed(
-    () => !this._hasParentField || this.forceShow() || this._hasError(),
-  );
+  protected readonly _display = computed(() => !this._hasParentField || this.forceShow() || this._hasError());
 
   protected readonly _hasError = computed(() => {
     const errors = this._field?.errors();

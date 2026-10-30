@@ -55,7 +55,10 @@ export class MinisService {
 
   /** The words of the text, each with the factions whose name contains it. */
   private async wordsOf(text: string): Promise<MiniSearchWord[]> {
-    const words = text.trim().split(/\s+/).filter((word) => word !== '');
+    const words = text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word !== '');
     return Promise.all(
       words.map(async (word) => ({
         text: word,

@@ -3,10 +3,7 @@
   <!-- Actions on the selection come with the backend. -->
   <div class="sticky top-0 z-10 mb-3 bg-background" data-testid="hoard-box-selection-bar">
     <div class="flex min-h-13 items-center gap-2">
-      <span
-        class="min-w-0 truncate px-1 text-sm font-semibold"
-        data-testid="hoard-box-selection-count"
-      >
+      <span class="min-w-0 truncate px-1 text-sm font-semibold" data-testid="hoard-box-selection-count">
         {{ store.selectedIds().size }}
         {{ store.selectedIds().size === 1 ? 'box' : 'boxes' }} selected
       </span>
@@ -95,17 +92,11 @@
 } @else if (store.hasFailed()) {
   <!-- The frame of the hoard says that loading failed. -->
 } @else if (store.boxes().length === 0) {
-  <p
-    class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
-    data-testid="hoard-box-empty"
-  >
+  <p class="rounded-xl border border-dashed p-8 text-center text-muted-foreground" data-testid="hoard-box-empty">
     No boxes yet. Add your first box to start your hoard.
   </p>
 } @else if (store.visibleBoxes().length === 0) {
-  <p
-    class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
-    data-testid="hoard-box-no-results"
-  >
+  <p class="rounded-xl border border-dashed p-8 text-center text-muted-foreground" data-testid="hoard-box-no-results">
     @if (store.query().trim()) {
       No boxes match "{{ store.query() }}".
     } @else {

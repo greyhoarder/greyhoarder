@@ -147,8 +147,7 @@ export class MinisService {
       throw new UnknownMinisError();
     }
     const factions = changes.factions && (await this.resolveFactions(ownerId, changes.factions));
-    const departure =
-      changes.departure && (await this.checkDeparture(ownerId, uniqueIds, changes.departure));
+    const departure = changes.departure && (await this.checkDeparture(ownerId, uniqueIds, changes.departure));
     const { parts, status, departure: _checked, factions: _resolved, ...rest } = changes;
     const resolved = parts && resolveParts(await this.hoard.findParts(ownerId), parts, randomUUID);
     const changed = minis.map((mini) => {
@@ -200,11 +199,7 @@ export class MinisService {
    *
    * @throws UnknownMinisError when a recipient is not in the owner's hoard or is one of the minis
    */
-  private async checkDeparture(
-    ownerId: string,
-    ids: readonly string[],
-    departure: Departure,
-  ): Promise<Departure> {
+  private async checkDeparture(ownerId: string, ids: readonly string[], departure: Departure): Promise<Departure> {
     const parsed = parseDeparture(departure);
     const recipientIds = parsed.recipientMiniIds ?? [];
     if (recipientIds.length === 0) {

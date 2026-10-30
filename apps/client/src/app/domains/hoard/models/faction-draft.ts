@@ -20,9 +20,7 @@ export function idsOf(factions: readonly FactionDraft[]): string[] {
 /** Whether the faction is among those chosen: by its id, or a new one by its name ignoring case. */
 export function hasFaction(chosen: readonly FactionDraft[], faction: FactionDraft): boolean {
   return chosen.some((known) =>
-    faction.id === undefined
-      ? factionKey(known.name) === factionKey(faction.name)
-      : known.id === faction.id,
+    faction.id === undefined ? factionKey(known.name) === factionKey(faction.name) : known.id === faction.id,
   );
 }
 

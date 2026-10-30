@@ -83,10 +83,7 @@ test.describe('Mini', () => {
     await expect(page.getByTestId('mini-part').filter({ hasText: 'Grot Banner' })).toHaveCount(1);
   });
 
-  test('goes back to the box with the back link when opened from the box', async ({
-    page,
-    signedIn,
-  }) => {
+  test('goes back to the box with the back link when opened from the box', async ({ page, signedIn }) => {
     const response = await page.request.post(`${signedIn.url}/api/hoard/boxes`, {
       data: { kitId: 'games-workshop/warhammer-40000/orks/lootas-2008', boxes: 1, tags: [], addedOn: '2026-10-25' },
       headers: { Origin: signedIn.url },
@@ -126,10 +123,7 @@ test.describe('Mini', () => {
     await page.getByTestId('mini-build').click();
 
     await expect(page.getByTestId('mini-status-badge')).toHaveText('Built');
-    await expect(page.getByTestId('mini-build-as').filter({ hasText: 'Nob' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    await expect(page.getByTestId('mini-build-as').filter({ hasText: 'Nob' })).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByTestId('mini-box')).toContainText('From the kit');
   });
 
@@ -138,18 +132,14 @@ test.describe('Mini', () => {
 
     await page.getByTestId('mini-add-faction').click();
     await page.getByTestId('mini-faction-search').fill('space');
-    await page
-      .getByTestId('mini-faction-result')
-      .filter({ hasText: 'Space Marines' })
-      .first()
-      .click();
+    await page.getByTestId('mini-faction-result').filter({ hasText: 'Space Marines' }).first().click();
     await expect(page.getByTestId('mini-faction')).toHaveCount(2);
     await page.reload();
 
     await expect(page.getByTestId('mini-faction')).toHaveText(['Orks', 'Space Marines']);
   });
 
-  test("offers only the user's own parts under \"Your parts\"", async ({ page, signedIn }) => {
+  test('offers only the user\'s own parts under "Your parts"', async ({ page, signedIn }) => {
     const add = (name: string, parts: readonly string[]) =>
       page.request.post(`${signedIn.url}/api/hoard/minis`, {
         data: {
@@ -173,10 +163,7 @@ test.describe('Mini', () => {
     ).toHaveText(['+ Grot Banner']);
   });
 
-  test("removes a part of the user's own from the vocabulary once no mini carries it", async ({
-    page,
-    signedIn,
-  }) => {
+  test("removes a part of the user's own from the vocabulary once no mini carries it", async ({ page, signedIn }) => {
     const add = async (name: string, parts: readonly string[]) => {
       const added = await page.request.post(`${signedIn.url}/api/hoard/minis`, {
         data: {

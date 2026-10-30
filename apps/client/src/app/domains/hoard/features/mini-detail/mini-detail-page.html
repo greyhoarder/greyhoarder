@@ -31,12 +31,7 @@
     Can't load this mini right now. Try again in a moment.
   </p>
 } @else if (editor.isLoading()) {
-  <div
-    class="flex flex-col gap-6"
-    aria-busy="true"
-    aria-label="Loading the mini"
-    data-testid="mini-loading"
-  >
+  <div class="flex flex-col gap-6" aria-busy="true" aria-label="Loading the mini" data-testid="mini-loading">
     <div class="flex items-start gap-5">
       <hlm-skeleton class="size-28 rounded-xl" />
       <div class="flex flex-1 flex-col gap-3">
@@ -68,10 +63,7 @@
       <div class="flex flex-wrap items-center gap-2 text-sm">
         <ul class="flex flex-wrap items-center gap-2" aria-label="Factions">
           @for (faction of factions(); track $index) {
-            <li
-              class="inline-flex h-8 items-center gap-1 rounded-full bg-muted pr-1.5 pl-3"
-              data-testid="mini-faction"
-            >
+            <li class="inline-flex h-8 items-center gap-1 rounded-full bg-muted pr-1.5 pl-3" data-testid="mini-faction">
               {{ faction.name }}
               @if (faction.isOwn) {
                 <span class="text-muted-foreground">· own</span>
@@ -135,13 +127,7 @@
           <ng-icon name="lucideEllipsisVertical" size="16" />
         </button>
         <!-- Duplicating and changing the origin come later. -->
-        <ul
-          hlmPopoverContent
-          class="w-56 gap-0 p-1"
-          role="menu"
-          aria-label="Mini"
-          *hlmPopoverPortal="let menu"
-        >
+        <ul hlmPopoverContent class="w-56 gap-0 p-1" role="menu" aria-label="Mini" *hlmPopoverPortal="let menu">
           @for (item of menuItems(); track item.testId) {
             <li role="none">
               <button
@@ -211,9 +197,7 @@
 
   <section class="flex flex-col gap-3" aria-labelledby="mini-status-heading">
     <div class="flex items-baseline justify-between gap-4">
-      <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="mini-status-heading">
-        Status
-      </h2>
+      <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="mini-status-heading">Status</h2>
       <span class="text-lg font-semibold tabular-nums" data-testid="mini-percent">
         {{ percent() }}<span class="text-sm text-muted-foreground">%</span>
       </span>
@@ -289,10 +273,7 @@
             [name]="editor.buildName() || editor.name()"
           />
         } @else {
-          <p
-            class="rounded-xl border bg-card p-5 text-sm text-muted-foreground"
-            data-testid="mini-origin"
-          >
+          <p class="rounded-xl border bg-card p-5 text-sm text-muted-foreground" data-testid="mini-origin">
             Without box
           </p>
         }
@@ -312,9 +293,7 @@
                     ><app-either-or-name [name]="source.name"
                   /></a>
                   @if (source.strippedOn; as strippedOn) {
-                    <span class="text-sm text-muted-foreground"
-                      >Stripped on {{ formatDate(strippedOn) }}</span
-                    >
+                    <span class="text-sm text-muted-foreground">Stripped on {{ formatDate(strippedOn) }}</span>
                   }
                 </li>
               }
@@ -337,7 +316,5 @@
     />
   }
 } @else {
-  <p class="text-muted-foreground" role="alert" data-testid="mini-not-found">
-    This mini isn't in your hoard.
-  </p>
+  <p class="text-muted-foreground" role="alert" data-testid="mini-not-found">This mini isn't in your hoard.</p>
 }

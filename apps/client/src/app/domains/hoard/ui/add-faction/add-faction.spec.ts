@@ -57,9 +57,8 @@ describe('Add faction', () => {
     await fixture.whenStable();
 
     // The search opens in a popover outside the component.
-    const offered = Array.from(
-      document.querySelectorAll('[data-testid="mini-faction-result"]'),
-      (result) => result.textContent?.replace(/\s+/g, ' ').trim(),
+    const offered = Array.from(document.querySelectorAll('[data-testid="mini-faction-result"]'), (result) =>
+      result.textContent?.replace(/\s+/g, ' ').trim(),
     );
     expect(offered).toEqual(['Space Marines · Warhammer 40,000']);
   });
@@ -83,8 +82,9 @@ describe('Add faction', () => {
       ownResults: [CRIMSON_WOLVES],
     });
 
-    expect(
-      find('mini-faction-result').map((result) => result.textContent?.replace(/\s+/g, ' ').trim()),
-    ).toEqual(['Crimson Wolves · Your own', 'Space Wolves · Warhammer 40,000']);
+    expect(find('mini-faction-result').map((result) => result.textContent?.replace(/\s+/g, ' ').trim())).toEqual([
+      'Crimson Wolves · Your own',
+      'Space Wolves · Warhammer 40,000',
+    ]);
   });
 });

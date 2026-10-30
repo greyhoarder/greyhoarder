@@ -42,9 +42,7 @@ describe('Mini deletion', () => {
 
   it('does not call a box empty while it keeps a gone mini', () => {
     const deleted = [mini('boy', { boxId: 'boyz' })];
-    const staying = [
-      mini('sold-boy', { boxId: 'boyz', departure: { reason: 'sold', on: '2026-10-20' } }),
-    ];
+    const staying = [mini('sold-boy', { boxId: 'boyz', departure: { reason: 'sold', on: '2026-10-20' } })];
 
     const emptied = emptiedBoxIds(deleted, staying);
 

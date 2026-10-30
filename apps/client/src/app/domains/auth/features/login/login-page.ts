@@ -65,8 +65,7 @@ export default class LoginPage {
   protected readonly passwordVisible = signal(false);
 
   /** Set when the setup sent the user here because someone else finished it first. */
-  protected readonly isSetupAlreadyDone =
-    this.router.currentNavigation()?.extras.info === SETUP_ALREADY_DONE;
+  protected readonly isSetupAlreadyDone = this.router.currentNavigation()?.extras.info === SETUP_ALREADY_DONE;
 
   /** Why the server refused the last attempt; cleared on the next one. */
   protected readonly failure = signal<string | undefined>(undefined);

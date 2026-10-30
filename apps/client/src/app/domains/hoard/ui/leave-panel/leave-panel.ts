@@ -1,13 +1,4 @@
-import {
-  afterNextRender,
-  Component,
-  computed,
-  ElementRef,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { afterNextRender, Component, computed, ElementRef, inject, input, output, signal } from '@angular/core';
 import { type Departure, type DepartureReason, departureReasons } from '@greyhoarder/domain/hoard';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
@@ -82,18 +73,13 @@ export class LeavePanel {
     const needle = this.query().trim().toLowerCase();
     const chosen = new Set(this.recipients().map((recipient) => recipient.id));
     return this.recipientChoices()
-      .filter(
-        (choice) =>
-          !chosen.has(choice.id) && eitherOrText(choice.name).toLowerCase().includes(needle),
-      )
+      .filter((choice) => !chosen.has(choice.id) && eitherOrText(choice.name).toLowerCase().includes(needle))
       .slice(0, MAX_CHOICES);
   });
 
   constructor() {
     afterNextRender(() =>
-      this.host.nativeElement
-        .querySelector<HTMLElement>('[data-testid="mini-leave-reason"]')
-        ?.focus(),
+      this.host.nativeElement.querySelector<HTMLElement>('[data-testid="mini-leave-reason"]')?.focus(),
     );
   }
 

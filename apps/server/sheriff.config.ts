@@ -31,19 +31,8 @@ const LAYER_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
  * `api/` re-exports only its own domain, `models/` uses only
  * `@greyhoarder/domain`, ports use only `models/`.
  */
-const LAYERS_USING_OTHER_DOMAINS: readonly string[] = [
-  'module',
-  'features',
-  'infrastructure',
-  'util',
-];
-const LAYERS_USING_SHARED: readonly string[] = [
-  'module',
-  'api',
-  'features',
-  'infrastructure',
-  'util',
-];
+const LAYERS_USING_OTHER_DOMAINS: readonly string[] = ['module', 'features', 'infrastructure', 'util'];
+const LAYERS_USING_SHARED: readonly string[] = ['module', 'api', 'features', 'infrastructure', 'util'];
 const LAYERS_USING_CONFIG: readonly string[] = ['module', 'features', 'infrastructure'];
 const LAYERS_USING_PLATFORM: readonly string[] = ['module', 'infrastructure'];
 
@@ -102,9 +91,7 @@ function isAllowed(fromTags: string[], toTags: string[]): boolean {
     if ('appLevel' in to) {
       return APP_LEVEL_DEPENDENCIES[from.appLevel].includes(to.appLevel);
     }
-    return (
-      APP_LEVEL_USING_DOMAINS.includes(from.appLevel) && DOMAIN_ENTRY_LAYERS.includes(to.layer)
-    );
+    return APP_LEVEL_USING_DOMAINS.includes(from.appLevel) && DOMAIN_ENTRY_LAYERS.includes(to.layer);
   }
   if ('appLevel' in to) {
     return isAllowedIntoAppLevel(from.layer, to.appLevel);

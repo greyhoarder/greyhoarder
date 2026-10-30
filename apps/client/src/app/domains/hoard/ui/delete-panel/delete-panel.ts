@@ -1,12 +1,4 @@
-import {
-  afterNextRender,
-  Component,
-  ElementRef,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { afterNextRender, Component, ElementRef, inject, input, output, signal } from '@angular/core';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { CountStepper } from '../count-stepper/count-stepper';
 
@@ -41,9 +33,7 @@ export class DeletePanel {
 
   constructor() {
     afterNextRender(() =>
-      this.host.nativeElement
-        .querySelector<HTMLElement>('[data-testid="mini-delete-cancel"]')
-        ?.focus(),
+      this.host.nativeElement.querySelector<HTMLElement>('[data-testid="mini-delete-cancel"]')?.focus(),
     );
   }
 

@@ -43,10 +43,7 @@ const SEGMENTS = [1, 2, 3, 4] as const;
       </div>
       <div class="grid grid-cols-4 gap-1">
         @for (segment of segments; track segment) {
-          <span
-            class="h-1 rounded-full"
-            [class]="segment <= (level()?.value ?? 0) ? level()?.fill : 'bg-muted'"
-          ></span>
+          <span class="h-1 rounded-full" [class]="segment <= (level()?.value ?? 0) ? level()?.fill : 'bg-muted'"></span>
         }
       </div>
     </div>

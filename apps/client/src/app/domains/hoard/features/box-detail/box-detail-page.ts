@@ -13,21 +13,9 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
-import {
-  type HobbyStatus,
-  hobbyStatuses,
-  isGone,
-  type Kit,
-  toKit,
-  withStatus,
-} from '@greyhoarder/domain/hoard';
+import { type HobbyStatus, hobbyStatuses, isGone, type Kit, toKit, withStatus } from '@greyhoarder/domain/hoard';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideBox,
-  lucideChevronDown,
-  lucideChevronLeft,
-  lucideEllipsisVertical,
-} from '@ng-icons/lucide';
+import { lucideBox, lucideChevronDown, lucideChevronLeft, lucideEllipsisVertical } from '@ng-icons/lucide';
 import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -60,11 +48,7 @@ import { formatDate } from '../../util/format-date';
 import { DEPARTURE_LABELS, STATUS_LABELS } from '../../util/status-labels';
 import { minisLabel } from '../../util/kit-labels';
 import { BoxKitCard } from './box-kit-card/box-kit-card';
-import {
-  BoxGroupCard,
-  type MiniSelectionChange,
-  type StatusChoice,
-} from './box-group-card/box-group-card';
+import { BoxGroupCard, type MiniSelectionChange, type StatusChoice } from './box-group-card/box-group-card';
 import { BoxSprueCard, type SpruePanel } from './box-sprue-card/box-sprue-card';
 import { EitherOrName } from '../../ui/either-or-name/either-or-name';
 import { LongPress } from '../../ui/long-press/long-press';
@@ -125,16 +109,12 @@ export class BoxDetailPage {
   /** What the box's dialog asks: whether to delete it now that it is empty, or from its menu. */
   protected readonly boxQuestion = signal<'emptied' | 'delete'>('emptied');
   /** The mini page deleted the box's last mini and leads here to ask. */
-  private readonly isEmptiedOnArrival = Boolean(
-    this.router.currentNavigation()?.extras.state?.['isEmptied'],
-  );
+  private readonly isEmptiedOnArrival = Boolean(this.router.currentNavigation()?.extras.state?.['isEmptied']);
 
   protected readonly isLoading = computed(() => this.boxes.isLoading() || this.minis.isLoading());
   protected readonly hasFailed = computed(() => this.boxes.hasFailed() || this.minis.hasFailed());
 
-  private readonly storedBox = computed(() =>
-    this.boxes.boxes().find((box) => box.id === this.id()),
-  );
+  private readonly storedBox = computed(() => this.boxes.boxes().find((box) => box.id === this.id()));
   /** Undefined while loading and for a box that isn't in the hoard. */
   protected readonly box = computed(() => {
     const box = this.storedBox();
@@ -161,9 +141,7 @@ export class BoxDetailPage {
   protected readonly groups = computed(() =>
     toMiniGroups(this.presentMinis(), this.factionNames.names(), this.parts.names()),
   );
-  protected readonly builtCount = computed(() =>
-    this.groups().reduce((sum, group) => sum + group.minis.length, 0),
-  );
+  protected readonly builtCount = computed(() => this.groups().reduce((sum, group) => sum + group.minis.length, 0));
   /** Alike minis on the sprue as one row, by name. */
   protected readonly sprueRows = computed(() => {
     const box = this.storedBox();
@@ -176,9 +154,7 @@ export class BoxDetailPage {
   });
   protected readonly sprueCount = computed(() => countMinis(this.sprueRows()));
   /** The card on the sprue that is open, and with which panel; at most one is. */
-  protected readonly openSprue = signal<{ rowId: string; panel: SpruePanel } | undefined>(
-    undefined,
-  );
+  protected readonly openSprue = signal<{ rowId: string; panel: SpruePanel } | undefined>(undefined);
   private readonly sprueCards = viewChildren(BoxSprueCard);
 
   /** Every gone mini on its own, by name, with its departure, e.g. "Sold on 12 Oct 2026". */
@@ -191,9 +167,7 @@ export class BoxDetailPage {
     const rows = toSingleRows(minis, [box], this.factionNames.names(), this.parts.names());
     return sortRows(rows, 'name', 'ascending').map((row) => ({
       ...row,
-      departureText:
-        row.departure &&
-        `${DEPARTURE_LABELS[row.departure.reason]} on ${formatDate(row.departure.on)}`,
+      departureText: row.departure && `${DEPARTURE_LABELS[row.departure.reason]} on ${formatDate(row.departure.on)}`,
     }));
   });
   protected readonly goneCount = computed(() => countMinis(this.goneRows()));
@@ -221,9 +195,7 @@ export class BoxDetailPage {
     },
   });
   /** Left out while loading, when the kit can't be loaded and for boxes without a kit. */
-  protected readonly kit = computed(() =>
-    this.loadedKit.hasValue() ? this.loadedKit.value() : undefined,
-  );
+  protected readonly kit = computed(() => (this.loadedKit.hasValue() ? this.loadedKit.value() : undefined));
   protected readonly hasKitFailed = computed(() => this.loadedKit.error() !== undefined);
   /** The catalog answered, but without this version of the kit. */
   protected readonly isKitMissing = computed(

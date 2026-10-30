@@ -100,9 +100,7 @@ describe('Add box page', () => {
       kits: [
         {
           ...catalogKit('games-workshop/orks/boyz-2026'),
-          variants: [
-            { name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: [], factionIds: [] }] },
-          ],
+          variants: [{ name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: [], factionIds: [] }] }],
         },
       ],
       containedKits: new Map(),

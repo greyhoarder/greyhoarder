@@ -1,13 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
-import {
-  type Box,
-  boxKitName,
-  type Mini,
-  newBoxes,
-  parseTags,
-  toKit,
-} from '@greyhoarder/domain/hoard';
+import { type Box, boxKitName, type Mini, newBoxes, parseTags, toKit } from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries, findContainedKits } from '../../../catalog/api/index.js';
 import { nextBoxNumber } from '../../models/box-numbers.js';
 import { droppedFactions } from '../../models/dropped-factions.js';
@@ -55,9 +48,7 @@ export class BoxesService {
 
   async list(ownerId: string): Promise<BoxList> {
     const boxes = await this.hoard.findBoxes(ownerId);
-    const factionNames = await this.catalog.findFactionNames([
-      ...new Set(boxes.flatMap((box) => box.factionIds)),
-    ]);
+    const factionNames = await this.catalog.findFactionNames([...new Set(boxes.flatMap((box) => box.factionIds))]);
     return { boxes, factionNames };
   }
 

@@ -61,10 +61,7 @@ function eitherOrSprueMinis(kit: Kit): SprueMinis[] {
     parts: [...new Set(undecidedSlots.flatMap((slot) => slot.parts))],
     isUndecided: true,
   };
-  return [
-    ...(undecided.count > 0 ? [undecided] : []),
-    ...sharedSlots.map((slot) => slotSprueMinis(kit, slot)),
-  ];
+  return [...(undecided.count > 0 ? [undecided] : []), ...sharedSlots.map((slot) => slotSprueMinis(kit, slot))];
 }
 
 function slotSprueMinis(kit: Kit, slot: KitSlot): SprueMinis {

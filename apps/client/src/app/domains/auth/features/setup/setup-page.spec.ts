@@ -39,8 +39,7 @@ describe('Setup page', () => {
   };
 
   const errorTextOf = (testId: string): string =>
-    field(testId).closest('[data-slot="field"]')?.querySelector('[data-slot="field-error"]')
-      ?.textContent?.trim() ?? '';
+    field(testId).closest('[data-slot="field"]')?.querySelector('[data-slot="field-error"]')?.textContent?.trim() ?? '';
 
   const type = async (testId: string, value: string): Promise<void> => {
     field(testId).value = value;

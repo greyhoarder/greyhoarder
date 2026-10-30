@@ -19,16 +19,7 @@ import type { BoxRow } from '../../application/boxes/box-row';
 /** The Boxes tab of the hoard: search, filters, selection and the boxes as cards or table. */
 @Component({
   selector: 'app-box-list-page',
-  imports: [
-    NgIcon,
-    HlmButton,
-    HlmInputGroupImports,
-    HlmSkeleton,
-    BoxCard,
-    BoxTable,
-    FilterChip,
-    LongPress,
-  ],
+  imports: [NgIcon, HlmButton, HlmInputGroupImports, HlmSkeleton, BoxCard, BoxTable, FilterChip, LongPress],
   providers: [provideIcons({ lucideSearch, lucideX })],
   templateUrl: './box-list-page.html',
   host: { class: '@container flex flex-col gap-3' },
@@ -38,9 +29,7 @@ export class BoxListPage {
   protected readonly view = inject(HoardView);
   private readonly router = inject(Router);
 
-  protected readonly factionOptions = computed(() =>
-    optionsOf(this.store.boxes(), (box) => box.factions),
-  );
+  protected readonly factionOptions = computed(() => optionsOf(this.store.boxes(), (box) => box.factions));
   protected readonly progressOptions = computed<FilterOption[]>(() =>
     boxProgresses.map((progress) => ({
       value: progress,
@@ -73,10 +62,7 @@ export class BoxListPage {
 }
 
 /** The values of the boxes, sorted, each with how many boxes have it. */
-function optionsOf(
-  boxes: readonly BoxRow[],
-  valuesOf: (box: BoxRow) => readonly string[],
-): FilterOption[] {
+function optionsOf(boxes: readonly BoxRow[], valuesOf: (box: BoxRow) => readonly string[]): FilterOption[] {
   const values = [...new Set(boxes.flatMap(valuesOf))].sort((a, b) => a.localeCompare(b));
   return values.map((value) => ({
     value,

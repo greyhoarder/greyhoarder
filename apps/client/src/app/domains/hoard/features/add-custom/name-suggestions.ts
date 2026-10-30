@@ -19,10 +19,7 @@ export function ownNameSuggestions(hoard: readonly Mini[], text: string): NameSu
 }
 
 /** The catalog minis whose own name contains the text, ignoring case, each with its faction. */
-export function catalogNameSuggestions(
-  result: CatalogMiniSearchResult,
-  text: string,
-): NameSuggestion[] {
+export function catalogNameSuggestions(result: CatalogMiniSearchResult, text: string): NameSuggestion[] {
   const needle = text.trim().toLowerCase();
   return result.minis
     .filter((mini) => mini.name.toLowerCase().includes(needle))

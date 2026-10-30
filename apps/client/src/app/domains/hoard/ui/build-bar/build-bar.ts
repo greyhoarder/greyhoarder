@@ -43,9 +43,7 @@ export class BuildBar {
     if (name === '') {
       return 'Choose what to build.';
     }
-    const parts = this.parts().map((part) =>
-      part.isSwappable ? `${part.name} (swappable)` : part.name,
-    );
+    const parts = this.parts().map((part) => (part.isSwappable ? `${part.name} (swappable)` : part.name));
     const what = parts.length > 0 ? `${name} with ${parts.join(', ')}.` : `${name}, no parts.`;
     const [count, size] = [this.count(), this.rowSize()];
     if (size === 1) {

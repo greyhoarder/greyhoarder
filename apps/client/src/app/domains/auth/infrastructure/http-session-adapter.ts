@@ -29,9 +29,7 @@ export class HttpSessionAdapter {
   async signIn(credentials: Credentials): Promise<SessionUser> {
     const request: LoginRequest = { ...credentials };
     try {
-      const session = await firstValueFrom(
-        this.http.post<SessionResponse>('/api/auth/session', request),
-      );
+      const session = await firstValueFrom(this.http.post<SessionResponse>('/api/auth/session', request));
       return session.user;
     } catch (error) {
       throw toSignInError(error);

@@ -72,10 +72,7 @@ export class MinisController {
 
   @Patch()
   @ZodSerializerDto(updateMinisResponseSchema)
-  async update(
-    @CurrentUser() user: User,
-    @Body() body: UpdateMinisRequestDto,
-  ): Promise<UpdateMinisResponse> {
+  async update(@CurrentUser() user: User, @Body() body: UpdateMinisRequestDto): Promise<UpdateMinisResponse> {
     try {
       const { minis, ownFactionNames } = await this.minis.update(user.id, body.ids, body.set);
       return { minis, ownFactionNames: Object.fromEntries(ownFactionNames) };
@@ -96,10 +93,7 @@ export class MinisController {
 
   @Delete()
   @ZodSerializerDto(deleteMinisResponseSchema)
-  async delete(
-    @CurrentUser() user: User,
-    @Body() body: DeleteMinisRequestDto,
-  ): Promise<DeleteMinisResponse> {
+  async delete(@CurrentUser() user: User, @Body() body: DeleteMinisRequestDto): Promise<DeleteMinisResponse> {
     try {
       return await this.minis.delete(user.id, body.ids);
     } catch (error) {

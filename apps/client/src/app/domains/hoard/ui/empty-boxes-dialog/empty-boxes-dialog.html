@@ -4,10 +4,7 @@
   autoFocus="[data-slot=alert-dialog-cancel]"
   (closed)="closed.emit()"
 >
-  <hlm-alert-dialog-content
-    *hlmAlertDialogPortal
-    [attr.data-testid]="screen() + '-empty-boxes-dialog'"
-  >
+  <hlm-alert-dialog-content *hlmAlertDialogPortal [attr.data-testid]="screen() + '-empty-boxes-dialog'">
     <hlm-alert-dialog-header>
       <hlm-alert-dialog-media class="bg-destructive/15 text-destructive">
         <ng-icon name="lucideTrash2" size="22" />
@@ -15,20 +12,12 @@
       <h2 hlmAlertDialogTitle>{{ question() }}</h2>
     </hlm-alert-dialog-header>
     @if (hasFailed()) {
-      <p
-        class="px-6 pt-5 text-sm text-destructive"
-        role="alert"
-        [attr.data-testid]="screen() + '-empty-boxes-error'"
-      >
+      <p class="px-6 pt-5 text-sm text-destructive" role="alert" [attr.data-testid]="screen() + '-empty-boxes-error'">
         Can't delete right now. Try again in a moment.
       </p>
     }
     <hlm-alert-dialog-footer>
-      <button
-        hlmAlertDialogCancel
-        [disabled]="isDeleting()"
-        [attr.data-testid]="screen() + '-empty-boxes-keep'"
-      >
+      <button hlmAlertDialogCancel [disabled]="isDeleting()" [attr.data-testid]="screen() + '-empty-boxes-keep'">
         {{ isOne() ? 'Keep box' : 'Keep boxes' }}
       </button>
       <button

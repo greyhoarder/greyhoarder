@@ -59,12 +59,7 @@
   </div>
 }
 @if (store.isLoading()) {
-  <div
-    class="flex flex-col gap-3"
-    aria-busy="true"
-    aria-label="Loading minis"
-    data-testid="hoard-loading"
-  >
+  <div class="flex flex-col gap-3" aria-busy="true" aria-label="Loading minis" data-testid="hoard-loading">
     @for (placeholder of [1, 2, 3]; track placeholder) {
       <div class="flex items-center gap-4 rounded-xl border bg-card p-4">
         <hlm-skeleton class="size-12 sm:size-14" />
@@ -78,17 +73,11 @@
 } @else if (store.hasFailed()) {
   <!-- The frame of the hoard says that loading failed. -->
 } @else if (store.rows().length === 0) {
-  <p
-    class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
-    data-testid="hoard-empty"
-  >
+  <p class="rounded-xl border border-dashed p-8 text-center text-muted-foreground" data-testid="hoard-empty">
     No minis built yet. Build the minis of a box and they appear here.
   </p>
 } @else if (store.visibleRows().length === 0) {
-  <p
-    class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
-    data-testid="hoard-no-results"
-  >
+  <p class="rounded-xl border border-dashed p-8 text-center text-muted-foreground" data-testid="hoard-no-results">
     @if (store.query().trim()) {
       No minis match "{{ store.query() }}".
     } @else {

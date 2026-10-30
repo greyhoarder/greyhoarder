@@ -37,9 +37,10 @@ describe('Part tiles', () => {
   it('tells screen readers whether a part is swappable', async () => {
     const section = await render();
 
-    expect(
-      all(section, 'mini-part-swappable').map((toggle) => toggle.getAttribute('aria-pressed')),
-    ).toEqual(['false', 'true']);
+    expect(all(section, 'mini-part-swappable').map((toggle) => toggle.getAttribute('aria-pressed'))).toEqual([
+      'false',
+      'true',
+    ]);
   });
 
   it('tells screen readers whether the part picker is open', async () => {
@@ -49,10 +50,7 @@ describe('Part tiles', () => {
 
     const picker = opened?.ownerDocument.getElementById(opened.getAttribute('aria-controls') ?? '');
 
-    expect([closed?.getAttribute('aria-expanded'), opened?.getAttribute('aria-expanded')]).toEqual([
-      'false',
-      'true',
-    ]);
+    expect([closed?.getAttribute('aria-expanded'), opened?.getAttribute('aria-expanded')]).toEqual(['false', 'true']);
     expect(picker).not.toBeNull();
   });
 });

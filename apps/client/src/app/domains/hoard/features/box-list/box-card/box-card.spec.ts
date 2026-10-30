@@ -24,9 +24,7 @@ describe('Box card', () => {
   it('shows how far the box has come as a percentage', async () => {
     const card = await render(BOYZ);
 
-    expect(
-      card.querySelector('[data-testid="hoard-box-percent"]')?.textContent?.replace(/\s+/g, ''),
-    ).toBe('8%');
+    expect(card.querySelector('[data-testid="hoard-box-percent"]')?.textContent?.replace(/\s+/g, '')).toBe('8%');
   });
 
   it('names the kit with its article number', async () => {
@@ -38,9 +36,7 @@ describe('Box card', () => {
   it('names a box without any minis empty', async () => {
     const card = await render({ ...BOYZ, minis: {}, goneCount: 0 });
 
-    expect(card.querySelector('[data-testid="hoard-box-progress"]')?.textContent?.trim()).toBe(
-      'Empty',
-    );
+    expect(card.querySelector('[data-testid="hoard-box-progress"]')?.textContent?.trim()).toBe('Empty');
     expect(card.querySelector('[data-testid="hoard-box-percent"]')).toBeNull();
   });
 

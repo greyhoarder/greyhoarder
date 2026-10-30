@@ -13,9 +13,7 @@ export type NavigationFailureReason = 'unreachable' | 'unexpected';
 export class NavigationFailure {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
-  private readonly failed = signal<{ url: string; reason: NavigationFailureReason } | undefined>(
-    undefined,
-  );
+  private readonly failed = signal<{ url: string; reason: NavigationFailureReason } | undefined>(undefined);
 
   readonly reason = computed(() => this.failed()?.reason);
   readonly isRetrying = signal(false);

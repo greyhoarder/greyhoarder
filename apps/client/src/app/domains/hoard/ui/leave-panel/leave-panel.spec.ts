@@ -8,8 +8,7 @@ describe('Leave panel', () => {
     fixture.componentRef.setInput('recipientChoices', []);
     await fixture.whenStable();
     const panel: HTMLElement = fixture.nativeElement;
-    const find = <T extends HTMLElement = HTMLElement>(selector: string): T | null =>
-      panel.querySelector<T>(selector);
+    const find = <T extends HTMLElement = HTMLElement>(selector: string): T | null => panel.querySelector<T>(selector);
     const click = async (selector: string): Promise<void> => {
       find(selector)?.click();
       await fixture.whenStable();

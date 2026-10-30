@@ -10,11 +10,7 @@ import { formatDate } from '../../../util/format-date';
 import type { BoxRow } from '../../../application/boxes/box-row';
 import { STATUS_SHORT_LABELS } from '../../../util/status-labels';
 import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
-import {
-  PROGRESS_STATUSES,
-  ProgressBar,
-  STATUS_COLORS,
-} from '../../../ui/progress-bar/progress-bar';
+import { PROGRESS_STATUSES, ProgressBar, STATUS_COLORS } from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 
@@ -25,8 +21,7 @@ import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
   providers: [provideIcons({ lucideEllipsisVertical })],
   templateUrl: './box-card.html',
   host: {
-    class:
-      'group flex cursor-pointer flex-col overflow-hidden rounded-xl border bg-card transition-colors',
+    class: 'group flex cursor-pointer flex-col overflow-hidden rounded-xl border bg-card transition-colors',
     '[class.border-primary/60]': 'isSelected()',
     '[attr.data-testid]': '"hoard-box"',
     '(click)': 'onCardClick()',

@@ -7,8 +7,7 @@ import type { Request } from 'express';
  * the current user; never take it from bodies, parameters or headers (ADR-0010).
  */
 export const CurrentUser = createParamDecorator(
-  (_data: unknown, context: ExecutionContext): User | undefined =>
-    context.switchToHttp().getRequest<Request>().user,
+  (_data: unknown, context: ExecutionContext): User | undefined => context.switchToHttp().getRequest<Request>().user,
 );
 
 declare module 'express' {

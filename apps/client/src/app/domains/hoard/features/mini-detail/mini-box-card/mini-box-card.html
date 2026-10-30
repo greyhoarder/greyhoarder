@@ -40,10 +40,7 @@
     <span class="text-sm text-muted-foreground">The kit suggests for a {{ name() }}</span>
     <ul class="flex flex-wrap gap-x-2 gap-y-1.5" aria-label="Suggested parts">
       @for (part of suggestedParts(); track part) {
-        <li
-          class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground"
-          data-testid="mini-box-part"
-        >
+        <li class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground" data-testid="mini-box-part">
           {{ part }}
         </li>
       }
@@ -52,7 +49,5 @@
 }
 
 @if (kit()) {
-  <p class="border-t pt-4 text-sm text-muted-foreground">
-    Kits only suggest. What you add here counts.
-  </p>
+  <p class="border-t pt-4 text-sm text-muted-foreground">Kits only suggest. What you add here counts.</p>
 }

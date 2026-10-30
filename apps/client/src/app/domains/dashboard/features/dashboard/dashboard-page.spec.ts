@@ -62,9 +62,7 @@ describe('Dashboard page', () => {
 
     await fixture.whenStable();
 
-    expect((fixture.nativeElement as HTMLElement).querySelector('h1')?.textContent).toContain(
-      'Welcome back, lucas',
-    );
+    expect((fixture.nativeElement as HTMLElement).querySelector('h1')?.textContent).toContain('Welcome back, lucas');
   });
 
   it('says how many minis the hoard holds and how many are painted', async () => {
@@ -142,9 +140,7 @@ describe('Dashboard page', () => {
 
     await fixture.whenStable();
 
-    expect(textsOf('dashboard-hoard-error')).toEqual([
-      "Can't load your hoard right now. Try again in a moment.",
-    ]);
+    expect(textsOf('dashboard-hoard-error')).toEqual(["Can't load your hoard right now. Try again in a moment."]);
   });
 
   it('says "No minis yet. Add a box and its minis appear here." when the hoard is empty', async () => {
@@ -152,8 +148,6 @@ describe('Dashboard page', () => {
 
     await fixture.whenStable();
 
-    expect(textsOf('dashboard-hoard-empty')).toEqual([
-      'No minis yet. Add a box and its minis appear here.',
-    ]);
+    expect(textsOf('dashboard-hoard-empty')).toEqual(['No minis yet. Add a box and its minis appear here.']);
   });
 });

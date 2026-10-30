@@ -54,10 +54,7 @@ export function toHoardGroups(rows: readonly MiniRow[]): HoardGroup[] {
           members
             // A mini added from a kit counts among the kits, not as one without a box.
             .filter((row) => row.box !== undefined || row.kit === undefined)
-            .map((row) => [
-              row.boxId ?? row.box,
-              row.box === undefined ? undefined : boxLabel(row.box, row.boxNumber),
-            ]),
+            .map((row) => [row.boxId ?? row.box, row.box === undefined ? undefined : boxLabel(row.box, row.boxNumber)]),
         ).values(),
       ],
       kits: [...new Set(members.flatMap((row) => row.kit ?? []))],

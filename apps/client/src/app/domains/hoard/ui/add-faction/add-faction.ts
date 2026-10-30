@@ -132,9 +132,7 @@ export class AddFaction {
   protected readonly offeredOwn = computed(() =>
     this.ownResults().filter((faction) => !this.chosenIds().includes(faction.id)),
   );
-  protected readonly create = computed(() =>
-    newFactionName(this.query(), [...this.ownResults(), ...this.results()]),
-  );
+  protected readonly create = computed(() => newFactionName(this.query(), [...this.ownResults(), ...this.results()]));
 
   private readonly searchField = viewChild<ElementRef<HTMLInputElement>>('search');
 

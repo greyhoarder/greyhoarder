@@ -1,13 +1,7 @@
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideChevronLeft,
-  lucideCircleCheck,
-  lucideScanBarcode,
-  lucideSearch,
-  lucideX,
-} from '@ng-icons/lucide';
+import { lucideChevronLeft, lucideCircleCheck, lucideScanBarcode, lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HttpKitsAdapter } from '../../../catalog/api';
@@ -28,9 +22,7 @@ import { KitCard } from './kit-card/kit-card';
 @Component({
   selector: 'app-add-box-page',
   imports: [RouterLink, NgIcon, HlmButton, HlmInputGroupImports, KitCard],
-  providers: [
-    provideIcons({ lucideChevronLeft, lucideCircleCheck, lucideScanBarcode, lucideSearch, lucideX }),
-  ],
+  providers: [provideIcons({ lucideChevronLeft, lucideCircleCheck, lucideScanBarcode, lucideSearch, lucideX })],
   templateUrl: './add-box-page.html',
   host: { class: 'flex w-full flex-col gap-6 p-4 sm:p-8 lg:p-10' },
 })

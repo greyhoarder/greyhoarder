@@ -1,10 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {
-  type DepartureReason,
-  departureReasons,
-  type HobbyStatus,
-  hobbyStatuses,
-} from '@greyhoarder/domain/hoard';
+import { type DepartureReason, departureReasons, type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { BoxKitDbo } from './mongo-box-schema.js';
 
 /** Stored form of a `MiniPart`. */

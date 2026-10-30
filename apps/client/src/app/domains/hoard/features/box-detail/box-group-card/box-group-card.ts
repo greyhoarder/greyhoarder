@@ -7,11 +7,7 @@ import type { MiniGroup } from '../mini-group';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 import { LongPress } from '../../../ui/long-press/long-press';
 import { RowCheck } from '../../../ui/row-check/row-check';
-import {
-  PROGRESS_STATUSES,
-  ProgressBar,
-  STATUS_COLORS,
-} from '../../../ui/progress-bar/progress-bar';
+import { PROGRESS_STATUSES, ProgressBar, STATUS_COLORS } from '../../../ui/progress-bar/progress-bar';
 import { minisLabel } from '../../../util/kit-labels';
 import { STATUS_LABELS } from '../../../util/status-labels';
 
@@ -72,8 +68,7 @@ export class BoxGroupCard {
     const { factions, parts } = this.group();
     const boxFactions = this.boxFactions();
     const isLikeBox =
-      factions.length === boxFactions.length &&
-      factions.every((faction) => boxFactions.includes(faction));
+      factions.length === boxFactions.length && factions.every((faction) => boxFactions.includes(faction));
     return [...(isLikeBox ? [] : factions), ...parts];
   });
   /** The statuses the group has, in pipeline order, with their counts. */

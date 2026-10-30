@@ -98,9 +98,7 @@ describe('Minis page', () => {
   it('shows only the minis with a matching part while searching', async () => {
     await search('klaw');
 
-    expect(byTestId('hoard-group').map((group) => group.textContent)).toEqual([
-      expect.stringContaining('Nob'),
-    ]);
+    expect(byTestId('hoard-group').map((group) => group.textContent)).toEqual([expect.stringContaining('Nob')]);
   });
 
   it('says that nothing matches when the search finds no minis', async () => {
@@ -149,18 +147,13 @@ describe('Minis page', () => {
 
   it('leaves out minis still on the sprue of a box', async () => {
     showPage(() =>
-      Promise.resolve([
-        mini('s1', { name: 'Grot', boxId: 'boyz' }),
-        mini('b1', { name: 'Nob', status: 'built' }),
-      ]),
+      Promise.resolve([mini('s1', { name: 'Grot', boxId: 'boyz' }), mini('b1', { name: 'Nob', status: 'built' })]),
     );
     await fixture.whenStable();
 
     await showTable();
 
-    expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([
-      expect.stringContaining('Nob'),
-    ]);
+    expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([expect.stringContaining('Nob')]);
   });
 
   it('lists minis on the sprue without a box', async () => {
@@ -169,9 +162,7 @@ describe('Minis page', () => {
 
     await showTable();
 
-    expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([
-      expect.stringContaining('Grot'),
-    ]);
+    expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([expect.stringContaining('Grot')]);
   });
 
   it('shows a table line for every mini', async () => {
@@ -220,9 +211,9 @@ describe('Minis page', () => {
       byTestId('hoard-filter-box')[0]?.click();
       await fixture.whenStable();
 
-      const options = [
-        ...document.querySelectorAll('[data-testid="hoard-filter-option"] label'),
-      ].map((label) => label.textContent?.trim());
+      const options = [...document.querySelectorAll('[data-testid="hoard-filter-option"] label')].map((label) =>
+        label.textContent?.trim(),
+      );
       expect(options).toEqual(['Boyz (2026) · 12 Oct 2026', 'Boyz (2026) · 30 Sep 2026']);
     });
 
@@ -231,9 +222,7 @@ describe('Minis page', () => {
       TestBed.inject(MinisList).boxFilter.set(new Set(['b2']));
       await fixture.whenStable();
 
-      expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([
-        expect.stringContaining('Nob'),
-      ]);
+      expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([expect.stringContaining('Nob')]);
     });
   });
 
@@ -267,9 +256,7 @@ describe('Minis page', () => {
 
   it('offers no leaving when only gone minis are selected', async () => {
     showPage(() =>
-      Promise.resolve([
-        mini('gone', { status: 'built', departure: { reason: 'sold', on: '2026-10-20' } }),
-      ]),
+      Promise.resolve([mini('gone', { status: 'built', departure: { reason: 'sold', on: '2026-10-20' } })]),
     );
     await fixture.whenStable();
     TestBed.inject(MinisList).statusFilter.set(new Set([GONE]));
@@ -277,9 +264,7 @@ describe('Minis page', () => {
 
     await click(byTestId('hoard-row-check')[0]);
 
-    expect((byTestId('hoard-selection-leave')[0] as HTMLButtonElement | undefined)?.disabled).toBe(
-      true,
-    );
+    expect((byTestId('hoard-selection-leave')[0] as HTMLButtonElement | undefined)?.disabled).toBe(true);
   });
 
   it('asks whether to delete boxes left without minis', async () => {
@@ -305,9 +290,7 @@ describe('Minis page', () => {
     const line = byTestId('hoard-row')[0];
     vi.useFakeTimers();
 
-    line?.dispatchEvent(
-      Object.assign(new MouseEvent('pointerdown', { bubbles: true }), { pointerType: 'touch' }),
-    );
+    line?.dispatchEvent(Object.assign(new MouseEvent('pointerdown', { bubbles: true }), { pointerType: 'touch' }));
     vi.advanceTimersByTime(500);
     vi.useRealTimers();
     await fixture.whenStable();

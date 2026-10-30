@@ -119,10 +119,7 @@ test.describe('Box', () => {
     await page.goto(`${signedIn.url}/hoard/boxes`);
 
     await expect(page.getByTestId('hoard-box-number')).toHaveCount(2);
-    expect((await page.getByTestId('hoard-box-number').allTextContents()).sort()).toEqual([
-      '#1',
-      '#2',
-    ]);
+    expect((await page.getByTestId('hoard-box-number').allTextContents()).sort()).toEqual(['#1', '#2']);
   });
 });
 

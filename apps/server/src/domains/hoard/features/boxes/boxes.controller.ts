@@ -42,10 +42,7 @@ export class BoxesController {
 
   @Post()
   @ZodSerializerDto(addBoxesResponseSchema)
-  async add(
-    @CurrentUser() user: User,
-    @Body() body: AddBoxesRequestDto,
-  ): Promise<AddBoxesResponse> {
+  async add(@CurrentUser() user: User, @Body() body: AddBoxesRequestDto): Promise<AddBoxesResponse> {
     try {
       return await this.boxes.add(user.id, body);
     } catch (error) {

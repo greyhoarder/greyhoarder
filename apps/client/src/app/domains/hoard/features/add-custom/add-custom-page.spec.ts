@@ -1,10 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import {
-  HttpCatalogFactionsAdapter,
-  HttpCatalogMinisAdapter,
-  HttpCatalogPartsAdapter,
-} from '../../../catalog/api';
+import { HttpCatalogFactionsAdapter, HttpCatalogMinisAdapter, HttpCatalogPartsAdapter } from '../../../catalog/api';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
 import { AddCustomPage } from './add-custom-page';
@@ -49,9 +45,7 @@ describe('Add custom page', () => {
   });
 
   const byTestId = <T extends HTMLElement = HTMLElement>(testId: string): T[] =>
-    Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll<T>(`[data-testid="${testId}"]`),
-    );
+    Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<T>(`[data-testid="${testId}"]`));
 
   const typeName = async (name: string): Promise<void> => {
     const field = byTestId<HTMLInputElement>('add-custom-name')[0];
@@ -68,9 +62,7 @@ describe('Add custom page', () => {
   /** Two primed Tankbustas, added. */
   const addTwoPrimedTankbustas = async (): Promise<void> => {
     await typeName('Tankbusta');
-    const primed = byTestId('add-custom-status').findIndex(
-      (chip) => chip.textContent?.trim() === 'Primed',
-    );
+    const primed = byTestId('add-custom-status').findIndex((chip) => chip.textContent?.trim() === 'Primed');
     await click('add-custom-status', primed);
     await click('add-custom-more');
     await click('add-custom-submit');
@@ -79,9 +71,7 @@ describe('Add custom page', () => {
   it('asks for a name and adds nothing when the name is empty', async () => {
     await click('add-custom-submit');
 
-    expect(byTestId('add-custom-name-missing')[0]?.textContent?.trim()).toBe(
-      'Give the minis a name.',
-    );
+    expect(byTestId('add-custom-name-missing')[0]?.textContent?.trim()).toBe('Give the minis a name.');
     expect(addMinis).not.toHaveBeenCalled();
   });
 
@@ -101,9 +91,7 @@ describe('Add custom page', () => {
     await typeName('Tankbusta');
     await click('add-custom-add-faction');
     // The search opens in a popover outside the page.
-    const field = document.querySelector<HTMLInputElement>(
-      '[data-testid="add-custom-faction-search"]',
-    );
+    const field = document.querySelector<HTMLInputElement>('[data-testid="add-custom-faction-search"]');
     if (field) {
       field.value = 'Crimson Wolves';
       field.dispatchEvent(new Event('input'));
@@ -122,9 +110,7 @@ describe('Add custom page', () => {
   it('says which minis were added', async () => {
     await addTwoPrimedTankbustas();
 
-    expect(byTestId('add-custom-added')[0]?.textContent).toContain(
-      'Added 2 × Tankbusta (Primed) to your hoard.',
-    );
+    expect(byTestId('add-custom-added')[0]?.textContent).toContain('Added 2 × Tankbusta (Primed) to your hoard.');
   });
 
   it('says that adding failed when the server does not add the minis', async () => {

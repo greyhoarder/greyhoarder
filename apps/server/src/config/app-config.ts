@@ -25,7 +25,11 @@ const environmentSchema = z.object({
         .filter(Boolean),
     )
     .pipe(z.array(z.string().min(16)).min(1)),
-  SESSION_IDLE_MINUTES: z.coerce.number().int().positive().default(7 * 24 * 60),
+  SESSION_IDLE_MINUTES: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(7 * 24 * 60),
   SESSION_MAX_DAYS: z.coerce.number().int().positive().default(30),
   /** The client build; without it the server serves only the API (ADR-0017). */
   WEB_APP_DIR: z.string().min(1).optional(),
@@ -43,9 +47,7 @@ export class AppConfig {
   readonly catalogDirectory = CATALOG_DIRECTORY;
 
   constructor(environment: NodeJS.ProcessEnv, development: boolean) {
-    const result = environmentSchema.safeParse(
-      development ? { ...DEVELOPMENT_DEFAULTS, ...environment } : environment,
-    );
+    const result = environmentSchema.safeParse(development ? { ...DEVELOPMENT_DEFAULTS, ...environment } : environment);
     if (!result.success) {
       throw new Error(`Invalid configuration:\n${z.prettifyError(result.error)}`);
     }

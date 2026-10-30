@@ -42,9 +42,7 @@
             [checked]="selected().has(option.value)"
             (checkedChange)="toggle(option.value)"
           />
-          <label class="flex-1 cursor-pointer truncate" [for]="idPrefix + '-' + $index">{{
-            option.label
-          }}</label>
+          <label class="flex-1 cursor-pointer truncate" [for]="idPrefix + '-' + $index">{{ option.label }}</label>
           <span class="text-xs text-muted-foreground tabular-nums">{{ option.count }}</span>
         </li>
       } @empty {
@@ -54,9 +52,7 @@
 
     @if (selected().size > 0) {
       <div class="border-t p-1">
-        <button hlmBtn variant="ghost" type="button" class="h-8 w-full text-sm" (click)="clear()">
-          Clear filter
-        </button>
+        <button hlmBtn variant="ghost" type="button" class="h-8 w-full text-sm" (click)="clear()">Clear filter</button>
       </div>
     }
   </div>

@@ -94,9 +94,7 @@ describe('Group card of the hoard', () => {
 
     expect(
       cards.map((card) =>
-        card
-          .querySelector('[aria-label$=" mini"], [aria-label$=" minis"]')
-          ?.getAttribute('aria-label'),
+        card.querySelector('[aria-label$=" mini"], [aria-label$=" minis"]')?.getAttribute('aria-label'),
       ),
     ).toEqual(['2 minis', '1 mini']);
   });

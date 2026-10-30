@@ -122,7 +122,10 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
   }
 
   async findKits(ids: readonly string[]): Promise<VersionedEntry<CatalogKit>[]> {
-    const kits = await this.kits.find({ ...LATEST, kitId: { $in: ids } }).lean().exec();
+    const kits = await this.kits
+      .find({ ...LATEST, kitId: { $in: ids } })
+      .lean()
+      .exec();
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
@@ -133,8 +136,14 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
 
   async findFactionNames(ids: readonly string[]): Promise<ReadonlyMap<string, string>> {
     const [systems, factions] = await Promise.all([
-      this.systems.find({ ...LATEST, systemId: { $in: ids } }).lean().exec(),
-      this.factions.find({ ...LATEST, factionId: { $in: ids } }).lean().exec(),
+      this.systems
+        .find({ ...LATEST, systemId: { $in: ids } })
+        .lean()
+        .exec(),
+      this.factions
+        .find({ ...LATEST, factionId: { $in: ids } })
+        .lean()
+        .exec(),
     ]);
     return new Map([
       ...systems.map((system) => [system.systemId, system.name] as const),
@@ -143,7 +152,10 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
   }
 
   async findFactions(ids: readonly string[]): Promise<CatalogFaction[]> {
-    const factions = await this.factions.find({ ...LATEST, isRemoved: false, factionId: { $in: ids } }).lean().exec();
+    const factions = await this.factions
+      .find({ ...LATEST, isRemoved: false, factionId: { $in: ids } })
+      .lean()
+      .exec();
     return factions.map(toCatalogFaction);
   }
 
@@ -174,9 +186,15 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
   }
 
   async findSystemNames(factionIds: readonly string[]): Promise<ReadonlyMap<string, string>> {
-    const factions = await this.factions.find({ ...LATEST, factionId: { $in: factionIds } }).lean().exec();
+    const factions = await this.factions
+      .find({ ...LATEST, factionId: { $in: factionIds } })
+      .lean()
+      .exec();
     const systemIds = [...new Set(factions.map((faction) => faction.systemId))];
-    const systems = await this.systems.find({ ...LATEST, systemId: { $in: systemIds } }).lean().exec();
+    const systems = await this.systems
+      .find({ ...LATEST, systemId: { $in: systemIds } })
+      .lean()
+      .exec();
     const systemNames = new Map(systems.map((system) => [system.systemId, system.name] as const));
     return new Map(
       factions.flatMap((faction) => {
@@ -193,7 +211,11 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
     session: ClientSession,
   ): Promise<void> {
     const latestOf = (ids: readonly string[]) => ({ ...LATEST, [collection.idField]: { $in: ids } });
-    await collection.model.updateMany(latestOf(update.versions.map(({ entry }) => entry.id)), { isLatest: false }, { session });
+    await collection.model.updateMany(
+      latestOf(update.versions.map(({ entry }) => entry.id)),
+      { isLatest: false },
+      { session },
+    );
     await collection.model.insertMany(
       update.versions.map(({ entry: { id, ...content }, version }) => ({
         ...content,

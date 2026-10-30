@@ -2,8 +2,8 @@
   <span class="text-xs text-muted-foreground">Added from the kit</span>
   <div class="flex flex-wrap items-center gap-2">
     <!-- Editions of a kit share its name; the year tells them apart. -->
-    <span class="font-semibold"
-      >@for (name of kit().names; track name) {
+    <span class="font-semibold">
+      @for (name of kit().names; track name) {
         @if (!$first) {
           <span class="font-normal text-muted-foreground">or</span>
         }
@@ -50,6 +50,4 @@
   </ul>
 </div>
 
-<p class="border-t pt-4 text-sm text-muted-foreground">
-  Kits only suggest. Changing the kit never changes this box.
-</p>
+<p class="border-t pt-4 text-sm text-muted-foreground">Kits only suggest. Changing the kit never changes this box.</p>

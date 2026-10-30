@@ -14,7 +14,9 @@ describe('Either-or name', () => {
     const name = await render('Lootas / Burna Boyz (2008)');
 
     expect(textOf(name)).toBe('Lootas or Burna Boyz (2008)');
-    expect([...name.querySelectorAll('[data-separator]')].map((separator) => separator.textContent?.trim())).toEqual(['or']);
+    expect([...name.querySelectorAll('[data-separator]')].map((separator) => separator.textContent?.trim())).toEqual([
+      'or',
+    ]);
   });
 
   it('shows any other name as it is', async () => {

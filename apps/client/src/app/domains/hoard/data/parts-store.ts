@@ -10,9 +10,7 @@ export class PartsStore {
   private readonly loaded = resource({ loader: () => this.adapter.list() });
 
   /** Empty until loaded, and when it can't be loaded: minis then show no part names. */
-  readonly parts = computed<readonly VocabularyPart[]>(() =>
-    this.loaded.hasValue() ? this.loaded.value() : [],
-  );
+  readonly parts = computed<readonly VocabularyPart[]>(() => (this.loaded.hasValue() ? this.loaded.value() : []));
   /** The name of each part, by id. */
   readonly names = computed(() => new Map(this.parts().map((part) => [part.id, part.name])));
 

@@ -60,9 +60,7 @@ function itFollowsLibraryRules(directory: string): void {
         return importedModules(file)
           .filter(isRelative)
           .map((specifier) => targetOf(file, specifier, directory))
-          .every(
-            (target) => target.split('/')[0] === ownDomain || /^[^/]+\/index\.js$/.test(target),
-          );
+          .every((target) => target.split('/')[0] === ownDomain || /^[^/]+\/index\.js$/.test(target));
       }, 'imports other domains through their index.ts');
 
     await expect(rule).toPassAsync();
@@ -95,9 +93,7 @@ describe('API protocol', () => {
         (file) =>
           importedModules(file)
             .filter((specifier) => !isRelative(specifier))
-            .every(
-              (specifier) => specifier === 'zod' || specifier.startsWith('@greyhoarder/domain/'),
-            ),
+            .every((specifier) => specifier === 'zod' || specifier.startsWith('@greyhoarder/domain/')),
         'depends only on zod and @greyhoarder/domain',
       );
 

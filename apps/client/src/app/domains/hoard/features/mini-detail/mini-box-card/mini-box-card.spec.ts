@@ -58,8 +58,7 @@ describe('Mini box card', () => {
     await fixture.whenStable();
     return fixture.nativeElement;
   };
-  const textOf = (element: Element | null): string =>
-    element?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+  const textOf = (element: Element | null): string => element?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
   const suggestedParts = (card: HTMLElement): string[] =>
     [...card.querySelectorAll('[data-testid="mini-box-part"]')].map(textOf);
 
@@ -82,9 +81,7 @@ describe('Mini box card', () => {
   it('says when the box was added and how far it is', async () => {
     const card = await render({ percent: 27 });
 
-    expect(textOf(card.querySelector('[data-testid="mini-box-added"]'))).toBe(
-      'Added 12 Oct 2026 · box #1 at 27%',
-    );
+    expect(textOf(card.querySelector('[data-testid="mini-box-added"]'))).toBe('Added 12 Oct 2026 · box #1 at 27%');
   });
 
   it('shows the parts the kit suggests for the name the minis are built as', async () => {
@@ -98,9 +95,6 @@ describe('Mini box card', () => {
     const cards = [await render({ name: '' }), await render({ name: 'Spanner' })];
 
     expect(cards.map((card) => suggestedParts(card))).toEqual([[], []]);
-    expect(cards.map((card) => textOf(card).includes('The kit suggests for'))).toEqual([
-      false,
-      false,
-    ]);
+    expect(cards.map((card) => textOf(card).includes('The kit suggests for'))).toEqual([false, false]);
   });
 });

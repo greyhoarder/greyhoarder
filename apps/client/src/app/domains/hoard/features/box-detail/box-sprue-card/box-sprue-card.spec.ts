@@ -29,9 +29,7 @@ const BOYZ_KIT = {
   minis: 10,
   isDraft: false,
   contains: [],
-  variants: [
-    { name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: ['Slugga'], factionIds: [] }] },
-  ],
+  variants: [{ name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: ['Slugga'], factionIds: [] }] }],
 };
 
 /** Five alike Boyz on the sprue, one row. */
@@ -63,9 +61,7 @@ describe('Card on the sprue', () => {
   let update: ReturnType<typeof vi.fn>;
 
   /** The card opens and closes its panels as the box page would. */
-  async function showCard(
-    saves: () => Promise<readonly Mini[]> = () => Promise.resolve([]),
-  ): Promise<void> {
+  async function showCard(saves: () => Promise<readonly Mini[]> = () => Promise.resolve([])): Promise<void> {
     update = vi.fn(saves);
     TestBed.configureTestingModule({
       providers: [
@@ -100,16 +96,12 @@ describe('Card on the sprue', () => {
     });
     fixture = TestBed.createComponent(BoxSprueCard);
     fixture.componentRef.setInput('row', ROW);
-    fixture.componentInstance.panelChange.subscribe((panel) =>
-      fixture.componentRef.setInput('panel', panel),
-    );
+    fixture.componentInstance.panelChange.subscribe((panel) => fixture.componentRef.setInput('panel', panel));
     await fixture.whenStable();
   }
 
   const all = (testId: string): HTMLElement[] => [
-    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
-      `[data-testid="${testId}"]`,
-    ),
+    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
   ];
 
   async function click(element: HTMLElement | undefined): Promise<void> {
@@ -127,11 +119,9 @@ describe('Card on the sprue', () => {
   it('tells screen readers how many minis the row stands for', async () => {
     await showCard();
 
-    expect(
-      all('box-sprue-toggle')[0]
-        ?.querySelector('[aria-label$=" minis"]')
-        ?.getAttribute('aria-label'),
-    ).toBe('5 minis');
+    expect(all('box-sprue-toggle')[0]?.querySelector('[aria-label$=" minis"]')?.getAttribute('aria-label')).toBe(
+      '5 minis',
+    );
   });
 
   it('shows the build panel only once the card is opened', async () => {
@@ -141,10 +131,7 @@ describe('Card on the sprue', () => {
 
     await click(toggle);
 
-    expect([
-      closed,
-      [all('box-sprue-panel').length, toggle?.getAttribute('aria-expanded')],
-    ]).toEqual([
+    expect([closed, [all('box-sprue-panel').length, toggle?.getAttribute('aria-expanded')]]).toEqual([
       [0, 'false'],
       [1, 'true'],
     ]);

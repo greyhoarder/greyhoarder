@@ -33,10 +33,7 @@ test.describe('Add box', () => {
     await expect(page).toHaveURL(`${signedIn.url}/hoard/boxes`);
   });
 
-  test('adds a box of a kit and shows it among the boxes of the hoard', async ({
-    page,
-    signedIn,
-  }) => {
+  test('adds a box of a kit and shows it among the boxes of the hoard', async ({ page, signedIn }) => {
     await page.goto(`${signedIn.url}/hoard/boxes`);
     await expect(page.getByTestId('hoard-box')).toHaveCount(0);
     await page.getByTestId('hoard-add-boxes').click();

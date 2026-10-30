@@ -1,9 +1,4 @@
-import {
-  EmptyBoxError,
-  hasReached,
-  type HobbyStatus,
-  hobbyStatuses,
-} from '@greyhoarder/domain/hoard';
+import { EmptyBoxError, hasReached, type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
 
 /**
  * How far the minis of a box have come, derived from their statuses; all gone once only gone
@@ -48,9 +43,6 @@ export function progressPercent(statuses: readonly HobbyStatus[]): number {
     throw new EmptyBoxError();
   }
   const lastStep = hobbyStatuses.length - 1;
-  const sum = statuses.reduce(
-    (total, status) => total + hobbyStatuses.indexOf(status) / lastStep,
-    0,
-  );
+  const sum = statuses.reduce((total, status) => total + hobbyStatuses.indexOf(status) / lastStep, 0);
   return Math.round((sum / statuses.length) * 100);
 }

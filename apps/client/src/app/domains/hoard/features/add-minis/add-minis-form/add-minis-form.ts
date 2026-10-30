@@ -32,11 +32,7 @@ import { StatusChoice } from '../../../ui/status-choice/status-choice';
       (pickerToggled)="addition.togglePicker()"
     />
     <div class="flex flex-wrap items-center gap-3 border-t pt-4">
-      <app-minis-stepper
-        testId="add-minis"
-        [count]="addition.count()"
-        (changed)="addition.changeCount($event)"
-      />
+      <app-minis-stepper testId="add-minis" [count]="addition.count()" (changed)="addition.changeCount($event)" />
       <button
         hlmBtn
         type="button"

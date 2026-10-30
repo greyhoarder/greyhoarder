@@ -1,12 +1,5 @@
 import { afterNextRender, Component, inject, signal } from '@angular/core';
-import {
-  form,
-  FormField,
-  FormRoot,
-  required,
-  type TreeValidationResult,
-  validate,
-} from '@angular/forms/signals';
+import { form, FormField, FormRoot, required, type TreeValidationResult, validate } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEye, lucideEyeOff } from '@ng-icons/lucide';

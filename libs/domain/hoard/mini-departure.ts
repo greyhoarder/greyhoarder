@@ -14,8 +14,7 @@ export interface Departure {
 
 /** A departure by the rules: only a mini stripped for parts has recipients, each once. */
 export function parseDeparture(departure: Departure): Departure {
-  const recipientMiniIds =
-    departure.reason === 'stripped' ? [...new Set(departure.recipientMiniIds ?? [])] : [];
+  const recipientMiniIds = departure.reason === 'stripped' ? [...new Set(departure.recipientMiniIds ?? [])] : [];
   return recipientMiniIds.length === 0
     ? { reason: departure.reason, on: departure.on }
     : { ...departure, recipientMiniIds };

@@ -20,15 +20,11 @@ export const PROTOCOL = /^@greyhoarder\/protocol(\/|$)/;
  * not depend on the libraries being built.
  */
 export function importedModules(file: FileInfo): string[] {
-  return ts
-    .preProcessFile(file.content, true, true)
-    .importedFiles.map((imported) => imported.fileName);
+  return ts.preProcessFile(file.content, true, true).importedFiles.map((imported) => imported.fileName);
 }
 
 export function importsAny(file: FileInfo, patterns: readonly RegExp[]): boolean {
-  return importedModules(file).some((specifier) =>
-    patterns.some((pattern) => pattern.test(specifier)),
-  );
+  return importedModules(file).some((specifier) => patterns.some((pattern) => pattern.test(specifier)));
 }
 
 export function isRelative(specifier: string): boolean {

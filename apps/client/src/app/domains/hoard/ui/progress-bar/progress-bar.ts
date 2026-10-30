@@ -63,9 +63,7 @@ export class ProgressBar {
 }
 
 /** The statuses that count as progress; the sprue is where every mini starts. */
-export const PROGRESS_STATUSES: readonly HobbyStatus[] = hobbyStatuses.filter(
-  (status) => status !== 'sprue',
-);
+export const PROGRESS_STATUSES: readonly HobbyStatus[] = hobbyStatuses.filter((status) => status !== 'sprue');
 
 /** Grey getting lighter towards primed, gold once painted, like the status badges. */
 export const STATUS_COLORS: Readonly<Record<HobbyStatus, string>> = {

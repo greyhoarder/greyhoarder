@@ -1,9 +1,5 @@
 import { Directive } from '@angular/core';
-import {
-  BrnPopover,
-  provideBrnPopoverConfig,
-  provideBrnPopoverDefaultOptions,
-} from '@spartan-ng/brain/popover';
+import { BrnPopover, provideBrnPopoverConfig, provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
 import { BrnSelectMultiple } from '@spartan-ng/brain/select';
 import { classes } from '@spartan-ng/helm/utils';
 
@@ -25,14 +21,7 @@ import { classes } from '@spartan-ng/helm/utils';
     },
     {
       directive: BrnPopover,
-      inputs: [
-        'align',
-        'closeOnOutsidePointerEvents',
-        'sideOffset',
-        'state',
-        'offsetX',
-        'scrollStrategy',
-      ],
+      inputs: ['align', 'closeOnOutsidePointerEvents', 'sideOffset', 'state', 'offsetX', 'scrollStrategy'],
       outputs: ['stateChanged', 'closed'],
     },
   ],

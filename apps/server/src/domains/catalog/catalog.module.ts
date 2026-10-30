@@ -9,11 +9,23 @@ import { MinisController } from './features/minis/minis.controller.js';
 import { MinisService } from './features/minis/minis.service.js';
 import { PartsController } from './features/parts/parts.controller.js';
 import { PartsService } from './features/parts/parts.service.js';
-import { CatalogFactionDbo, CatalogFactionSchema } from './infrastructure/catalog-repository/schemas/mongo-catalog-faction-schema.js';
-import { CatalogImportDbo, CatalogImportSchema } from './infrastructure/catalog-repository/schemas/mongo-catalog-import-schema.js';
-import { CatalogKitDbo, CatalogKitSchema } from './infrastructure/catalog-repository/schemas/mongo-catalog-kit-schema.js';
+import {
+  CatalogFactionDbo,
+  CatalogFactionSchema,
+} from './infrastructure/catalog-repository/schemas/mongo-catalog-faction-schema.js';
+import {
+  CatalogImportDbo,
+  CatalogImportSchema,
+} from './infrastructure/catalog-repository/schemas/mongo-catalog-import-schema.js';
+import {
+  CatalogKitDbo,
+  CatalogKitSchema,
+} from './infrastructure/catalog-repository/schemas/mongo-catalog-kit-schema.js';
 import { MongoCatalogRepository } from './infrastructure/catalog-repository/mongo-catalog-repository.js';
-import { GameSystemDbo, GameSystemSchema } from './infrastructure/catalog-repository/schemas/mongo-game-system-schema.js';
+import {
+  GameSystemDbo,
+  GameSystemSchema,
+} from './infrastructure/catalog-repository/schemas/mongo-game-system-schema.js';
 import { YamlCatalogSnapshotSource } from './infrastructure/catalog-snapshot-source/yaml-catalog-snapshot-source.js';
 import { CatalogKitQueries } from './ports/catalog-kit-queries.js';
 import { CatalogRepository } from './ports/catalog-repository.js';

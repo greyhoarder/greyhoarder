@@ -6,10 +6,7 @@ export interface VocabularyPart extends Part {
 }
 
 /** The terms, each telling whether its name is one of the part names the catalog offers. */
-export function withCatalogOrigin(
-  parts: readonly Part[],
-  offeredNames: readonly string[],
-): VocabularyPart[] {
+export function withCatalogOrigin(parts: readonly Part[], offeredNames: readonly string[]): VocabularyPart[] {
   const offered = new Set(offeredNames.map(partKey));
   return parts.map((part) => ({ ...part, isFromCatalog: offered.has(partKey(part.name)) }));
 }

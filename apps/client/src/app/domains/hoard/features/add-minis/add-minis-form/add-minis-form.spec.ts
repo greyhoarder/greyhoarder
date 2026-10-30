@@ -40,11 +40,7 @@ describe('Add minis form', () => {
   });
 
   const byTestId = (testId: string): HTMLElement[] =>
-    Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
-        `[data-testid="${testId}"]`,
-      ),
-    );
+    Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`));
 
   const click = async (testId: string, index = 0): Promise<void> => {
     byTestId(testId)[index]?.click();

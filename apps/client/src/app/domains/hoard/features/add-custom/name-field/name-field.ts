@@ -71,12 +71,7 @@ export interface NameSuggestion {
       }
     </div>
     @if (isMissing()) {
-      <p
-        class="text-sm text-destructive"
-        role="alert"
-        data-testid="add-custom-name-missing"
-        [id]="missingId"
-      >
+      <p class="text-sm text-destructive" role="alert" data-testid="add-custom-name-missing" [id]="missingId">
         Give the minis a name.
       </p>
     }
@@ -113,9 +108,7 @@ export class NameField {
     ].filter((group) => group.suggestions.length > 0);
   });
   private readonly all = computed(() => [...this.ownNames(), ...this.catalogNames()]);
-  protected readonly isListShown = computed(
-    () => this.isOpen() && this.value().trim() !== '' && this.all().length > 0,
-  );
+  protected readonly isListShown = computed(() => this.isOpen() && this.value().trim() !== '' && this.all().length > 0);
   protected readonly activeId = computed(() =>
     this.isListShown() && this.active() >= 0 ? this.optionId(this.active()) : null,
   );

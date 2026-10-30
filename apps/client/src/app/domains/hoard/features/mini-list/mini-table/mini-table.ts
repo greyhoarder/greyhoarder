@@ -34,16 +34,7 @@ export interface RowSelection {
 /** The minis as a table, one line each, sorted by clicking a column header; starts sorted by faction. */
 @Component({
   selector: 'app-mini-table',
-  imports: [
-    EitherOrName,
-    NgIcon,
-    HlmBadge,
-    HlmTableImports,
-    LongPress,
-    RowCheck,
-    GoneBadge,
-    StatusBadge,
-  ],
+  imports: [EitherOrName, NgIcon, HlmBadge, HlmTableImports, LongPress, RowCheck, GoneBadge, StatusBadge],
   providers: [provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown })],
   templateUrl: './mini-table.html',
   host: { class: 'block rounded-xl border bg-card' },
@@ -68,16 +59,12 @@ export class MiniTable {
   protected readonly eitherOrText = eitherOrText;
   protected readonly sortOrder = signal<MiniSortOrder>('army');
   protected readonly sortDirection = signal<SortDirection>('ascending');
-  protected readonly sortedRows = computed(() =>
-    sortRows(this.rows(), this.sortOrder(), this.sortDirection()),
-  );
+  protected readonly sortedRows = computed(() => sortRows(this.rows(), this.sortOrder(), this.sortDirection()));
 
   /** A new column sorts ascending; the current one switches direction. */
   protected sortBy(order: MiniSortOrder): void {
     if (order === this.sortOrder()) {
-      this.sortDirection.update((direction) =>
-        direction === 'ascending' ? 'descending' : 'ascending',
-      );
+      this.sortDirection.update((direction) => (direction === 'ascending' ? 'descending' : 'ascending'));
       return;
     }
     this.sortOrder.set(order);

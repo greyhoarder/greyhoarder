@@ -40,9 +40,7 @@ describe('Mini table', () => {
     fixture.componentRef.setInput('rows', ROWS);
     await fixture.whenStable();
     const table: HTMLElement = fixture.nativeElement;
-    const statusHeader = table.querySelector<HTMLButtonElement>(
-      '[data-testid="hoard-sort-status"]',
-    );
+    const statusHeader = table.querySelector<HTMLButtonElement>('[data-testid="hoard-sort-status"]');
     const firstStatus = (): string | undefined =>
       table.querySelector('[data-testid="hoard-status"]')?.textContent?.trim();
 

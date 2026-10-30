@@ -38,9 +38,7 @@ describe('Box table', () => {
     fixture.componentRef.setInput('boxes', BOXES);
     await fixture.whenStable();
     const table: HTMLElement = fixture.nativeElement;
-    const nameHeader = table.querySelector<HTMLButtonElement>(
-      '[data-testid="hoard-box-sort-name"]',
-    );
+    const nameHeader = table.querySelector<HTMLButtonElement>('[data-testid="hoard-box-sort-name"]');
     const firstBox = (): string | undefined =>
       table.querySelector('[data-testid="hoard-box"] .font-medium')?.textContent?.trim();
 

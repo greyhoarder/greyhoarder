@@ -16,19 +16,13 @@ export function builtGroups(minis: readonly Mini[]): Mini[][] {
 
 /** Equal for the minis of a group, different otherwise. */
 export function groupKey(mini: Mini): string {
-  return JSON.stringify([
-    mini.name,
-    mini.factionIds,
-    mini.parts.map((part) => [part.partId, part.isSwappable]),
-  ]);
+  return JSON.stringify([mini.name, mini.factionIds, mini.parts.map((part) => [part.partId, part.isSwappable])]);
 }
 
 /** Groups by their first mini, which has their furthest status. */
 function byFirstMini(a: readonly Mini[], b: readonly Mini[]): number {
   const [first, other] = [a[0], b[0]];
-  return first && other
-    ? byFurthestStatus(first, other) || first.name.localeCompare(other.name)
-    : 0;
+  return first && other ? byFurthestStatus(first, other) || first.name.localeCompare(other.name) : 0;
 }
 
 function byFurthestStatus(a: Mini, b: Mini): number {

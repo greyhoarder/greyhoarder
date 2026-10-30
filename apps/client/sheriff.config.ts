@@ -92,9 +92,7 @@ function isAllowed(fromTags: string[], toTags: string[]): boolean {
     if ('appLevel' in to) {
       return APP_LEVEL_DEPENDENCIES[from.appLevel].includes(to.appLevel);
     }
-    return (
-      APP_LEVEL_USING_DOMAINS.includes(from.appLevel) && DOMAIN_ENTRY_LAYERS.includes(to.layer)
-    );
+    return APP_LEVEL_USING_DOMAINS.includes(from.appLevel) && DOMAIN_ENTRY_LAYERS.includes(to.layer);
   }
   if ('appLevel' in to) {
     return to.appLevel === 'shared' && LAYERS_USING_SHARED.includes(from.layer);

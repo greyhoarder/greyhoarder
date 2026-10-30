@@ -39,17 +39,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'app-box-sprue-card',
-  imports: [
-    NgIcon,
-    HlmButton,
-    HlmPopoverImports,
-    EitherOrName,
-    BuildAs,
-    PartTiles,
-    BuildBar,
-    LeavePanel,
-    DeletePanel,
-  ],
+  imports: [NgIcon, HlmButton, HlmPopoverImports, EitherOrName, BuildAs, PartTiles, BuildBar, LeavePanel, DeletePanel],
   providers: [
     MiniEditor,
     provideIcons({ lucideChevronDown, lucideEllipsisVertical }),
@@ -104,10 +94,9 @@ export class BoxSprueCard {
 
   /** Moves the focus into the open panel, e.g. after "Take from the sprue". */
   focusPanel(): void {
-    afterNextRender(
-      () => this.panelElement()?.nativeElement.querySelector<HTMLElement>('button, input')?.focus(),
-      { injector: this.injector },
-    );
+    afterNextRender(() => this.panelElement()?.nativeElement.querySelector<HTMLElement>('button, input')?.focus(), {
+      injector: this.injector,
+    });
   }
 
   protected choose(panel: SpruePanel): void {

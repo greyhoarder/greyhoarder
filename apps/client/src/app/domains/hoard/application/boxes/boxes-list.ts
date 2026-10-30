@@ -29,9 +29,7 @@ export class BoxesList {
   readonly progressFilter = signal<ReadonlySet<string>>(new Set());
   readonly tagFilter = signal<ReadonlySet<string>>(new Set());
   readonly isFiltered = computed(() =>
-    [this.factionFilter(), this.progressFilter(), this.tagFilter()].some(
-      (filter) => filter.size > 0,
-    ),
+    [this.factionFilter(), this.progressFilter(), this.tagFilter()].some((filter) => filter.size > 0),
   );
 
   /** Newest first; the table sorts by its own headers. */

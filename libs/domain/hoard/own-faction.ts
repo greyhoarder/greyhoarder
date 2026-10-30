@@ -23,10 +23,7 @@ export function factionKey(text: string): string {
 }
 
 /** The own faction of that name, ignoring case and surrounding spaces. */
-export function findOwnFaction(
-  factions: readonly OwnFaction[],
-  name: string,
-): OwnFaction | undefined {
+export function findOwnFaction(factions: readonly OwnFaction[], name: string): OwnFaction | undefined {
   const key = factionKey(name);
   return factions.find((faction) => factionKey(faction.name) === key);
 }

@@ -1,9 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import type {
-  CatalogMiniSearchRequest,
-  CatalogMiniSearchResponse,
-} from '@greyhoarder/protocol/catalog';
+import type { CatalogMiniSearchRequest, CatalogMiniSearchResponse } from '@greyhoarder/protocol/catalog';
 import { firstValueFrom } from 'rxjs';
 import type { CatalogMiniSearchResult } from '../models/catalog-mini-search-result';
 
@@ -15,9 +12,7 @@ export class HttpCatalogMinisAdapter {
   /** The catalog minis for which every word of the text is in their name, a kit's or their faction's, best first. */
   async search(text: string): Promise<CatalogMiniSearchResult> {
     const params: CatalogMiniSearchRequest = { search: text };
-    const response = await firstValueFrom(
-      this.http.get<CatalogMiniSearchResponse>('/api/catalog/minis', { params }),
-    );
+    const response = await firstValueFrom(this.http.get<CatalogMiniSearchResponse>('/api/catalog/minis', { params }));
     return {
       minis: response.minis,
       factionNames: new Map(Object.entries(response.factionNames)),

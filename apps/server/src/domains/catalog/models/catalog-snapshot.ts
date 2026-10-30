@@ -119,9 +119,7 @@ function kitProblem(
   if (unknownFaction !== undefined) {
     return `unknown faction ${unknownFaction}`;
   }
-  const unknownKit = kit.contains.map((contained) => contained.kitId).find(
-    (id) => id !== undefined && !kitIds.has(id),
-  );
+  const unknownKit = kit.contains.map((contained) => contained.kitId).find((id) => id !== undefined && !kitIds.has(id));
   if (unknownKit !== undefined) {
     return `unknown kit ${unknownKit}`;
   }

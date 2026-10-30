@@ -11,11 +11,7 @@ import {
 import { toObservable } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide';
-import {
-  type BrnPaginatedTabHeaderItem,
-  BrnTabsPaginatedList,
-  BrnTabsTrigger,
-} from '@spartan-ng/brain/tabs';
+import { type BrnPaginatedTabHeaderItem, BrnTabsPaginatedList, BrnTabsTrigger } from '@spartan-ng/brain/tabs';
 import { buttonVariants } from '@spartan-ng/helm/button';
 import { classes, hlm } from '@spartan-ng/helm/utils';
 import type { ClassValue } from 'clsx';
@@ -47,17 +43,8 @@ import { listVariants } from './hlm-tabs-list';
       <ng-icon name="lucideChevronLeft" />
     </button>
 
-    <div
-      #tabListContainer
-      class="z-[1] flex grow overflow-hidden"
-      (keydown)="_handleKeydown($event)"
-    >
-      <div
-        class="relative grow transition-transform"
-        #tabList
-        role="tablist"
-        (cdkObserveContent)="_onContentChanges()"
-      >
+    <div #tabListContainer class="z-[1] flex grow overflow-hidden" (keydown)="_handleKeydown($event)">
+      <div class="relative grow transition-transform" #tabList role="tablist" (cdkObserveContent)="_onContentChanges()">
         <div #tabListInner [class]="_tabListClass()">
           <ng-content />
         </div>
@@ -88,17 +75,13 @@ export class HlmTabsPaginatedList extends BrnTabsPaginatedList {
 
   public readonly items = contentChildren(BrnTabsTrigger, { descendants: false });
   /** Explicitly annotating type to avoid non-portable inferred type */
-  public readonly itemsChanges: Observable<ReadonlyArray<BrnPaginatedTabHeaderItem>> = toObservable(
-    this.items,
-  );
+  public readonly itemsChanges: Observable<ReadonlyArray<BrnPaginatedTabHeaderItem>> = toObservable(this.items);
 
-  public readonly tabListContainer =
-    viewChild.required<ElementRef<HTMLElement>>('tabListContainer');
+  public readonly tabListContainer = viewChild.required<ElementRef<HTMLElement>>('tabListContainer');
   public readonly tabList = viewChild.required<ElementRef<HTMLElement>>('tabList');
   public readonly tabListInner = viewChild.required<ElementRef<HTMLElement>>('tabListInner');
   public readonly nextPaginator = viewChild.required<ElementRef<HTMLElement>>('nextPaginator');
-  public readonly previousPaginator =
-    viewChild.required<ElementRef<HTMLElement>>('previousPaginator');
+  public readonly previousPaginator = viewChild.required<ElementRef<HTMLElement>>('previousPaginator');
 
   public readonly tabListClass = input<ClassValue>('', { alias: 'tabListClass' });
   protected readonly _tabListClass = computed(() => hlm(listVariants(), this.tabListClass()));

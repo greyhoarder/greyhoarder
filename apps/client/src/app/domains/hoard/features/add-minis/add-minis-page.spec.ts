@@ -52,11 +52,7 @@ describe('Add minis page', () => {
   });
 
   const byTestId = (testId: string): HTMLElement[] =>
-    Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
-        `[data-testid="${testId}"]`,
-      ),
-    );
+    Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`));
 
   const searchFor = async (text: string): Promise<void> => {
     const field = byTestId('add-minis-search')[0] as HTMLInputElement;
@@ -76,10 +72,7 @@ describe('Add minis page', () => {
 
     await searchFor('boy');
 
-    expect(byTestId('add-minis-mini-name').map((name) => name.textContent?.trim())).toEqual([
-      'Boy',
-      'Burna Boy',
-    ]);
+    expect(byTestId('add-minis-mini-name').map((name) => name.textContent?.trim())).toEqual(['Boy', 'Burna Boy']);
   });
 
   it('says that nothing matches when the search finds no minis', async () => {
@@ -97,9 +90,6 @@ describe('Add minis page', () => {
     byTestId('add-minis-mini')[1]?.click();
     await fixture.whenStable();
 
-    expect(byTestId('add-minis-mini').map((card) => card.getAttribute('aria-expanded'))).toEqual([
-      'false',
-      'true',
-    ]);
+    expect(byTestId('add-minis-mini').map((card) => card.getAttribute('aria-expanded'))).toEqual(['false', 'true']);
   });
 });

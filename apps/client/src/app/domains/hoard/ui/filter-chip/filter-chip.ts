@@ -48,9 +48,7 @@ export class FilterChip {
     if (selected.size > MAX_NAMED) {
       return [`${selected.size} selected`];
     }
-    return [...selected].map(
-      (value) => this.options().find((option) => option.value === value)?.label ?? value,
-    );
+    return [...selected].map((value) => this.options().find((option) => option.value === value)?.label ?? value);
   });
 
   protected toggle(value: string): void {

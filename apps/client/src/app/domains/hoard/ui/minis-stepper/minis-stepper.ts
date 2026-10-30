@@ -22,12 +22,9 @@ import { minisLabel } from '../../util/kit-labels';
     >
       <ng-icon name="lucideMinus" size="16" />
     </button>
-    <span
-      class="min-w-16 text-center text-sm"
-      aria-live="polite"
-      [attr.data-testid]="testId() + '-count'"
-      >{{ label(count()) }}</span
-    >
+    <span class="min-w-16 text-center text-sm" aria-live="polite" [attr.data-testid]="testId() + '-count'">{{
+      label(count())
+    }}</span>
     <button
       hlmBtn
       variant="ghost"

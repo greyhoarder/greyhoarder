@@ -1,21 +1,10 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideArrowDown,
-  lucideArrowUp,
-  lucideChevronsUpDown,
-  lucideEllipsisVertical,
-} from '@ng-icons/lucide';
+import { lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTableImports } from '@spartan-ng/helm/table';
 import { kitLine } from '../../../util/box-labels';
-import {
-  miniCount,
-  paintedCount,
-  percentOf,
-  progressOf,
-  sprueCount,
-} from '../../../application/boxes/box-row';
+import { miniCount, paintedCount, percentOf, progressOf, sprueCount } from '../../../application/boxes/box-row';
 import { hasPercent } from '../../../models/box-progress';
 import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
 import { formatDate } from '../../../util/format-date';
@@ -50,19 +39,8 @@ const COLUMNS: readonly Column[] = [
 /** The boxes as a table, sorted by clicking a column header; starts with the newest. */
 @Component({
   selector: 'app-box-table',
-  imports: [
-    EitherOrName,
-    NgIcon,
-    HlmButton,
-    HlmTableImports,
-    LongPress,
-    ProgressBadge,
-    ProgressBar,
-    RowCheck,
-  ],
-  providers: [
-    provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical }),
-  ],
+  imports: [EitherOrName, NgIcon, HlmButton, HlmTableImports, LongPress, ProgressBadge, ProgressBar, RowCheck],
+  providers: [provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical })],
   templateUrl: './box-table.html',
   host: { class: 'block rounded-xl border bg-card' },
 })
@@ -83,9 +61,7 @@ export class BoxTable {
   );
   protected readonly sortOrder = signal<BoxSortOrder>('added');
   protected readonly sortDirection = signal<SortDirection>('descending');
-  protected readonly sortedBoxes = computed(() =>
-    sortBoxes(this.boxes(), this.sortOrder(), this.sortDirection()),
-  );
+  protected readonly sortedBoxes = computed(() => sortBoxes(this.boxes(), this.sortOrder(), this.sortDirection()));
 
   protected readonly kitLine = kitLine;
   protected readonly sprueCount = sprueCount;
@@ -105,9 +81,7 @@ export class BoxTable {
   /** A new column sorts ascending; the current one switches direction. */
   protected sortBy(order: BoxSortOrder): void {
     if (order === this.sortOrder()) {
-      this.sortDirection.update((direction) =>
-        direction === 'ascending' ? 'descending' : 'ascending',
-      );
+      this.sortDirection.update((direction) => (direction === 'ascending' ? 'descending' : 'ascending'));
       return;
     }
     this.sortOrder.set(order);

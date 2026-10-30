@@ -7,19 +7,14 @@
   (click)="toggled.emit()"
 >
   <!-- Photos come later; until then every group shows the same placeholder. -->
-  <span
-    aria-hidden="true"
-    class="size-12 shrink-0 rounded-lg bg-muted bg-busy-stripes sm:size-14"
-  ></span>
+  <span aria-hidden="true" class="size-12 shrink-0 rounded-lg bg-muted bg-busy-stripes sm:size-14"></span>
   <span class="flex min-w-0 flex-1 flex-col gap-1">
     <span class="truncate font-semibold"><app-either-or-name [name]="group().name" /></span>
     <span class="truncate text-sm text-muted-foreground">{{ origin() }}</span>
     <!-- Always present, so groups without parts are as tall as the others. -->
     <span class="flex min-h-6 flex-wrap gap-1.5">
       @for (part of group().parts; track part) {
-        <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{
-          part
-        }}</span>
+        <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{ part }}</span>
       }
     </span>
   </span>
@@ -37,9 +32,7 @@
     </span>
   </span>
 
-  <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(count())">
-    ×{{ count() }}
-  </span>
+  <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(count())"> ×{{ count() }} </span>
   <ng-icon
     name="lucideChevronDown"
     size="16"

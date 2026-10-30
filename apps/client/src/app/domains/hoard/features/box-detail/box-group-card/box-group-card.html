@@ -11,9 +11,7 @@
     <!-- Always present, so groups without parts are as tall as the others. -->
     <span class="flex min-h-6 flex-wrap gap-1.5">
       @for (chip of chips(); track chip) {
-        <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{
-          chip
-        }}</span>
+        <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{ chip }}</span>
       }
     </span>
   </span>
@@ -31,9 +29,7 @@
     </span>
   </span>
 
-  <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(count())">
-    ×{{ count() }}
-  </span>
+  <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(count())"> ×{{ count() }} </span>
   <ng-icon
     name="lucideChevronDown"
     size="16"
@@ -92,10 +88,7 @@
               [attr.aria-pressed]="choice.status === mini.status"
               [attr.data-status]="choice.status"
               data-testid="box-group-status"
-              (click)="
-                choice.status !== mini.status &&
-                  statusChosen.emit({ miniId: mini.id, status: choice.status })
-              "
+              (click)="choice.status !== mini.status && statusChosen.emit({ miniId: mini.id, status: choice.status })"
             >
               {{ choice.label }}
             </button>

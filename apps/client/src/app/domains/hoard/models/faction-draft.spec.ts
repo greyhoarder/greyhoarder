@@ -1,9 +1,6 @@
 import { type FactionDraft, hasFaction, isOwnDraft } from './faction-draft';
 
-const CHOSEN: FactionDraft[] = [
-  { id: 'warhammer-40000/orks', name: 'Orks' },
-  { name: 'Crimson Wolves' },
-];
+const CHOSEN: FactionDraft[] = [{ id: 'warhammer-40000/orks', name: 'Orks' }, { name: 'Crimson Wolves' }];
 
 describe('Faction draft', () => {
   it('knows a chosen faction by its id', () => {
@@ -19,9 +16,7 @@ describe('Faction draft', () => {
   });
 
   it("counts a new faction, which has no id yet, as one of the user's own", () => {
-    const own = [{ name: 'Crimson Wolves' }, { id: 'warhammer-40000/orks', name: 'Orks' }].map(
-      isOwnDraft,
-    );
+    const own = [{ name: 'Crimson Wolves' }, { id: 'warhammer-40000/orks', name: 'Orks' }].map(isOwnDraft);
 
     expect(own).toEqual([true, false]);
   });

@@ -11,8 +11,7 @@ describe('Delete box dialog', () => {
     // The dialog opens in an overlay outside the component.
     const find = <T extends HTMLElement = HTMLElement>(testId: string): T | null =>
       document.querySelector<T>(`[data-testid="${testId}"]`);
-    const description = (): string =>
-      find('box-delete-box-dialog')?.querySelector('p')?.textContent?.trim() ?? '';
+    const description = (): string => find('box-delete-box-dialog')?.querySelector('p')?.textContent?.trim() ?? '';
     return { fixture, find, description };
   };
 

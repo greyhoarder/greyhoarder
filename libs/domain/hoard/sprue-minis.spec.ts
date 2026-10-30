@@ -85,7 +85,9 @@ const INTERCESSORS: Kit = {
   manufacturer: 'games-workshop',
   factionIds: ['warhammer-40000/space-marines'],
   isDraft: false,
-  variants: [{ name: 'Intercessors', slots: [{ count: 10, names: ['Intercessor'], parts: [], factionIds: [] }], minis: 10 }],
+  variants: [
+    { name: 'Intercessors', slots: [{ count: 10, names: ['Intercessor'], parts: [], factionIds: [] }], minis: 10 },
+  ],
   minis: 10,
   contains: [],
 };
@@ -98,7 +100,9 @@ const TERMAGANTS: Kit = {
   manufacturer: 'games-workshop',
   factionIds: ['warhammer-40000/tyranids'],
   isDraft: false,
-  variants: [{ name: 'Termagants', slots: [{ count: 10, names: ['Termagant'], parts: [], factionIds: [] }], minis: 10 }],
+  variants: [
+    { name: 'Termagants', slots: [{ count: 10, names: ['Termagant'], parts: [], factionIds: [] }], minis: 10 },
+  ],
   minis: 10,
   contains: [],
 };
@@ -123,11 +127,7 @@ describe('Sprue minis', () => {
   it('puts the minis of bundled kits into the box', () => {
     const rows = sprueMinis(BATTLEFORCE);
 
-    expect(rows.map((row) => `${row.count}× ${row.name}`)).toEqual([
-      '9× Boy',
-      '1× Nob',
-      '10× Lootas / Burna Boyz',
-    ]);
+    expect(rows.map((row) => `${row.count}× ${row.name}`)).toEqual(['9× Boy', '1× Nob', '10× Lootas / Burna Boyz']);
   });
 
   it('gives the minis of a bundled kit the factions they get when that kit is added on its own', () => {
@@ -142,9 +142,6 @@ describe('Sprue minis', () => {
   it('puts a slot that every variant of an either-or kit has into a row of its own', () => {
     const rows = sprueMinis(LOOTAS_OR_BURNA_BOYZ_WITH_SPANNER);
 
-    expect(rows.map((row) => `${row.count}× ${row.name}`)).toEqual([
-      '4× Lootas / Burna Boyz',
-      '1× Spanner',
-    ]);
+    expect(rows.map((row) => `${row.count}× ${row.name}`)).toEqual(['4× Lootas / Burna Boyz', '1× Spanner']);
   });
 });

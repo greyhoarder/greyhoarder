@@ -19,10 +19,9 @@ describe('Kit card', () => {
 
     await fixture.whenStable();
 
-    expect(
-      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="add-box-kit-draft"]')
-        ?.textContent,
-    ).toBe('Not checked');
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="add-box-kit-draft"]')?.textContent).toBe(
+      'Not checked',
+    );
   });
 
   it('shows every name of an either-or kit, e.g. "Lootas or Burna Boyz"', async () => {
@@ -71,9 +70,7 @@ describe('Kit card', () => {
     await fixture.whenStable();
 
     expect(
-      (fixture.nativeElement as HTMLElement)
-        .querySelector('[data-testid="add-box-kit-builds"]')
-        ?.textContent?.trim(),
+      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="add-box-kit-builds"]')?.textContent?.trim(),
     ).toBe('2 builds');
   });
 
@@ -94,8 +91,6 @@ describe('Kit card', () => {
 
     await fixture.whenStable();
 
-    expect(
-      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="add-box-kit-builds"]'),
-    ).toBeNull();
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="add-box-kit-builds"]')).toBeNull();
   });
 });

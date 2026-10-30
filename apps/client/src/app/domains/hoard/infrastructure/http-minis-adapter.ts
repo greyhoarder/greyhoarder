@@ -38,9 +38,7 @@ export class HttpMinisAdapter {
   /** Adds alike minis without a box; part names the vocabulary lacks are added to it. */
   async add(minis: MinisToAdd): Promise<readonly Mini[]> {
     const body: AddMinisRequest = minis;
-    const response = await firstValueFrom(
-      this.http.post<AddMinisResponse>('/api/hoard/minis', body),
-    );
+    const response = await firstValueFrom(this.http.post<AddMinisResponse>('/api/hoard/minis', body));
     return response.minis;
   }
 
@@ -50,9 +48,7 @@ export class HttpMinisAdapter {
    */
   async update(ids: readonly string[], changes: MiniChanges): Promise<ChangedMinis> {
     const body: UpdateMinisRequest = { ids, set: changes };
-    const response = await firstValueFrom(
-      this.http.patch<UpdateMinisResponse>('/api/hoard/minis', body),
-    );
+    const response = await firstValueFrom(this.http.patch<UpdateMinisResponse>('/api/hoard/minis', body));
     return {
       minis: response.minis,
       ownFactionNames: new Map(Object.entries(response.ownFactionNames)),

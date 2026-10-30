@@ -1,11 +1,5 @@
 import type { BooleanInput } from '@angular/cdk/coercion';
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
 import { BrnFieldControlDescribedBy } from '@spartan-ng/brain/field';
@@ -31,10 +25,7 @@ import type { ClassValue } from 'clsx';
       data-slot="select-trigger"
     >
       <ng-content />
-      <ng-icon
-        name="lucideChevronDown"
-        class="text-muted-foreground text-[length:--spacing(4)] ms-auto"
-      />
+      <ng-icon name="lucideChevronDown" class="text-muted-foreground text-[length:--spacing(4)] ms-auto" />
     </button>
   `,
 })

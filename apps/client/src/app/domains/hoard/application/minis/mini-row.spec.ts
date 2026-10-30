@@ -58,8 +58,9 @@ describe('Mini rows', () => {
 
     const rows = toMiniRows(minis, BOXES, NAMES);
 
-    expect(
-      rows.map((row) => `${row.count}× ${row.isOnWorkbench ? 'on the workbench' : 'off it'}`),
-    ).toEqual(['1× on the workbench', '2× off it']);
+    expect(rows.map((row) => `${row.count}× ${row.isOnWorkbench ? 'on the workbench' : 'off it'}`)).toEqual([
+      '1× on the workbench',
+      '2× off it',
+    ]);
   });
 });

@@ -1,12 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
-import type {
-  AddBoxesRequest,
-  AddBoxesResponse,
-  BoxesResponse,
-  DeleteBoxResponse,
-} from '@greyhoarder/protocol/hoard';
+import type { AddBoxesRequest, AddBoxesResponse, BoxesResponse, DeleteBoxResponse } from '@greyhoarder/protocol/hoard';
 import { firstValueFrom } from 'rxjs';
 import type { BoxesToAdd } from '../models/boxes-to-add';
 
@@ -41,8 +36,6 @@ export class HttpBoxesAdapter {
     /** Other minis whose recipients lost the deleted ones. */
     readonly minis: readonly Mini[];
   }> {
-    return firstValueFrom(
-      this.http.delete<DeleteBoxResponse>(`/api/hoard/boxes/${encodeURIComponent(id)}`),
-    );
+    return firstValueFrom(this.http.delete<DeleteBoxResponse>(`/api/hoard/boxes/${encodeURIComponent(id)}`));
   }
 }

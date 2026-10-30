@@ -2,9 +2,7 @@ import type { Kit } from '@greyhoarder/domain/hoard';
 
 /** E.g. "Games Workshop · 50-80"; the year goes with the name. */
 export function kitMeta(kit: Kit): string {
-  return [manufacturerName(kit.manufacturer), kit.sku]
-    .filter((part) => part !== undefined && part !== '')
-    .join(' · ');
+  return [manufacturerName(kit.manufacturer), kit.sku].filter((part) => part !== undefined && part !== '').join(' · ');
 }
 
 /** The catalog names manufacturers only by their folder, e.g. "games-workshop" → "Games Workshop". */
@@ -16,10 +14,7 @@ function manufacturerName(folder: string): string {
 }
 
 /** The names of the factions, leaving out those whose names are unknown. */
-export function factionNamesOf(
-  factionIds: readonly string[],
-  factionNames: ReadonlyMap<string, string>,
-): string[] {
+export function factionNamesOf(factionIds: readonly string[], factionNames: ReadonlyMap<string, string>): string[] {
   return factionIds.flatMap((id) => factionNames.get(id) ?? []);
 }
 

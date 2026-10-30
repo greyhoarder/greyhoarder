@@ -71,9 +71,7 @@ export class MinisList {
   readonly visibleGroups = computed(() => toHoardGroups(this.visibleRows()));
 
   /** Every mini that is not gone, on the sprue or not; for the summary. */
-  readonly ownedCount = computed(
-    () => this.minisStore.minis().filter((mini) => !isGone(mini)).length,
-  );
+  readonly ownedCount = computed(() => this.minisStore.minis().filter((mini) => !isGone(mini)).length);
   readonly miniCount = computed(() => countMinis(this.presentRows()));
   readonly visibleMiniCount = computed(() => countMinis(this.visibleRows()));
   readonly paintedCount = computed(() =>
@@ -86,9 +84,7 @@ export class MinisList {
   private readonly selection = new MiniSelection();
   readonly selectedIds = this.selection.selectedIds.asReadonly();
   readonly isSelecting = this.selection.isSelecting;
-  readonly selectedCount = computed(() =>
-    countMinis(this.rows().filter((row) => this.selectedIds().has(row.id))),
-  );
+  readonly selectedCount = computed(() => countMinis(this.rows().filter((row) => this.selectedIds().has(row.id))));
 
   resetFilters(): void {
     for (const filter of [this.factionFilter, this.statusFilter, this.boxFilter]) {

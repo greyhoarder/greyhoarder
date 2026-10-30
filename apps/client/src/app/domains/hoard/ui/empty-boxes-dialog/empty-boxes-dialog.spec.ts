@@ -23,11 +23,9 @@ describe('Empty boxes dialog', () => {
   it('asks whether to delete the box that has no minis left', async () => {
     const { find } = await render({ names: ['Boyz'] });
 
-    const texts = [
-      'hoard-empty-boxes-dialog',
-      'hoard-empty-boxes-keep',
-      'hoard-empty-boxes-delete',
-    ].map((testId) => find(testId)?.textContent?.trim() ?? '');
+    const texts = ['hoard-empty-boxes-dialog', 'hoard-empty-boxes-keep', 'hoard-empty-boxes-delete'].map(
+      (testId) => find(testId)?.textContent?.trim() ?? '',
+    );
 
     expect(texts[0]).toContain('Boyz has no minis left. Delete the box as well?');
     expect(texts.slice(1)).toEqual(['Keep box', 'Delete box']);

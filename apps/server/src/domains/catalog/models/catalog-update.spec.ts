@@ -31,7 +31,10 @@ describe('Catalog update', () => {
   it('gives a changed entry the next version and leaves unchanged ones alone', () => {
     const changedBoyz = entry('boyz', 'Boyz, corrected');
 
-    const update = planCatalogUpdate([imported(entry('boyz'), 2), imported(entry('nobz'))], [changedBoyz, entry('nobz')]);
+    const update = planCatalogUpdate(
+      [imported(entry('boyz'), 2), imported(entry('nobz'))],
+      [changedBoyz, entry('nobz')],
+    );
 
     expect(update.versions).toEqual([{ entry: changedBoyz, version: 3 }]);
   });
@@ -71,7 +74,10 @@ describe('Catalog update', () => {
   });
 
   it('plans nothing for the same snapshot twice', () => {
-    const update = planCatalogUpdate([imported(entry('boyz')), imported(entry('nobz'))], [entry('boyz'), entry('nobz')]);
+    const update = planCatalogUpdate(
+      [imported(entry('boyz')), imported(entry('nobz'))],
+      [entry('boyz'), entry('nobz')],
+    );
 
     expect(update).toEqual({ versions: [], removedIds: [], restoredIds: [] });
   });

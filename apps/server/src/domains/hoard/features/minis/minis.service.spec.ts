@@ -109,7 +109,9 @@ describe('Minis service', () => {
     const { hoard, updateMinis } = fakeHoard([BOY]);
     const service = new MinisService(hoard, CATALOG);
 
-    const { minis: [mini] } = await service.update('owner', ['boy'], {
+    const {
+      minis: [mini],
+    } = await service.update('owner', ['boy'], {
       parts: [{ name: 'power claw', isSwappable: false }],
     });
 
@@ -135,7 +137,9 @@ describe('Minis service', () => {
     const { hoard } = fakeHoard([{ ...BOY, status: 'painted', isOnWorkbench: true }]);
     const service = new MinisService(hoard, CATALOG);
 
-    const { minis: [mini] } = await service.update('owner', ['boy'], { status: 'done' });
+    const {
+      minis: [mini],
+    } = await service.update('owner', ['boy'], { status: 'done' });
 
     expect(mini?.isOnWorkbench).toBe(false);
   });

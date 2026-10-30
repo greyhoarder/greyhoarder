@@ -1,24 +1,9 @@
-import {
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  inject,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { isGone } from '@greyhoarder/domain/hoard';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideBrush,
-  lucideCamera,
-  lucideChevronLeft,
-  lucideEllipsisVertical,
-  lucideX,
-} from '@ng-icons/lucide';
+import { lucideBrush, lucideCamera, lucideChevronLeft, lucideEllipsisVertical, lucideX } from '@ng-icons/lucide';
 import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmPopoverImports } from '@spartan-ng/helm/popover';

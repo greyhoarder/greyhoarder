@@ -5,11 +5,7 @@ import type { HoardGroup } from '../../../application/minis/hoard-group';
 import type { MiniRow } from '../../../application/minis/mini-row';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 import { LongPress } from '../../../ui/long-press/long-press';
-import {
-  PROGRESS_STATUSES,
-  ProgressBar,
-  STATUS_COLORS,
-} from '../../../ui/progress-bar/progress-bar';
+import { PROGRESS_STATUSES, ProgressBar, STATUS_COLORS } from '../../../ui/progress-bar/progress-bar';
 import { eitherOrText } from '../../../util/either-or';
 import { minisLabel } from '../../../util/kit-labels';
 import { STATUS_LABELS } from '../../../util/status-labels';
@@ -47,9 +43,7 @@ export class MiniGroupCard {
   protected readonly count = computed(() => this.group().rows.length);
   protected readonly minisLabel = minisLabel;
   protected readonly statusColor = STATUS_COLORS;
-  protected readonly hasSelected = computed(() =>
-    this.group().rows.some((row) => this.selectedIds().has(row.id)),
-  );
+  protected readonly hasSelected = computed(() => this.group().rows.some((row) => this.selectedIds().has(row.id)));
 
   /** Factions and box or kit, e.g. "Orks · Boyz (2026)", or "Orks · 2 boxes". */
   protected readonly origin = computed(() => {

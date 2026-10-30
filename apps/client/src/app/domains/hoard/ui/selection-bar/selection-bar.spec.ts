@@ -2,10 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { SelectionBar } from './selection-bar';
 
 describe('Selection bar', () => {
-  const render = async ({
-    count = 3,
-    canLeave = true,
-  }: { count?: number; canLeave?: boolean } = {}) => {
+  const render = async ({ count = 3, canLeave = true }: { count?: number; canLeave?: boolean } = {}) => {
     const fixture = TestBed.createComponent(SelectionBar);
     fixture.componentRef.setInput('screen', 'hoard');
     fixture.componentRef.setInput('count', count);
@@ -28,8 +25,8 @@ describe('Selection bar', () => {
   it('offers no actions while nothing is selected', async () => {
     const { find } = await render({ count: 0, canLeave: false });
 
-    const actions = ['hoard-selection-edit', 'hoard-selection-leave', 'hoard-selection-delete'].map(
-      (testId) => isDisabled(find<HTMLButtonElement>(testId)),
+    const actions = ['hoard-selection-edit', 'hoard-selection-leave', 'hoard-selection-delete'].map((testId) =>
+      isDisabled(find<HTMLButtonElement>(testId)),
     );
 
     expect(actions).toEqual([true, true, true]);
@@ -38,8 +35,8 @@ describe('Selection bar', () => {
   it('offers no leaving when none of the selected minis can leave', async () => {
     const { find } = await render({ count: 2, canLeave: false });
 
-    const actions = ['hoard-selection-edit', 'hoard-selection-leave', 'hoard-selection-delete'].map(
-      (testId) => isDisabled(find<HTMLButtonElement>(testId)),
+    const actions = ['hoard-selection-edit', 'hoard-selection-leave', 'hoard-selection-delete'].map((testId) =>
+      isDisabled(find<HTMLButtonElement>(testId)),
     );
 
     expect(actions).toEqual([false, true, false]);

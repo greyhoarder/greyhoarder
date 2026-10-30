@@ -2,8 +2,7 @@ import type { Departure, HobbyStatus } from '@greyhoarder/domain/hoard';
 
 /** A part to put on minis: one of the vocabulary, or a name, which joins the vocabulary if it is new. */
 export type PartChange =
-  | { readonly partId: string; readonly isSwappable: boolean }
-  | { readonly name: string; readonly isSwappable: boolean };
+  { readonly partId: string; readonly isSwappable: boolean } | { readonly name: string; readonly isSwappable: boolean };
 
 /** A faction to give minis: a catalog faction or an own one by its id, or a name for a new own faction. */
 export type FactionChange = { readonly id: string } | { readonly name: string };

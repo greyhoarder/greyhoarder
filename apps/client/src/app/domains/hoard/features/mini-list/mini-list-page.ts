@@ -49,9 +49,7 @@ export class MiniListPage {
   protected readonly deletion = inject(MinisDeletion);
   protected readonly boxesDeletion = inject(BoxesDeletion);
 
-  protected readonly factionOptions = computed(() =>
-    optionsOf(this.store.presentRows(), (row) => row.factions),
-  );
+  protected readonly factionOptions = computed(() => optionsOf(this.store.presentRows(), (row) => row.factions));
   /** The statuses past the sprue of the minis that are not gone, then the gone ones. */
   protected readonly statusOptions = computed<FilterOption[]>(() => [
     ...hobbyStatuses
@@ -125,7 +123,5 @@ function optionsOf(
       label: value === NONE ? noneLabel : labelOf(value),
       count: countMinis(rows.filter((row) => valuesOf(row).includes(value))),
     }))
-    .sort((a, b) =>
-      a.value === NONE ? 1 : b.value === NONE ? -1 : a.label.localeCompare(b.label),
-    );
+    .sort((a, b) => (a.value === NONE ? 1 : b.value === NONE ? -1 : a.label.localeCompare(b.label)));
 }

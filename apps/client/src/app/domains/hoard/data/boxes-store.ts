@@ -10,9 +10,7 @@ export class BoxesStore {
   private readonly loaded = resource({ loader: () => this.adapter.list() });
 
   /** Empty until loaded; keeps the previous boxes while reloading. */
-  readonly boxes = computed<readonly Box[]>(() =>
-    this.loaded.hasValue() ? this.loaded.value().boxes : [],
-  );
+  readonly boxes = computed<readonly Box[]>(() => (this.loaded.hasValue() ? this.loaded.value().boxes : []));
   /** The names of the factions the boxes refer to, by id, as the server delivers them with the boxes. */
   readonly factionNames = computed<ReadonlyMap<string, string>>(() =>
     this.loaded.hasValue() ? this.loaded.value().factionNames : new Map(),
@@ -24,10 +22,7 @@ export class BoxesStore {
   /** Takes boxes the server deleted out of the hoard. */
   remove(ids: readonly string[]): void {
     const deleted = new Set(ids);
-    this.loaded.update(
-      (loaded) =>
-        loaded && { ...loaded, boxes: loaded.boxes.filter((box) => !deleted.has(box.id)) },
-    );
+    this.loaded.update((loaded) => loaded && { ...loaded, boxes: loaded.boxes.filter((box) => !deleted.has(box.id)) });
   }
 
   /** Fetches the boxes again, e.g. after boxes were added on the server. */

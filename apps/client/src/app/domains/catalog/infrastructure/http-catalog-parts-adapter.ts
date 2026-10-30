@@ -11,9 +11,7 @@ export class HttpCatalogPartsAdapter {
   /** Every part the catalog kits of the factions and of the factions they are part of offer, by name. */
   async rangeParts(factionIds: readonly string[]): Promise<readonly string[]> {
     const params: RangePartsRequest = { factionIds: factionIds.join(',') };
-    const response = await firstValueFrom(
-      this.http.get<RangePartsResponse>('/api/catalog/parts', { params }),
-    );
+    const response = await firstValueFrom(this.http.get<RangePartsResponse>('/api/catalog/parts', { params }));
     return response.parts;
   }
 }

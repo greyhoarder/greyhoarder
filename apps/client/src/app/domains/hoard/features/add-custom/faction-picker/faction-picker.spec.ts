@@ -60,9 +60,7 @@ describe('Faction picker', () => {
     const toggled = vi.fn();
     fixture.componentInstance.toggled.subscribe(toggled);
 
-    find('add-custom-faction-search')[0]?.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
-    );
+    find('add-custom-faction-search')[0]?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     await fixture.whenStable();
 
     expect(toggled).toHaveBeenCalledOnce();

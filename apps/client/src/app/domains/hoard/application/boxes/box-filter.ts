@@ -22,9 +22,7 @@ export function matchesBoxSearch(box: BoxRow, query: string): boolean {
   if (!needle) {
     return true;
   }
-  return [box.name, box.kit?.name, box.kit?.sku, ...box.tags].some((text) =>
-    text?.toLowerCase().includes(needle),
-  );
+  return [box.name, box.kit?.name, box.kit?.sku, ...box.tags].some((text) => text?.toLowerCase().includes(needle));
 }
 
 function matchesAny(wanted: ReadonlySet<string>, values: readonly string[]): boolean {

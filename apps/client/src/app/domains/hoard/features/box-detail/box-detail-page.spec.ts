@@ -52,20 +52,13 @@ const BOYZ_KIT = {
   minis: 10,
   isDraft: false,
   contains: [],
-  variants: [
-    { name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: [], factionIds: [] }] },
-  ],
+  variants: [{ name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: [], factionIds: [] }] }],
 };
 
 @Component({ template: '' })
 class MinisTab {}
 
-const MINIS: Mini[] = [
-  mini('m1', 'sprue'),
-  mini('m2', 'sprue'),
-  mini('m3', 'built'),
-  mini('m4', 'done'),
-];
+const MINIS: Mini[] = [mini('m1', 'sprue'), mini('m2', 'sprue'), mini('m3', 'built'), mini('m4', 'done')];
 
 describe('Box page', () => {
   let fixture: ComponentFixture<BoxDetailPage>;
@@ -80,10 +73,7 @@ describe('Box page', () => {
   let deleteBox = vi.fn<HttpBoxesAdapter['delete']>();
 
   /** A fresh page for the box with this id, whose hoard holds what `loadMinis` answers. */
-  function showBox(
-    id: string,
-    loadMinis: () => Promise<readonly Mini[]> = () => Promise.resolve(MINIS),
-  ): void {
+  function showBox(id: string, loadMinis: () => Promise<readonly Mini[]> = () => Promise.resolve(MINIS)): void {
     deleteMinis = vi.fn(async () => ({ emptiedBoxIds: [BOYZ.id], minis: [] }));
     deleteBox = vi.fn(async () => ({ deletedMiniIds: [], minis: [] }));
     TestBed.configureTestingModule({
@@ -120,12 +110,9 @@ describe('Box page', () => {
   }
 
   const all = (testId: string): HTMLElement[] => [
-    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
-      `[data-testid="${testId}"]`,
-    ),
+    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
   ];
-  const textOf = (testId: string): string =>
-    all(testId)[0]?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+  const textOf = (testId: string): string => all(testId)[0]?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
   const groupTexts = (): string[] =>
     all('box-group-toggle').map((toggle) => toggle.textContent?.replace(/\s+/g, ' ').trim() ?? '');
 
@@ -237,11 +224,7 @@ describe('Box page', () => {
 
   it('shows the minis on the sprue, alike ones as one row', async () => {
     showBox(BOYZ.id, () =>
-      Promise.resolve([
-        mini('m1', 'sprue'),
-        mini('m2', 'sprue'),
-        mini('m3', 'sprue', { name: 'Nob' }),
-      ]),
+      Promise.resolve([mini('m1', 'sprue'), mini('m2', 'sprue'), mini('m3', 'sprue', { name: 'Nob' })]),
     );
 
     await fixture.whenStable();
@@ -285,14 +268,8 @@ describe('Box page', () => {
     await fixture.whenStable();
 
     const heading = (id: string): string | undefined =>
-      (fixture.nativeElement as HTMLElement)
-        .querySelector(`#${id}`)
-        ?.textContent?.replace(/\s+/g, ' ')
-        .trim();
-    expect([heading('box-minis-heading'), heading('box-sprue-heading')]).toEqual([
-      'Minis 2',
-      'On the sprue 2',
-    ]);
+      (fixture.nativeElement as HTMLElement).querySelector(`#${id}`)?.textContent?.replace(/\s+/g, ' ').trim();
+    expect([heading('box-minis-heading'), heading('box-sprue-heading')]).toEqual(['Minis 2', 'On the sprue 2']);
   });
 
   it('shows the kit the box was added from, in the version the box records', async () => {
@@ -326,10 +303,7 @@ describe('Box page', () => {
 
     const items = [...(menu?.querySelectorAll('[role="menuitem"]') ?? [])];
 
-    expect(items.map((item) => item.getAttribute('data-testid'))).toEqual([
-      'box-add-mini',
-      'box-delete',
-    ]);
+    expect(items.map((item) => item.getAttribute('data-testid'))).toEqual(['box-add-mini', 'box-delete']);
   });
 
   it('tells screen readers whether the box menu is open', async () => {
@@ -407,10 +381,7 @@ describe('Box page', () => {
 
   it('selects a gone mini instead of opening it in selection mode', async () => {
     showBox(BOYZ.id, () =>
-      Promise.resolve([
-        mini('m3', 'built'),
-        mini('m5', 'built', { departure: { reason: 'sold', on: '2026-10-20' } }),
-      ]),
+      Promise.resolve([mini('m3', 'built'), mini('m5', 'built', { departure: { reason: 'sold', on: '2026-10-20' } })]),
     );
     await fixture.whenStable();
     await click(all('box-group-toggle')[0]);

@@ -52,13 +52,9 @@ export function partOptions(
   const isCarried = (name: string) => carried.some((part) => partKey(part) === partKey(name));
   const asOption = (name: string) => {
     const known = findPart(vocabulary, name);
-    return known
-      ? { name: known.name, partId: known.id, aliases: known.aliases }
-      : { name, aliases: [] };
+    return known ? { name: known.name, partId: known.id, aliases: known.aliases } : { name, aliases: [] };
   };
-  const matching = (
-    option: PartOption & { readonly aliases: readonly string[] },
-  ): PartOption | undefined => {
+  const matching = (option: PartOption & { readonly aliases: readonly string[] }): PartOption | undefined => {
     const { aliases, ...part } = option;
     if (needle === '' || partKey(part.name).includes(needle)) {
       return part;
@@ -69,14 +65,10 @@ export function partOptions(
 
   const kitParts = parts.kit ? sprueOffer(parts.kit, parts.sprueName).parts : [];
   const kitOptions = kitParts.map(asOption);
-  const fromKit = kitOptions
-    .filter((part) => !isCarried(part.name))
-    .flatMap((part) => matching(part) ?? []);
+  const fromKit = kitOptions.filter((part) => !isCarried(part.name)).flatMap((part) => matching(part) ?? []);
   const ownTerms = vocabulary.filter((known) => known.isFromCatalog !== true);
   const fromVocabulary = ownTerms
-    .filter(
-      (known) => !kitOptions.some((part) => part.partId === known.id) && !isCarried(known.name),
-    )
+    .filter((known) => !kitOptions.some((part) => part.partId === known.id) && !isCarried(known.name))
     .map((known) => ({ name: known.name, partId: known.id, aliases: known.aliases }))
     .sort((a, b) => a.name.localeCompare(b.name))
     .flatMap((part) => matching(part) ?? []);

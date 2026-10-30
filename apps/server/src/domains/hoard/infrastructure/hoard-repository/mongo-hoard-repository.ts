@@ -146,10 +146,7 @@ export class MongoHoardRepository extends HoardRepository {
    *
    * @returns the numbers given, by box id
    */
-  private async numberUnnumbered(
-    ownerId: string,
-    stored: readonly BoxDbo[],
-  ): Promise<ReadonlyMap<string, number>> {
+  private async numberUnnumbered(ownerId: string, stored: readonly BoxDbo[]): Promise<ReadonlyMap<string, number>> {
     const unnumbered = stored
       .filter((box) => box.number === undefined)
       .sort((a, b) => a.addedOn.localeCompare(b.addedOn));
@@ -222,10 +219,7 @@ export class MongoHoardRepository extends HoardRepository {
   async deleteBox(ownerId: string, boxId: string, change: HoardChange): Promise<string[]> {
     return this.connection.transaction(async (session) => {
       // Read inside the transaction, so a mini added to the box meanwhile goes with it.
-      const minis = await this.minis
-        .find({ ownerId, boxId }, { _id: 1 }, { session })
-        .lean()
-        .exec();
+      const minis = await this.minis.find({ ownerId, boxId }, { _id: 1 }, { session }).lean().exec();
       const miniIds = minis.map((mini) => mini._id);
       await this.minis.deleteMany({ ownerId, boxId }, { session });
       await this.boxes.deleteOne({ ownerId, _id: boxId }, { session });
@@ -279,10 +273,7 @@ export class MongoHoardRepository extends HoardRepository {
     }
     if (droppedFactionIds.length > 0) {
       const carriedIds = await this.stillCarried(ownerId, 'factionIds', droppedFactionIds, session);
-      await this.ownFactions.deleteMany(
-        { ownerId, _id: { $in: droppedFactionIds, $nin: carriedIds } },
-        { session },
-      );
+      await this.ownFactions.deleteMany({ ownerId, _id: { $in: droppedFactionIds, $nin: carriedIds } }, { session });
     }
   }
 
@@ -300,22 +291,14 @@ export class MongoHoardRepository extends HoardRepository {
     return carried.filter((id): id is string => typeof id === 'string');
   }
 
-
   /** Only what a mini's owner can change; box, sprue name and creation stay as they are. */
-  private async writeMinis(
-    ownerId: string,
-    minis: readonly Mini[],
-    session: ClientSession,
-  ): Promise<void> {
+  private async writeMinis(ownerId: string, minis: readonly Mini[], session: ClientSession): Promise<void> {
     if (minis.length === 0) {
       return;
     }
     await this.minis.bulkWrite(
       minis.map((mini) => {
-        const { name, factionIds, status, parts, notes, isOnWorkbench, departure } = toMiniDbo(
-          ownerId,
-          mini,
-        );
+        const { name, factionIds, status, parts, notes, isOnWorkbench, departure } = toMiniDbo(ownerId, mini);
         const unset = {
           ...(notes === undefined ? { notes: '' } : {}),
           ...(departure === undefined ? { departure: '' } : {}),

@@ -12,12 +12,7 @@
     Can't load this box right now. Try again in a moment.
   </p>
 } @else if (isLoading()) {
-  <div
-    class="flex flex-col gap-6"
-    aria-busy="true"
-    aria-label="Loading the box"
-    data-testid="box-loading"
-  >
+  <div class="flex flex-col gap-6" aria-busy="true" aria-label="Loading the box" data-testid="box-loading">
     <div class="flex items-start gap-5">
       <hlm-skeleton class="size-28 rounded-xl" />
       <div class="flex flex-1 flex-col gap-3">
@@ -58,13 +53,9 @@
           >#{{ box.number }}</span
         >
         @for (tag of box.tags; track tag) {
-          <span
-            hlmBadge
-            variant="outline"
-            class="rounded-md font-normal text-muted-foreground"
-            data-testid="box-tag"
-            >{{ tag }}</span
-          >
+          <span hlmBadge variant="outline" class="rounded-md font-normal text-muted-foreground" data-testid="box-tag">{{
+            tag
+          }}</span>
         }
       </div>
     </div>
@@ -81,13 +72,7 @@
           Take from the sprue
         </button>
       }
-      <button
-        hlmBtn
-        variant="outline"
-        type="button"
-        class="h-10 px-3.5 text-sm"
-        data-testid="box-edit"
-      >
+      <button hlmBtn variant="outline" type="button" class="h-10 px-3.5 text-sm" data-testid="box-edit">
         Edit box
       </button>
       <hlm-popover align="end" sideOffset="6">
@@ -103,13 +88,7 @@
         >
           <ng-icon name="lucideEllipsisVertical" size="16" />
         </button>
-        <ul
-          hlmPopoverContent
-          class="w-56 gap-0 p-1"
-          role="menu"
-          aria-label="Box"
-          *hlmPopoverPortal="let menu"
-        >
+        <ul hlmPopoverContent class="w-56 gap-0 p-1" role="menu" aria-label="Box" *hlmPopoverPortal="let menu">
           <!-- Adding a mini comes later. -->
           <li role="none">
             <button
@@ -143,9 +122,7 @@
 
   <section class="flex flex-col gap-3" aria-labelledby="box-progress-heading">
     <div class="flex items-baseline justify-between gap-4">
-      <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="box-progress-heading">
-        Progress
-      </h2>
+      <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="box-progress-heading">Progress</h2>
       @if (hasPercentage()) {
         <span class="text-lg font-semibold tabular-nums" data-testid="box-percent">
           {{ percent() }}<span class="text-sm text-muted-foreground">%</span>
@@ -156,11 +133,7 @@
     <ul class="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3 lg:grid-cols-5">
       @for (entry of statuses(); track entry.status) {
         <li class="flex items-center gap-2" data-testid="box-status">
-          <span
-            class="size-2.5 rounded-full"
-            [class]="statusColor[entry.status]"
-            aria-hidden="true"
-          ></span>
+          <span class="size-2.5 rounded-full" [class]="statusColor[entry.status]" aria-hidden="true"></span>
           <span class="flex-1 text-sm text-muted-foreground">{{ entry.label }}</span>
           <span class="font-semibold tabular-nums">{{ entry.count }}</span>
         </li>
@@ -177,10 +150,7 @@
           </p>
         }
         @if (isEmpty()) {
-          <p
-            class="rounded-xl border border-dashed p-8 text-center text-muted-foreground"
-            data-testid="box-no-minis"
-          >
+          <p class="rounded-xl border border-dashed p-8 text-center text-muted-foreground" data-testid="box-no-minis">
             No minis in this box.
           </p>
         }
@@ -202,11 +172,7 @@
           <section class="flex flex-col gap-3" aria-labelledby="box-minis-heading">
             <!-- While minis are selected, the selection bar takes the place of the heading, so nothing moves. -->
             <div class="flex min-h-13 items-center justify-between gap-4">
-              <h2
-                class="font-semibold"
-                id="box-minis-heading"
-                [class.sr-only]="selection.isSelecting()"
-              >
+              <h2 class="font-semibold" id="box-minis-heading" [class.sr-only]="selection.isSelecting()">
                 Minis <span class="font-normal text-muted-foreground">{{ builtCount() }}</span>
               </h2>
               @if (selection.isSelecting()) {
@@ -294,9 +260,7 @@
                     >
                       <app-either-or-name [name]="row.name" />
                     </button>
-                    <span class="shrink-0 text-sm text-muted-foreground">{{
-                      row.departureText
-                    }}</span>
+                    <span class="shrink-0 text-sm text-muted-foreground">{{ row.departureText }}</span>
                   </li>
                 }
               </ul>
@@ -307,17 +271,11 @@
       @if (kit(); as kit) {
         <app-box-kit-card class="@[720px]:w-80 @[720px]:shrink-0" [kit]="kit" />
       } @else if (hasKitFailed()) {
-        <p
-          class="text-sm text-muted-foreground @[720px]:w-80 @[720px]:shrink-0"
-          data-testid="box-kit-error"
-        >
+        <p class="text-sm text-muted-foreground @[720px]:w-80 @[720px]:shrink-0" data-testid="box-kit-error">
           Can't load the kit right now. Try again in a moment.
         </p>
       } @else if (isKitMissing()) {
-        <p
-          class="text-sm text-muted-foreground @[720px]:w-80 @[720px]:shrink-0"
-          data-testid="box-kit-missing"
-        >
+        <p class="text-sm text-muted-foreground @[720px]:w-80 @[720px]:shrink-0" data-testid="box-kit-missing">
           The catalog no longer has this version of the kit.
         </p>
       }
@@ -354,7 +312,5 @@
     (closed)="boxesDeletion.cancel()"
   />
 } @else {
-  <p class="text-muted-foreground" role="alert" data-testid="box-not-found">
-    This box isn't in your hoard.
-  </p>
+  <p class="text-muted-foreground" role="alert" data-testid="box-not-found">This box isn't in your hoard.</p>
 }

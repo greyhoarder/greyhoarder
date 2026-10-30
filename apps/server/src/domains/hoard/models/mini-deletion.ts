@@ -5,18 +5,11 @@ import { type Mini, withDeparture } from '@greyhoarder/domain/hoard';
  * them: deleted minis disappear from the recipients of others (docs/domains/hoard.md, Leaving the
  * hoard).
  */
-export function withoutDeletedRecipients(
-  staying: readonly Mini[],
-  deleted: ReadonlySet<string>,
-): Mini[] {
+export function withoutDeletedRecipients(staying: readonly Mini[], deleted: ReadonlySet<string>): Mini[] {
   return staying.flatMap((mini) => {
     const { departure } = mini;
     const recipients = departure?.recipientMiniIds;
-    if (
-      departure === undefined ||
-      recipients === undefined ||
-      !recipients.some((id) => deleted.has(id))
-    ) {
+    if (departure === undefined || recipients === undefined || !recipients.some((id) => deleted.has(id))) {
       return [];
     }
     return [

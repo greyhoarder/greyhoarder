@@ -43,8 +43,7 @@ describe('Hoard layout', () => {
   /** Without boxes and minis, the server does not answer. */
   async function showHoard(hoard?: { boxes: readonly Box[]; minis: readonly Mini[] }) {
     const factionNames = new Map([[ORKS, 'Orks']]);
-    const answer = <T>(value: T): Promise<T> =>
-      hoard ? Promise.resolve(value) : Promise.reject(new Error('offline'));
+    const answer = <T>(value: T): Promise<T> => (hoard ? Promise.resolve(value) : Promise.reject(new Error('offline')));
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
@@ -61,9 +60,7 @@ describe('Hoard layout', () => {
         {
           provide: HttpMinisAdapter,
           useValue: {
-            list: vi.fn(() =>
-              answer({ minis: hoard?.minis ?? [], factionNames, systemNames: new Map() }),
-            ),
+            list: vi.fn(() => answer({ minis: hoard?.minis ?? [], factionNames, systemNames: new Map() })),
           },
         },
       ],
@@ -85,9 +82,7 @@ describe('Hoard layout', () => {
   });
 
   it('counts the shown minis on the tab while a search narrows the list', async () => {
-    const built = MINIS.map((each) =>
-      each.status === 'sprue' ? { ...each, status: 'built' as const } : each,
-    );
+    const built = MINIS.map((each) => (each.status === 'sprue' ? { ...each, status: 'built' as const } : each));
     await showHoard({ boxes: BOXES, minis: built });
 
     TestBed.inject(MinisList).query.set('klaw');

@@ -2,10 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { DeletePanel } from './delete-panel';
 
 describe('Delete panel', () => {
-  const render = async ({
-    rowSize = 1,
-    isDeleting = false,
-  }: { rowSize?: number; isDeleting?: boolean } = {}) => {
+  const render = async ({ rowSize = 1, isDeleting = false }: { rowSize?: number; isDeleting?: boolean } = {}) => {
     const fixture = TestBed.createComponent(DeletePanel);
     fixture.componentRef.setInput('rowSize', rowSize);
     fixture.componentRef.setInput('isDeleting', isDeleting);
@@ -20,8 +17,7 @@ describe('Delete panel', () => {
     return { fixture, panel, find, click };
   };
 
-  const questionOf = (panel: HTMLElement): string =>
-    panel.querySelector('h2')?.textContent?.trim() ?? '';
+  const questionOf = (panel: HTMLElement): string => panel.querySelector('h2')?.textContent?.trim() ?? '';
 
   it('says how many minis of the row are deleted', async () => {
     const { panel, click } = await render({ rowSize: 3 });

@@ -45,10 +45,7 @@ describe('Server architecture', () => {
 
   // architecture-boundaries.md, "Domains"
   it.each(DOMAINS)('has no import cycles inside the %s domain', async (domain) => {
-    const rule = projectFiles(TSCONFIG)
-      .inFolder(`src/domains/${domain}/**`)
-      .should()
-      .haveNoCycles();
+    const rule = projectFiles(TSCONFIG).inFolder(`src/domains/${domain}/**`).should().haveNoCycles();
 
     await expect(rule).toPassAsync();
   });

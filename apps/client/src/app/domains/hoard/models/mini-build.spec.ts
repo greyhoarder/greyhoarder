@@ -20,18 +20,12 @@ const LOOTAS: Kit = {
   variants: [
     {
       name: 'Lootas',
-      slots: [
-        slot(4, ['Loota'], ['Deffgun']),
-        slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
-      ],
+      slots: [slot(4, ['Loota'], ['Deffgun']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])],
       minis: 5,
     },
     {
       name: 'Burna Boyz',
-      slots: [
-        slot(4, ['Burna Boy'], ['Burna']),
-        slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
-      ],
+      slots: [slot(4, ['Burna Boy'], ['Burna']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])],
       minis: 5,
     },
   ],
@@ -109,10 +103,7 @@ describe('Build suggestions', () => {
   });
 
   it('counts a mini built under an own name as using up the name it had on the sprue', () => {
-    const left = leftOf(
-      [mini('m1', { name: 'Tankbusta', sprueName: 'Loota', status: 'built' })],
-      'Loota',
-    );
+    const left = leftOf([mini('m1', { name: 'Tankbusta', sprueName: 'Loota', status: 'built' })], 'Loota');
 
     expect(left).toBe(3);
   });
@@ -128,10 +119,7 @@ describe('Build suggestions', () => {
 
   it('never counts below none left', () => {
     const left = leftOf(
-      [
-        mini('m1', { name: 'Spanner', status: 'built' }),
-        mini('m2', { name: 'Spanner', status: 'primed' }),
-      ],
+      [mini('m1', { name: 'Spanner', status: 'built' }), mini('m2', { name: 'Spanner', status: 'primed' })],
       'Spanner',
     );
 

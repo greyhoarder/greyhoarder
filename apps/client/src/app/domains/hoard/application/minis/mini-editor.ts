@@ -1,12 +1,4 @@
-import {
-  computed,
-  inject,
-  Injectable,
-  linkedSignal,
-  resource,
-  signal,
-  untracked,
-} from '@angular/core';
+import { computed, inject, Injectable, linkedSignal, resource, signal, untracked } from '@angular/core';
 import {
   type Departure,
   findPart,
@@ -21,12 +13,7 @@ import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import type { ChangedMinis } from '../../models/changed-minis';
 import { type FactionDraft, hasFaction, idsOf, toFactionChange } from '../../models/faction-draft';
 import { areAlike } from '../../models/mini-alikeness';
-import {
-  type BuildSuggestion,
-  buildSuggestions,
-  looseSuggestions,
-  preselectedParts,
-} from '../../models/mini-build';
+import { type BuildSuggestion, buildSuggestions, looseSuggestions, preselectedParts } from '../../models/mini-build';
 import type { MiniChanges, PartChange } from '../../models/mini-changes';
 import type { PartOption } from '../../models/part-options';
 import { eitherOrText } from '../../util/either-or';
@@ -92,10 +79,7 @@ export class MiniEditor {
       return [];
     }
     return this.withAlike()
-      ? [
-          mini,
-          ...this.minisStore.minis().filter((other) => other !== mini && areAlike(other, mini)),
-        ]
+      ? [mini, ...this.minisStore.minis().filter((other) => other !== mini && areAlike(other, mini))]
       : [mini];
   });
   readonly rowSize = computed(() => this.row().length);
@@ -111,9 +95,7 @@ export class MiniEditor {
 
   readonly box = computed(() => {
     const boxId = this.mini()?.boxId;
-    return boxId === undefined
-      ? undefined
-      : this.boxesStore.boxes().find((box) => box.id === boxId);
+    return boxId === undefined ? undefined : this.boxesStore.boxes().find((box) => box.id === boxId);
   });
   /** The kit of the minis' box, or else the catalog kit a mini without a box was added from. */
   private readonly kitReference = computed(() => {
@@ -154,17 +136,13 @@ export class MiniEditor {
   /** Named after the minis' first faction, e.g. "Orks" for "Orks range". */
   readonly rangeName = computed(() => {
     const [factionId] = this.factionIds();
-    return factionId === undefined
-      ? undefined
-      : (this.factionNames.names().get(factionId) ?? factionId);
+    return factionId === undefined ? undefined : (this.factionNames.names().get(factionId) ?? factionId);
   });
 
   /** Every mini of the minis' box, the row included; none without a box. */
   readonly minisOfBox = computed(() => {
     const boxId = this.box()?.id;
-    return boxId === undefined
-      ? []
-      : this.minisStore.minis().filter((mini) => mini.boxId === boxId);
+    return boxId === undefined ? [] : this.minisStore.minis().filter((mini) => mini.boxId === boxId);
   });
 
   readonly suggestions = computed((): readonly BuildSuggestion[] => {
@@ -178,9 +156,7 @@ export class MiniEditor {
     }
     return kit ? buildSuggestions(kit, this.minisOfBox(), mini.sprueName) : [];
   });
-  private readonly suggestedNames = computed(() =>
-    this.suggestions().map((suggestion) => suggestion.name),
-  );
+  private readonly suggestedNames = computed(() => this.suggestions().map((suggestion) => suggestion.name));
 
   // What is chosen while on the sprue; nothing of it is saved until the minis are built.
   /** The chosen suggestion; at first the mini's own name when it is one, else none. */
@@ -191,16 +167,11 @@ export class MiniEditor {
   /** Typed into "Your own name"; past the sprue the mini's name when no suggestion has it. */
   readonly ownName = linkedSignal(() => {
     const mini = this.mini();
-    return mini && mini.status !== 'sprue' && !this.suggestedNames().includes(mini.name)
-      ? mini.name
-      : '';
+    return mini && mini.status !== 'sprue' && !this.suggestedNames().includes(mini.name) ? mini.name : '';
   });
   /** Once the user changed the parts, choosing another name keeps them. */
   readonly partsChanged = linkedSignal({ source: () => this.mini()?.id, computation: () => false });
-  private readonly chosenParts = linkedSignal<
-    { name: string; kit: Kit | undefined },
-    readonly PartDraft[]
-  >({
+  private readonly chosenParts = linkedSignal<{ name: string; kit: Kit | undefined }, readonly PartDraft[]>({
     source: () => ({ name: this.buildName(), kit: this.kit() }),
     // Only a new name or kit preselects again; the minis and the vocabulary loading anew don't.
     computation: ({ name, kit }, previous) =>
@@ -253,18 +224,14 @@ export class MiniEditor {
   readonly partsFrom = computed(() => {
     const id = this.mini()?.id;
     return this.links(
-      this.minisStore
-        .minis()
-        .filter((mini) => id !== undefined && mini.departure?.recipientMiniIds?.includes(id)),
+      this.minisStore.minis().filter((mini) => id !== undefined && mini.departure?.recipientMiniIds?.includes(id)),
     );
   });
   /** What can get the parts of these minis: every other mini past the sprue that is not gone. */
   readonly recipientChoices = computed(() => {
     const ids = new Set(this.row().map((mini) => mini.id));
     return this.links(
-      this.minisStore
-        .minis()
-        .filter((mini) => !ids.has(mini.id) && !isGone(mini) && mini.status !== 'sprue'),
+      this.minisStore.minis().filter((mini) => !ids.has(mini.id) && !isGone(mini) && mini.status !== 'sprue'),
     );
   });
 
@@ -343,9 +310,7 @@ export class MiniEditor {
 
   toggleSwappable(index: number): void {
     this.changeParts(
-      this.parts().map((part, other) =>
-        other === index ? { ...part, isSwappable: !part.isSwappable } : part,
-      ),
+      this.parts().map((part, other) => (other === index ? { ...part, isSwappable: !part.isSwappable } : part)),
     );
   }
 
@@ -418,9 +383,7 @@ export class MiniEditor {
    *
    * @returns whether they are deleted, and the ids of the boxes left without any minis; boxes stay
    */
-  async delete(
-    count: number,
-  ): Promise<{ readonly isDeleted: boolean; readonly emptiedBoxIds: readonly string[] }> {
+  async delete(count: number): Promise<{ readonly isDeleted: boolean; readonly emptiedBoxIds: readonly string[] }> {
     const ids = this.firstOfRow(count);
     this.saveState.set('saving');
     try {
@@ -495,9 +458,7 @@ export class MiniEditor {
         return { ...part, name: names.get(part.partId) ?? '' };
       }
       const known = findPart(this.partsStore.parts(), part);
-      return known
-        ? { partId: known.id, name: known.name, isSwappable: false }
-        : { name: part, isSwappable: false };
+      return known ? { partId: known.id, name: known.name, isSwappable: false } : { name: part, isSwappable: false };
     });
   }
 }

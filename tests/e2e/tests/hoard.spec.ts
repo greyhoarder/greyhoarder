@@ -41,10 +41,7 @@ async function addBuiltMinis(page: Page, url: string): Promise<void> {
 }
 
 test.describe('Hoard', () => {
-  test('lists the built minis of the hoard in groups when opened from the navigation', async ({
-    page,
-    signedIn,
-  }) => {
+  test('lists the built minis of the hoard in groups when opened from the navigation', async ({ page, signedIn }) => {
     await addBuiltMinis(page, signedIn.url);
     await page.goto(`${signedIn.url}/dashboard`);
 
@@ -53,10 +50,7 @@ test.describe('Hoard', () => {
     await expect(page.getByTestId('hoard-group')).not.toHaveCount(0);
   });
 
-  test('narrows the hoard down to the groups of matching minis while searching', async ({
-    page,
-    signedIn,
-  }) => {
+  test('narrows the hoard down to the groups of matching minis while searching', async ({ page, signedIn }) => {
     await addBuiltMinis(page, signedIn.url);
     await page.goto(`${signedIn.url}/hoard/minis`);
     await expect(page.getByTestId('hoard-group')).not.toHaveCount(0);

@@ -86,9 +86,7 @@
           (click)="addRecipient(choice)"
         >
           + <app-either-or-name [name]="choice.name" />
-          <span class="text-muted-foreground">{{
-            choice.box ? eitherOrText(choice.box) : 'Without box'
-          }}</span>
+          <span class="text-muted-foreground">{{ choice.box ? eitherOrText(choice.box) : 'Without box' }}</span>
         </button>
       }
     </div>
@@ -96,14 +94,7 @@
 }
 
 <div class="flex flex-wrap justify-end gap-2">
-  <button
-    hlmBtn
-    variant="ghost"
-    type="button"
-    class="h-10"
-    data-testid="mini-leave-cancel"
-    (click)="closed.emit()"
-  >
+  <button hlmBtn variant="ghost" type="button" class="h-10" data-testid="mini-leave-cancel" (click)="closed.emit()">
     Cancel
   </button>
   <button

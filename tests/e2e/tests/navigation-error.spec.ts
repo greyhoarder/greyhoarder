@@ -1,7 +1,7 @@
 import { expect, test } from '../fixtures.js';
 
 test.describe('Navigation error', () => {
-  test('offers to try again while the server can\'t be reached and opens the page once it answers', async ({
+  test("offers to try again while the server can't be reached and opens the page once it answers", async ({
     page,
     signedIn,
   }) => {

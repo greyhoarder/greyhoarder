@@ -22,9 +22,7 @@ export class HttpKitsAdapter {
   }
 
   private async list(params: KitSearchRequest | KitVersionRequest): Promise<KitSearchResult> {
-    const response = await firstValueFrom(
-      this.http.get<KitSearchResponse>('/api/catalog/kits', { params }),
-    );
+    const response = await firstValueFrom(this.http.get<KitSearchResponse>('/api/catalog/kits', { params }));
     return {
       kits: response.kits,
       containedKits: new Map(response.containedKits.map((kit) => [kit.id, kit])),

@@ -15,10 +15,8 @@ describe('Progress bar', () => {
 
     await fixture.whenStable();
 
-    expect(
-      (fixture.nativeElement as HTMLElement)
-        .querySelector('[role="img"]')
-        ?.getAttribute('aria-label'),
-    ).toBe('5 primed, 5 done');
+    expect((fixture.nativeElement as HTMLElement).querySelector('[role="img"]')?.getAttribute('aria-label')).toBe(
+      '5 primed, 5 done',
+    );
   });
 });

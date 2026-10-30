@@ -21,10 +21,7 @@ export async function findContainedKits(
   return containedKits;
 }
 
-function unknownContainedIds(
-  kits: readonly VersionedEntry<CatalogKit>[],
-  knownIds: ReadonlySet<string>,
-): string[] {
+function unknownContainedIds(kits: readonly VersionedEntry<CatalogKit>[], knownIds: ReadonlySet<string>): string[] {
   return [...new Set(kits.flatMap(({ entry }) => entry.contains.map((contained) => contained.kitId)))].filter(
     (id) => !knownIds.has(id),
   );

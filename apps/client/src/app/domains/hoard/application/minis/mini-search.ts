@@ -6,7 +6,5 @@ export function matchesSearch(row: MiniRow, query: string): boolean {
   if (!needle) {
     return true;
   }
-  return [row.name, ...row.parts, row.box, row.kit].some((text) =>
-    text?.toLowerCase().includes(needle),
-  );
+  return [row.name, ...row.parts, row.box, row.kit].some((text) => text?.toLowerCase().includes(needle));
 }

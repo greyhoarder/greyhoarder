@@ -25,17 +25,11 @@ const LOOTAS_KIT = toKit(
     variants: [
       {
         name: 'Lootas',
-        slots: [
-          slot(4, ['Loota'], ['Deffgun']),
-          slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
-        ],
+        slots: [slot(4, ['Loota'], ['Deffgun']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])],
       },
       {
         name: 'Burna Boyz',
-        slots: [
-          slot(4, ['Burna Boy'], ['Burna']),
-          slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
-        ],
+        slots: [slot(4, ['Burna Boy'], ['Burna']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])],
       },
     ],
   },
@@ -74,9 +68,7 @@ describe('Part picker', () => {
     ...(container?.querySelectorAll<HTMLElement>('[data-testid="mini-part-option"]') ?? []),
   ];
   const namesOf = (options: HTMLElement[]): string[] =>
-    options.map(
-      (option) => option.textContent?.replace(/\s+/g, ' ').trim().replace(/^\+ /, '') ?? '',
-    );
+    options.map((option) => option.textContent?.replace(/\s+/g, ' ').trim().replace(/^\+ /, '') ?? '');
   const filterField = (): HTMLInputElement =>
     element().querySelector<HTMLInputElement>('[data-testid="mini-part-filter"]')!;
 
@@ -114,8 +106,7 @@ describe('Part picker', () => {
 
     await filterParts('pow');
 
-    const name =
-      group('range')?.querySelector('[data-testid="mini-part-group-name"]')?.textContent ?? '';
+    const name = group('range')?.querySelector('[data-testid="mini-part-group-name"]')?.textContent ?? '';
     expect(name).toContain('Orks');
   });
 
@@ -124,9 +115,7 @@ describe('Part picker', () => {
 
     await filterParts('Grot Banner');
 
-    const create = [
-      ...(group('create')?.querySelectorAll('[data-testid="mini-part-create"]') ?? []),
-    ];
+    const create = [...(group('create')?.querySelectorAll('[data-testid="mini-part-create"]') ?? [])];
     expect(create).toHaveLength(1);
     expect(create[0]?.textContent).toContain('Grot Banner');
   });

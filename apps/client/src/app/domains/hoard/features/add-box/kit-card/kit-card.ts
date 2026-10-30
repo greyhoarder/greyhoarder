@@ -34,17 +34,15 @@ import { BoxForm } from '../box-form/box-form';
       <span class="flex min-w-0 flex-1 flex-col gap-0.5">
         <span class="flex min-w-0 items-center gap-2">
           <!-- Editions of a kit share its name; the year tells them apart. -->
-          <span class="truncate font-semibold" data-testid="add-box-kit-name"
-            >@for (name of kit().names; track name) {
+          <span class="truncate font-semibold" data-testid="add-box-kit-name">
+            @for (name of kit().names; track name) {
               @if (!$first) {
                 <span class="font-normal text-muted-foreground">or</span>
               }
               {{ name }}
             }
             @if (kit().year) {
-              <span class="font-normal text-muted-foreground" data-testid="add-box-kit-year"
-                >· {{ kit().year }}</span
-              >
+              <span class="font-normal text-muted-foreground" data-testid="add-box-kit-year">· {{ kit().year }}</span>
             }
           </span>
           @if (kit().isDraft) {
@@ -67,18 +65,13 @@ import { BoxForm } from '../box-form/box-form';
       <span class="flex shrink-0 flex-col items-end gap-0.5 text-sm">
         <span data-testid="add-box-kit-minis">{{ minis() }}</span>
         @if (kit().variants.length > 1) {
-          <span
-            class="flex items-center gap-1 text-xs text-muted-foreground"
-            data-testid="add-box-kit-builds"
-          >
+          <span class="flex items-center gap-1 text-xs text-muted-foreground" data-testid="add-box-kit-builds">
             <ng-icon name="lucideSplit" size="14" aria-hidden="true" />
             {{ kit().variants.length }} builds
           </span>
         }
         @if (ownedBoxes() > 0) {
-          <span class="hidden text-primary sm:inline" data-testid="add-box-kit-owned">{{
-            owned()
-          }}</span>
+          <span class="hidden text-primary sm:inline" data-testid="add-box-kit-owned">{{ owned() }}</span>
         }
       </span>
     </button>

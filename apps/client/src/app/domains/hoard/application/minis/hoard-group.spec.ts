@@ -16,10 +16,7 @@ const row = (id: string, overrides: Partial<MiniRow> = {}): MiniRow => ({
 
 describe('Groups of the Minis tab', () => {
   it('puts minis with the same name, factions and parts into one group, whatever their box, status or workbench place', () => {
-    const rows = [
-      row('m1', { status: 'primed' }),
-      row('m2', { box: 'Boyz (2021)', isOnWorkbench: true }),
-    ];
+    const rows = [row('m1', { status: 'primed' }), row('m2', { box: 'Boyz (2021)', isOnWorkbench: true })];
 
     const groups = toHoardGroups(rows);
 
@@ -44,19 +41,11 @@ describe('Groups of the Minis tab', () => {
 
     const [group] = toHoardGroups(rows);
 
-    expect(group?.rows.map((each) => each.id)).toEqual([
-      'done',
-      'painted-2021',
-      'painted-2026',
-      'built',
-    ]);
+    expect(group?.rows.map((each) => each.id)).toEqual(['done', 'painted-2021', 'painted-2026', 'built']);
   });
 
   it('counts minis from two boxes with the same name as from two boxes', () => {
-    const rows = [
-      row('m1', { boxId: 'b1', boxNumber: 1 }),
-      row('m2', { boxId: 'b2', boxNumber: 2 }),
-    ];
+    const rows = [row('m1', { boxId: 'b1', boxNumber: 1 }), row('m2', { boxId: 'b2', boxNumber: 2 })];
 
     const [group] = toHoardGroups(rows);
 

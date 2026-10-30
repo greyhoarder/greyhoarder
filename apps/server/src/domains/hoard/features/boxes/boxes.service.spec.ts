@@ -28,8 +28,7 @@ const BOYZ: CatalogKit = {
 function fakeCatalog(kit: CatalogKit, version: number): CatalogKitQueries {
   return {
     searchKits: () => Promise.resolve([]),
-    findKits: (ids) =>
-      Promise.resolve(ids.includes(kit.id) ? [{ entry: kit, version, isRemoved: false }] : []),
+    findKits: (ids) => Promise.resolve(ids.includes(kit.id) ? [{ entry: kit, version, isRemoved: false }] : []),
     findKitVersion: () => Promise.resolve(undefined),
     findFactions: () => Promise.resolve([]),
     findKitParts: () => Promise.resolve([]),
@@ -58,9 +57,7 @@ describe('Boxes', () => {
       addedOn: '2026-10-25',
     });
 
-    expect(boxes.map((box) => box.kit)).toEqual([
-      { id: BOYZ.id, version: 3, name: 'Boyz (2026)', sku: '50-80' },
-    ]);
+    expect(boxes.map((box) => box.kit)).toEqual([{ id: BOYZ.id, version: 3, name: 'Boyz (2026)', sku: '50-80' }]);
     expect(minis.map((mini) => mini.name)).toEqual([...Array<string>(9).fill('Boy'), 'Nob']);
     expect(minis.every((mini) => mini.boxId === boxes[0]?.id)).toBe(true);
     expect(addBoxes).toHaveBeenCalledWith('owner', boxes, minis);

@@ -85,7 +85,8 @@ describe('Catalog files', () => {
 
   it('leaves out a kit that contains a kit that was left out', async () => {
     await writeCatalog('name: Boyz\nfactions: [warhammer-40000/orks]\n', {
-      bundle: 'name: Bundle\nfactions: [warhammer-40000/orks]\nminis: 10\ncontains:\n  - kit: games-workshop/orks/boyz\n    count: 1\n',
+      bundle:
+        'name: Bundle\nfactions: [warhammer-40000/orks]\nminis: 10\ncontains:\n  - kit: games-workshop/orks/boyz\n    count: 1\n',
     });
 
     const snapshot = await loadCatalog();

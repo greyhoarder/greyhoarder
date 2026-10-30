@@ -10,9 +10,7 @@ export class MinisStore {
   private readonly loaded = resource({ loader: () => this.adapter.list() });
 
   /** Empty until loaded; keeps the previous minis while reloading. */
-  readonly minis = computed<readonly Mini[]>(() =>
-    this.loaded.hasValue() ? this.loaded.value().minis : [],
-  );
+  readonly minis = computed<readonly Mini[]>(() => (this.loaded.hasValue() ? this.loaded.value().minis : []));
   /** The names of the factions the minis refer to, by id, as the server delivers them with the minis. */
   readonly factionNames = computed<ReadonlyMap<string, string>>(() =>
     this.loaded.hasValue() ? this.loaded.value().factionNames : new Map(),
@@ -45,8 +43,7 @@ export class MinisStore {
   remove(ids: readonly string[]): void {
     const deleted = new Set(ids);
     this.loaded.update(
-      (loaded) =>
-        loaded && { ...loaded, minis: loaded.minis.filter((mini) => !deleted.has(mini.id)) },
+      (loaded) => loaded && { ...loaded, minis: loaded.minis.filter((mini) => !deleted.has(mini.id)) },
     );
   }
 

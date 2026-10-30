@@ -18,9 +18,7 @@ describe('Count stepper', () => {
   it('says how many of how many are chosen', async () => {
     const stepper = await render(2, 5);
 
-    expect(stepper.querySelector('[data-testid="mini-build-count"]')?.textContent?.trim()).toBe(
-      '2',
-    );
+    expect(stepper.querySelector('[data-testid="mini-build-count"]')?.textContent?.trim()).toBe('2');
     expect(stepper.textContent).toContain('of 5');
   });
 

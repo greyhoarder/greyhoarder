@@ -2,11 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import type { Box, Mini, Part } from '@greyhoarder/domain/hoard';
-import {
-  HttpCatalogFactionsAdapter,
-  HttpCatalogPartsAdapter,
-  HttpKitsAdapter,
-} from '../../../catalog/api';
+import { HttpCatalogFactionsAdapter, HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
@@ -45,17 +41,11 @@ const LOOTAS_KIT = {
   variants: [
     {
       name: 'Lootas',
-      slots: [
-        slot(4, ['Loota'], ['Deffgun']),
-        slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
-      ],
+      slots: [slot(4, ['Loota'], ['Deffgun']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])],
     },
     {
       name: 'Burna Boyz',
-      slots: [
-        slot(4, ['Burna Boy'], ['Burna']),
-        slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha']),
-      ],
+      slots: [slot(4, ['Burna Boy'], ['Burna']), slot(1, ['Spanner'], ['Big Shoota', 'Rokkit Launcha'])],
     },
   ],
 };
@@ -92,8 +82,7 @@ describe('Mini page', () => {
   function showMini(
     id: string,
     loadMinis: () => Promise<readonly Mini[]> = () => Promise.resolve(ON_THE_SPRUE),
-    saves: () => Promise<ChangedMinis> = () =>
-      Promise.resolve({ minis: [], ownFactionNames: new Map() }),
+    saves: () => Promise<ChangedMinis> = () => Promise.resolve({ minis: [], ownFactionNames: new Map() }),
   ): void {
     update = vi.fn(saves);
     TestBed.configureTestingModule({
@@ -145,16 +134,13 @@ describe('Mini page', () => {
   }
 
   const all = (testId: string): HTMLElement[] => [
-    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
-      `[data-testid="${testId}"]`,
-    ),
+    ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
   ];
   const textsOf = (testId: string): string[] =>
     all(testId).map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '');
   const nameTile = (name: string) =>
     all('mini-build-as').find(
-      (tile) =>
-        tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim() === name,
+      (tile) => tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim() === name,
     );
   const partNames = () => textsOf('mini-part-name');
 
@@ -434,10 +420,7 @@ describe('Mini page', () => {
     await fixture.whenStable();
 
     const back = all('mini-back')[0];
-    expect([back?.textContent?.trim(), back?.getAttribute('href')]).toEqual([
-      'Box',
-      '/hoard/boxes/b1',
-    ]);
+    expect([back?.textContent?.trim(), back?.getAttribute('href')]).toEqual(['Box', '/hoard/boxes/b1']);
   });
 
   it('leads back to the hoard when opened from anywhere else', async () => {
@@ -446,10 +429,7 @@ describe('Mini page', () => {
     await fixture.whenStable();
 
     const back = all('mini-back')[0];
-    expect([back?.textContent?.trim(), back?.getAttribute('href')]).toEqual([
-      'Hoard',
-      '/hoard/minis',
-    ]);
+    expect([back?.textContent?.trim(), back?.getAttribute('href')]).toEqual(['Hoard', '/hoard/minis']);
   });
 
   it('shows placeholders while the hoard loads', () => {

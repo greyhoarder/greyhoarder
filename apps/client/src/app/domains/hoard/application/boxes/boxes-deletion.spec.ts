@@ -84,9 +84,7 @@ describe('Boxes deletion', () => {
   });
 
   it('keeps the box and its minis when the server does not answer', async () => {
-    const { deletion, minis, boxes } = await deletionWith(() =>
-      Promise.reject(new Error('offline')),
-    );
+    const { deletion, minis, boxes } = await deletionWith(() => Promise.reject(new Error('offline')));
     deletion.ask(['boyz']);
 
     const isDeleted = await deletion.confirm();

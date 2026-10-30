@@ -1,8 +1,5 @@
 <div class="flex min-h-13 items-center gap-2">
-  <span
-    class="min-w-0 truncate px-1 text-sm font-semibold"
-    [attr.data-testid]="screen() + '-selection-count'"
-  >
+  <span class="min-w-0 truncate px-1 text-sm font-semibold" [attr.data-testid]="screen() + '-selection-count'">
     {{ count() }} {{ count() === 1 ? 'mini' : 'minis' }} selected
   </span>
   <button
@@ -66,13 +63,7 @@
     >
       <ng-icon name="lucideEllipsisVertical" size="16" />
     </button>
-    <ul
-      hlmPopoverContent
-      class="w-48 gap-0 p-1"
-      role="menu"
-      aria-label="Selection"
-      *hlmPopoverPortal="let menu"
-    >
+    <ul hlmPopoverContent class="w-48 gap-0 p-1" role="menu" aria-label="Selection" *hlmPopoverPortal="let menu">
       @for (item of menuItems; track item.action) {
         <li role="none">
           <button

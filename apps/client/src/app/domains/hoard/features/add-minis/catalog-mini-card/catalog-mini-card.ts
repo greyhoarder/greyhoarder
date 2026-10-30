@@ -30,9 +30,7 @@ import type { CatalogMini } from '../../../../catalog/api';
       </span>
       <span class="flex min-w-0 flex-1 flex-col gap-0.5">
         <span class="flex min-w-0 items-center gap-2">
-          <span class="truncate font-semibold" data-testid="add-minis-mini-name">{{
-            mini().name
-          }}</span>
+          <span class="truncate font-semibold" data-testid="add-minis-mini-name">{{ mini().name }}</span>
           @if (isDraft()) {
             <span
               hlmBadge
@@ -44,9 +42,7 @@ import type { CatalogMini } from '../../../../catalog/api';
           }
         </span>
         <span class="truncate text-sm" data-testid="add-minis-mini-faction">{{ faction() }}</span>
-        <span class="truncate text-xs text-muted-foreground" data-testid="add-minis-mini-kits"
-          >From {{ kit() }}</span
-        >
+        <span class="truncate text-xs text-muted-foreground" data-testid="add-minis-mini-kits">From {{ kit() }}</span>
       </span>
       @if (owned() > 0) {
         <span class="shrink-0 text-sm text-primary" data-testid="add-minis-mini-owned"

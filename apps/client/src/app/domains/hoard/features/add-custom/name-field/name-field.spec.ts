@@ -7,9 +7,7 @@ describe('Name field', () => {
     const fixture = TestBed.createComponent(NameField);
     fixture.componentRef.setInput('value', 'Tank');
     fixture.componentRef.setInput('ownNames', [{ name: 'Tankbusta' }]);
-    fixture.componentRef.setInput('catalogNames', [
-      { name: 'Tankbusta Rokkiteer', detail: 'Orks' },
-    ]);
+    fixture.componentRef.setInput('catalogNames', [{ name: 'Tankbusta Rokkiteer', detail: 'Orks' }]);
     const valueChange = vi.fn();
     fixture.componentInstance.valueChange.subscribe(valueChange);
     const field: HTMLElement = fixture.nativeElement;

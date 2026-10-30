@@ -30,10 +30,7 @@ export class FactionSearch {
   });
   readonly results = computed(() => (this.matches.hasValue() ? this.matches.value() : []));
   readonly ownResults = computed(() =>
-    matchingOwnFactions(
-      ownFactionsOf(this.minisStore.minis(), this.factionNames.names()),
-      this.query(),
-    ),
+    matchingOwnFactions(ownFactionsOf(this.minisStore.minis(), this.factionNames.names()), this.query()),
   );
 
   /** Opens or closes the search, empty either way. */

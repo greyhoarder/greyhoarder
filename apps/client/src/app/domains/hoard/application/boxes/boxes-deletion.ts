@@ -39,9 +39,7 @@ export class BoxesDeletion {
     this.ids.set(boxes.map((box) => box.id));
     this.asked.set({
       names: boxes.map((box) => eitherOrText(box.name)),
-      miniCount: this.minisStore
-        .minis()
-        .filter((mini) => mini.boxId !== undefined && asked.has(mini.boxId)).length,
+      miniCount: this.minisStore.minis().filter((mini) => mini.boxId !== undefined && asked.has(mini.boxId)).length,
     });
     this.hasFailed.set(false);
     this.isAsking.set(true);

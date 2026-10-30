@@ -11,10 +11,7 @@
     <span class="min-w-0 flex-1 truncate font-semibold">
       <app-either-or-name [name]="row().name" />
     </span>
-    <span
-      class="w-10 shrink-0 text-right font-semibold"
-      [attr.aria-label]="minisLabel(row().count)"
-    >
+    <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(row().count)">
       ×{{ row().count }}
     </span>
     <ng-icon

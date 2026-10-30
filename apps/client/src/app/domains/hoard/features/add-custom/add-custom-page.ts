@@ -22,17 +22,7 @@ import { catalogNameSuggestions, ownNameSuggestions } from './name-suggestions';
  */
 @Component({
   selector: 'app-add-custom-page',
-  imports: [
-    RouterLink,
-    NgIcon,
-    HlmButton,
-    AddedBar,
-    FactionPicker,
-    MinisStepper,
-    NameField,
-    PartTiles,
-    StatusChoice,
-  ],
+  imports: [RouterLink, NgIcon, HlmButton, AddedBar, FactionPicker, MinisStepper, NameField, PartTiles, StatusChoice],
   providers: [provideIcons({ lucideChevronLeft }), MinisAddition, FactionSearch],
   templateUrl: './add-custom-page.html',
   host: { class: 'flex w-full flex-col gap-6 p-4 sm:p-8 lg:p-10' },
@@ -47,17 +37,13 @@ export class AddCustomPage {
   protected readonly statuses = hobbyStatuses.filter((status) => status !== 'sprue');
   protected readonly isNameMissing = signal(false);
 
-  protected readonly ownNames = computed(() =>
-    ownNameSuggestions(this.minisStore.minis(), this.addition.name()),
-  );
+  protected readonly ownNames = computed(() => ownNameSuggestions(this.minisStore.minis(), this.addition.name()));
   private readonly nameMatches = resource({
     params: () => this.addition.name().trim() || undefined,
     loader: ({ params }) => this.catalogMinis.search(params),
   });
   protected readonly catalogNames = computed(() =>
-    this.nameMatches.hasValue()
-      ? catalogNameSuggestions(this.nameMatches.value(), this.addition.name())
-      : [],
+    this.nameMatches.hasValue() ? catalogNameSuggestions(this.nameMatches.value(), this.addition.name()) : [],
   );
 
   constructor() {

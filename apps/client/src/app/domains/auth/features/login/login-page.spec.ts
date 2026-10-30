@@ -29,8 +29,7 @@ describe('Login page', () => {
   const field = (id: string) => page.querySelector<HTMLInputElement>(`#${id}`)!;
 
   const errorTextOf = (id: string) =>
-    field(id).closest('[data-slot="field"]')!.querySelector('[data-slot="field-error"]')!
-      .textContent!.trim();
+    field(id).closest('[data-slot="field"]')!.querySelector('[data-slot="field-error"]')!.textContent!.trim();
 
   const type = async (id: string, value: string) => {
     field(id).value = value;
@@ -45,8 +44,7 @@ describe('Login page', () => {
 
   const submitButton = () => page.querySelector<HTMLButtonElement>('button[type="submit"]')!;
 
-  const buttonNamed = (name: string) =>
-    page.querySelector<HTMLButtonElement>(`button[aria-label="${name}"]`)!;
+  const buttonNamed = (name: string) => page.querySelector<HTMLButtonElement>(`button[aria-label="${name}"]`)!;
 
   it('places the cursor in the username field when the page opens', () => {
     expect(document.activeElement).toBe(field('username'));

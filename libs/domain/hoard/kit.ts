@@ -85,9 +85,7 @@ export function toKit(
     minis: kit.minis,
     contains: kit.contains.flatMap((contained) => {
       const containedKit = containedKits.get(contained.kitId);
-      return containedKit
-        ? [{ kit: toKit(containedKit, containedKits), count: contained.count }]
-        : [];
+      return containedKit ? [{ kit: toKit(containedKit, containedKits), count: contained.count }] : [];
     }),
   };
 }

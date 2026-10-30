@@ -23,9 +23,7 @@ export class HoardByFaction {
   /** Gone minis are not counted. */
   private readonly minis = computed(() => this.minisStore.minis().filter((mini) => !isGone(mini)));
   readonly miniCount = computed(() => this.minis().length);
-  readonly paintedCount = computed(
-    () => this.minis().filter((mini) => hasReached(mini.status, 'painted')).length,
-  );
+  readonly paintedCount = computed(() => this.minis().filter((mini) => hasReached(mini.status, 'painted')).length);
 
   /** Most minis first, then by name; the minis without a faction last. */
   readonly factions = computed<readonly FactionOverview[]>(() => {

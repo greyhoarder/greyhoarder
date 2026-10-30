@@ -89,9 +89,7 @@ export class MinisAddition {
 
   /** A faction found, or a new own faction by its name; the server adds that with the minis. */
   addFaction(faction: FactionDraft): void {
-    this.factions.update((factions) =>
-      hasFaction(factions, faction) ? factions : [...factions, faction],
-    );
+    this.factions.update((factions) => (hasFaction(factions, faction) ? factions : [...factions, faction]));
   }
 
   removeFaction(index: number): void {
@@ -121,9 +119,7 @@ export class MinisAddition {
 
   toggleSwappable(index: number): void {
     this.parts.update((parts) =>
-      parts.map((part, other) =>
-        other === index ? { ...part, isSwappable: !part.isSwappable } : part,
-      ),
+      parts.map((part, other) => (other === index ? { ...part, isSwappable: !part.isSwappable } : part)),
     );
   }
 

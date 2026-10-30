@@ -35,10 +35,7 @@ describe('Group card of a box', () => {
     await fixture.whenStable();
   };
 
-  const statusButton = (
-    line: HTMLElement | undefined,
-    status: string,
-  ): HTMLElement | null | undefined =>
+  const statusButton = (line: HTMLElement | undefined, status: string): HTMLElement | null | undefined =>
     line?.querySelector<HTMLElement>(`[data-testid="box-group-status"][data-status="${status}"]`);
 
   it('shows the factions of the group only when they differ from those of the box', async () => {
@@ -67,9 +64,7 @@ describe('Group card of a box', () => {
   it('tells screen readers how many minis the group holds', async () => {
     const card = await render();
 
-    expect(card.querySelector('[aria-label$=" minis"]')?.getAttribute('aria-label')).toBe(
-      '3 minis',
-    );
+    expect(card.querySelector('[aria-label$=" minis"]')?.getAttribute('aria-label')).toBe('3 minis');
   });
 
   it('marks the minis of the group that are on the workbench', async () => {
@@ -77,9 +72,11 @@ describe('Group card of a box', () => {
 
     await open(card);
 
-    expect(
-      all(card, 'box-group-mini').map((line) => line.textContent?.includes('Workbench')),
-    ).toEqual([true, false, false]);
+    expect(all(card, 'box-group-mini').map((line) => line.textContent?.includes('Workbench'))).toEqual([
+      true,
+      false,
+      false,
+    ]);
   });
 
   it('shows the status of each of its minis as chosen', async () => {
@@ -87,9 +84,7 @@ describe('Group card of a box', () => {
 
     await open(card);
 
-    expect(
-      statusButton(all(card, 'box-group-mini')[0], 'painted')?.getAttribute('aria-pressed'),
-    ).toBe('true');
+    expect(statusButton(all(card, 'box-group-mini')[0], 'painted')?.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('hands on a status chosen for one of its minis', async () => {

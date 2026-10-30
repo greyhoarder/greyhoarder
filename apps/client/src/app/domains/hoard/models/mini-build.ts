@@ -18,11 +18,7 @@ export interface BuildSuggestion {
  * own that had it on the sprue, and those built from a slot that offered it: the names of an
  * either-or slot share its minis, so building a Loota leaves one Burna Boy fewer as well.
  */
-export function buildSuggestions(
-  kit: Kit,
-  minisOfBox: readonly Mini[],
-  sprueName?: string,
-): BuildSuggestion[] {
+export function buildSuggestions(kit: Kit, minisOfBox: readonly Mini[], sprueName?: string): BuildSuggestion[] {
   const allNames = [...new Set(slotsOf(kit).flatMap((slot) => slot.names))];
   const kinds = sprueMinis(kit);
   /** What the kit put minis with this sprue name on the sprue to be built as; none for other names. */
@@ -85,13 +81,8 @@ function provided(kit: Kit, name: string): number {
   const ownMinis = Math.max(
     0,
     ...kit.variants.map((variant) =>
-      variant.slots
-        .filter((slot) => slot.names.includes(name))
-        .reduce((sum, slot) => sum + slot.count, 0),
+      variant.slots.filter((slot) => slot.names.includes(name)).reduce((sum, slot) => sum + slot.count, 0),
     ),
   );
-  return kit.contains.reduce(
-    (sum, { kit: contained, count }) => sum + count * provided(contained, name),
-    ownMinis,
-  );
+  return kit.contains.reduce((sum, { kit: contained, count }) => sum + count * provided(contained, name), ownMinis);
 }
