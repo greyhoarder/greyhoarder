@@ -1,0 +1,9 @@
+# Versioned and formatted in its own repository
+libs/catalog
+
+# Written by tools
+CHANGELOG.md
+package-lock.json
+
+# Prettier pads Markdown tables, which turns small doc changes into large diffs
+*.md

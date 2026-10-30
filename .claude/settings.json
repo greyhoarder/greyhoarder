@@ -3,6 +3,18 @@
     "ask": ["Edit(**/*.spec.ts)", "Write(**/*.spec.ts)"]
   },
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/hooks/claude-format-hook.mjs\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
