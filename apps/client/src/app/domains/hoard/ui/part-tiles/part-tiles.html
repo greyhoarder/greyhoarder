@@ -22,10 +22,7 @@
       </div>
       <button
         type="button"
-        class="inline-flex h-7 w-fit items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-        [class.bg-muted]="part.isSwappable"
-        [class.border-muted-foreground]="part.isSwappable"
-        [class.text-muted-foreground]="!part.isSwappable"
+        class="inline-flex h-7 w-fit items-center gap-1.5 rounded-full border px-2.5 text-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         [attr.aria-label]="'Swappable ' + part.name"
         [attr.aria-pressed]="part.isSwappable"
         data-testid="mini-part-swappable"
