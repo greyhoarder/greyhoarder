@@ -8,7 +8,7 @@
 The architecture rules live in `docs/architecture-*.md` (ADR-0001). ADR-0004
 and ADR-0006 say that boundaries and the framework-free shared models are
 "checked by lint", but no tool checks them yet. Today only the
-`architecture-review` skill looks at them: an agent that reads the code
+`code-review` skill looks at them: an agent that reads the code
 after it was written, sees what it happens to read and may miss a
 violation the next time it looks. Most code is written by agents, and a
 rule that breaks without anything failing is soon broken in many places.
@@ -79,7 +79,7 @@ same runs as lint and tests:
 - **A rule and its check change together.** Changing a rule in
   `docs/architecture-*.md` includes changing its check in the same change.
   Rules that no tool can check (whether something is a business rule,
-  where a type belongs) stay with the `architecture-review` skill.
+  where a type belongs) stay with the `code-review` skill.
 - **No exceptions lists.** The checks are turned on green: violations
   found when a check is added are fixed, or the rule is clarified in the
   guide first. A rule is not weakened in the config to make a check pass.
@@ -110,7 +110,7 @@ same runs as lint and tests:
   jsdom, and the libraries have no test runner.
 - **Nx module boundaries:** the reference for tag-based rules, but needs
   Nx, which ADR-0006 left out as more tooling than needed.
-- **Review only** (the `architecture-review` skill): no tooling, but not
+- **Review only** (the `code-review` skill): no tooling, but not
   deterministic and only after the fact.
 
 ## Consequences
@@ -134,5 +134,5 @@ same runs as lint and tests:
 - Content rules depend on the working directory. Each suite needs one
   check that the files it reads are not empty, or a wrong directory makes
   all of them pass silently.
-- The `architecture-review` skill can leave out what the tools check and
+- The `code-review` skill can leave out what the tools check and
   look at what they cannot.

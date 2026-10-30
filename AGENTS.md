@@ -40,8 +40,7 @@ your task, and only those:
 - **Working in a domain** (its terms, rules and data): its doc in
   [docs/domains/](docs/domains/README.md), if there is one
 - **Building or changing a feature** (what a user can do): its use case in
-  [docs/use-cases/](docs/use-cases/README.md); write or update it and have
-  it approved before tests and code
+  [docs/use-cases/](docs/use-cases/README.md); see "Workflow" below
 - **Building or changing a screen**: its spec in
   [docs/screens/](docs/screens/README.md), if there is one
 - **Writing or changing tests**:
@@ -69,8 +68,30 @@ Never invent scripts; use only those defined in the `package.json` files.
 
 ## Workflow
 
-- Before finishing a task, run lint, tests and build for every workspace you
-  changed, and report failures instead of hiding them.
+A feature goes through these steps; each starts only after the user
+approved the one before:
+
+1. **Use case:** write or update its spec in `docs/use-cases/`.
+2. **UI design:** write or update the screen specs in `docs/screens/`.
+   Design work ends here: it changes no code and runs no checks.
+3. **Tests:** propose test cases for the use case's scenarios
+   (`write-tests` skill).
+4. **Implementation:** write the approved tests, see them fail, then the
+   code.
+5. **End-to-end:** once the feature is done, run `npm run build` and
+   `npm run e2e` once; where they can't run (no browsers, MongoDB or
+   Redis), say so.
+6. **Review:** run the `code-review` skill once and report its findings,
+   with the end-to-end result.
+
+A bug fix starts at step 3 with a test that reproduces the bug; a
+refactoring skips to step 4 with the existing tests.
+
+- Every code change gets the sensors: the stop hook runs build, lint and
+  tests for the changed workspaces (`npm run check:changed`) whenever code
+  changed. Fix what fails or report it; don't run them again by hand.
+- Ask for approvals as a question with fixed options, so the answer is
+  unambiguous.
 - Don't add, remove or upgrade dependencies without asking.
 - Don't commit or push unless asked.
 - Every component needs tests, but write, change or delete a test case only

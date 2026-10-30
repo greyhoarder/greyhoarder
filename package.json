@@ -19,6 +19,7 @@
     "lint": "npm run lint --workspaces --if-present",
     "e2e": "npm run e2e -w @greyhoarder/e2e",
     "check:specs": "node scripts/checks/component-specs.mjs",
+    "check:changed": "node scripts/checks/sensors.mjs",
     "release": "release-it"
   },
   "overrides": {

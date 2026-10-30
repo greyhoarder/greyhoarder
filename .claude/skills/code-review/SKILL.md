@@ -1,57 +1,58 @@
 ---
 name: code-review
-description: Review code quality in greyhoarder for code smells, cohesion and coupling — judgment calls the coding guidelines don't cover. Use when asked to review code, before finishing a larger change, or after the architecture review.
+description: Review a code change in greyhoarder against the architecture rules and for design quality, once, at the end of every code change. Use after the sensors passed, before reporting a code change as done, or when asked to review code or architecture.
 ---
 
 # Code review
 
-This review covers design quality. Rule violations (boundaries, security,
-testing) are the `architecture-review` skill's job; mention them only if
-that review has not run.
+One review per code change, after the sensors (lint, tests, build) ran.
+Report only; change nothing unless asked.
 
-1. Determine the scope: the files of the current change (`git diff`), or the
-   files, folder or domain the user names. Review only that scope.
-2. Read `docs/coding-guidelines.md` and check the scope against it.
-3. Then look for the following. Each is a judgment call: report it only
-   when it actually hurts readability, changeability or testability, and
-   say why.
-   - **Code Smells and Refactoring Catalog (Fowler):** long functions,
-     long parameter lists, feature envy, data clumps, primitive obsession,
-     shotgun surgery, divergent change, speculative generality, dead code,
-     duplicated business rules. Name the smell and the refactoring that
-     fits.
-   - **SRP:** a class or function with more than one reason to change.
-   - **Single Level of Abstraction (Martin, Clean Code; Beck's Composed
-     Method):** a function that mixes steps of the use case with the
-     details of one of them, e.g. a component method that decides what
-     happens next and also builds a request, loops over arrays or formats
-     text. Extract the details into well-named functions, so the function
-     reads as a sequence of steps on one level.
-   - **Law of Demeter:** chains through other objects' internals
-     (`a.b().c().d`).
-   - **Cohesion Criteria:** a module, feature or file whose parts don't
-     belong together.
-   - **Deep Modules (Ousterhout):** shallow wrappers whose interface is as
-     complex as what they hide; ports or services that only pass calls
-     through.
-   - **Locality of Behaviour:** behavior a reader has to collect from many
-     files to understand one use case.
-4. Don't report style issues that Prettier, ESLint or oxlint catch, and
-   don't report personal preferences as findings.
-5. Report in this format and do **not** change code unless asked:
+1. **Scope:** the changed files (`git status --short`, `git diff HEAD`),
+   or the files, folder or domain the user names. Read only the scope.
+2. **Sensors:** don't run lint, tests or build again. Use the stop hook's
+   result; if none is at hand, run `npm run check:changed` once. Report
+   its failures first, and at the end of a feature the end-to-end result.
+3. **Guides:** read only the guides `AGENTS.md` routes the changed paths
+   to. Skip what Sheriff, ArchUnitTS, ESLint, oxlint and Prettier already
+   check.
+4. **Architecture** (rules of those guides), in particular:
+   - boundaries: business rules only in `models/` or `libs/domain`; types
+     one app knows stay in its `models/`; one Nest module per domain;
+     client `application/` grouped by subject; stores hold no search,
+     filters, selection or projections;
+   - persistence: no queries into other domains' collections; multi-document
+     writes in a transaction;
+   - security: endpoints protected unless `@Public()`, admin endpoints
+     `@Roles('admin')`, current user only via `@CurrentUser()`, user data
+     scoped by `ownerId`, no passwords or session IDs in logs;
+   - UI and Angular: Spartan + Tailwind, theme tokens, `shared/ui/` free
+     of domain terms; standalone, signals, `inject()`, native control flow;
+   - testing: required tests present, cases approved, descriptions by the
+     rules of `docs/architecture-testing.md`.
+5. **Design quality,** only where it hurts readability, changeability or
+   testability: Fowler's smells (long functions, long parameter lists,
+   feature envy, data clumps, primitive obsession, shotgun surgery,
+   duplicated business rules, dead code), SRP, single level of
+   abstraction, Law of Demeter, cohesion, shallow modules, locality of
+   behaviour. Name the smell and the refactoring.
+6. **Use case:** the change does what the scenarios of its use case say
+   (`docs/use-cases/`), and the tests name or cover them.
+7. Report in this form:
 
 ```
 ## Code review: <scope>
+Sensors: passed | <failures>
 Result: OK | Findings
 
-| # | File:line | Smell / principle | Finding | Suggested refactoring | Weight |
-|---|-----------|-------------------|---------|-----------------------|--------|
+| # | File:line | Rule / smell | Finding | Suggested fix | Weight |
+|---|-----------|--------------|---------|---------------|--------|
 
-Weight: must (bug risk or blocks change) · should (makes the next change
-harder) · could (minor).
+Weight: must (breaks a rule or risks a bug) · should (makes the next
+change harder) · could (minor).
 
-Notes: <trade-offs, places where a finding conflicts with a guideline>
+Notes: <conflicting rules, outdated docs, trade-offs>
 ```
 
-Never change the coding guidelines. If a guideline seems wrong, say so
-under Notes.
+Never change the architecture rules, the coding guidelines or ADRs. If a
+rule seems wrong or two rules conflict, say so under Notes.
