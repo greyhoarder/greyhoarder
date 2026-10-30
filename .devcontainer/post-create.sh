@@ -14,6 +14,9 @@ sudo git config --system --add safe.directory "$PWD/libs/catalog"
 # The community kit catalog is a submodule; a plain clone leaves it empty.
 git submodule update --init
 
+# npm 12 runs no install scripts of dependencies; the image ships an older npm.
+sudo npm install --global npm@12
+
 npm ci
 
 # Browsers must match the installed Playwright version, so they come only
