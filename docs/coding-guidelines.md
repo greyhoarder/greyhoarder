@@ -42,9 +42,8 @@ Fence**. In this project that means in particular:
 ## Types
 
 - No `any`; use `unknown` and narrow it.
-- No non-null assertions (`value!`) outside tests.
-- No type assertions (`as`) except right after validation at the edge
-  (e.g. by a Zod schema).
+- No non-null assertions (`value!`) and no type assertions (`as`, except
+  `as const`) outside tests.
 - Exported functions and public methods declare their return type.
 - String literal unions instead of `enum`: `type Role = 'admin' | 'member'`.
 - `readonly` for data that must not change.
@@ -52,11 +51,12 @@ Fence**. In this project that means in particular:
 
 ## Functions
 
-- At most three parameters; beyond that, one object.
+- At most five parameters; beyond that, one object.
 - No boolean parameters that switch behavior; write two functions or use a
   named option.
 - Return early; at most two levels of nesting.
-- Don't mutate parameters.
+- Don't mutate parameters. Framework objects meant to be changed, such as
+  the request of an Express session or a DOM event, are exempt.
 
 ## Errors
 
@@ -84,7 +84,9 @@ Fence**. In this project that means in particular:
   `catalog-kit.ts`), nested Mongoose sub-schemas. A protocol file holds
   the request and response of one endpoint. Functions are not affected;
   generated code (`shared/ui/helm/`) is exempt.
-- Named exports only; no default exports, no `export *`.
+- Named exports only; no default exports, no `export *`. Only
+  `<domain>.routes.ts` exports its routes as default, since Angular loads
+  them lazily that way.
 - Barrel files exist only as `api/index.ts` in the apps and as
   `<domain>/index.ts` in `libs/`.
 - Comments explain *why*, never *what*. No commented-out code.

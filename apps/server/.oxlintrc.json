@@ -1,9 +1,54 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "vitest"],
   "rules": {
-    "typescript/no-explicit-any": "off",
-    "typescript/no-floating-promises": "error"
+    "typescript/no-explicit-any": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/consistent-type-assertions": [
+      "error",
+      {
+        "assertionStyle": "never"
+      }
+    ],
+    "typescript/explicit-module-boundary-types": "error",
+    "typescript/only-throw-error": "error",
+    "max-params": ["error", 5],
+    "max-depth": ["error", 2],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": ["request"]
+      }
+    ],
+    "promise/prefer-await-to-then": "error",
+    "import/no-default-export": "error",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "case": "kebabCase"
+      }
+    ],
+    "vitest/valid-title": [
+      "error",
+      {
+        "mustNotMatch": {
+          "it": "^should"
+        }
+      }
+    ],
+    "vitest/require-mock-type-parameters": "off"
   },
+  "overrides": [
+    {
+      "files": ["**/*.spec.ts"],
+      "rules": {
+        "typescript/no-non-null-assertion": "off",
+        "typescript/consistent-type-assertions": "off"
+      }
+    }
+  ],
   "env": {
     "node": true
   }

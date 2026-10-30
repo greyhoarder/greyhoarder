@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { HttpSessionAdapter } from '../../infrastructure/http-session-adapter';
 import { InvalidCredentialsError } from '../../util/invalid-credentials.error';
-import LoginPage from './login-page';
+import { LoginPage } from './login-page';
 
 @Component({ template: '' })
 class StubPage {}

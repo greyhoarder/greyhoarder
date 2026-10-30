@@ -21,9 +21,7 @@ export function resolveParts(
   const parts: MiniPart[] = [];
   for (const change of changes) {
     if ('partId' in change) {
-      if (!vocabulary.some((known) => known.id === change.partId)) {
-        throw new UnknownPartError();
-      }
+      checkKnown(vocabulary, change.partId);
       parts.push({ partId: change.partId, isSwappable: change.isSwappable });
       continue;
     }
@@ -36,4 +34,10 @@ export function resolveParts(
   }
   const unique = parts.filter((part, index) => parts.findIndex((other) => other.partId === part.partId) === index);
   return { parts: unique, newParts };
+}
+
+function checkKnown(vocabulary: readonly Part[], partId: string): void {
+  if (!vocabulary.some((known) => known.id === partId)) {
+    throw new UnknownPartError();
+  }
 }

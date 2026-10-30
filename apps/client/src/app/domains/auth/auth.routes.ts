@@ -7,7 +7,7 @@ export default [
     path: 'login',
     title: 'Sign in · Greyhoarder',
     canActivate: [setupDoneGuard, signedOutGuard],
-    loadComponent: () => import('./features/login/login-page'),
+    loadComponent: async () => (await import('./features/login/login-page')).LoginPage,
   },
   {
     path: 'setup',

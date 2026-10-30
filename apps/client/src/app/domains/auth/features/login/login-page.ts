@@ -35,7 +35,7 @@ import { TooManyLoginAttemptsError } from '../../util/too-many-login-attempts.er
   templateUrl: './login-page.html',
   host: { class: 'flex min-h-dvh flex-col items-center justify-center gap-8 bg-background p-4' },
 })
-export default class LoginPage {
+export class LoginPage {
   private readonly sessions = inject(HttpSessionAdapter);
   private readonly router = inject(Router);
 

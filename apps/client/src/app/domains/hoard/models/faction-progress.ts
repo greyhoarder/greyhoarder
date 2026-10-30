@@ -1,4 +1,4 @@
-import { hasReached, type HobbyStatus, hobbyStatuses, type Mini } from '@greyhoarder/domain/hoard';
+import { hasReached, type HobbyStatus, type Mini } from '@greyhoarder/domain/hoard';
 
 /** How far the minis of one faction have come (docs/screens/dashboard.md). */
 export interface FactionProgress {
@@ -40,8 +40,17 @@ function progressOf(statuses: readonly HobbyStatus[]): Omit<FactionProgress, 'fa
     miniCount: statuses.length,
     paintedCount,
     paintedPercent: Math.round((paintedCount / statuses.length) * 100),
-    statusCounts: Object.fromEntries(
-      hobbyStatuses.map((step) => [step, statuses.filter((status) => status === step).length]),
-    ) as Record<HobbyStatus, number>,
+    statusCounts: statusCountsOf(statuses),
+  };
+}
+
+function statusCountsOf(statuses: readonly HobbyStatus[]): Record<HobbyStatus, number> {
+  const count = (step: HobbyStatus): number => statuses.filter((status) => status === step).length;
+  return {
+    sprue: count('sprue'),
+    built: count('built'),
+    primed: count('primed'),
+    painted: count('painted'),
+    done: count('done'),
   };
 }
