@@ -119,7 +119,7 @@ count stepper.
 | Group card | {name}, {parts}; legend: {count} {status} per status the group has; ×{count} |
 | Group toggle (accessible name) | {name} |
 | Mini line | {name}, Workbench |
-| Status control | Built · Primed · Painted · Done; group named "Status of {name}" |
+| Status control | On the sprue · Built · Primed · Painted · Done; group named "Status of {name}" |
 | Sprue heading | On the sprue {count} |
 | Sprue card | {name}, ×{count} |
 | Sprue toggle (accessible name) | {name} |
@@ -204,7 +204,10 @@ count stepper.
 - Choosing a status in a mini's control saves it at once for that one mini
   ([domain](../domains/hoard.md)); "Done" takes it off the workbench. The
   mini stays in its group. Afterwards the group's bar and legend, the
-  box's progress and its badge show the new state.
+  box's progress and its badge show the new state. "On the sprue" puts it
+  back on the sprue ([domain](../domains/hoard.md#minis)): it leaves its
+  group and the workbench and joins the row of its sprue name, keeping
+  its parts, notes and factions.
 - A click on the header of a card on the sprue opens or closes its build
   panel; all are closed at first, and opening one closes the others.
   "Take from the sprue" opens the first card on the sprue and moves the

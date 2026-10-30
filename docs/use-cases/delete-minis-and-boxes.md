@@ -124,8 +124,5 @@ The system MUST NOT delete anything when deleting fails.
 
 - The app deletes a box with all its minis without asking yet
   (DELETE-11 is new).
-- Where minis on the sprue that stay without a box are found; see the
-  open question on loose minis on the sprue in
-  [BROWSE](find-in-the-hoard.md#open-questions).
 - Deleting a box from the "⋮" menu of the list of boxes: the menu has no
   entries yet.

@@ -32,7 +32,8 @@ minis at once on their box, or one mini on its own.
 
 The system SHALL offer as names to build what the slots the mini was put on
 the sprue from can be built as; for a mini without a box, the names of its
-catalog kit's slots that offer its name.
+catalog kit's slots that offer the name it was added as, with their
+parts, also after it was renamed.
 
 #### Scenario: Undecided minis of an either-or kit (BUILD-01)
 
@@ -48,6 +49,14 @@ catalog kit's slots that offer its name.
 - **When** the user opens it
 - **Then** the names of the kit's slots that offer "Nob" are offered,
   without saying how many are left
+
+#### Scenario: A loose mini renamed (BUILD-13)
+
+- **Given** a "Nob" added from the catalog kit "Boyz", built and renamed
+  to "Big Nob"
+- **When** the user opens it
+- **Then** the names and parts of the kit's slots that offer "Nob" are
+  offered, not those of every slot of the kit
 
 ### Requirement: Count what is left in the box
 
@@ -91,8 +100,8 @@ chosen.
 
 ### Requirement: Build as many as chosen
 
-The system SHALL build as many alike minis of a row on the box as the user
-counted, or the one mini opened on its own, with the chosen name, parts and
+The system SHALL build as many alike minis of a row on the box, or of a
+row in the hoard's section On the sprue, as the user counted, or the one mini opened on its own, with the chosen name, parts and
 notes, and on the mini on its own also the chosen factions; minis built
 on the box keep the factions their kit gave them, and anything further is
 decided per mini. It MUST NOT save anything before the user builds.
@@ -103,6 +112,14 @@ decided per mini. It MUST NOT save anything before the user builds.
 - **When** the user builds 4 of them as "Boy"
 - **Then** 4 built Boys appear among the box's minis, and 6 Boys stay on
   the sprue
+
+#### Scenario: Several loose minis (BUILD-12)
+
+- **Given** a row of 10 Boyz on the sprue without a box in the hoard's
+  section On the sprue
+- **When** the user builds 3 of them as "Boy"
+- **Then** 3 Boys are built and listed with the minis of the hoard, and
+  the row shows 7
 
 #### Scenario: One mini on its own (BUILD-08)
 
@@ -142,7 +159,8 @@ the user chose.
 
 ## Open questions
 
-- The [hoard](../screens/hoard.md) leaves every mini on the sprue out of
-  the Minis tab, while the domain and the app list those without a box
-  there; which way a loose mini on the sprue is reached.
+- The app has no section On the sprue in the hoard yet (BUILD-12 is new).
+- Minis added from the catalog record no sprue name yet; the app offers
+  every name and part of the kit once they are renamed, and on the mini
+  screen the parts of every slot (BUILD-13 is new).
 - The box screen does not describe what the user sees when building fails.

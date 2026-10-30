@@ -42,6 +42,10 @@ exactly one user, and users see only their own hoard.
   it never needs its box to be listed, found or edited.
 - The status follows the order sprue → built → primed → painted → done.
   Any status can be set, also backwards (a mistake, a stripped mini).
+  Back to the sprue only for minis from a box or from the catalog, never
+  for custom minis: such a mini gets its sprue name back, keeps its
+  parts, notes and factions, leaves the workbench and no longer uses up
+  a suggestion.
 - A mini may exist without a box (bought loose, second hand, already
   painted, 3D printed, kitbashed) and may start with any status.
 - A mini has at most one box as its origin; a mini without a box added
@@ -52,9 +56,10 @@ exactly one user, and users see only their own hoard.
 - Minis without a box are added in two ways:
   - **From the catalog:** a name that the slots of one catalog kit can be
     built as, with its faction, in any status, on the sprue as well. The
-    mini records the kit, in the version it was found in; it suggests
-    what the mini is built as and its parts like a box's kit, without
-    counting what is left.
+    mini records the kit, in the version it was found in, and the name
+    it was found as as its sprue name, whatever its status; it suggests
+    what the mini is built as and its parts like a box's kit, from the
+    slots that offer its sprue name, without counting what is left.
   - **Custom:** a mini the user put together (kitbash, conversion, 3D
     print, another manufacturer) with any name, factions, parts and notes.
     It starts built or further.
@@ -87,8 +92,9 @@ exactly one user, and users see only their own hoard.
   Boyz; a Boy of a bundle only what the Boy slot offers, not the names
   and parts of the other kits in it. Kits only suggest; any name and
   part can still be given.
-- A mini keeps the name it got on the sprue as its sprue name, which never
-  changes. A suggestion is used up by the minis of the box built as it,
+- A mini keeps the name it got on the sprue, or for a mini added from the
+  catalog the name it was found as, as its sprue name, which never
+  changes. Custom minis have none. A suggestion is used up by the minis of the box built as it,
   and by those built under a name of the user's own that had it on the
   sprue.
 - A box from a catalog kit records the kit's id and version.
@@ -216,8 +222,8 @@ a filter, never as a level to navigate through.
 
 Minis on the sprue of a box are not listed with the others: they are
 taken from the sprue on their box. Minis on the sprue without a box are
-listed with the others and built one by one, like any mini. On a box,
-minis on the sprue that are alike (same
+listed in a section of their own below the others. On a box and in that
+section, minis on the sprue that are alike (same
 name, factions, parts and notes) share a row with a count, from which the
 user picks how many to build, to let depart or to delete. Minis past the
 sprue and gone minis are acted on several at once by selecting them, one

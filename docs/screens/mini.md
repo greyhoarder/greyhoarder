@@ -231,7 +231,7 @@ muted line, the "or" is plain.
   left, the line reads "None left in this box" and the tile is greyed out;
   it can still be chosen. Nothing is blocked: kits only suggest.
   A mini without a box added from a catalog kit is offered the names of
-  the kit's slots that offer its name ("Suggested by {kit name}"), without
+  the kit's slots that offer its sprue name ("Suggested by {kit name}"), without
   a line below them: there is no box to count in.
 - Typing an own name chooses its tile; choosing a suggestion empties it.
   A mini built under an own name uses up the suggestion it had on the

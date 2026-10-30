@@ -53,7 +53,8 @@ workbench.
 ### Requirement: Custom minis are past the sprue
 
 The system SHALL add custom minis as built or further, and MUST NOT offer
-the status On the sprue.
+the status On the sprue nor accept custom minis on the sprue in any other
+way.
 
 #### Scenario: Status offered (ADD-CUSTOM-04)
 
@@ -115,5 +116,5 @@ user chose.
 
 - Whether added minis can be put on the workbench right away.
 - Photos of custom minis.
-- Only the screen leaves out On the sprue; the server accepts custom minis
-  on the sprue as well. Whether the server should refuse them.
+- The app still accepts custom minis on the sprue when they do not come
+  through the screen (a bug).

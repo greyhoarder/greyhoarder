@@ -13,7 +13,8 @@ The overview of everything a user owns. The Minis tab shows every mini
 past the sprue with its status, found by name, part or box, in groups of
 minis with the same name, factions and parts (see
 [Lists of minis](../domains/hoard.md#lists-of-minis)); minis on the sprue
-are taken from their [box](box.md). The Boxes tab shows
+are taken from their [box](box.md), or, without a box, from the section
+"On the sprue" below the minis. The Boxes tab shows
 what was bought: each box with its progress, date and tags.
 
 ## Layout
@@ -40,6 +41,9 @@ the sidebar, from top to bottom:
    "Select all" and "Done". On narrow screens "Select all", "Leave the
    hoard…" and "Delete…" move into a "⋮" menu of the bar.
 5. The minis as group cards or as a table.
+6. While loose minis are on the sprue: the section "On the sprue", in
+   both views, with one card per row of alike minis, built like the cards
+   on the sprue of [Box](box.md#layout).
 
 **Cards** (the default view): one card per group, stacked with a small
 gap, built like the group cards of [Box](box.md#layout):
@@ -125,7 +129,7 @@ summary line.
 | Workbench tag | Workbench |
 | Status badge | On the sprue / Built / Primed / Painted / Done |
 | Gone badge | Sold · Given away · Stripped for parts · Lost or broken, in place of the status badge |
-| Status filter values | Built · Primed · Painted · Done · Gone |
+| Status filter values | On the sprue · Built · Primed · Painted · Done · Gone |
 | Count | ×{count} |
 | Row check (accessible name) | Select {name} |
 | No minis yet | No minis built yet. Build the minis of a box and they appear here. |
@@ -156,6 +160,7 @@ summary line.
 | List | The hoard has minis past the sprue | Group cards, closed, sorted by army |
 | Group open | A group card's header was clicked | The card lists its minis |
 | Table | "Table" in the view switch | One line per mini, at first sorted by faction |
+| Loose minis on the sprue | The hoard has minis on the sprue without a box | The section "On the sprue" below the list, its cards closed |
 | Searching | Text in the search field | Only minis whose name, a part or the box contains the text; the tab counts what is shown |
 | Filtered | Values ticked in a filter chip | Only matching minis; the chip shows up to two ticked values as badges after a divider, more as "{n} selected"; "Reset" appears |
 | Gone shown | "Gone" ticked in the Status filter | The gone rows as well, each with its gone badge in place of the status badge |
@@ -172,9 +177,16 @@ summary line.
 
 ## Behavior
 
-- Minis on the sprue are left out of the Minis tab, its counts and its
-  filters' numbers; they are built on their [box](box.md). The summary
-  counts every mini that is not gone, on the sprue or not.
+- Minis on the sprue of a box are left out of the Minis tab, its counts
+  and its filters' numbers; they are built on their [box](box.md). The
+  summary counts every mini that is not gone, on the sprue or not.
+- Minis on the sprue without a box are in the section "On the sprue";
+  alike ones share a row with a count
+  ([domain](../domains/hoard.md#lists-of-minis)). Its cards work as the
+  cards on the sprue of [Box](box.md#behavior): building, leaving and
+  deleting as many of a row as counted. Search and filters narrow the
+  section as well; "On the sprue" in the Status filter counts these minis,
+  and ticked alone it shows only the section.
 - A group holds the minis past the sprue with the same name, factions
   and parts, each glued or swappable alike, from any box
   ([domain](../domains/hoard.md#lists-of-minis)). Its bar and legend count

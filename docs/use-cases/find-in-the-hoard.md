@@ -28,8 +28,10 @@ it has come or to open it.
 ### Requirement: List the minis in groups
 
 The system SHALL list the minis past the sprue, with minis of the same
-name, factions and parts in one group whatever their box, and MUST NOT list
-the minis on the sprue of a box among them.
+name, factions and parts in one group whatever their box, and below them
+the minis on the sprue without a box in a section of their own, alike ones
+in one row with their count. It MUST NOT list the minis on the sprue of a
+box.
 
 #### Scenario: Alike minis from two boxes (BROWSE-01)
 
@@ -44,7 +46,7 @@ the minis on the sprue of a box among them.
   without a box
 - **When** the user opens the minis of the hoard
 - **Then** the minis of the box are not listed, and the mini without a box
-  is
+  is listed in the section On the sprue
 
 ### Requirement: Search and filter
 
@@ -74,6 +76,12 @@ ticked in one filter are alternatives.
 - **When** the user ticks Space Marines in the faction filter
 - **Then** the minis of the Space Marines and of the Dark Angels are
   shown, but not those of the Orks
+
+#### Scenario: Only the minis on the sprue (BROWSE-14)
+
+- **Given** built Boyz and 10 Boyz on the sprue without a box
+- **When** the user ticks only On the sprue in the status filter
+- **Then** only the section On the sprue with the 10 Boyz is shown
 
 #### Scenario: Reset (BROWSE-05)
 
@@ -152,9 +160,9 @@ The system SHALL tell the user when the hoard can't be loaded.
 
 ## Open questions
 
-- The hoard screen says minis on the sprue are left out of the minis of
-  the hoard; the domain and the app list those without a box (BROWSE-02).
-  The status filter offers no "On the sprue" for them.
+- The app lists minis on the sprue without a box among the others and
+  its status filter has no On the sprue yet (BROWSE-02 changed,
+  BROWSE-14 is new).
 - The app's faction filter matches the chosen faction only yet
   (BROWSE-13 is new).
 - The search also matches the kit of a mini without a box; the hoard screen
