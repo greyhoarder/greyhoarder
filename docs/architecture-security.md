@@ -53,8 +53,10 @@ _(derived from [ADR-0007](adr/0007-local-user-accounts.md))_
 - Keep the per-user set of session IDs in sync when creating or destroying
   sessions.
 - Never log session IDs.
-- State-changing requests require an `Origin` equal to the request's own
-  origin.
+- Reject state-changing requests from another origin with NestJS's
+  `app.enableCsrfProtection()` in `main.ts`, before the sessions; it checks
+  `Sec-Fetch-Site`, or else whether `Origin` matches the request's host.
+  Never change state in a `GET` request.
 - Rate-limit login; give the same error for unknown user and wrong
   password.
 

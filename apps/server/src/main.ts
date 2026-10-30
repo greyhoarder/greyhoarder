@@ -10,6 +10,8 @@ async function bootstrap(): Promise<void> {
   const config = app.get(AppConfig);
 
   app.setGlobalPrefix('api');
+  // Before the sessions, so a request from another origin never touches Redis (ADR-0009).
+  app.enableCsrfProtection();
   // Files of the web app never touch Redis (ADR-0017).
   app.use(
     '/api',
