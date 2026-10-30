@@ -8,8 +8,19 @@ use case you build or change; how its screens look is in
 
 | ID | Use case | Status |
 |----|----------|--------|
-| `ADD-MINIS` | [Add minis from the catalog](add-minis.md) | Draft |
+| `SET-UP` | [Set up the instance](set-up-the-instance.md) | Draft |
 | `SIGN-IN` | [Sign in and out](sign-in-and-out.md) | Draft |
+| `ADD-BOXES` | [Add boxes from the catalog](add-boxes.md) | Draft |
+| `ADD-MINIS` | [Add minis from the catalog](add-minis.md) | Draft |
+| `ADD-CUSTOM` | [Add custom minis](add-custom-minis.md) | Draft |
+| `BROWSE` | [Find what is in the hoard](find-in-the-hoard.md) | Draft |
+| `BUILD` | [Build minis as the catalog suggests](build-minis.md) | Draft |
+| `BUILD-CUSTOM` | [Build a custom mini from the sprue](build-custom-minis.md) | Draft |
+| `PROGRESS` | [Track hobby progress](track-progress.md) | Draft |
+| `EDIT-MINI` | [Edit a mini](edit-a-mini.md) | Draft |
+| `LEAVE` | [Let minis leave the hoard](leave-the-hoard.md) | Draft |
+| `DELETE` | [Delete minis and boxes](delete-minis-and-boxes.md) | Draft |
+| `OVERVIEW` | [See progress by faction](progress-by-faction.md) | Draft |
 
 ## When a spec is needed
 
