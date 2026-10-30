@@ -43,8 +43,10 @@
     [isOpen]="factionSearch.isOpen()"
     [query]="factionSearch.query()"
     [results]="factionSearch.results()"
+    [ownResults]="factionSearch.ownResults()"
     (queryChange)="factionSearch.query.set($event)"
     (added)="chooseFaction($event)"
+    (created)="createFaction($event)"
     (removed)="addition.removeFaction($event)"
     (toggled)="factionSearch.toggle()"
   />

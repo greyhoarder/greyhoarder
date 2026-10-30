@@ -37,6 +37,24 @@ async function openLootas(page: Page, url: string): Promise<void> {
   await page.getByTestId('hoard-row').click();
 }
 
+/** Adds a built Ork mini of that name without a box through the API. */
+async function addBuiltOrk(page: Page, url: string, name: string): Promise<string | undefined> {
+  const added = await page.request.post(`${url}/api/hoard/minis`, {
+    data: { name, factions: [{ id: 'warhammer-40000/orks' }], status: 'built', parts: [], count: 1 },
+    headers: { Origin: url },
+  });
+  expect(added.ok()).toBe(true);
+  return ((await added.json()) as { minis: { id: string }[] }).minis[0]?.id;
+}
+
+/** On an open mini, creates a faction of the user's own with that name from "+ Faction". */
+async function createOwnFaction(page: Page, name: string): Promise<void> {
+  await page.getByTestId('mini-add-faction').click();
+  await page.getByTestId('mini-faction-search').fill(name);
+  await page.getByTestId('mini-faction-create').click();
+  await expect(page.getByTestId('mini-faction').filter({ hasText: name })).toHaveCount(1);
+}
+
 test.describe('Mini', () => {
   test('opens a built mini from a group of the hoard', async ({ page, signedIn }) => {
     await openLootas(page, signedIn.url);
@@ -136,7 +154,7 @@ test.describe('Mini', () => {
       page.request.post(`${signedIn.url}/api/hoard/minis`, {
         data: {
           name,
-          factionIds: ['warhammer-40000/orks'],
+          factions: [{ id: 'warhammer-40000/orks' }],
           status: 'built',
           parts: parts.map((part) => ({ name: part, isSwappable: false })),
           count: 1,
@@ -163,7 +181,7 @@ test.describe('Mini', () => {
       const added = await page.request.post(`${signedIn.url}/api/hoard/minis`, {
         data: {
           name,
-          factionIds: ['warhammer-40000/orks'],
+          factions: [{ id: 'warhammer-40000/orks' }],
           status: 'built',
           parts: parts.map((part) => ({ name: part, isSwappable: false })),
           count: 1,
@@ -183,5 +201,28 @@ test.describe('Mini', () => {
     await page.getByTestId('mini-add-part').click();
 
     await expect(page.locator('[data-testid="mini-part-group"][data-group="vocabulary"]')).toHaveCount(0);
+  });
+
+  test("gives a built mini a new faction of the user's own", async ({ page, signedIn }) => {
+    const nob = await addBuiltOrk(page, signedIn.url, 'Nob');
+    await page.goto(`${signedIn.url}/hoard/minis/${nob}`);
+    await createOwnFaction(page, 'Crimson Wolves');
+
+    await page.reload();
+
+    await expect(page.getByTestId('mini-faction')).toHaveText(['Orks', 'Crimson Wolves · own']);
+  });
+
+  test("offers a faction of the user's own on another mini", async ({ page, signedIn }) => {
+    const nob = await addBuiltOrk(page, signedIn.url, 'Nob');
+    const boy = await addBuiltOrk(page, signedIn.url, 'Boy');
+    await page.goto(`${signedIn.url}/hoard/minis/${nob}`);
+    await createOwnFaction(page, 'Crimson Wolves');
+    await page.goto(`${signedIn.url}/hoard/minis/${boy}`);
+
+    await page.getByTestId('mini-add-faction').click();
+    await page.getByTestId('mini-faction-search').fill('crim');
+
+    await expect(page.getByTestId('mini-faction-result').first()).toHaveText('Crimson Wolves · Your own');
   });
 });

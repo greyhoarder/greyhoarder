@@ -36,7 +36,7 @@ describe('Faction picker', () => {
 
     find('add-custom-faction-remove')[0]?.click();
 
-    expect(removed).toHaveBeenCalledExactlyOnceWith('warhammer-40000/orks');
+    expect(removed).toHaveBeenCalledExactlyOnceWith(0);
   });
 
   it('puts the cursor into the search as soon as it opens', async () => {

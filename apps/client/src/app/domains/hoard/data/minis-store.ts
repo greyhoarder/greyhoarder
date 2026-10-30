@@ -25,12 +25,19 @@ export class MinisStore {
   readonly isLoading = computed(() => this.loaded.status() === 'loading');
   readonly hasFailed = computed(() => this.loaded.error() !== undefined);
 
-  /** Puts minis the server changed in place of their old versions, without loading every mini again. */
-  apply(changed: readonly Mini[]): void {
+  /**
+   * Puts minis the server changed in place of their old versions, without loading every mini again,
+   * and learns the names of own factions they carry, e.g. one the change added.
+   */
+  apply(changed: readonly Mini[], ownFactionNames: ReadonlyMap<string, string> = new Map()): void {
     const byId = new Map(changed.map((mini) => [mini.id, mini]));
     this.loaded.update(
       (loaded) =>
-        loaded && { ...loaded, minis: loaded.minis.map((mini) => byId.get(mini.id) ?? mini) },
+        loaded && {
+          ...loaded,
+          minis: loaded.minis.map((mini) => byId.get(mini.id) ?? mini),
+          factionNames: new Map([...loaded.factionNames, ...ownFactionNames]),
+        },
     );
   }
 

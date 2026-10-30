@@ -11,6 +11,7 @@ import type {
   UpdateMinisResponse,
 } from '@greyhoarder/protocol/hoard';
 import { firstValueFrom } from 'rxjs';
+import type { ChangedMinis } from '../models/changed-minis';
 import type { MiniChanges } from '../models/mini-changes';
 import type { MinisToAdd } from '../models/minis-to-add';
 
@@ -43,13 +44,19 @@ export class HttpMinisAdapter {
     return response.minis;
   }
 
-  /** Applies the changes to every given mini alike; part names the vocabulary lacks are added to it. */
-  async update(ids: readonly string[], changes: MiniChanges): Promise<readonly Mini[]> {
+  /**
+   * Applies the changes to every given mini alike; part names the vocabulary lacks are added to it,
+   * faction names to the user's own factions.
+   */
+  async update(ids: readonly string[], changes: MiniChanges): Promise<ChangedMinis> {
     const body: UpdateMinisRequest = { ids, set: changes };
     const response = await firstValueFrom(
       this.http.patch<UpdateMinisResponse>('/api/hoard/minis', body),
     );
-    return response.minis;
+    return {
+      minis: response.minis,
+      ownFactionNames: new Map(Object.entries(response.ownFactionNames)),
+    };
   }
 
   /**

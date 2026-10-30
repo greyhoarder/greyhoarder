@@ -10,10 +10,11 @@ import { PartsService } from './features/parts/parts.service.js';
 import { MongoHoardRepository } from './infrastructure/hoard-repository/mongo-hoard-repository.js';
 import { BoxDbo, BoxSchema } from './infrastructure/hoard-repository/schemas/mongo-box-schema.js';
 import { MiniDbo, MiniSchema } from './infrastructure/hoard-repository/schemas/mongo-mini-schema.js';
+import { OwnFactionDbo, OwnFactionSchema } from './infrastructure/hoard-repository/schemas/mongo-own-faction-schema.js';
 import { PartDbo, PartSchema } from './infrastructure/hoard-repository/schemas/mongo-part-schema.js';
 import { HoardRepository } from './ports/hoard-repository.js';
 
-/** Each user's boxes, minis and vocabulary of parts (ADR-0019). Depends only on `catalog`, for the kits boxes are added from. */
+/** Each user's boxes, minis, vocabulary of parts and own factions (ADR-0019). Depends only on `catalog`, for the kits boxes are added from. */
 @Module({
   imports: [
     CatalogModule,
@@ -21,6 +22,7 @@ import { HoardRepository } from './ports/hoard-repository.js';
       { name: BoxDbo.name, schema: BoxSchema },
       { name: MiniDbo.name, schema: MiniSchema },
       { name: PartDbo.name, schema: PartSchema },
+      { name: OwnFactionDbo.name, schema: OwnFactionSchema },
     ]),
   ],
   controllers: [BoxesController, MinisController, PartsController],

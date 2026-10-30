@@ -33,7 +33,7 @@ export const miniSchema = z.object({
 /** Every mini of the signed-in user's hoard. */
 export const minisResponseSchema = z.object({
   minis: z.array(miniSchema).readonly(),
-  /** The names of the catalog factions the minis refer to, by id. */
+  /** The names of the factions the minis refer to, by id: catalog factions and the user's own. */
   factionNames: z.record(z.string(), z.string()),
   /** The names of the game systems of those factions, by faction id. */
   systemNames: z.record(z.string(), z.string()),
@@ -50,13 +50,22 @@ const partChangeSchema = z.union([
   z.object({ name: z.string().trim().min(1).max(100), isSwappable: z.boolean() }),
 ]);
 
+/**
+ * A faction to give minis: a catalog faction or one of the user's own by its id, or a name, which the
+ * server finds among the user's own factions or adds to them.
+ */
+const factionChangeSchema = z.union([
+  z.object({ id: z.string().min(1) }),
+  z.object({ name: z.string().trim().min(1).max(100) }),
+]);
+
 /** Changes that apply to every given mini alike, e.g. a row of alike minis or the minis being built. */
 export const updateMinisRequestSchema = z.object({
   ids: z.array(z.string().min(1)).min(1).readonly(),
   set: z.object({
     name: z.string().trim().min(1).max(100).optional(),
     status: z.enum(hobbyStatuses).optional(),
-    factionIds: z.array(z.string()).readonly().optional(),
+    factions: z.array(factionChangeSchema).readonly().optional(),
     parts: z.array(partChangeSchema).readonly().optional(),
     notes: z.string().max(5000).optional(),
     isOnWorkbench: z.boolean().optional(),
@@ -69,6 +78,8 @@ export type UpdateMinisRequest = z.infer<typeof updateMinisRequestSchema>;
 
 export const updateMinisResponseSchema = z.object({
   minis: z.array(miniSchema).readonly(),
+  /** The names of the user's own factions the minis carry, by id, also those the change added. */
+  ownFactionNames: z.record(z.string(), z.string()),
 });
 
 export type UpdateMinisResponse = z.infer<typeof updateMinisResponseSchema>;
@@ -78,7 +89,7 @@ export const addMinisRequestSchema = z.object({
   name: z.string().trim().min(1).max(100),
   /** The catalog kit the minis come from, in the version the search found; none for the user's own. */
   kit: z.object({ id: z.string().min(1), version: z.number().int().min(1) }).optional(),
-  factionIds: z.array(z.string()).readonly(),
+  factions: z.array(factionChangeSchema).readonly(),
   status: z.enum(hobbyStatuses),
   parts: z.array(partChangeSchema).readonly(),
   notes: z.string().max(5000).optional(),

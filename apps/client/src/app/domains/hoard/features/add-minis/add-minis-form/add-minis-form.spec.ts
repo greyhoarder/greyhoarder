@@ -70,7 +70,7 @@ describe('Add minis form', () => {
 
     expect(addMinis).toHaveBeenCalledExactlyOnceWith({
       name: 'Boy',
-      factionIds: ['warhammer-40000/orks'],
+      factions: [{ id: 'warhammer-40000/orks' }],
       status: 'sprue',
       parts: [],
       count: 3,

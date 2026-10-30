@@ -336,7 +336,7 @@ export class BoxDetailPage {
     this.hasSaveFailed.set(false);
     this.pendingStatuses.update((pending) => new Map(pending).set(miniId, status));
     try {
-      this.minis.apply(await this.minisAdapter.update([miniId], { status }));
+      this.minis.apply((await this.minisAdapter.update([miniId], { status })).minis);
     } catch {
       this.hasSaveFailed.set(true);
     } finally {

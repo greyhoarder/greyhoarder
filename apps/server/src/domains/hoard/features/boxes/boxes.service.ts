@@ -10,6 +10,7 @@ import {
 } from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries, findContainedKits } from '../../../catalog/api/index.js';
 import { nextBoxNumber } from '../../models/box-numbers.js';
+import { droppedFactions } from '../../models/dropped-factions.js';
 import { droppedParts } from '../../models/dropped-parts.js';
 import { withoutDeletedRecipients } from '../../models/mini-deletion.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
@@ -110,6 +111,7 @@ export class BoxesService {
     const deletedMiniIds = await this.hoard.deleteBox(ownerId, boxId, {
       changed,
       droppedPartIds: droppedParts(minisOfBox, []),
+      droppedFactionIds: droppedFactions(minisOfBox, []),
     });
     return { deletedMiniIds, minis: changed };
   }

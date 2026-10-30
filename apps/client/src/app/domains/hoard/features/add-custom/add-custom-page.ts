@@ -4,7 +4,7 @@ import { hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
-import { type FoundFaction, HttpCatalogMinisAdapter } from '../../../catalog/api';
+import { HttpCatalogMinisAdapter } from '../../../catalog/api';
 import { FactionSearch } from '../../application/faction-search';
 import { MinisAddition } from '../../application/minis/minis-addition';
 import { MinisStore } from '../../data/minis-store';
@@ -72,8 +72,14 @@ export class AddCustomPage {
   }
 
   /** Gives the faction to the minis and closes the search. */
-  protected chooseFaction({ id, name }: FoundFaction): void {
+  protected chooseFaction({ id, name }: { readonly id: string; readonly name: string }): void {
     this.addition.addFaction({ id, name });
+    this.factionSearch.close();
+  }
+
+  /** Gives the minis a new own faction of that name and closes the search. */
+  protected createFaction(name: string): void {
+    this.addition.addFaction({ name });
     this.factionSearch.close();
   }
 

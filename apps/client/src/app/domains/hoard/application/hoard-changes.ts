@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import type { Mini } from '@greyhoarder/domain/hoard';
 import { MinisStore } from '../data/minis-store';
 import { PartsStore } from '../data/parts-store';
+import type { ChangedMinis } from '../models/changed-minis';
 
 /**
  * Takes in what the server answered to a change of minis. The server deletes the terms of the
@@ -16,12 +17,12 @@ export class HoardChanges {
   /** The minis were deleted, and the server changed these others because of it. */
   removed(ids: readonly string[], changed: readonly Mini[]): void {
     this.minisStore.remove(ids);
-    this.changed(changed);
+    this.changed({ minis: changed, ownFactionNames: new Map() });
   }
 
   /** The server stored these minis. */
-  changed(minis: readonly Mini[]): void {
-    this.minisStore.apply(minis);
+  changed({ minis, ownFactionNames }: ChangedMinis): void {
+    this.minisStore.apply(minis, ownFactionNames);
     this.partsStore.reload();
   }
 }

@@ -81,4 +81,5 @@ MiniSchema.index({ ownerId: 1 });
 MiniSchema.index({ boxId: 1 });
 MiniSchema.index({ 'kit.kitId': 1 });
 MiniSchema.index({ 'parts.partId': 1 });
+MiniSchema.index({ factionIds: 1 });
 MiniSchema.index({ 'departure.recipientMiniIds': 1 });

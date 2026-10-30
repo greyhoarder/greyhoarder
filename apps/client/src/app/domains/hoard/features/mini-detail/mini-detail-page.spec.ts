@@ -10,6 +10,7 @@ import {
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
+import type { ChangedMinis } from '../../models/changed-minis';
 import { MiniDetailPage } from './mini-detail-page';
 
 const ORKS = 'warhammer-40000/orks';
@@ -91,7 +92,8 @@ describe('Mini page', () => {
   function showMini(
     id: string,
     loadMinis: () => Promise<readonly Mini[]> = () => Promise.resolve(ON_THE_SPRUE),
-    saves: () => Promise<readonly Mini[]> = () => Promise.resolve([]),
+    saves: () => Promise<ChangedMinis> = () =>
+      Promise.resolve({ minis: [], ownFactionNames: new Map() }),
   ): void {
     update = vi.fn(saves);
     TestBed.configureTestingModule({
@@ -160,6 +162,20 @@ describe('Mini page', () => {
     element?.click();
     await fixture.whenStable();
   }
+
+  /** Opens "+ Faction" and types into its search, which opens in a popover outside the page. */
+  async function searchFactions(text: string): Promise<void> {
+    await click(all('mini-add-faction')[0]);
+    const field = document.querySelector<HTMLInputElement>('[data-testid="mini-faction-search"]');
+    if (field) {
+      field.value = text;
+      field.dispatchEvent(new Event('input'));
+    }
+    await fixture.whenStable();
+  }
+
+  const inPopover = (testId: string): HTMLElement | undefined =>
+    document.querySelector<HTMLElement>(`[data-testid="${testId}"]`) ?? undefined;
 
   it('says the name of the minis as the title until a name is chosen', async () => {
     showMini('m1');
@@ -324,21 +340,51 @@ describe('Mini page', () => {
   it('gives a built mini a faction found by the search', async () => {
     showMini('m1', () => Promise.resolve(BUILT));
     await fixture.whenStable();
-    await click(all('mini-add-faction')[0]);
-    // The search opens in a popover outside the page.
-    const field = document.querySelector<HTMLInputElement>('[data-testid="mini-faction-search"]');
-    if (field) {
-      field.value = 'space';
-      field.dispatchEvent(new Event('input'));
-    }
-    await fixture.whenStable();
+    await searchFactions('space');
 
-    document.querySelector<HTMLElement>('[data-testid="mini-faction-result"]')?.click();
-    await fixture.whenStable();
+    await click(inPopover('mini-faction-result'));
 
     expect(update).toHaveBeenCalledWith(['m1'], {
-      factionIds: [ORKS, 'warhammer-40000/space-marines'],
+      factions: [{ id: ORKS }, { id: 'warhammer-40000/space-marines' }],
     });
+  });
+
+  it("gives a built mini a new faction of the user's own", async () => {
+    showMini(
+      'm1',
+      () => Promise.resolve(BUILT),
+      () =>
+        Promise.resolve({
+          minis: BUILT.map((stored) => ({ ...stored, factionIds: [ORKS, 'own/crimson-wolves'] })),
+          ownFactionNames: new Map([['own/crimson-wolves', 'Crimson Wolves']]),
+        }),
+    );
+    await fixture.whenStable();
+    await searchFactions('Crimson Wolves');
+
+    await click(inPopover('mini-faction-create'));
+
+    expect(update).toHaveBeenCalledWith(['m1'], {
+      factions: [{ id: ORKS }, { name: 'Crimson Wolves' }],
+    });
+    expect(textsOf('mini-faction')).toEqual(['Orks', 'Crimson Wolves · own']);
+  });
+
+  it("builds a mini with a new faction of the user's own", async () => {
+    showMini('m1');
+    await fixture.whenStable();
+    await click(nameTile('Loota'));
+    await searchFactions('Crimson Wolves');
+    await click(inPopover('mini-faction-create'));
+    expect(textsOf('mini-faction')).toEqual(['Orks', 'Crimson Wolves · own']);
+    expect(update).not.toHaveBeenCalled();
+
+    await click(all('mini-build')[0]);
+
+    expect(update).toHaveBeenCalledWith(
+      ['m1'],
+      expect.objectContaining({ factions: [{ id: ORKS }, { name: 'Crimson Wolves' }] }),
+    );
   });
 
   it('loads the vocabulary anew after a change of parts', async () => {
@@ -354,7 +400,11 @@ describe('Mini page', () => {
     showMini(
       'm1',
       () => Promise.resolve(BUILT),
-      () => Promise.resolve(BUILT.map((stored) => ({ ...stored, isOnWorkbench: true }))),
+      () =>
+        Promise.resolve({
+          minis: BUILT.map((stored) => ({ ...stored, isOnWorkbench: true })),
+          ownFactionNames: new Map(),
+        }),
     );
     await fixture.whenStable();
 

@@ -90,11 +90,33 @@ describe('Add custom page', () => {
 
     expect(addMinis).toHaveBeenCalledExactlyOnceWith({
       name: 'Tankbusta',
-      factionIds: [],
+      factions: [],
       status: 'primed',
       parts: [],
       count: 2,
     });
+  });
+
+  it("adds the minis with a new faction of the user's own", async () => {
+    await typeName('Tankbusta');
+    await click('add-custom-add-faction');
+    // The search opens in a popover outside the page.
+    const field = document.querySelector<HTMLInputElement>(
+      '[data-testid="add-custom-faction-search"]',
+    );
+    if (field) {
+      field.value = 'Crimson Wolves';
+      field.dispatchEvent(new Event('input'));
+    }
+    await fixture.whenStable();
+    document.querySelector<HTMLElement>('[data-testid="add-custom-faction-create"]')?.click();
+    await fixture.whenStable();
+
+    await click('add-custom-submit');
+
+    expect(addMinis).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ factions: [{ name: 'Crimson Wolves' }] }),
+    );
   });
 
   it('says which minis were added', async () => {

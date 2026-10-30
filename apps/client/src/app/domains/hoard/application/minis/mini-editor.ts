@@ -18,6 +18,8 @@ import {
 } from '@greyhoarder/domain/hoard';
 import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
+import type { ChangedMinis } from '../../models/changed-minis';
+import { type FactionDraft, hasFaction, idsOf, toFactionChange } from '../../models/faction-draft';
 import { areAlike } from '../../models/mini-alikeness';
 import {
   type BuildSuggestion,
@@ -208,7 +210,11 @@ export class MiniEditor {
           : this.toPartDrafts(preselectedParts(this.minisStore.minis(), kit, name)),
       ),
   });
-  private readonly chosenFactionIds = linkedSignal(() => this.mini()?.factionIds ?? []);
+  private readonly chosenFactions = linkedSignal<readonly string[], readonly FactionDraft[]>({
+    source: () => this.mini()?.factionIds ?? [],
+    // Names loading or a faction being added don't choose anew.
+    computation: (factionIds) => untracked(() => this.toFactionDrafts(factionIds)),
+  });
   /** Building puts the minis on the workbench, unless the user unticks it. */
   private readonly chosenWorkbench = linkedSignal({
     source: () => this.mini()?.id,
@@ -226,9 +232,11 @@ export class MiniEditor {
     this.isOnSprue() ? this.buildName() || (this.mini()?.name ?? '') : (this.mini()?.name ?? ''),
   );
   readonly status = computed(() => this.mini()?.status ?? 'sprue');
-  readonly factionIds = computed(() =>
-    this.isOnSprue() ? this.chosenFactionIds() : (this.mini()?.factionIds ?? []),
+  /** On the sprue also the new own factions chosen, which have no id yet. */
+  readonly factions = computed(() =>
+    this.isOnSprue() ? this.chosenFactions() : this.toFactionDrafts(this.mini()?.factionIds ?? []),
   );
+  readonly factionIds = computed(() => idsOf(this.factions()));
   readonly isOnWorkbench = computed(() =>
     this.isOnSprue() ? this.chosenWorkbench() : (this.mini()?.isOnWorkbench ?? false),
   );
@@ -305,24 +313,28 @@ export class MiniEditor {
 
   addFaction({ id, name }: { readonly id: string; readonly name: string }): void {
     this.addedFactionNames.update((names) => new Map([...names, [id, name]]));
-    if (this.factionIds().includes(id)) {
-      return;
+    if (!hasFaction(this.factions(), { id, name })) {
+      this.changeFactions([...this.factions(), { id, name }]);
     }
-    const factionIds = [...this.factionIds(), id];
-    if (this.isOnSprue()) {
-      this.chosenFactionIds.set(factionIds);
-      return;
-    }
-    void this.save({ factionIds });
   }
 
-  removeFaction(id: string): void {
-    const factionIds = this.factionIds().filter((factionId) => factionId !== id);
+  /** Gives the minis a new own faction by its name; the server adds it once the minis are saved. */
+  createFaction(name: string): void {
+    if (!hasFaction(this.factions(), { name })) {
+      this.changeFactions([...this.factions(), { name }]);
+    }
+  }
+
+  removeFaction(index: number): void {
+    this.changeFactions(this.factions().filter((_, other) => other !== index));
+  }
+
+  private changeFactions(factions: readonly FactionDraft[]): void {
     if (this.isOnSprue()) {
-      this.chosenFactionIds.set(factionIds);
+      this.chosenFactions.set(factions);
       return;
     }
-    void this.save({ factionIds });
+    void this.save({ factions: factions.map(toFactionChange) });
   }
 
   removePart(index: number): void {
@@ -370,7 +382,7 @@ export class MiniEditor {
       const changed = await this.minisAdapter.update(ids, {
         name: this.buildName(),
         status: 'built',
-        factionIds: this.chosenFactionIds(),
+        factions: this.chosenFactions().map(toFactionChange),
         parts: this.parts().map(toPartChange),
         notes: this.notes(),
         isOnWorkbench: this.chosenWorkbench(),
@@ -452,7 +464,7 @@ export class MiniEditor {
   }
 
   /** Shows what the server stored. */
-  private afterSave(changed: readonly Mini[]): void {
+  private afterSave(changed: ChangedMinis): void {
     this.saveState.set('saved');
     this.hoardChanges.changed(changed);
   }
@@ -464,6 +476,14 @@ export class MiniEditor {
       name: mini.name,
       box: mini.boxId === undefined ? undefined : boxNames.get(mini.boxId),
       strippedOn: mini.departure?.reason === 'stripped' ? mini.departure.on : undefined,
+    }));
+  }
+
+  private toFactionDrafts(factionIds: readonly string[]): FactionDraft[] {
+    const names = this.factionNames.names();
+    return factionIds.map((id) => ({
+      id,
+      name: this.addedFactionNames().get(id) ?? names.get(id) ?? id,
     }));
   }
 

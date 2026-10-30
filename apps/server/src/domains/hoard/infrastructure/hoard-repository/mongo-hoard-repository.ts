@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { type Box, type Mini, type Part, partKey } from '@greyhoarder/domain/hoard';
-import type { ClientSession, Connection, Model } from 'mongoose';
+import { type Box, factionKey, type Mini, type OwnFaction, type Part, partKey } from '@greyhoarder/domain/hoard';
+import { type ClientSession, type Connection, type Model, mongo } from 'mongoose';
+import { NameTakenMeanwhileError } from '../../models/errors/name-taken-meanwhile.error.js';
 import type { HoardChange } from '../../models/hoard-change.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { BoxDbo } from './schemas/mongo-box-schema.js';
 import { MiniDbo } from './schemas/mongo-mini-schema.js';
+import { OwnFactionDbo } from './schemas/mongo-own-faction-schema.js';
 import { PartDbo } from './schemas/mongo-part-schema.js';
 
 /** Copies only the fields of `Box`, so the owner, `__v` and timestamps never leave this adapter. */
@@ -109,6 +111,16 @@ function toPartDbo(ownerId: string, part: Part): PartDbo {
   };
 }
 
+const DUPLICATE_KEY = 11000;
+
+function toOwnFaction(stored: OwnFactionDbo): OwnFaction {
+  return { id: stored._id, name: stored.name };
+}
+
+function toOwnFactionDbo(ownerId: string, faction: OwnFaction): OwnFactionDbo {
+  return { _id: faction.id, ownerId, name: faction.name, nameKey: factionKey(faction.name) };
+}
+
 /** MongoDB adapter for the hoard: one document per box and per mini (ADR-0019). */
 @Injectable()
 export class MongoHoardRepository extends HoardRepository {
@@ -117,6 +129,7 @@ export class MongoHoardRepository extends HoardRepository {
     @InjectModel(BoxDbo.name) private readonly boxes: Model<BoxDbo>,
     @InjectModel(MiniDbo.name) private readonly minis: Model<MiniDbo>,
     @InjectModel(PartDbo.name) private readonly parts: Model<PartDbo>,
+    @InjectModel(OwnFactionDbo.name) private readonly ownFactions: Model<OwnFactionDbo>,
   ) {
     super();
   }
@@ -184,33 +197,29 @@ export class MongoHoardRepository extends HoardRepository {
     return stored.map(toPart);
   }
 
-  async updateMinis(ownerId: string, { changed, newParts = [], droppedPartIds }: HoardChange): Promise<void> {
+  async findOwnFactions(ownerId: string): Promise<OwnFaction[]> {
+    const stored = await this.ownFactions.find({ ownerId }).lean().exec();
+    return stored.map(toOwnFaction);
+  }
+
+  async updateMinis(ownerId: string, change: HoardChange): Promise<void> {
     await this.connection.transaction(async (session) => {
-      if (newParts.length > 0) {
-        await this.parts.insertMany(
-          newParts.map((part) => toPartDbo(ownerId, part)),
-          { session },
-        );
-      }
+      await this.insertAdded(ownerId, change, session);
       // Only what a mini's owner can change; box, sprue name and creation stay as they are.
-      await this.writeMinis(ownerId, changed, session);
-      await this.deleteDroppedParts(ownerId, droppedPartIds, session);
+      await this.writeMinis(ownerId, change.changed, session);
+      await this.deleteDropped(ownerId, change, session);
     });
   }
 
-  async deleteMinis(
-    ownerId: string,
-    miniIds: readonly string[],
-    { changed, droppedPartIds }: HoardChange,
-  ): Promise<void> {
+  async deleteMinis(ownerId: string, miniIds: readonly string[], change: HoardChange): Promise<void> {
     await this.connection.transaction(async (session) => {
       await this.minis.deleteMany({ ownerId, _id: { $in: miniIds } }, { session });
-      await this.writeMinis(ownerId, changed, session);
-      await this.deleteDroppedParts(ownerId, droppedPartIds, session);
+      await this.writeMinis(ownerId, change.changed, session);
+      await this.deleteDropped(ownerId, change, session);
     });
   }
 
-  async deleteBox(ownerId: string, boxId: string, { changed, droppedPartIds }: HoardChange): Promise<string[]> {
+  async deleteBox(ownerId: string, boxId: string, change: HoardChange): Promise<string[]> {
     return this.connection.transaction(async (session) => {
       // Read inside the transaction, so a mini added to the box meanwhile goes with it.
       const minis = await this.minis
@@ -220,27 +229,75 @@ export class MongoHoardRepository extends HoardRepository {
       const miniIds = minis.map((mini) => mini._id);
       await this.minis.deleteMany({ ownerId, boxId }, { session });
       await this.boxes.deleteOne({ ownerId, _id: boxId }, { session });
-      await this.writeMinis(ownerId, changed, session);
-      await this.deleteDroppedParts(ownerId, droppedPartIds, session);
+      await this.writeMinis(ownerId, change.changed, session);
+      await this.deleteDropped(ownerId, change, session);
       return miniIds;
     });
   }
 
-  /** Deletes the dropped terms, but none a mini still refers to: they may be carried elsewhere. */
-  private async deleteDroppedParts(
+  /**
+   * Stores the parts and own factions a change added.
+   *
+   * @throws NameTakenMeanwhileError when another change added one of the names meanwhile
+   */
+  private async insertAdded(
     ownerId: string,
-    droppedPartIds: readonly string[],
+    { newParts = [], newFactions = [] }: Pick<HoardChange, 'newParts' | 'newFactions'>,
     session: ClientSession,
   ): Promise<void> {
-    if (droppedPartIds.length === 0) {
-      return;
+    try {
+      if (newParts.length > 0) {
+        await this.parts.insertMany(
+          newParts.map((part) => toPartDbo(ownerId, part)),
+          { session },
+        );
+      }
+      if (newFactions.length > 0) {
+        await this.ownFactions.insertMany(
+          newFactions.map((faction) => toOwnFactionDbo(ownerId, faction)),
+          { session },
+        );
+      }
+    } catch (error) {
+      // The unique name keys: no other key of a new part or faction can be taken.
+      if (error instanceof mongo.MongoServerError && error.code === DUPLICATE_KEY) {
+        throw new NameTakenMeanwhileError();
+      }
+      throw error;
     }
-    const stillCarried: unknown[] = await this.minis
-      .distinct('parts.partId', { ownerId, 'parts.partId': { $in: droppedPartIds } })
+  }
+
+  /** Deletes the dropped terms and own factions, but none a mini still refers to: they may be carried elsewhere. */
+  private async deleteDropped(
+    ownerId: string,
+    { droppedPartIds, droppedFactionIds }: HoardChange,
+    session: ClientSession,
+  ): Promise<void> {
+    if (droppedPartIds.length > 0) {
+      const carriedIds = await this.stillCarried(ownerId, 'parts.partId', droppedPartIds, session);
+      await this.parts.deleteMany({ ownerId, _id: { $in: droppedPartIds, $nin: carriedIds } }, { session });
+    }
+    if (droppedFactionIds.length > 0) {
+      const carriedIds = await this.stillCarried(ownerId, 'factionIds', droppedFactionIds, session);
+      await this.ownFactions.deleteMany(
+        { ownerId, _id: { $in: droppedFactionIds, $nin: carriedIds } },
+        { session },
+      );
+    }
+  }
+
+  /** Those of the ids that a mini still has in the field. */
+  private async stillCarried(
+    ownerId: string,
+    field: 'parts.partId' | 'factionIds',
+    ids: readonly string[],
+    session: ClientSession,
+  ): Promise<string[]> {
+    const carried: unknown[] = await this.minis
+      .distinct(field, { ownerId, [field]: { $in: ids } })
       .session(session)
       .exec();
-    const carriedIds = stillCarried.filter((id): id is string => typeof id === 'string');
-    await this.parts.deleteMany({ ownerId, _id: { $in: droppedPartIds, $nin: carriedIds } }, { session });
+    return carried.filter((id): id is string => typeof id === 'string');
   }
 
 
@@ -285,14 +342,13 @@ export class MongoHoardRepository extends HoardRepository {
     );
   }
 
-  async addMinis(ownerId: string, minis: readonly Mini[], newParts: readonly Part[]): Promise<void> {
+  async addMinis(
+    ownerId: string,
+    minis: readonly Mini[],
+    added: Pick<HoardChange, 'newParts' | 'newFactions'>,
+  ): Promise<void> {
     await this.connection.transaction(async (session) => {
-      if (newParts.length > 0) {
-        await this.parts.insertMany(
-          newParts.map((part) => toPartDbo(ownerId, part)),
-          { session },
-        );
-      }
+      await this.insertAdded(ownerId, added, session);
       await this.minis.insertMany(
         minis.map((mini) => toMiniDbo(ownerId, mini)),
         { session },

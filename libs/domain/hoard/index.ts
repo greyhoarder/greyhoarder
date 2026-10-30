@@ -28,6 +28,13 @@ export {
   parseDeparture,
 } from './mini-departure.js';
 export { MIN_BOXES, newBoxes } from './new-box.js';
+export {
+  factionKey,
+  findOwnFaction,
+  isOwnFaction,
+  type OwnFaction,
+  ownFactionId,
+} from './own-faction.js';
 export { findPart, type Part, partKey } from './part.js';
 export { type SprueMinis, sprueMinis } from './sprue-minis.js';
 export { parseTags } from './tag.js';

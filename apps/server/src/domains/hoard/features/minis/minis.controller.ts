@@ -77,7 +77,8 @@ export class MinisController {
     @Body() body: UpdateMinisRequestDto,
   ): Promise<UpdateMinisResponse> {
     try {
-      return { minis: await this.minis.update(user.id, body.ids, body.set) };
+      const { minis, ownFactionNames } = await this.minis.update(user.id, body.ids, body.set);
+      return { minis, ownFactionNames: Object.fromEntries(ownFactionNames) };
     } catch (error) {
       if (
         error instanceof UnknownMinisError ||

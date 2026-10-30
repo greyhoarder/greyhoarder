@@ -23,8 +23,6 @@ import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmPopoverImports } from '@spartan-ng/helm/popover';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
-import type { FoundFaction } from '../../../catalog/api';
-import { FactionNames } from '../../application/faction-names';
 import { FactionSearch } from '../../application/faction-search';
 import { MiniEditor } from '../../application/minis/mini-editor';
 import { AddFaction } from '../../ui/add-faction/add-faction';
@@ -35,6 +33,7 @@ import { type Leaving, LeavePanel } from '../../ui/leave-panel/leave-panel';
 import { PartTiles } from '../../ui/part-tiles/part-tiles';
 import { StatusBadge } from '../../ui/status-badge/status-badge';
 import { progressPercent } from '../../models/box-progress';
+import { isOwnDraft } from '../../models/faction-draft';
 import { PROGRESS_STATUSES, STATUS_COLORS } from '../../ui/progress-bar/progress-bar';
 import { eitherOrText } from '../../util/either-or';
 import { formatDate } from '../../util/format-date';
@@ -88,7 +87,6 @@ export class MiniDetailPage {
 
   protected readonly editor = inject(MiniEditor);
   protected readonly factionSearch = inject(FactionSearch);
-  private readonly factionNames = inject(FactionNames);
   private readonly title = inject(Title);
   private readonly router = inject(Router);
   private readonly menuButton = viewChild('menuButton', { read: ElementRef<HTMLElement> });
@@ -101,18 +99,21 @@ export class MiniDetailPage {
       : { link: ['/hoard/minis'], label: 'Hoard' };
   });
 
+  protected readonly factions = computed(() =>
+    this.editor.factions().map((faction) => ({ name: faction.name, isOwn: isOwnDraft(faction) })),
+  );
+
   /** Gives the faction to the minis and closes the search. */
-  protected chooseFaction(faction: FoundFaction): void {
+  protected chooseFaction(faction: { readonly id: string; readonly name: string }): void {
     this.editor.addFaction(faction);
     this.factionSearch.close();
   }
 
-  protected readonly factions = computed(() =>
-    this.editor.factionIds().map((id) => ({
-      id,
-      name: this.editor.addedFactionNames().get(id) ?? this.factionNames.names().get(id) ?? id,
-    })),
-  );
+  /** Gives the minis a new own faction of that name and closes the search. */
+  protected createFaction(name: string): void {
+    this.editor.createFaction(name);
+    this.factionSearch.close();
+  }
   /** How far the mini is, 0 to 100, weighted like a box's progress. */
   protected readonly percent = computed(() => progressPercent([this.editor.status()]));
   /** One segment per status past the sprue; those reached take the color of the current status. */

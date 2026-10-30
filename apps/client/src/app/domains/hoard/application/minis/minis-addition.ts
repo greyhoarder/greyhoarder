@@ -4,6 +4,7 @@ import { HttpCatalogPartsAdapter } from '../../../catalog/api';
 import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
+import { type FactionDraft, hasFaction, idsOf, toFactionChange } from '../../models/faction-draft';
 import type { PartChange } from '../../models/mini-changes';
 import { type KitVersion, MIN_MINIS, type MinisToAdd } from '../../models/minis-to-add';
 import type { PartOption } from '../../models/part-options';
@@ -12,16 +13,10 @@ import { minisLabel } from '../../util/kit-labels';
 import { STATUS_LABELS } from '../../util/status-labels';
 import type { PartDraft } from './mini-editor';
 
-/** A faction given to the minis, with the name its chip shows. */
-export interface ChosenFaction {
-  readonly id: string;
-  readonly name: string;
-}
-
 /** What a new form starts with. */
 export interface AdditionStart {
   readonly name?: string;
-  readonly faction?: ChosenFaction;
+  readonly faction?: FactionDraft;
   /** The parts the catalog suggests for the name; offered first by the part picker. */
   readonly suggestedParts?: readonly string[];
   /** The catalog kit the minis come from. */
@@ -41,8 +36,9 @@ export class MinisAddition {
   private readonly catalogParts = inject(HttpCatalogPartsAdapter);
 
   readonly name = signal('');
-  readonly factions = signal<readonly ChosenFaction[]>([]);
-  private readonly factionIds = computed(() => this.factions().map((faction) => faction.id));
+  /** Also new own factions, which have no id until the minis are added. */
+  readonly factions = signal<readonly FactionDraft[]>([]);
+  private readonly factionIds = computed(() => idsOf(this.factions()));
   /** Named after the first faction, e.g. "Orks" for "Orks range". */
   readonly rangeName = computed(() => this.factions()[0]?.name);
   readonly status = signal<HobbyStatus>('built');
@@ -91,14 +87,15 @@ export class MinisAddition {
     this.hasAddFailed.set(false);
   }
 
-  addFaction(faction: ChosenFaction): void {
+  /** A faction found, or a new own faction by its name; the server adds that with the minis. */
+  addFaction(faction: FactionDraft): void {
     this.factions.update((factions) =>
-      factions.some((known) => known.id === faction.id) ? factions : [...factions, faction],
+      hasFaction(factions, faction) ? factions : [...factions, faction],
     );
   }
 
-  removeFaction(id: string): void {
-    this.factions.update((factions) => factions.filter((faction) => faction.id !== id));
+  removeFaction(index: number): void {
+    this.factions.update((factions) => factions.filter((_, other) => other !== index));
   }
 
   changeCount(by: number): void {
@@ -163,7 +160,7 @@ export class MinisAddition {
     return {
       ...(kit === undefined ? {} : { kit }),
       name: this.name().trim(),
-      factionIds: this.factionIds(),
+      factions: this.factions().map(toFactionChange),
       status: this.status(),
       parts: this.parts().map(toPartChange),
       ...(notes === '' ? {} : { notes }),

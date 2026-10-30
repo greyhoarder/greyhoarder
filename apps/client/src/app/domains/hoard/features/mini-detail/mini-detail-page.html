@@ -67,17 +67,20 @@
       </div>
       <div class="flex flex-wrap items-center gap-2 text-sm">
         <ul class="flex flex-wrap items-center gap-2" aria-label="Factions">
-          @for (faction of factions(); track faction.id) {
+          @for (faction of factions(); track $index) {
             <li
               class="inline-flex h-8 items-center gap-1 rounded-full bg-muted pr-1.5 pl-3"
               data-testid="mini-faction"
             >
               {{ faction.name }}
+              @if (faction.isOwn) {
+                <span class="text-muted-foreground">· own</span>
+              }
               <button
                 type="button"
                 class="flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 [attr.aria-label]="'Remove ' + faction.name"
-                (click)="editor.removeFaction(faction.id)"
+                (click)="editor.removeFaction($index)"
               >
                 <ng-icon name="lucideX" size="12" />
               </button>
@@ -90,8 +93,10 @@
           [isOpen]="factionSearch.isOpen()"
           [query]="factionSearch.query()"
           [results]="factionSearch.results()"
+          [ownResults]="factionSearch.ownResults()"
           (queryChange)="factionSearch.query.set($event)"
           (added)="chooseFaction($event)"
+          (created)="createFaction($event)"
           (toggled)="factionSearch.toggle()"
         />
       </div>

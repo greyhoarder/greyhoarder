@@ -4,8 +4,10 @@ import {
   type BoxKitReference,
   type Departure,
   type HobbyStatus,
+  isOwnFaction,
   kitReferenceOf,
   type Mini,
+  type OwnFaction,
   parseDeparture,
   parseMini,
   toKit,
@@ -14,8 +16,12 @@ import {
 } from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries } from '../../../catalog/api/index.js';
 import { type LooseMinis, looseMinis } from '../../models/loose-minis.js';
+import { ownFactionNamesOf } from '../../models/own-faction-names.js';
 import { emptiedBoxIds, withoutDeletedRecipients } from '../../models/mini-deletion.js';
+import { droppedFactions } from '../../models/dropped-factions.js';
 import { droppedParts } from '../../models/dropped-parts.js';
+import { type FactionChange, resolveFactions } from '../../models/faction-changes.js';
+import { NameTakenMeanwhileError } from '../../models/errors/name-taken-meanwhile.error.js';
 import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 import { type PartChange, resolveParts } from '../../models/part-changes.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
@@ -24,17 +30,24 @@ import { UnknownFactionError } from './errors/unknown-faction.error.js';
 
 export interface MiniList {
   readonly minis: readonly Mini[];
-  /** The names of the catalog factions the minis refer to, by id. */
+  /** The names of the factions the minis refer to, by id: catalog factions and the owner's own. */
   readonly factionNames: ReadonlyMap<string, string>;
-  /** The names of the game systems of those factions, by faction id. */
+  /** The names of the game systems of the catalog factions, by faction id. */
   readonly systemNames: ReadonlyMap<string, string>;
+}
+
+/** Minis as a change stored them. */
+export interface ChangedMinis {
+  readonly minis: readonly Mini[];
+  /** The names of the owner's own factions the minis carry, by id. */
+  readonly ownFactionNames: ReadonlyMap<string, string>;
 }
 
 /** What to change on every given mini alike; left out means unchanged. */
 export interface MiniChanges {
   readonly name?: string;
   readonly status?: HobbyStatus;
-  readonly factionIds?: readonly string[];
+  readonly factions?: readonly FactionChange[];
   readonly parts?: readonly PartChange[];
   readonly notes?: string;
   readonly isOnWorkbench?: boolean;
@@ -42,8 +55,9 @@ export interface MiniChanges {
   readonly departure?: Departure | null;
 }
 
-/** Alike minis to add without a box; parts as in changes. */
-export type MinisToAdd = Omit<LooseMinis, 'parts' | 'kit'> & {
+/** Alike minis to add without a box; factions and parts as in changes. */
+export type MinisToAdd = Omit<LooseMinis, 'factionIds' | 'parts' | 'kit'> & {
+  readonly factions: readonly FactionChange[];
   readonly parts: readonly PartChange[];
   /** The catalog kit in the version the search found. */
   readonly kit?: { readonly id: string; readonly version: number };
@@ -67,29 +81,35 @@ export class MinisService {
 
   async list(ownerId: string): Promise<MiniList> {
     const minis = await this.hoard.findMinis(ownerId);
-    const factionIds = [...new Set(minis.flatMap((mini) => mini.factionIds))];
-    const [factionNames, systemNames] = await Promise.all([
-      this.catalog.findFactionNames(factionIds),
-      this.catalog.findSystemNames(factionIds),
+    const catalogIds = [...new Set(minis.flatMap((mini) => mini.factionIds))].filter((id) => !isOwnFaction(id));
+    const [catalogNames, systemNames, ownFactions] = await Promise.all([
+      this.catalog.findFactionNames(catalogIds),
+      this.catalog.findSystemNames(catalogIds),
+      this.hoard.findOwnFactions(ownerId),
     ]);
-    return { minis, factionNames, systemNames };
+    return { minis, factionNames: new Map([...catalogNames, ...ownFactionNamesOf(minis, ownFactions)]), systemNames };
   }
 
   /**
-   * Adds alike minis without a box, adding part names the vocabulary does not know to it; all or
-   * nothing. Whether the name is one of the catalog is not checked: kits only suggest.
+   * Adds alike minis without a box, adding part names the vocabulary does not know to it and faction
+   * names to the owner's own factions; all or nothing. Whether the name is one of the catalog is not
+   * checked: kits only suggest.
    *
    * @throws UnknownPartError when a part refers to an id that is not in the owner's vocabulary
-   * @throws UnknownFactionError when a faction is neither a catalog faction nor a game system
+   * @throws UnknownFactionError when a faction is neither a catalog faction, a game system nor one of the owner's own
    * @throws UnknownKitError when the catalog has no such version of the kit
    */
-  async add(ownerId: string, minis: MinisToAdd): Promise<Mini[]> {
-    await this.checkFactions(minis.factionIds);
-    const { kit: wanted, ...alike } = minis;
+  add(ownerId: string, minis: MinisToAdd): Promise<Mini[]> {
+    return againIfNameTaken(() => this.tryAdd(ownerId, minis));
+  }
+
+  private async tryAdd(ownerId: string, minis: MinisToAdd): Promise<Mini[]> {
+    const { factionIds, newFactions } = await this.resolveFactions(ownerId, minis.factions);
+    const { kit: wanted, factions: _resolved, ...alike } = minis;
     const kit = wanted && (await this.kitReference(wanted));
     const { parts, newParts } = resolveParts(await this.hoard.findParts(ownerId), minis.parts, randomUUID);
-    const added = looseMinis({ ...alike, parts, ...(kit ? { kit } : {}) }, randomUUID);
-    await this.hoard.addMinis(ownerId, added, newParts);
+    const added = looseMinis({ ...alike, factionIds, parts, ...(kit ? { kit } : {}) }, randomUUID);
+    await this.hoard.addMinis(ownerId, added, { newParts, newFactions });
     return added;
   }
 
@@ -109,28 +129,35 @@ export class MinisService {
   }
 
   /**
-   * Applies the changes to every mini, adding part names the vocabulary does not know to it;
-   * all or nothing.
+   * Applies the changes to every mini, adding part names the vocabulary does not know to it and
+   * faction names to the owner's own factions; all or nothing.
    *
    * @throws UnknownMinisError when a mini is not in the owner's hoard
    * @throws UnknownPartError when a part refers to an id that is not in the owner's vocabulary
-   * @throws UnknownFactionError when a faction is neither a catalog faction nor a game system
+   * @throws UnknownFactionError when a faction is neither a catalog faction, a game system nor one of the owner's own
    */
-  async update(ownerId: string, ids: readonly string[], changes: MiniChanges): Promise<Mini[]> {
+  update(ownerId: string, ids: readonly string[], changes: MiniChanges): Promise<ChangedMinis> {
+    return againIfNameTaken(() => this.tryUpdate(ownerId, ids, changes));
+  }
+
+  private async tryUpdate(ownerId: string, ids: readonly string[], changes: MiniChanges): Promise<ChangedMinis> {
     const uniqueIds = [...new Set(ids)];
     const minis = await this.hoard.findMinisByIds(ownerId, uniqueIds);
     if (minis.length !== uniqueIds.length) {
       throw new UnknownMinisError();
     }
-    if (changes.factionIds) {
-      await this.checkFactions(changes.factionIds);
-    }
+    const factions = changes.factions && (await this.resolveFactions(ownerId, changes.factions));
     const departure =
       changes.departure && (await this.checkDeparture(ownerId, uniqueIds, changes.departure));
-    const { parts, status, departure: _checked, ...rest } = changes;
+    const { parts, status, departure: _checked, factions: _resolved, ...rest } = changes;
     const resolved = parts && resolveParts(await this.hoard.findParts(ownerId), parts, randomUUID);
     const changed = minis.map((mini) => {
-      let next: Mini = { ...mini, ...rest, ...(resolved ? { parts: resolved.parts } : {}) };
+      let next: Mini = {
+        ...mini,
+        ...rest,
+        ...(factions ? { factionIds: factions.factionIds } : {}),
+        ...(resolved ? { parts: resolved.parts } : {}),
+      };
       next = status === undefined ? next : withStatus(next, status);
       next = departure === undefined ? next : withDeparture(next, departure ?? undefined);
       return parseMini(next);
@@ -138,9 +165,11 @@ export class MinisService {
     await this.hoard.updateMinis(ownerId, {
       changed,
       newParts: resolved?.newParts ?? [],
+      newFactions: factions?.newFactions ?? [],
       droppedPartIds: droppedParts(minis, changed),
+      droppedFactionIds: droppedFactions(minis, changed),
     });
-    return changed;
+    return { minis: changed, ownFactionNames: ownFactionNamesOf(changed, factions?.ownFactions ?? []) };
   }
 
   /**
@@ -158,7 +187,11 @@ export class MinisService {
     }
     const staying = all.filter((mini) => !deleted.has(mini.id));
     const changed = withoutDeletedRecipients(staying, deleted);
-    await this.hoard.deleteMinis(ownerId, [...deleted], { changed, droppedPartIds: droppedParts(minis, []) });
+    await this.hoard.deleteMinis(ownerId, [...deleted], {
+      changed,
+      droppedPartIds: droppedParts(minis, []),
+      droppedFactionIds: droppedFactions(minis, []),
+    });
     return { emptiedBoxIds: emptiedBoxIds(minis, staying), minis: changed };
   }
 
@@ -184,11 +217,40 @@ export class MinisService {
     return parsed;
   }
 
-  /** Factions are references into the catalog: catalog factions or whole game systems. */
-  private async checkFactions(factionIds: readonly string[]): Promise<void> {
-    const known = await this.catalog.findFactionNames(factionIds);
-    if (factionIds.some((id) => !known.has(id))) {
+  /**
+   * The factions as ids, with the own factions to add for new names. Factions are catalog factions,
+   * whole game systems or the owner's own.
+   *
+   * @throws UnknownFactionError when an id is neither in the catalog nor one of the owner's own
+   */
+  private async resolveFactions(
+    ownerId: string,
+    changes: readonly FactionChange[],
+  ): Promise<{ factionIds: string[]; newFactions: OwnFaction[]; ownFactions: OwnFaction[] }> {
+    const known = await this.hoard.findOwnFactions(ownerId);
+    const { factionIds, newFactions } = resolveFactions(known, changes, randomUUID);
+    const ownFactions = [...known, ...newFactions];
+    const ownIds = new Set(ownFactions.map((faction) => faction.id));
+    const catalogIds = factionIds.filter((id) => !isOwnFaction(id));
+    const catalogNames = await this.catalog.findFactionNames(catalogIds);
+    if (factionIds.some((id) => (isOwnFaction(id) ? !ownIds.has(id) : !catalogNames.has(id)))) {
       throw new UnknownFactionError();
     }
+    return { factionIds, newFactions, ownFactions };
+  }
+}
+
+/**
+ * Runs the change again once when another change added one of its new names meanwhile: the second
+ * time, it finds that name among the owner's parts or factions instead of adding it.
+ */
+async function againIfNameTaken<T>(change: () => Promise<T>): Promise<T> {
+  try {
+    return await change();
+  } catch (error) {
+    if (error instanceof NameTakenMeanwhileError) {
+      return change();
+    }
+    throw error;
   }
 }
