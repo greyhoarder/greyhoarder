@@ -15,6 +15,9 @@ Suggest the subject line only: no body, no bullet points.
    - Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`.
    - Scope only when one workspace is affected: `client`, `server`,
      `domain`, `protocol`, `e2e`. Docs and repo-wide changes have no scope.
+   - A change made for security, whichever workspaces it touches, has the
+     scope `security`, e.g. `fix(security): reject changes sent from
+     another origin`.
    - A commit that only moves the catalog submodule is
      `chore(catalog): …`; it makes a patch release.
    - Mark a breaking change with `!` after type and scope, e.g.
