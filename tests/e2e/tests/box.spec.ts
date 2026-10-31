@@ -104,6 +104,35 @@ test.describe('Box', () => {
     await expect(page.getByTestId('hoard-box-empty')).toBeVisible();
   });
 
+  test('edits the minis on the sprue of a box and marks it as edited', async ({ page, signedIn }) => {
+    await openBoyz(page, signedIn.url);
+    await page.getByTestId('box-edit').click();
+    // The rows of Boyz: Boy, Nob, Ammo Runt.
+    await page.getByTestId('box-edit-less').first().click();
+
+    await page.getByTestId('box-edit-save').click();
+
+    await expect(page.getByTestId('box-edit-dialog')).toHaveCount(0);
+    await expect(page.getByTestId('box-edited')).toBeVisible();
+    // Sorted by name: Ammo Runt, Boy, Nob.
+    await expect(page.getByTestId('box-sprue').nth(1)).toContainText('×8');
+  });
+
+  test('keeps the built minis without a box when a box is deleted', async ({ page, signedIn }) => {
+    await openBoyz(page, signedIn.url);
+    await buildThroughApi(page, signedIn.url, (name) => name === 'Boy', { count: 2 });
+    await page.reload();
+
+    await page.getByTestId('box-menu').click();
+    await page.getByTestId('box-delete').click();
+    await page.getByTestId('box-delete-box-keep-minis').click();
+    await expect(page).toHaveURL(/\/hoard\/boxes$/);
+    await page.goto(`${signedIn.url}/hoard/minis`);
+
+    await expect(page.getByTestId('hoard-group')).toHaveCount(1);
+    await expect(page.getByTestId('hoard-group')).toContainText('×2');
+  });
+
   test('numbers boxes with the same name', async ({ page, signedIn }) => {
     const response = await page.request.post(`${signedIn.url}/api/hoard/boxes`, {
       data: {

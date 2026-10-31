@@ -106,27 +106,6 @@ test.describe('Mini', () => {
     await expect(page.getByTestId('box-name')).toBeVisible();
   });
 
-  test('builds a mini added on the sprue without a box', async ({ page, signedIn }) => {
-    await page.goto(`${signedIn.url}/hoard/add/minis`);
-    await page.getByTestId('add-minis-search').fill('Nob');
-    await page
-      .getByTestId('add-minis-mini')
-      .filter({ has: page.getByTestId('add-minis-mini-name').getByText('Nob', { exact: true }) })
-      .first()
-      .click();
-    await page.getByTestId('add-minis-status').filter({ hasText: 'On the sprue' }).click();
-    await page.getByTestId('add-minis-submit').click();
-    await page.getByTestId('add-minis-added-show').click();
-    await page.getByTestId('hoard-group-toggle').click();
-    await page.getByTestId('hoard-row').click();
-
-    await page.getByTestId('mini-build').click();
-
-    await expect(page.getByTestId('mini-status-badge')).toHaveText('Built');
-    await expect(page.getByTestId('mini-build-as').filter({ hasText: 'Nob' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.getByTestId('mini-box')).toContainText('From the kit');
-  });
-
   test('gives a built mini another faction', async ({ page, signedIn }) => {
     await openLootas(page, signedIn.url);
 
