@@ -18,7 +18,8 @@ exactly one user, and users see only their own hoard.
 | Term | Meaning |
 |------|---------|
 | **Mini** | One physical miniature, built or still on the sprue. The only thing with a hobby status. |
-| **Box** | Something the user acquired that minis came out of: a kit, a starter set, a bundle. |
+| **Box** | Something the user acquired that minis came out of: a kit, a starter set, a bundle, or sprues of one bought without their box. |
+| **Edited box** | A box whose minis on the sprue the user counted themselves, when adding it or later, instead of taking them as its kit describes. |
 | **Tag** | A user's own label for boxes, e.g. "Gift", "Second hand", "Shelf of shame". |
 | **Progress** | How far the minis of a box have come: untouched, started or done. |
 | **Kit** | A template for what a box can become: its variants and, per variant, its slots. Either a user's own kit or a [catalog](catalog.md) kit. |
@@ -42,12 +43,14 @@ exactly one user, and users see only their own hoard.
   it never needs its box to be listed, found or edited.
 - The status follows the order sprue → built → primed → painted → done.
   Any status can be set, also backwards (a mistake, a stripped mini).
-  Back to the sprue only for minis from a box or from the catalog, never
-  for custom minis: such a mini gets its sprue name back, keeps its
-  parts, notes and factions, leaves the workbench and no longer uses up
-  a suggestion.
-- A mini may exist without a box (bought loose, second hand, already
-  painted, 3D printed, kitbashed) and may start with any status.
+  Back to the sprue only for minis of a box, never for minis without a
+  box: such a mini gets its sprue name back, keeps its parts, notes and
+  factions, leaves the workbench and no longer uses up a suggestion.
+- A mini on the sprue always belongs to a box. Sprues bought without
+  their box are added as a box as well (see
+  [Boxes and kits](#boxes-and-kits)).
+- A mini may exist without a box (bought built, second hand, already
+  painted, 3D printed, kitbashed); it starts built or further.
 - A mini has at most one box as its origin; a mini without a box added
   from the catalog has the catalog kit as its origin instead, recorded
   like a box's kit. Further origins of a kitbash
@@ -55,11 +58,10 @@ exactly one user, and users see only their own hoard.
   sources of parts.
 - Minis without a box are added in two ways:
   - **From the catalog:** a name that the slots of one catalog kit can be
-    built as, with its faction, in any status, on the sprue as well. The
-    mini records the kit, in the version it was found in, and the name
-    it was found as as its sprue name, whatever its status; it suggests
-    what the mini is built as and its parts like a box's kit, from the
-    slots that offer its sprue name, without counting what is left.
+    built as, with its faction, built or further. The mini records the
+    kit, in the version it was found in, and the name it was found as as
+    its sprue name; it suggests names and parts like a box's kit, from
+    the slots that offer its sprue name, without counting what is left.
   - **Custom:** a mini the user put together (kitbash, conversion, 3D
     print, another manufacturer) with any name, factions, parts and notes.
     It starts built or further.
@@ -85,6 +87,21 @@ exactly one user, and users see only their own hoard.
   - for a bundle, also the minis of every kit in it, created as if that
     kit's box were added on its own. A bundle with two boxes of Lootas
     gets their minis twice.
+- Before adding, the user can change how many minis each of these rows
+  puts on the sprue, down to none as long as one mini is left, and the
+  box's name; when several boxes are added at once, each gets the
+  changed rows and name. A box whose rows then differ from its kit is an
+  edited box.
+- Sprues bought without their box are added the same way, as one box
+  whose rows start at none; the user counts the minis they have. Such a
+  box is always an edited box. The kit is found by its name, a variant,
+  its product code or barcode, or a name its slots can be built as; a
+  bundle can be chosen as well, e.g. the Ork half of a starter set.
+- A box's minis on the sprue can be changed later, row by row of its
+  kit, also rows that have none: more puts further minis on the sprue as
+  adding the box would, fewer deletes minis on the sprue of that row for
+  good. Built and gone minis stay as they are. The box becomes an edited
+  box.
 - What a mini becomes is decided when it is built, mini by mini. It is
   offered what the slots it was put on the sprue from can be built as,
   together with their parts: the undecided minis of an either-or kit the
@@ -93,8 +110,8 @@ exactly one user, and users see only their own hoard.
   and parts of the other kits in it. Kits only suggest; any name and
   part can still be given.
 - A mini keeps the name it got on the sprue, or for a mini added from the
-  catalog the name it was found as, as its sprue name, which never
-  changes. Custom minis have none. A suggestion is used up by the minis of the box built as it,
+  catalog without a box the name it was found as, as its sprue name,
+  which never changes. Custom minis have none. A suggestion is used up by the minis of the box built as it,
   and by those built under a name of the user's own that had it on the
   sprue.
 - A box from a catalog kit records the kit's id and version.
@@ -104,9 +121,9 @@ exactly one user, and users see only their own hoard.
   Deleting minis never deletes their box: when a box has no minis left,
   gone ones included, the user is asked whether to delete it as well.
 - Deleting a box asks whether its minis go too: either the box and all
-  its minis, gone ones included, are deleted for good, or only the box,
-  and its minis stay in the hoard without a box, keeping the box's kit
-  as their kit.
+  its minis, gone ones included, are deleted for good, or only the box
+  and its minis on the sprue, gone ones included, and its other minis
+  stay in the hoard without a box, keeping the box's kit as their kit.
 - Kits only suggest. Any name and any part can be given to any mini, and a
   box may end up with more, fewer or other minis than its kit describes.
 - Changing a kit never changes existing boxes or minis; neither does a
@@ -196,8 +213,8 @@ exactly one user, and users see only their own hoard.
 
 ## Life of a mini
 
-1. The user adds a box of a kit. Its minis appear on the sprue, named
-   after their slot.
+1. The user adds a box of a kit, or the sprues of one bought without
+   their box. Its minis appear on the sprue, named after their slot.
 2. While building, the user gives individual minis their names, parts
    and factions ("Boss Nob" with a power klaw; a Space Marine becomes a
    Crimson Wolf) and sets them to built, one by one or several at once.
@@ -221,9 +238,8 @@ line. The origin box is shown as a detail of each mini and can be used as
 a filter, never as a level to navigate through.
 
 Minis on the sprue of a box are not listed with the others: they are
-taken from the sprue on their box. Minis on the sprue without a box are
-listed in a section of their own below the others. On a box and in that
-section, minis on the sprue that are alike (same
+taken from the sprue on their box. On a box, minis on the sprue that are
+alike (same
 name, factions, parts and notes) share a row with a count, from which the
 user picks how many to build, to let depart or to delete. Minis past the
 sprue and gone minis are acted on several at once by selecting them, one
@@ -278,4 +294,13 @@ Filtering by faction depends on what the list is for:
 - The data model will change soon for minis on the sprue: they will be
   handled apart from built minis instead of as minis with the status
   `sprue`. How they are stored and how building turns them into minis is
-  open. The departure of minis on the sprue has to carry over.
+  open. The departure of minis on the sprue has to carry over. Minis on
+  the sprue always belong to a box, which may make this simpler.
+- What happens to the minis on the sprue without a box stored before
+  every mini on the sprue had to belong to a box: whether they are moved
+  into a box of their kit or set to built.
+- Whether deleting minis on the sprue of a box also makes it an edited
+  box, as lowering its rows does.
+- Splitting a bundle by faction or kit in one step (the Ork half of a
+  starter set), and sprues of several kits in one box (later; until then
+  one box per kit).

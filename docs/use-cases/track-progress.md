@@ -47,8 +47,9 @@ painted or done, also backwards, and save it at once for that one mini.
 
 The system SHALL let the user set a built mini of a box back on the sprue.
 The mini SHALL get its sprue name back, keep its parts, notes and
-factions, leave the workbench and no longer use up a suggestion. Custom
-minis MUST NOT go back to the sprue.
+factions, leave the workbench and no longer use up a suggestion. Minis
+without a box, custom ones and those added from the catalog, MUST NOT go
+back to the sprue.
 
 #### Scenario: A mistaken build (PROGRESS-08)
 
@@ -58,6 +59,12 @@ minis MUST NOT go back to the sprue.
 - **Then** it is back in the row "Lootas / Burna Boyz" on the sprue, off
   the workbench, and "Loota" and "Burna Boy" each have one more left in
   the box
+
+#### Scenario: A mini without a box (PROGRESS-09)
+
+- **Given** a built Nob added from the catalog without a box
+- **When** the user changes its status
+- **Then** On the sprue is not offered
 
 ### Requirement: The box's progress follows
 
@@ -116,8 +123,7 @@ The system SHALL show the stored status again when saving a status fails.
 - The mini screen only shows the status; whether it gets a control to
   change it.
 - The box offers only built to done yet (PROGRESS-08 is new).
-- Minis added from the catalog record no sprue name yet, so they could
-  not get it back once renamed (see BUILD-13).
+- PROGRESS-09 is new.
 - The domain puts minis on the workbench several at once; today only
   building does, and the hoard's "Edit" for selected minis has no function
   yet.

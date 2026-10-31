@@ -10,8 +10,8 @@
 
 ## Goal
 
-The user takes minis whose form a kit defines off the sprue, those of a box
-or those added loose from the catalog, and builds them as one of the names
+The user takes minis whose form a kit defines off the sprue of their box,
+also of a box of sprues bought without it, and builds them as one of the names
 the kit suggests, with the parts they actually glued on: several alike
 minis at once on their box, or one mini on its own.
 
@@ -19,7 +19,7 @@ minis at once on their box, or one mini on its own.
 
 - Building under a name of one's own: [BUILD-CUSTOM](build-custom-minis.md).
 - Getting minis onto the sprue: [ADD-BOXES](add-boxes.md),
-  [ADD-MINIS](add-minis.md).
+  [ADD-SPRUES](add-sprues.md), [EDIT-BOX](edit-a-box.md).
 - Priming, painting and the workbench after building:
   [PROGRESS](track-progress.md).
 - Changing a built mini: [EDIT-MINI](edit-a-mini.md).
@@ -31,9 +31,9 @@ minis at once on their box, or one mini on its own.
 ### Requirement: Offer what the kit suggests
 
 The system SHALL offer as names to build what the slots the mini was put on
-the sprue from can be built as; for a mini without a box, the names of its
-catalog kit's slots that offer the name it was added as, with their
-parts, also after it was renamed.
+the sprue from can be built as; for a mini added from the catalog without a
+box, the names of its catalog kit's slots that offer the name it was added
+as, with their parts, also after it was renamed.
 
 #### Scenario: Undecided minis of an either-or kit (BUILD-01)
 
@@ -41,14 +41,6 @@ parts, also after it was renamed.
   sprue
 - **When** the user starts building one of them
 - **Then** "Loota" and "Burna Boy" are offered, and "Spanner" is not
-
-#### Scenario: A loose mini from the catalog (BUILD-02)
-
-- **Given** a "Nob" added on the sprue from the catalog kit "Boyz", without
-  a box
-- **When** the user opens it
-- **Then** the names of the kit's slots that offer "Nob" are offered,
-  without saying how many are left
 
 #### Scenario: A loose mini renamed (BUILD-13)
 
@@ -100,8 +92,7 @@ chosen.
 
 ### Requirement: Build as many as chosen
 
-The system SHALL build as many alike minis of a row on the box, or of a
-row in the hoard's section On the sprue, as the user counted, or the one mini opened on its own, with the chosen name, parts and
+The system SHALL build as many alike minis of a row on the box as the user counted, or the one mini opened on its own, with the chosen name, parts and
 notes, and on the mini on its own also the chosen factions; minis built
 on the box keep the factions their kit gave them, and anything further is
 decided per mini. It MUST NOT save anything before the user builds.
@@ -112,14 +103,6 @@ decided per mini. It MUST NOT save anything before the user builds.
 - **When** the user builds 4 of them as "Boy"
 - **Then** 4 built Boys appear among the box's minis, and 6 Boys stay on
   the sprue
-
-#### Scenario: Several loose minis (BUILD-12)
-
-- **Given** a row of 10 Boyz on the sprue without a box in the hoard's
-  section On the sprue
-- **When** the user builds 3 of them as "Boy"
-- **Then** 3 Boys are built and listed with the minis of the hoard, and
-  the row shows 7
 
 #### Scenario: One mini on its own (BUILD-08)
 
@@ -159,7 +142,6 @@ the user chose.
 
 ## Open questions
 
-- The app has no section On the sprue in the hoard yet (BUILD-12 is new).
 - Minis added from the catalog record no sprue name yet; the app offers
   every name and part of the kit once they are renamed, and on the mini
   screen the parts of every slot (BUILD-13 is new).

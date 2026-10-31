@@ -9,14 +9,16 @@
 
 ## Goal
 
-The user adds minis they own without their box, bought loose, second hand
-or already painted, by finding them in the catalog and saying how many
-there are and how far they have come.
+The user adds minis they bought built or further without their box,
+second hand or already painted, by finding them in the catalog and saying
+how many there are and how far they have come.
 
 ## Not in scope
 
 - Minis the catalog does not know: [Add custom](../screens/add-custom.md).
 - Minis that come in a box: [Add box](../screens/add-box.md).
+- Minis on the sprue, also sprues bought without their box: they always
+  belong to a box, [ADD-SPRUES](add-sprues.md).
 - Adding a mini to a box the user already has (later).
 - Changing minis after adding them: [Mini](../screens/mini.md).
 
@@ -54,19 +56,23 @@ chosen status and parts, and off the workbench.
 - **Then** the hoard has 3 more built Nobs of the Orks without a box, each
   recording "Boyz" as its kit and none on the workbench
 
-#### Scenario: Minis on the sprue (ADD-MINIS-04)
-
-- **Given** the user chose a mini with the status On the sprue
-- **When** the user adds it
-- **Then** it is listed among the minis of the hoard, although it is on the
-  sprue
-
 #### Scenario: A new part (ADD-MINIS-05)
 
 - **Given** the user gave the minis a part that is not in their vocabulary
 - **When** the user adds them
 - **Then** the minis carry that part, and it is a term of the user's
   vocabulary
+
+### Requirement: Minis without a box are past the sprue
+
+The system SHALL add minis from the catalog as built or further, and MUST
+NOT offer the status On the sprue.
+
+#### Scenario: Status offered (ADD-MINIS-08)
+
+- **Given** the user opened a mini found in the catalog
+- **When** the user chooses the status
+- **Then** Built, Primed, Painted and Done are offered, Built is chosen
 
 ### Requirement: Add alike minis in other states
 
@@ -94,3 +100,5 @@ user chose.
 ## Open questions
 
 - Whether added minis can be put on the workbench right away.
+- The app still offers On the sprue (ADD-MINIS-04 removed, ADD-MINIS-08
+  is new).

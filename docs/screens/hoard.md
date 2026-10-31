@@ -13,8 +13,7 @@ The overview of everything a user owns. The Minis tab shows every mini
 past the sprue with its status, found by name, part or box, in groups of
 minis with the same name, factions and parts (see
 [Lists of minis](../domains/hoard.md#lists-of-minis)); minis on the sprue
-are taken from their [box](box.md), or, without a box, from the section
-"On the sprue" below the minis. The Boxes tab shows
+are taken from their [box](box.md). The Boxes tab shows
 what was bought: each box with its progress, date and tags.
 
 ## Layout
@@ -22,9 +21,10 @@ what was bought: each box with its progress, date and tags.
 Inside the [shell](shell.md), one content column over the full width beside
 the sidebar, from top to bottom:
 
-1. Header: title and summary on the left; on the right one button per way
-   into the hoard: "Add boxes" (primary), "Add minis" and "Add custom"
-   (outline).
+1. Header: title and summary on the left; on the right "Add boxes"
+   (primary) and "Add…" (outline, with a chevron down), which opens a menu
+   with the other ways into the hoard: "Add sprues", "Add minis" and "Add
+   custom".
 2. Tab bar over the full width with a bottom border: the tabs "Minis" and
    "Boxes" as links to their routes, with their counts as badges, the
    active one underlined in gold; switching tabs keeps search, filters and
@@ -41,9 +41,6 @@ the sidebar, from top to bottom:
    "Select all" and "Done". On narrow screens "Select all", "Leave the
    hoard…" and "Delete…" move into a "⋮" menu of the bar.
 5. The minis as group cards or as a table.
-6. While loose minis are on the sprue: the section "On the sprue", in
-   both views, with one card per row of alike minis, built like the cards
-   on the sprue of [Box](box.md#layout).
 
 **Cards** (the default view): one card per group, stacked with a small
 gap, built like the group cards of [Box](box.md#layout):
@@ -83,7 +80,8 @@ line (table).
 changes when the sidebar collapses: four columns from 1280 px, three from
 1024 px, two from 672 px, one below; newest box first. A card holds a striped photo placeholder
 with the round check and the progress badge on its top left and a "⋮"
-button on its top right; below it the box name with the kit line under it
+button on its top right; below it the box name with the kit line under it,
+followed by the "Edited" badge for edited boxes,
 and the progress percentage on the right, the progress bar with a status
 line under it in one line (a colored dot and the count for built, primed,
 painted and done, also 0), and a line with factions and date followed by
@@ -91,7 +89,8 @@ the tags as small outlined badges, with the box's number "#{n}" in muted
 text at its right end.
 
 **Table**: the round check, Box (name followed by its number "#{n}" in
-muted text, kit line below in small text), Faction, Progress
+muted text, kit line below in small text followed by the "Edited" badge
+for edited boxes), Faction, Progress
 (bar with the percentage on its right), On the sprue, Painted ("{n} of
 {all}"), Added and the "⋮" button. Sorted by Added, newest first; every
 header except the menu sorts it like the minis table. Below the table a
@@ -104,7 +103,8 @@ summary line.
 | Browser tab title | Hoard · Greyhoarder |
 | Title | Hoard |
 | Summary | {minis} minis from {boxes} boxes · {painted} painted |
-| Add buttons | Add boxes · Add minis · Add custom |
+| Add buttons | Add boxes · Add… |
+| Add menu | Add sprues · Add minis · Add custom |
 | Tabs | Minis {count} · Boxes {count}; while a search or filter narrows the list: Minis {shown} of {all} |
 | View switch (accessible names) | Cards / Table |
 | Search placeholder | Search name, part or box |
@@ -127,9 +127,9 @@ summary line.
 | Box of a mini (table) | {box} #{number}, the kit of a mini without a box, or "Without box" |
 | Box number | #{number}, on box cards and in the boxes table |
 | Workbench tag | Workbench |
-| Status badge | On the sprue / Built / Primed / Painted / Done |
+| Status badge | Built / Primed / Painted / Done |
 | Gone badge | Sold · Given away · Stripped for parts · Lost or broken, in place of the status badge |
-| Status filter values | On the sprue · Built · Primed · Painted · Done · Gone |
+| Status filter values | Built · Primed · Painted · Done · Gone |
 | Count | ×{count} |
 | Row check (accessible name) | Select {name} |
 | No minis yet | No minis built yet. Build the minis of a box and they appear here. |
@@ -137,6 +137,7 @@ summary line.
 | Box search placeholder | Search boxes |
 | Box filter chips | Faction · Progress · Tag |
 | Kit line | {kit name} · {article number, if any}; "No kit" for boxes without one |
+| Edited badge | Edited; tooltip: Counted by you, not as the kit describes |
 | Progress badge and word | Untouched / Started / Done / All gone / Empty |
 | Progress percentage | {n}% |
 | Progress bar (tooltip and accessible name) | Counts per status past the sprue, in pipeline order, e.g. "5 primed, 5 done" |
@@ -160,7 +161,6 @@ summary line.
 | List | The hoard has minis past the sprue | Group cards, closed, sorted by army |
 | Group open | A group card's header was clicked | The card lists its minis |
 | Table | "Table" in the view switch | One line per mini, at first sorted by faction |
-| Loose minis on the sprue | The hoard has minis on the sprue without a box | The section "On the sprue" below the list, its cards closed |
 | Searching | Text in the search field | Only minis whose name, a part or the box contains the text; the tab counts what is shown |
 | Filtered | Values ticked in a filter chip | Only matching minis; the chip shows up to two ticked values as badges after a divider, more as "{n} selected"; "Reset" appears |
 | Gone shown | "Gone" ticked in the Status filter | The gone rows as well, each with its gone badge in place of the status badge |
@@ -179,14 +179,10 @@ summary line.
 
 - Minis on the sprue of a box are left out of the Minis tab, its counts
   and its filters' numbers; they are built on their [box](box.md). The
-  summary counts every mini that is not gone, on the sprue or not.
-- Minis on the sprue without a box are in the section "On the sprue";
-  alike ones share a row with a count
-  ([domain](../domains/hoard.md#lists-of-minis)). Its cards work as the
-  cards on the sprue of [Box](box.md#behavior): building, leaving and
-  deleting as many of a row as counted. Search and filters narrow the
-  section as well; "On the sprue" in the Status filter counts these minis,
-  and ticked alone it shows only the section.
+  summary counts every mini that is not gone, on the sprue or not. Every
+  mini on the sprue belongs to a box
+  ([domain](../domains/hoard.md#minis)), so the Status filter has no "On
+  the sprue".
 - A group holds the minis past the sprue with the same name, factions
   and parts, each glued or swappable alike, from any box
   ([domain](../domains/hoard.md#lists-of-minis)). Its bar and legend count
@@ -272,12 +268,19 @@ summary line.
   tag filter when it carries any of the ticked tags.
 - Until the hoard comes from the server, the screen shows placeholder rows
   and boxes.
-  "Add boxes" opens [Add box](add-box.md); "Add minis" and "Add custom"
-  have no function yet.
+- "Add boxes" opens [Add box](add-box.md). "Add…" opens its menu:
+  "Add sprues" opens [Add box](add-box.md) for sprues
+  (`/hoard/add/sprues`), "Add minis" opens [Add minis](add-minis.md) and
+  "Add custom" opens [Add custom](add-custom.md).
+- The "Edited" badge is a small outlined badge in muted text, on box cards
+  and in the boxes table, for boxes whose minis on the sprue the user
+  counted themselves ([domain](../domains/hoard.md#boxes-and-kits)).
 
 ## Accessibility
 
 - Each checkbox is named after its mini ("Select Boy").
+- The "Add…" button has `aria-haspopup="menu"` and `aria-expanded`; its
+  entries are menu items.
 - The selection bar's "⋮" button has `aria-haspopup="menu"` and
   `aria-expanded`.
 - The delete dialog is an alert dialog named by its question and
@@ -299,7 +302,8 @@ summary line.
 
 ## Test IDs
 
-`hoard-summary`, `hoard-add-boxes`, `hoard-add-minis`, `hoard-add-custom`,
+`hoard-summary`, `hoard-add-boxes`, `hoard-add-menu`, `hoard-add-sprues`,
+`hoard-add-minis`, `hoard-add-custom`,
 `hoard-tab-minis`, `hoard-tab-minis-count`, `hoard-tab-boxes`,
 `hoard-view-cards`, `hoard-view-table`, `hoard-search`,
 `hoard-filter-faction`, `hoard-filter-status`, `hoard-filter-box`, `hoard-filter-option`, `hoard-filter-reset`,
@@ -316,6 +320,7 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 `hoard-box-filter-progress`, `hoard-box-filter-tag`,
 `hoard-box-filter-option`, `hoard-box-filter-reset`, `hoard-box`,
 `hoard-box-progress`, `hoard-box-percent`, `hoard-box-statuses`, `hoard-box-number`,
+`hoard-box-edited`,
 `hoard-box-menu`, `hoard-box-selection-bar`, `hoard-box-selection-count`,
 `hoard-box-select-all`, `hoard-box-select-done`, `hoard-box-table`,
 `hoard-box-sort-<column>`, `hoard-box-summary`, `hoard-box-no-results`,
@@ -324,8 +329,7 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 
 ## Open questions
 
-- What each add button opens; whether Workbench becomes a filter chip as
-  well.
+- Whether Workbench becomes a filter chip as well.
 - Mobs and squads are left out for now (domain doc); if they come, the
   screen gets them as a chip and a column.
 - Filtering by a faction should include the factions that are part of it

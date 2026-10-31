@@ -80,8 +80,9 @@ empty boxes unless the user deletes them.
 
 The system SHALL ask whether the minis of a box go with it when the user
 deletes the box, and SHALL either delete the box with all its minis, gone
-ones included, or only the box, keeping its minis in the hoard without a
-box and with the box's kit.
+ones included, or the box with its minis on the sprue, gone ones
+included, keeping its other minis in the hoard without a box and with the
+box's kit.
 
 #### Scenario: Deleting a box with its minis (DELETE-08)
 
@@ -95,8 +96,9 @@ box and with the box's kit.
 - **Given** a box of Boyz (2026) with 2 built Boyz and 8 Boyz on the
   sprue
 - **When** the user deletes the box and keeps its minis
-- **Then** the box is gone, the 10 Boyz stay in the hoard without a box,
-  and building one of them still suggests the names of the Boyz kit
+- **Then** the box and its 8 Boyz on the sprue are gone, the 2 built
+  Boyz stay in the hoard without a box, and renaming one of them still
+  suggests the names of the Boyz kit
 
 ### Requirement: Deleted minis leave no traces
 

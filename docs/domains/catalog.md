@@ -81,7 +81,9 @@ repository's README. This document covers what Greyhoarder does with it.
 - Kits marked as draft are offered like any other kit, but are marked as
   not checked.
 - Every signed-in user can search the catalog kits by name, the name of
-  any variant, product code or barcode, ignoring case. A search returns at most 50 kits, sorted by
+  any variant, product code, barcode or a name its slots, or those of the
+  kits in it, can be built as, ignoring case, with the slots that match
+  the name. A search returns at most 50 kits, sorted by
   name; removed kits are not part of it.
 - Every signed-in user can search the minis of the catalog: the names the
   slots of a catalog kit can be built as, each once per faction (the

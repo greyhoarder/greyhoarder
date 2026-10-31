@@ -9,8 +9,9 @@
 
 ## Purpose
 
-Adding minis without their box: bought loose, second hand or already
-painted. The user finds a mini the catalog knows, says how many and how far
+Adding minis bought built or further without their box: second hand or
+already painted. Minis on the sprue always belong to a box; sprues bought
+without their box are added on [Add box](add-box.md) for sprues. The user finds a mini the catalog knows, says how many and how far
 they have come, and adds them; minis of the same kind in different states
 are added one after the other, all on one screen. Minis the catalog does not
 know are put together on [Add custom](add-custom.md).
@@ -48,8 +49,8 @@ Texts are cut off with an ellipsis instead of wrapping.
 The open card has a gold border. Below the header, without a further
 border:
 
-1. The status: the label "Status" and one toggle chip per status, "On the
-   sprue" to "Done"; exactly one is chosen.
+1. The status: the label "Status" and one toggle chip per status,
+   "Built" to "Done"; exactly one is chosen.
 2. The parts: the chosen parts as tiles like on [Mini](mini.md), each with
    its swappable switch and a remove button, then "Add a part", which opens
    the part picker below the tiles with the groups "From the kit" (the
@@ -75,7 +76,7 @@ border:
 | Kit line | From {kit} · {year}, e.g. "From Boyz · 2026" |
 | Minis in the hoard | {n} in your hoard |
 | Status label | Status |
-| Status chips | On the sprue · Built · Primed · Painted · Done |
+| Status chips | Built · Primed · Painted · Done |
 | Add part button | Add a part |
 | Suggestion group | From the kit · {kit as in the kit line, without "From"}, e.g. "From the kit · Boyz · 2026" |
 | Vocabulary group | Your parts |
@@ -121,8 +122,7 @@ border:
   ([domain](../domains/hoard.md#parts)).
 - Adding creates as many minis as counted, without a box, with the name,
   the faction, the kit, the chosen status and parts, off the workbench
-  ([domain](../domains/hoard.md#minis)). Minis on the sprue without a box
-  are listed in the Minis tab of the [hoard](hoard.md) like the others.
+  ([domain](../domains/hoard.md#minis)).
 - After adding, the card stays open with what was chosen, so the same mini
   can be added again in another state; the status bar appears. "Show minis"
   leads to the Minis tab of the hoard, the cross hides the bar. The bar is

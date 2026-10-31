@@ -193,7 +193,7 @@ muted line, the "or" is plain.
 | On the sprue | The mini is on the sprue | The status "On the sprue", "Build as" with the mini's name chosen when it is a suggestion, else nothing chosen, parts preselected (see Behavior), the build bar; the save note says nothing is saved |
 | Building | "Build mini" pressed | The button shows the busy stripes and "Building…"; the bar stays until the server answers |
 | Built | The mini is past the sprue | No build bar; every change is saved at once, the save note says so |
-| Without kit | The mini has no box and no kit, or its box no kit, or the kit can't be loaded | No suggestion tiles, only "Your own name", except for a mini on the sprue without a box, which is offered its own name as a tile; no "Suggested by"; the part picker has no kit group; the box card without kit, parts and note |
+| Without kit | The mini has no box and no kit, or its box no kit, or the kit can't be loaded | No suggestion tiles, only "Your own name"; no "Suggested by"; the part picker has no kit group; the box card without kit, parts and note |
 | Picker open | "Add a part" pressed | The part picker below the part tiles |
 | Not found | No mini with this id in the user's hoard, also one of another user | The not-found message below the back link |
 | Load failed | The server does not answer | The load-failed message in `destructive` below the back link, announced to screen readers |

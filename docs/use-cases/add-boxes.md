@@ -15,6 +15,9 @@ catalog, so the minis in them are there on the sprue, ready to be built.
 
 - Minis without a box: [Add minis](add-minis.md) and
   [Add custom minis](add-custom-minis.md).
+- Sprues bought without their box: [Add sprues](add-sprues.md).
+- Changing a box's minis on the sprue later: [Edit a box](edit-a-box.md).
+- Splitting a bundle by faction or kit in one step (later).
 - Deciding what the minis become; that happens when they are built:
   [Build minis](build-minis.md) and
   [Build custom minis](build-custom-minis.md).
@@ -26,8 +29,8 @@ catalog, so the minis in them are there on the sprue, ready to be built.
 ### Requirement: Find a kit in the catalog
 
 The system SHALL offer the catalog kits whose name, a variant's name,
-product code or barcode contains the search, and MUST NOT offer removed
-kits.
+product code or barcode contains the search, or whose slots can be built
+as a name that contains it, and MUST NOT offer removed kits.
 
 #### Scenario: Search by name (ADD-BOXES-01)
 
@@ -77,6 +80,47 @@ asking what they will be built as.
 - **Then** the box has its own minis and those of both kits on the sprue,
   as if their boxes were added on their own
 
+### Requirement: Change what the boxes hold
+
+The system SHALL let the user change, before adding, how many minis each
+row of the kit puts on the sprue, down to none, and the name of the
+boxes; every box added gets the changed rows and name. A box whose rows
+differ from its kit SHALL be an edited box. The system MUST NOT add boxes
+without any mini.
+
+#### Scenario: Fewer minis in a row (ADD-BOXES-09)
+
+- **Given** the user opened a kit with a row of 10 Boys
+- **When** the user lowers the row to 7 and adds 1 box
+- **Then** the box has 7 Boys on the sprue and is marked as edited
+
+#### Scenario: Several changed boxes (ADD-BOXES-10)
+
+- **Given** the user lowered a row of 10 Boys to 7 and chose 2 boxes
+- **When** the user adds them
+- **Then** each of the 2 boxes has 7 Boys on the sprue, and both are
+  marked as edited
+
+#### Scenario: No minis left (ADD-BOXES-11)
+
+- **Given** the user set every row of the kit to none
+- **When** the user tries to add the box
+- **Then** nothing can be added until a row has at least one mini
+
+#### Scenario: Another name (ADD-BOXES-12)
+
+- **Given** the user opened "Boyz" from 2026 and named the box "Boyz from
+  Dad"
+- **When** the user adds it
+- **Then** the hoard has a box "Boyz from Dad", numbered among the boxes
+  of that name
+
+#### Scenario: Rows as the kit describes (ADD-BOXES-13)
+
+- **Given** the user changed a row and set it back to the kit's count
+- **When** the user adds the box
+- **Then** the box is not marked as edited
+
 ### Requirement: Show what is already in the hoard
 
 The system SHALL show for each kit how many boxes of it the user already
@@ -107,3 +151,4 @@ user chose.
 - Offering the user's existing tags once tags have a data model.
 - How a kit not in the catalog is added as a box.
 - Whether the search should also match factions and older names.
+- Whether a renamed box keeps the kit's year in its name.

@@ -28,10 +28,8 @@ it has come or to open it.
 ### Requirement: List the minis in groups
 
 The system SHALL list the minis past the sprue, with minis of the same
-name, factions and parts in one group whatever their box, and below them
-the minis on the sprue without a box in a section of their own, alike ones
-in one row with their count. It MUST NOT list the minis on the sprue of a
-box.
+name, factions and parts in one group whatever their box. It MUST NOT list
+minis on the sprue; they are on their box.
 
 #### Scenario: Alike minis from two boxes (BROWSE-01)
 
@@ -42,11 +40,9 @@ box.
 
 #### Scenario: Minis on the sprue (BROWSE-02)
 
-- **Given** a box with 10 minis on the sprue and a mini on the sprue
-  without a box
+- **Given** a box with 10 minis on the sprue and 2 built minis
 - **When** the user opens the minis of the hoard
-- **Then** the minis of the box are not listed, and the mini without a box
-  is listed in the section On the sprue
+- **Then** only the 2 built minis are listed
 
 ### Requirement: Search and filter
 
@@ -76,12 +72,6 @@ ticked in one filter are alternatives.
 - **When** the user ticks Space Marines in the faction filter
 - **Then** the minis of the Space Marines and of the Dark Angels are
   shown, but not those of the Orks
-
-#### Scenario: Only the minis on the sprue (BROWSE-14)
-
-- **Given** built Boyz and 10 Boyz on the sprue without a box
-- **When** the user ticks only On the sprue in the status filter
-- **Then** only the section On the sprue with the 10 Boyz is shown
 
 #### Scenario: Reset (BROWSE-05)
 
@@ -160,9 +150,9 @@ The system SHALL tell the user when the hoard can't be loaded.
 
 ## Open questions
 
-- The app lists minis on the sprue without a box among the others and
-  its status filter has no On the sprue yet (BROWSE-02 changed,
-  BROWSE-14 is new).
+- The app lists minis on the sprue without a box among the others
+  (BROWSE-02 changed); once minis on the sprue always belong to a box,
+  whether the status filter still needs On the sprue.
 - The search also matches the kit of a mini without a box; the hoard screen
   names only name, part and box.
 - Boxes can be selected, but the selection has no actions yet.
