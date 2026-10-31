@@ -26,4 +26,6 @@ export interface Box {
   readonly number: number;
   /** Its minis on the sprue were counted by the user, when adding it or later, not taken as its kit describes. */
   readonly isEdited?: boolean;
+  /** Sprues bought without their box; such a box is never an edited box. */
+  readonly areSprues?: boolean;
 }

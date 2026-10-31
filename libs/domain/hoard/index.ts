@@ -1,11 +1,12 @@
 export type { Box, BoxKitReference } from './box.js';
 export { editedRows, sprueRowCounts } from './box-rows.js';
-export { type ChangesToMinis, withChanges } from './changes-to-minis.js';
+export { type ChangesToMinis, haveSameName, withChanges } from './changes-to-minis.js';
 export { EmptyBoxError } from './errors/empty-box.error.js';
 export { hasReached, type HobbyStatus, hobbyStatuses } from './hobby-status.js';
 export { InvalidMiniError } from './errors/invalid-mini.error.js';
 export { InvalidRowsError } from './errors/invalid-rows.error.js';
 export { LooseMiniOnSprueError } from './errors/loose-mini-on-sprue.error.js';
+export { PartsOfDifferentMinisError } from './errors/parts-of-different-minis.error.js';
 export {
   boxKitName,
   type BundledKit,

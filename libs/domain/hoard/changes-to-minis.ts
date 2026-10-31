@@ -16,6 +16,11 @@ export interface ChangesToMinis {
   readonly removePartIds?: readonly string[];
 }
 
+/** Whether all the minis have the same name; only then their parts are changed together. */
+export function haveSameName(minis: readonly Mini[]): boolean {
+  return new Set(minis.map((mini) => mini.name)).size <= 1;
+}
+
 /**
  * A mini with the changes made to several minis at once. Only minis that are neither done nor gone
  * go on the workbench; once done, a mini leaves it (docs/domains/hoard.md, Workbench).

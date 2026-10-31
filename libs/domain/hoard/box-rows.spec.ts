@@ -95,6 +95,12 @@ describe('Rows of a box', () => {
     expect(deletedIds).toEqual(expect.not.arrayContaining(['4', '5']));
   });
 
+  it('does not mark a box of sprues as edited once a row changed', () => {
+    const { box } = editedRows(BOYZ, { ...BOX, areSprues: true }, MINIS, [4, 0], () => 'new');
+
+    expect(box.isEdited).toBeFalsy();
+  });
+
   it('marks the box as edited once a row changed', () => {
     const { box } = edit([4, 0]);
 

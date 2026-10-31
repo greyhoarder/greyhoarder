@@ -85,7 +85,8 @@ export function newBoxes(
   if (rows.every((count) => count === 0)) {
     throw new EmptyBoxError();
   }
-  const isEdited = boxesToAdd.areSprues === true || differFromKit(kit, rows);
+  const areSprues = boxesToAdd.areSprues === true;
+  const isEdited = !areSprues && differFromKit(kit, rows);
   const boxes: Box[] = [];
   const minis: Mini[] = [];
   for (let index = 0; index < boxesToAdd.boxes; index++) {
@@ -98,6 +99,7 @@ export function newBoxes(
       addedOn,
       number: firstNumber + index,
       ...(isEdited ? { isEdited } : {}),
+      ...(areSprues ? { areSprues } : {}),
     };
     boxes.push(box);
     kinds.forEach((kind, row) => minis.push(...rowMinis(kit, kind, box.id, rows[row] ?? 0, newId)));

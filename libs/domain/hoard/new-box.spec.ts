@@ -182,10 +182,11 @@ describe('New boxes', () => {
     expect(boxes[0]?.isEdited).toBeFalsy();
   });
 
-  it('marks a box of sprues as edited, also when counted as its kit describes', () => {
-    const { boxes } = newBoxes(BOYZ, { boxes: 1, tags: [], rows: [9, 1], areSprues: true }, context());
+  it('records a box of sprues as sprues, not as edited', () => {
+    const { boxes } = newBoxes(BOYZ, { boxes: 1, tags: [], rows: [7, 1], areSprues: true }, context());
 
-    expect(boxes[0]?.isEdited).toBe(true);
+    expect(boxes[0]?.areSprues).toBe(true);
+    expect(boxes[0]?.isEdited).toBeFalsy();
   });
 
   it('names counted undecided minis of an either-or kit after the kit', () => {

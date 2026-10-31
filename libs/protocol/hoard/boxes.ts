@@ -21,6 +21,7 @@ export const boxSchema = z.object({
   addedOn: isoDateSchema,
   number: z.number().int().min(1),
   isEdited: z.boolean().optional(),
+  areSprues: z.boolean().optional(),
 });
 
 /** Every box of the signed-in user's hoard. */

@@ -59,5 +59,5 @@ export function editedRows(
     deletedIds.push(...current.slice(count).map((mini) => mini.id));
   });
   const isChanged = added.length > 0 || deletedIds.length > 0;
-  return { box: isChanged ? { ...box, isEdited: true } : box, added, deletedIds };
+  return { box: isChanged && box.areSprues !== true ? { ...box, isEdited: true } : box, added, deletedIds };
 }
