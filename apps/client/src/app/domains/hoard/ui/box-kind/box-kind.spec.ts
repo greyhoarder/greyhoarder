@@ -15,7 +15,7 @@ describe('Box kind', () => {
     expect(icon?.getAttribute('aria-label')).toBe('Box');
   });
 
-  it('shows the grid icon for sprues', async () => {
+  it('shows the sprue icon for sprues', async () => {
     const icon = await render(true);
 
     expect(icon?.getAttribute('aria-label')).toBe('Sprues');
