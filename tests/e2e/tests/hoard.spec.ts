@@ -60,6 +60,34 @@ test.describe('Hoard', () => {
     await expect(page.getByTestId('hoard-group')).toHaveCount(1);
   });
 
+  test('deletes two selected boxes with their minis', async ({ page, signedIn }) => {
+    await addBuiltMinis(page, signedIn.url);
+    await page.goto(`${signedIn.url}/hoard/boxes`);
+    await page.getByTestId('hoard-row-check').first().click();
+    await page.getByTestId('hoard-row-check').last().click();
+
+    await page.getByTestId('hoard-box-selection-delete').click();
+    await page.getByTestId('box-delete-box-confirm').click();
+
+    await expect(page.getByTestId('hoard-box-empty')).toBeVisible();
+    await page.goto(`${signedIn.url}/hoard/minis`);
+    await expect(page.getByTestId('hoard-empty')).toBeVisible();
+  });
+
+  test('deletes two selected boxes and keeps their built minis', async ({ page, signedIn }) => {
+    await addBuiltMinis(page, signedIn.url);
+    await page.goto(`${signedIn.url}/hoard/boxes`);
+    await page.getByTestId('hoard-row-check').first().click();
+    await page.getByTestId('hoard-row-check').last().click();
+
+    await page.getByTestId('hoard-box-selection-delete').click();
+    await page.getByTestId('box-delete-box-keep-minis').click();
+
+    await expect(page.getByTestId('hoard-box-empty')).toBeVisible();
+    await page.goto(`${signedIn.url}/hoard/minis`);
+    await expect(page.getByTestId('hoard-group')).not.toHaveCount(0);
+  });
+
   test('deletes selected minis after asking', async ({ page, signedIn }) => {
     await addBuiltMinis(page, signedIn.url);
     await page.goto(`${signedIn.url}/hoard/minis`);
