@@ -20,6 +20,7 @@ export const boxSchema = z.object({
   tags: z.array(z.string()).readonly(),
   addedOn: isoDateSchema,
   number: z.number().int().min(1),
+  isEdited: z.boolean().optional(),
 });
 
 /** Every box of the signed-in user's hoard. */

@@ -4,8 +4,19 @@ export {
   type AddBoxesResponse,
   addBoxesResponseSchema,
 } from './add-boxes.js';
+export {
+  type EditBoxRowsRequest,
+  editBoxRowsRequestSchema,
+  type EditBoxRowsResponse,
+  editBoxRowsResponseSchema,
+} from './box-rows.js';
 export { type BoxesResponse, boxesResponseSchema } from './boxes.js';
-export { type DeleteBoxResponse, deleteBoxResponseSchema } from './delete-box.js';
+export {
+  type DeleteBoxRequest,
+  deleteBoxRequestSchema,
+  type DeleteBoxResponse,
+  deleteBoxResponseSchema,
+} from './delete-box.js';
 export {
   type AddMinisRequest,
   addMinisRequestSchema,

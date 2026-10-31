@@ -38,7 +38,7 @@ const catalogKitSchema = z.object({
   variants: z.array(kitVariantSchema).readonly(),
 });
 
-/** Searching the catalog by name, product code or barcode. */
+/** Searching the catalog by name, product code, barcode or a name its slots, or those of the kits in it, can be built as. */
 export const kitSearchRequestSchema = z.object({
   search: z.string().trim().min(1).max(100),
 });
