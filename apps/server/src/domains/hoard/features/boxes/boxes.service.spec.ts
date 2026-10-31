@@ -38,6 +38,26 @@ function fakeCatalog(kit: CatalogKit, version: number): CatalogKitQueries {
   };
 }
 
+const BOX: Box = { id: 'boyz', name: 'Boyz', factionIds: [], tags: [], addedOn: '2026-10-25', number: 1 };
+
+function miniOf(boxId: string, id: string, status: Mini['status']): Mini {
+  return { id, name: id, factionIds: [], status, parts: [], boxId, isOnWorkbench: false };
+}
+
+/** A hoard of these boxes and minis, deleting boxes as `deleteBoxes` does. */
+function hoardOf(boxes: readonly Box[], minis: readonly Mini[], deleteBoxes: HoardRepository['deleteBoxes']) {
+  return {
+    findBoxes: vi.fn(() => Promise.resolve(boxes)),
+    findMinis: vi.fn(() => Promise.resolve(minis)),
+    findMinisByIds: vi.fn(),
+    findParts: vi.fn(),
+    addBoxes: vi.fn(),
+    updateMinis: vi.fn(),
+    deleteMinis: vi.fn(),
+    deleteBoxes,
+  };
+}
+
 describe('Boxes', () => {
   it('adds boxes of the latest version of a catalog kit, each with the minis it puts on the sprue', async () => {
     const addBoxes = vi.fn<HoardRepository['addBoxes']>(() => Promise.resolve());
@@ -82,7 +102,7 @@ describe('Boxes', () => {
       boxId: 'boyz',
       isOnWorkbench: false,
     }));
-    const deleteBox = vi.fn<HoardRepository['deleteBox']>(() => Promise.resolve(['boy', 'nob']));
+    const deleteBoxes = vi.fn<HoardRepository['deleteBoxes']>(() => Promise.resolve(['boy', 'nob']));
     const hoard = {
       findBoxes: vi.fn(() => Promise.resolve([box])),
       findMinis: vi.fn(() => Promise.resolve(minis)),
@@ -91,18 +111,18 @@ describe('Boxes', () => {
       addBoxes: vi.fn(),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox,
+      deleteBoxes,
     };
     const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
 
-    const { deletedMiniIds } = await service.delete('owner', 'boyz');
+    const { deletedMiniIds } = await service.delete('owner', ['boyz']);
 
-    expect(deleteBox).toHaveBeenCalledWith('owner', 'boyz', expect.objectContaining({ changed: [] }));
+    expect(deleteBoxes).toHaveBeenCalledWith('owner', ['boyz'], expect.objectContaining({ changed: [] }));
     expect(deletedMiniIds).toEqual(['boy', 'nob']);
   });
 
   it('refuses to delete a box that is not in the hoard', async () => {
-    const deleteBox = vi.fn<HoardRepository['deleteBox']>();
+    const deleteBoxes = vi.fn<HoardRepository['deleteBoxes']>();
     const hoard = {
       findBoxes: vi.fn(() => Promise.resolve([])),
       findMinis: vi.fn(() => Promise.resolve([])),
@@ -111,14 +131,57 @@ describe('Boxes', () => {
       addBoxes: vi.fn(),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox,
+      deleteBoxes,
     };
     const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
 
-    const remove = service.delete('owner', 'someone-elses-box');
+    const remove = service.delete('owner', ['someone-elses-box']);
 
     await expect(remove).rejects.toThrow(UnknownBoxError);
-    expect(deleteBox).not.toHaveBeenCalled();
+    expect(deleteBoxes).not.toHaveBeenCalled();
+  });
+
+  it('deletes several boxes with all their minis in one go', async () => {
+    const boxes = ['boyz', 'nobz'].map((id, index): Box => ({ ...BOX, id, number: index + 1 }));
+    const minis = [miniOf('boyz', 'boy', 'built'), miniOf('nobz', 'nob', 'sprue')];
+    const deleteBoxes = vi.fn<HoardRepository['deleteBoxes']>(() => Promise.resolve(['boy', 'nob']));
+    const service = new BoxesService(hoardOf(boxes, minis, deleteBoxes), fakeCatalog(BOYZ, 3));
+
+    const { deletedMiniIds } = await service.delete('owner', ['boyz', 'nobz']);
+
+    expect(deleteBoxes).toHaveBeenCalledOnce();
+    expect(deleteBoxes).toHaveBeenCalledWith('owner', ['boyz', 'nobz'], expect.objectContaining({ keptMinis: [] }));
+    expect(deletedMiniIds).toEqual(['boy', 'nob']);
+  });
+
+  it('deletes several boxes and keeps their minis past the sprue when asked', async () => {
+    const boxes = ['boyz', 'nobz'].map((id, index): Box => ({ ...BOX, id, number: index + 1 }));
+    const minis = [miniOf('boyz', 'boy', 'built'), miniOf('nobz', 'nob', 'built'), miniOf('nobz', 'grot', 'sprue')];
+    const deleteBoxes = vi.fn<HoardRepository['deleteBoxes']>(() => Promise.resolve(['grot']));
+    const service = new BoxesService(hoardOf(boxes, minis, deleteBoxes), fakeCatalog(BOYZ, 3));
+
+    const deletion = await service.delete('owner', ['boyz', 'nobz'], { keepBuiltMinis: true });
+
+    expect(deletion.deletedMiniIds).toEqual(['grot']);
+    expect(deletion.minis.map((mini) => [mini.id, mini.boxId])).toEqual([
+      ['boy', undefined],
+      ['nob', undefined],
+    ]);
+    expect(deleteBoxes).toHaveBeenCalledWith(
+      'owner',
+      ['boyz', 'nobz'],
+      expect.objectContaining({ keptMinis: deletion.minis }),
+    );
+  });
+
+  it('deletes nothing when one of the boxes is not in the hoard', async () => {
+    const deleteBoxes = vi.fn<HoardRepository['deleteBoxes']>();
+    const service = new BoxesService(hoardOf([BOX], [], deleteBoxes), fakeCatalog(BOYZ, 3));
+
+    const remove = service.delete('owner', [BOX.id, 'someone-elses-box']);
+
+    await expect(remove).rejects.toThrow(UnknownBoxError);
+    expect(deleteBoxes).not.toHaveBeenCalled();
   });
 
   it('numbers new boxes after the boxes of the same name', async () => {
@@ -138,7 +201,7 @@ describe('Boxes', () => {
       addBoxes: vi.fn<HoardRepository['addBoxes']>(() => Promise.resolve()),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox: vi.fn(),
+      deleteBoxes: vi.fn(),
     };
     const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
 
@@ -169,7 +232,7 @@ describe('Boxes', () => {
       addBoxes: vi.fn<HoardRepository['addBoxes']>(() => Promise.resolve()),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox: vi.fn(),
+      deleteBoxes: vi.fn(),
     };
     const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
 
@@ -198,7 +261,7 @@ describe('Boxes', () => {
       { id: 'boy', name: 'Boy', factionIds: [], status: 'sprue', parts: [], boxId: 'boyz', isOnWorkbench: false },
       { id: 'nob', name: 'Nob', factionIds: [], status: 'built', parts: [], boxId: 'boyz', isOnWorkbench: false },
     ];
-    const deleteBox = vi.fn<HoardRepository['deleteBox']>(() => Promise.resolve(['boy']));
+    const deleteBoxes = vi.fn<HoardRepository['deleteBoxes']>(() => Promise.resolve(['boy']));
     const hoard = {
       findBoxes: vi.fn(() => Promise.resolve([box])),
       findMinis: vi.fn(() => Promise.resolve(minis)),
@@ -207,17 +270,17 @@ describe('Boxes', () => {
       addBoxes: vi.fn(),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox,
+      deleteBoxes,
     };
     const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
 
-    const deletion = await service.delete('owner', 'boyz', { keepBuiltMinis: true });
+    const deletion = await service.delete('owner', ['boyz'], { keepBuiltMinis: true });
 
     expect(deletion.deletedMiniIds).toEqual(['boy']);
     expect(deletion.minis).toEqual([
       { id: 'nob', name: 'Nob', factionIds: [], status: 'built', parts: [], kit: box.kit, isOnWorkbench: false },
     ]);
-    expect(deleteBox).toHaveBeenCalledWith('owner', 'boyz', expect.objectContaining({ keptMinis: deletion.minis }));
+    expect(deleteBoxes).toHaveBeenCalledWith('owner', ['boyz'], expect.objectContaining({ keptMinis: deletion.minis }));
   });
 
   it('changes the minis on the sprue of a box row by row', async () => {
@@ -250,7 +313,7 @@ describe('Boxes', () => {
       addBoxes: vi.fn(),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox: vi.fn(),
+      deleteBoxes: vi.fn(),
       editBoxRows,
     };
     const catalog = fakeCatalog(BOYZ, 3);
@@ -309,7 +372,7 @@ describe('Boxes', () => {
       addBoxes: vi.fn(),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox: vi.fn(),
+      deleteBoxes: vi.fn(),
       editBoxRows: vi.fn<HoardRepository['editBoxRows']>(() => Promise.resolve()),
     };
     const catalog = fakeCatalog(BOYZ, 3);
@@ -332,7 +395,7 @@ describe('Boxes', () => {
       addBoxes: vi.fn(),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox: vi.fn(),
+      deleteBoxes: vi.fn(),
       editBoxRows,
     };
     const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
@@ -361,7 +424,7 @@ describe('Boxes', () => {
       addBoxes: vi.fn(),
       updateMinis: vi.fn(),
       deleteMinis: vi.fn(),
-      deleteBox: vi.fn(),
+      deleteBoxes: vi.fn(),
       editBoxRows,
     };
     const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));

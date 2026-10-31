@@ -44,7 +44,7 @@ function fakeHoard(
     addBoxes: vi.fn(),
     updateMinis,
     deleteMinis,
-    deleteBox: vi.fn(),
+    deleteBoxes: vi.fn(),
   };
   return { hoard, updateMinis, deleteMinis };
 }

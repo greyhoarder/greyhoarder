@@ -49,9 +49,9 @@ export interface AddedBoxes {
   readonly minis: readonly Mini[];
 }
 
-/** What deleting a box took with it. */
+/** What deleting boxes took with them. */
 export interface BoxDeletion {
-  /** Its minis deleted with it, gone ones included. */
+  /** Their minis deleted with them, gone ones included. */
   readonly deletedMiniIds: readonly string[];
   /** Other minis that changed: kept ones now without a box, and those whose recipients lost deleted ones. */
   readonly minis: readonly Mini[];
@@ -68,7 +68,7 @@ export interface EditedBox {
 
 /**
  * The boxes of the signed-in user's hoard: listing them, adding boxes of a catalog kit, counting the
- * minis on the sprue of a box anew, deleting a box.
+ * minis on the sprue of a box anew, deleting boxes.
  */
 @Injectable()
 export class BoxesService {
@@ -176,33 +176,38 @@ export class BoxesService {
   }
 
   /**
-   * Deletes the box and all its minis for good, gone ones included, or only those on the sprue when
-   * the others are kept: they stay without a box, with its kit. Takes the deleted minis out of the
-   * recipients of other minis' parts; all or nothing (docs/domains/hoard.md, Boxes and kits).
+   * Deletes the boxes and all their minis for good, gone ones included, or only those on the sprue
+   * when the others are kept: they stay without a box, with its kit. Takes the deleted minis out of
+   * the recipients of other minis' parts; all or nothing (docs/domains/hoard.md, Boxes and kits).
    *
-   * @throws UnknownBoxError when the box is not in the owner's hoard
+   * @throws UnknownBoxError when one of the boxes is not in the owner's hoard
    */
   async delete(
     ownerId: string,
-    boxId: string,
+    boxIds: readonly string[],
     options: { readonly keepBuiltMinis?: boolean } = {},
   ): Promise<BoxDeletion> {
-    const box = (await this.hoard.findBoxes(ownerId)).find((candidate) => candidate.id === boxId);
-    if (box === undefined) {
+    const asked = new Set(boxIds);
+    const boxes = (await this.hoard.findBoxes(ownerId)).filter((box) => asked.has(box.id));
+    if (boxes.length !== asked.size) {
       throw new UnknownBoxError();
     }
     const all = await this.hoard.findMinis(ownerId);
-    const { deleted, kept } = boxDeletion(
-      box,
-      all.filter((mini) => mini.boxId === boxId),
-      { keepBuiltMinis: options.keepBuiltMinis === true },
+    const deletions = boxes.map((box) =>
+      boxDeletion(
+        box,
+        all.filter((mini) => mini.boxId === box.id),
+        { keepBuiltMinis: options.keepBuiltMinis === true },
+      ),
     );
+    const deleted = deletions.flatMap((deletion) => deletion.deleted);
+    const kept = deletions.flatMap((deletion) => deletion.kept);
     const deletedIds = new Set(deleted.map((mini) => mini.id));
     const keptById = new Map(kept.map((mini) => [mini.id, mini]));
     const staying = all.filter((mini) => !deletedIds.has(mini.id)).map((mini) => keptById.get(mini.id) ?? mini);
     const changed = withoutDeletedRecipients(staying, deletedIds);
     const changedIds = new Set(changed.map((mini) => mini.id));
-    const deletedMiniIds = await this.hoard.deleteBox(ownerId, boxId, {
+    const deletedMiniIds = await this.hoard.deleteBoxes(ownerId, [...asked], {
       changed,
       keptMinis: kept,
       droppedPartIds: droppedParts(deleted, []),

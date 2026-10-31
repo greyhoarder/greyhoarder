@@ -220,19 +220,20 @@ export class MongoHoardRepository extends HoardRepository {
     });
   }
 
-  async deleteBox(
+  async deleteBoxes(
     ownerId: string,
-    boxId: string,
+    boxIds: readonly string[],
     change: HoardChange & { readonly keptMinis: readonly Mini[] },
   ): Promise<string[]> {
     return this.connection.transaction(async (session) => {
-      const deleting = { ownerId, boxId, _id: { $nin: change.keptMinis.map((mini) => mini.id) } };
-      // Read inside the transaction, so a mini added to the box meanwhile goes with it.
+      const inBoxes = { $in: [...boxIds] };
+      const deleting = { ownerId, boxId: inBoxes, _id: { $nin: change.keptMinis.map((mini) => mini.id) } };
+      // Read inside the transaction, so a mini added to a box meanwhile goes with it.
       const minis = await this.minis.find(deleting, { _id: 1 }, { session }).lean().exec();
       const miniIds = minis.map((mini) => mini._id);
       await this.minis.deleteMany(deleting, { session });
-      await this.takeOutOfBox(ownerId, boxId, change.keptMinis, session);
-      await this.boxes.deleteOne({ ownerId, _id: boxId }, { session });
+      await this.takeOutOfBoxes(ownerId, boxIds, change.keptMinis, session);
+      await this.boxes.deleteMany({ ownerId, _id: inBoxes }, { session });
       await this.writeMinis(ownerId, change.changed, session);
       await this.deleteDropped(ownerId, change, session);
       return miniIds;
@@ -240,9 +241,9 @@ export class MongoHoardRepository extends HoardRepository {
   }
 
   /** Leaves the minis without their box, with the kit they keep in its place. */
-  private async takeOutOfBox(
+  private async takeOutOfBoxes(
     ownerId: string,
-    boxId: string,
+    boxIds: readonly string[],
     minis: readonly Mini[],
     session: ClientSession,
   ): Promise<void> {
@@ -254,7 +255,7 @@ export class MongoHoardRepository extends HoardRepository {
         const { kit } = toMiniDbo(ownerId, mini);
         return {
           updateOne: {
-            filter: { _id: mini.id, ownerId, boxId },
+            filter: { _id: mini.id, ownerId, boxId: { $in: [...boxIds] } },
             update: kit === undefined ? { $unset: { boxId: '' } } : { $set: { kit }, $unset: { boxId: '' } },
           },
         };

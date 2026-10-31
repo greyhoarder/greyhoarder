@@ -7,7 +7,6 @@ import {
   Param,
   Post,
   Put,
-  Query,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { EmptyBoxError, InvalidRowsError } from '@greyhoarder/domain/hoard';
@@ -17,8 +16,8 @@ import {
   addBoxesResponseSchema,
   type BoxesResponse,
   boxesResponseSchema,
-  type DeleteBoxResponse,
-  deleteBoxResponseSchema,
+  type DeleteBoxesResponse,
+  deleteBoxesResponseSchema,
   type EditBoxRowsResponse,
   editBoxRowsResponseSchema,
 } from '@greyhoarder/protocol/hoard';
@@ -26,7 +25,7 @@ import { ZodSerializerDto } from 'nestjs-zod';
 import { CurrentUser } from '../../../../shared/auth/current-user.decorator.js';
 import { BoxesService } from './boxes.service.js';
 import { AddBoxesRequestDto } from './dtos/add-boxes-request.dto.js';
-import { DeleteBoxRequestDto } from './dtos/delete-box-request.dto.js';
+import { DeleteBoxesRequestDto } from './dtos/delete-boxes-request.dto.js';
 import { EditBoxRowsRequestDto } from './dtos/edit-box-rows-request.dto.js';
 import { BoxWithoutKitError } from './errors/box-without-kit.error.js';
 import { UnknownBoxError } from './errors/unknown-box.error.js';
@@ -84,15 +83,11 @@ export class BoxesController {
     }
   }
 
-  @Delete(':id')
-  @ZodSerializerDto(deleteBoxResponseSchema)
-  async delete(
-    @CurrentUser() user: User,
-    @Param('id') id: string,
-    @Query() query: DeleteBoxRequestDto,
-  ): Promise<DeleteBoxResponse> {
+  @Delete()
+  @ZodSerializerDto(deleteBoxesResponseSchema)
+  async delete(@CurrentUser() user: User, @Body() body: DeleteBoxesRequestDto): Promise<DeleteBoxesResponse> {
     try {
-      return await this.boxes.delete(user.id, id, { keepBuiltMinis: query.keepBuiltMinis });
+      return await this.boxes.delete(user.id, body.ids, { keepBuiltMinis: body.keepBuiltMinis });
     } catch (error) {
       if (error instanceof UnknownBoxError) {
         throw new NotFoundException(error.message);

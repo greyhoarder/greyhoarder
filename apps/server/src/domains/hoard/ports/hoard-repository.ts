@@ -28,15 +28,15 @@ export abstract class HoardRepository {
   abstract deleteMinis(ownerId: string, miniIds: readonly string[], change: HoardChange): Promise<void>;
 
   /**
-   * Deletes the box with every mini it has at that moment, gone ones included, except the kept
+   * Deletes the boxes with every mini they have at that moment, gone ones included, except the kept
    * minis, which stay without a box and with their kit; stores the change it makes to other minis
    * and the vocabulary, all or nothing.
    *
    * @returns the ids of the deleted minis
    */
-  abstract deleteBox(
+  abstract deleteBoxes(
     ownerId: string,
-    boxId: string,
+    boxIds: readonly string[],
     change: HoardChange & { readonly keptMinis: readonly Mini[] },
   ): Promise<string[]>;
 
