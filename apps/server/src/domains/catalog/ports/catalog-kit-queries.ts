@@ -7,9 +7,16 @@ import type { VersionedEntry } from '../models/versioned-entry.js';
 export abstract class CatalogKitQueries {
   /**
    * The latest version of every kit that is not removed and whose name, the name of any variant,
-   * product code or barcode contains the text, ignoring case; at most `limit`, sorted by name.
+   * product code, barcode or a name its slots can be built as contains the text, ignoring case; at
+   * most `limit`, sorted by name.
    */
   abstract searchKits(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]>;
+
+  /** The ids of the latest kits, removed ones included, with a slot that can be built as a name containing the text, ignoring case. */
+  abstract findKitIdsBuildableAs(text: string): Promise<string[]>;
+
+  /** The latest version of every kit, removed ones included, that contains one of the kits with these ids. */
+  abstract findBundlesContaining(kitIds: readonly string[]): Promise<VersionedEntry<CatalogKit>[]>;
 
   /**
    * The latest version of every kit that is not removed and that has, for every word, the word in

@@ -34,6 +34,20 @@ function fakeQueries(kits: {
   return {
     searchKits: () => Promise.resolve((kits.found ?? []).map(latest)),
     findKits: (ids) => Promise.resolve(kits.catalog.filter((entry) => ids.includes(entry.id)).map(latest)),
+    findKitIdsBuildableAs: (text) =>
+      Promise.resolve(
+        kits.catalog
+          .filter((entry) =>
+            entry.variants.some((variant) =>
+              variant.slots.some((slot) => slot.buildsAs.some((name) => name.toLowerCase().includes(text))),
+            ),
+          )
+          .map((entry) => entry.id),
+      ),
+    findBundlesContaining: (ids) =>
+      Promise.resolve(
+        kits.catalog.filter((entry) => entry.contains.some((contained) => ids.includes(contained.kitId))).map(latest),
+      ),
     findKitVersion: (id, version) =>
       Promise.resolve(kits.versions?.find((stored) => stored.entry.id === id && stored.version === version)),
     findFactions: () => Promise.resolve([]),
@@ -50,6 +64,20 @@ describe('Kit search', () => {
     const result = await service.search('a');
 
     expect(result.containedKits.map((contained) => contained.entry.id)).toEqual([B.id, C.id]);
+  });
+
+  it('finds a bundle through a kit in it whose slots match the search', async () => {
+    const nobz = {
+      ...kit('games-workshop/orks/nobz'),
+      variants: [{ name: 'Nobz', slots: [{ count: 5, buildsAs: ['Nob'], parts: [], factionIds: [] }] }],
+    };
+    const starter = kit('games-workshop/orks/starter', [nobz.id]);
+    const bigBox = kit('games-workshop/orks/big-box', [starter.id]);
+    const service = new KitsService(fakeQueries({ found: [nobz], catalog: [nobz, starter, bigBox] }));
+
+    const result = await service.search('nob');
+
+    expect(result.kits.map(({ entry }) => entry.id)).toEqual([bigBox.id, nobz.id, starter.id]);
   });
 });
 

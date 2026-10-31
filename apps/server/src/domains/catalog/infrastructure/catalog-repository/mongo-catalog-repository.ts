@@ -80,10 +80,26 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
           { 'variants.name': contains },
           { 'releases.sku': contains },
           { 'releases.barcode': contains },
+          { 'variants.slots.buildsAs': contains },
         ],
       })
       .sort({ name: 1, kitId: 1 })
       .limit(limit)
+      .lean()
+      .exec();
+    return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
+  }
+
+  async findKitIdsBuildableAs(text: string): Promise<string[]> {
+    const ids: unknown[] = await this.kits
+      .distinct('kitId', { ...LATEST, 'variants.slots.buildsAs': new RegExp(escapeRegExp(text), 'i') })
+      .exec();
+    return ids.filter((id): id is string => typeof id === 'string');
+  }
+
+  async findBundlesContaining(kitIds: readonly string[]): Promise<VersionedEntry<CatalogKit>[]> {
+    const kits = await this.kits
+      .find({ ...LATEST, 'contains.kitId': { $in: kitIds } })
       .lean()
       .exec();
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));

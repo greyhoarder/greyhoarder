@@ -28,12 +28,29 @@ export abstract class HoardRepository {
   abstract deleteMinis(ownerId: string, miniIds: readonly string[], change: HoardChange): Promise<void>;
 
   /**
-   * Deletes the box with every mini it has at that moment, gone ones included, and stores the change
-   * it makes to other minis and the vocabulary, all or nothing.
+   * Deletes the box with every mini it has at that moment, gone ones included, except the kept
+   * minis, which stay without a box and with their kit; stores the change it makes to other minis
+   * and the vocabulary, all or nothing.
    *
    * @returns the ids of the deleted minis
    */
-  abstract deleteBox(ownerId: string, boxId: string, change: HoardChange): Promise<string[]>;
+  abstract deleteBox(
+    ownerId: string,
+    boxId: string,
+    change: HoardChange & { readonly keptMinis: readonly Mini[] },
+  ): Promise<string[]>;
+
+  /**
+   * Stores a box with its minis on the sprue counted anew: the box as edited, the added minis and
+   * the deleted ones, with the change it makes to other minis and the vocabulary, all or nothing.
+   */
+  abstract editBoxRows(
+    ownerId: string,
+    box: Box,
+    added: readonly Mini[],
+    deletedMiniIds: readonly string[],
+    change: HoardChange,
+  ): Promise<void>;
 
   /**
    * Stores new minis together with the parts and own factions they added, all or nothing.

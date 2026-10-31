@@ -1,4 +1,4 @@
-import type { Mini, OwnFaction, Part } from '@greyhoarder/domain/hoard';
+import { LooseMiniOnSprueError, type Mini, type OwnFaction, type Part } from '@greyhoarder/domain/hoard';
 import type { CatalogKitQueries } from '../../../catalog/api/index.js';
 import type { HoardRepository } from '../../ports/hoard-repository.js';
 import { UnknownFactionError } from './errors/unknown-faction.error.js';
@@ -13,6 +13,7 @@ const BOY: Mini = {
   factionIds: ['warhammer-40000/orks'],
   status: 'sprue',
   parts: [],
+  boxId: 'boyz',
   isOnWorkbench: false,
 };
 
@@ -290,7 +291,7 @@ describe('Minis service', () => {
     const [added] = await service.add('owner', {
       name: 'Boy',
       factions: [{ id: 'warhammer-40000/orks' }],
-      status: 'sprue',
+      status: 'built',
       parts: [],
       kit: { id: 'games-workshop/orks/boyz-2026', version: 1 },
       count: 1,
@@ -302,5 +303,33 @@ describe('Minis service', () => {
       name: 'Boyz (2026)',
       sku: '50-80',
     });
+  });
+
+  it('refuses to add minis without a box on the sprue', async () => {
+    const addMinis = vi.fn<HoardRepository['addMinis']>(() => Promise.resolve());
+    const { hoard } = fakeHoard([]);
+    hoard.addMinis = addMinis;
+    const service = new MinisService(hoard, CATALOG);
+
+    const add = service.add('owner', {
+      name: 'Boy',
+      factions: [{ id: 'warhammer-40000/orks' }],
+      status: 'sprue',
+      parts: [],
+      count: 1,
+    });
+
+    await expect(add).rejects.toThrow(LooseMiniOnSprueError);
+    expect(addMinis).not.toHaveBeenCalled();
+  });
+
+  it('refuses to set a mini without a box back on the sprue', async () => {
+    const { hoard, updateMinis } = fakeHoard([{ ...BOY, status: 'built', boxId: undefined }]);
+    const service = new MinisService(hoard, CATALOG);
+
+    const update = service.update('owner', ['boy'], { status: 'sprue' });
+
+    await expect(update).rejects.toThrow(LooseMiniOnSprueError);
+    expect(updateMinis).not.toHaveBeenCalled();
   });
 });

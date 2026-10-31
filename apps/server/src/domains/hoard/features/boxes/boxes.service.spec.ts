@@ -3,6 +3,7 @@ import type { Box, Mini } from '@greyhoarder/domain/hoard';
 import type { CatalogKitQueries } from '../../../catalog/api/index.js';
 import type { HoardRepository } from '../../ports/hoard-repository.js';
 import { BoxesService } from './boxes.service.js';
+import { BoxWithoutKitError } from './errors/box-without-kit.error.js';
 import { UnknownBoxError } from './errors/unknown-box.error.js';
 
 const BOYZ: CatalogKit = {
@@ -149,5 +150,225 @@ describe('Boxes', () => {
     });
 
     expect(boxes.map((box) => box.number)).toEqual([3, 4]);
+  });
+
+  it('numbers new boxes after the boxes of the name chosen for them', async () => {
+    const existing: Box = {
+      id: 'boyz-from-dad',
+      name: 'Boyz from Dad',
+      factionIds: [],
+      tags: [],
+      addedOn: '2026-10-01',
+      number: 1,
+    };
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([existing])),
+      findMinis: vi.fn(),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn<HoardRepository['addBoxes']>(() => Promise.resolve()),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox: vi.fn(),
+    };
+    const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
+
+    const { boxes } = await service.add('owner', {
+      kitId: BOYZ.id,
+      boxes: 1,
+      tags: [],
+      addedOn: '2026-10-25',
+      name: 'Boyz from Dad',
+    });
+
+    expect(boxes.map((box) => [box.name, box.number])).toEqual([['Boyz from Dad', 2]]);
+  });
+
+  it('deletes a box and keeps its minis past the sprue when asked', async () => {
+    const box: Box = {
+      id: 'boyz',
+      name: 'Boyz (2026)',
+      kit: { id: BOYZ.id, version: 3, name: 'Boyz (2026)', sku: '50-80' },
+      factionIds: [],
+      tags: [],
+      addedOn: '2026-10-25',
+      number: 1,
+    };
+    const minis: Mini[] = [
+      { id: 'boy', name: 'Boy', factionIds: [], status: 'sprue', parts: [], boxId: 'boyz', isOnWorkbench: false },
+      { id: 'nob', name: 'Nob', factionIds: [], status: 'built', parts: [], boxId: 'boyz', isOnWorkbench: false },
+    ];
+    const deleteBox = vi.fn<HoardRepository['deleteBox']>(() => Promise.resolve(['boy']));
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([box])),
+      findMinis: vi.fn(() => Promise.resolve(minis)),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn(),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox,
+    };
+    const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
+
+    const deletion = await service.delete('owner', 'boyz', { keepBuiltMinis: true });
+
+    expect(deletion.deletedMiniIds).toEqual(['boy']);
+    expect(deletion.minis).toEqual([
+      { id: 'nob', name: 'Nob', factionIds: [], status: 'built', parts: [], kit: box.kit, isOnWorkbench: false },
+    ]);
+    expect(deleteBox).toHaveBeenCalledWith('owner', 'boyz', expect.objectContaining({ keptMinis: deletion.minis }));
+  });
+
+  it('changes the minis on the sprue of a box row by row', async () => {
+    const box: Box = {
+      id: 'boyz',
+      name: 'Boyz (2026)',
+      kit: { id: BOYZ.id, version: 3, name: 'Boyz (2026)', sku: '50-80' },
+      factionIds: [],
+      tags: [],
+      addedOn: '2026-10-25',
+      number: 1,
+    };
+    const onSprue = (id: string, name: string): Mini => ({
+      id,
+      name,
+      factionIds: ['warhammer-40000/orks'],
+      status: 'sprue',
+      parts: [],
+      sprueName: name,
+      boxId: 'boyz',
+      isOnWorkbench: false,
+    });
+    const minis = [onSprue('boy-1', 'Boy'), onSprue('boy-2', 'Boy'), onSprue('nob', 'Nob')];
+    const editBoxRows = vi.fn<HoardRepository['editBoxRows']>(() => Promise.resolve());
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([box])),
+      findMinis: vi.fn(() => Promise.resolve(minis)),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn(),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox: vi.fn(),
+      editBoxRows,
+    };
+    const catalog = fakeCatalog(BOYZ, 3);
+    catalog.findKitVersion = (id, version) =>
+      Promise.resolve(id === BOYZ.id && version === 3 ? { entry: BOYZ, version, isRemoved: false } : undefined);
+    const service = new BoxesService(hoard, catalog);
+
+    const edited = await service.editRows('owner', 'boyz', [3, 0]);
+
+    expect(edited.box.isEdited).toBe(true);
+    expect(edited.addedMinis.map((mini) => [mini.name, mini.status, mini.boxId])).toEqual([['Boy', 'sprue', 'boyz']]);
+    expect(edited.deletedMiniIds).toEqual(['nob']);
+    expect(editBoxRows).toHaveBeenCalledWith(
+      'owner',
+      edited.box,
+      edited.addedMinis,
+      edited.deletedMiniIds,
+      expect.objectContaining({ changed: [] }),
+    );
+  });
+
+  it('hands back the minis that no longer name a mini deleted while editing the box', async () => {
+    const box: Box = {
+      id: 'boyz',
+      name: 'Boyz (2026)',
+      kit: { id: BOYZ.id, version: 3, name: 'Boyz (2026)', sku: '50-80' },
+      factionIds: [],
+      tags: [],
+      addedOn: '2026-10-25',
+      number: 1,
+    };
+    const boy: Mini = {
+      id: 'boy',
+      name: 'Boy',
+      factionIds: ['warhammer-40000/orks'],
+      status: 'sprue',
+      parts: [],
+      sprueName: 'Boy',
+      boxId: 'boyz',
+      isOnWorkbench: false,
+    };
+    const stripped: Mini = {
+      ...boy,
+      id: 'stripped',
+      name: 'Grot',
+      status: 'built',
+      sprueName: undefined,
+      boxId: undefined,
+      departure: { reason: 'stripped', on: '2026-10-26', recipientMiniIds: ['boy'] },
+    };
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([box])),
+      findMinis: vi.fn(() => Promise.resolve([boy, stripped])),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn(),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox: vi.fn(),
+      editBoxRows: vi.fn<HoardRepository['editBoxRows']>(() => Promise.resolve()),
+    };
+    const catalog = fakeCatalog(BOYZ, 3);
+    catalog.findKitVersion = (id, version) =>
+      Promise.resolve(id === BOYZ.id && version === 3 ? { entry: BOYZ, version, isRemoved: false } : undefined);
+    const service = new BoxesService(hoard, catalog);
+
+    const edited = await service.editRows('owner', 'boyz', [0, 0]);
+
+    expect(edited.minis.map((mini) => [mini.id, mini.departure?.recipientMiniIds])).toEqual([['stripped', []]]);
+  });
+
+  it('refuses to edit a box that is not in the hoard', async () => {
+    const editBoxRows = vi.fn<HoardRepository['editBoxRows']>();
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([])),
+      findMinis: vi.fn(() => Promise.resolve([])),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn(),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox: vi.fn(),
+      editBoxRows,
+    };
+    const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
+
+    const edit = service.editRows('owner', 'someone-elses-box', [9, 1]);
+
+    await expect(edit).rejects.toThrow(UnknownBoxError);
+    expect(editBoxRows).not.toHaveBeenCalled();
+  });
+
+  it('refuses to edit a box without a kit', async () => {
+    const box: Box = {
+      id: 'bits',
+      name: 'Bits',
+      factionIds: [],
+      tags: [],
+      addedOn: '2026-10-25',
+      number: 1,
+    };
+    const editBoxRows = vi.fn<HoardRepository['editBoxRows']>();
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([box])),
+      findMinis: vi.fn(() => Promise.resolve([])),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn(),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBox: vi.fn(),
+      editBoxRows,
+    };
+    const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
+
+    const edit = service.editRows('owner', 'bits', [1]);
+
+    await expect(edit).rejects.toThrow(BoxWithoutKitError);
+    expect(editBoxRows).not.toHaveBeenCalled();
   });
 });

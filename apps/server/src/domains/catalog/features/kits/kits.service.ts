@@ -25,8 +25,35 @@ export interface KitSearchResult {
 export class KitsService {
   constructor(private readonly catalog: CatalogKitQueries) {}
 
+  /**
+   * The kits found by their name, a variant, product code, barcode or a name their slots can be
+   * built as, and the bundles containing kits whose slots match, also through nested bundles.
+   */
   async search(text: string): Promise<KitSearchResult> {
-    return this.withContainedKits(await this.catalog.searchKits(text, SEARCH_LIMIT));
+    const [found, bundles] = await Promise.all([
+      this.catalog.searchKits(text, SEARCH_LIMIT),
+      this.findBundlesBuildableAs(text),
+    ]);
+    const byId = new Map([...found, ...bundles].map((kit) => [kit.entry.id, kit]));
+    const kits = [...byId.values()]
+      .filter((kit) => !kit.isRemoved)
+      .sort((a, b) => compare(a.entry.name, b.entry.name) || compare(a.entry.id, b.entry.id))
+      .slice(0, SEARCH_LIMIT);
+    return this.withContainedKits(kits);
+  }
+
+  /** Every bundle that contains a kit with a slot buildable as the text, also within contained bundles; removed ones included. */
+  private async findBundlesBuildableAs(text: string): Promise<VersionedEntry<CatalogKit>[]> {
+    const knownIds = new Set(await this.catalog.findKitIdsBuildableAs(text));
+    const bundles: VersionedEntry<CatalogKit>[] = [];
+    let ids = [...knownIds];
+    while (ids.length > 0) {
+      const found = (await this.catalog.findBundlesContaining(ids)).filter(({ entry }) => !knownIds.has(entry.id));
+      found.forEach(({ entry }) => knownIds.add(entry.id));
+      bundles.push(...found);
+      ids = found.map(({ entry }) => entry.id);
+    }
+    return bundles;
   }
 
   /** This version of the kit, also when it was removed later; no kit when there is no such version. */
@@ -41,6 +68,14 @@ export class KitsService {
     const factionNames = await this.catalog.findFactionNames(factionIds);
     return { kits, containedKits, factionNames };
   }
+}
+
+/** Orders like the catalog's own sorting by name: by code unit, not by locale. */
+function compare(a: string, b: string): number {
+  if (a === b) {
+    return 0;
+  }
+  return a < b ? -1 : 1;
 }
 
 function factionIdsOf(kit: CatalogKit): string[] {

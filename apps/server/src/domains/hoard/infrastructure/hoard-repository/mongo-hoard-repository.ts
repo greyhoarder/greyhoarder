@@ -25,6 +25,7 @@ function toBox(stored: BoxDbo, number: number): Box {
     tags: stored.tags,
     addedOn: stored.addedOn,
     number,
+    ...(stored.isEdited === true ? { isEdited: true } : {}),
   };
 }
 
@@ -43,6 +44,7 @@ function toBoxDbo(ownerId: string, box: Box): BoxDbo {
     tags: [...box.tags],
     addedOn: box.addedOn,
     number: box.number,
+    ...(box.isEdited === true ? { isEdited: true } : {}),
   };
 }
 
@@ -216,16 +218,71 @@ export class MongoHoardRepository extends HoardRepository {
     });
   }
 
-  async deleteBox(ownerId: string, boxId: string, change: HoardChange): Promise<string[]> {
+  async deleteBox(
+    ownerId: string,
+    boxId: string,
+    change: HoardChange & { readonly keptMinis: readonly Mini[] },
+  ): Promise<string[]> {
     return this.connection.transaction(async (session) => {
+      const deleting = { ownerId, boxId, _id: { $nin: change.keptMinis.map((mini) => mini.id) } };
       // Read inside the transaction, so a mini added to the box meanwhile goes with it.
-      const minis = await this.minis.find({ ownerId, boxId }, { _id: 1 }, { session }).lean().exec();
+      const minis = await this.minis.find(deleting, { _id: 1 }, { session }).lean().exec();
       const miniIds = minis.map((mini) => mini._id);
-      await this.minis.deleteMany({ ownerId, boxId }, { session });
+      await this.minis.deleteMany(deleting, { session });
+      await this.takeOutOfBox(ownerId, boxId, change.keptMinis, session);
       await this.boxes.deleteOne({ ownerId, _id: boxId }, { session });
       await this.writeMinis(ownerId, change.changed, session);
       await this.deleteDropped(ownerId, change, session);
       return miniIds;
+    });
+  }
+
+  /** Leaves the minis without their box, with the kit they keep in its place. */
+  private async takeOutOfBox(
+    ownerId: string,
+    boxId: string,
+    minis: readonly Mini[],
+    session: ClientSession,
+  ): Promise<void> {
+    if (minis.length === 0) {
+      return;
+    }
+    await this.minis.bulkWrite(
+      minis.map((mini) => {
+        const { kit } = toMiniDbo(ownerId, mini);
+        return {
+          updateOne: {
+            filter: { _id: mini.id, ownerId, boxId },
+            update: kit === undefined ? { $unset: { boxId: '' } } : { $set: { kit }, $unset: { boxId: '' } },
+          },
+        };
+      }),
+      { session },
+    );
+  }
+
+  async editBoxRows(
+    ownerId: string,
+    box: Box,
+    added: readonly Mini[],
+    deletedMiniIds: readonly string[],
+    change: HoardChange,
+  ): Promise<void> {
+    await this.connection.transaction(async (session) => {
+      if (box.isEdited === true) {
+        await this.boxes.updateOne({ ownerId, _id: box.id }, { $set: { isEdited: true } }, { session });
+      }
+      if (added.length > 0) {
+        await this.minis.insertMany(
+          added.map((mini) => toMiniDbo(ownerId, mini)),
+          { session },
+        );
+      }
+      if (deletedMiniIds.length > 0) {
+        await this.minis.deleteMany({ ownerId, boxId: box.id, _id: { $in: deletedMiniIds } }, { session });
+      }
+      await this.writeMinis(ownerId, change.changed, session);
+      await this.deleteDropped(ownerId, change, session);
     });
   }
 
