@@ -95,6 +95,34 @@ describe('Boxes deletion', () => {
     expect(idsOf(minis.minis())).toEqual(['boy-1', 'boy-2', 'sold-boy', 'nob']);
   });
 
+  it('deletes every box asked about in one request', async () => {
+    const remove = vi.fn<HttpBoxesAdapter['delete']>(async () => ({
+      deletedMiniIds: ['boy-1', 'boy-2', 'sold-boy', 'nob'],
+      minis: [],
+    }));
+    const { deletion, minis, boxes } = await deletionWith(remove);
+    deletion.ask(['boyz', 'nobz']);
+
+    await deletion.confirm();
+
+    expect(remove).toHaveBeenCalledOnce();
+    expect(remove).toHaveBeenCalledWith(['boyz', 'nobz']);
+    expect(boxes.boxes()).toEqual([]);
+    expect(minis.minis()).toEqual([]);
+  });
+
+  it('keeps every box and its minis when the server does not answer', async () => {
+    const { deletion, minis, boxes } = await deletionWith(() => Promise.reject(new Error('offline')));
+    deletion.ask(['boyz', 'nobz']);
+
+    const isDeleted = await deletion.confirm();
+
+    expect(isDeleted).toBe(false);
+    expect(deletion.hasFailed()).toBe(true);
+    expect(idsOf(boxes.boxes())).toEqual(['boyz', 'nobz']);
+    expect(idsOf(minis.minis())).toEqual(['boy-1', 'boy-2', 'sold-boy', 'nob']);
+  });
+
   it('counts the built minis and the minis on the sprue of the box, gone ones included', async () => {
     const { deletion } = await deletionWith(vi.fn(), [
       ...MINIS,
@@ -118,7 +146,7 @@ describe('Boxes deletion', () => {
 
     await deletion.confirmKeepingBuiltMinis();
 
-    expect(remove).toHaveBeenCalledWith('boyz', { keepBuiltMinis: true });
+    expect(remove).toHaveBeenCalledWith(['boyz'], { keepBuiltMinis: true });
     expect(idsOf(boxes.boxes())).toEqual(['nobz']);
     expect(idsOf(minis.minis().filter((each) => each.boxId === undefined))).toEqual(['boy-1', 'boy-2', 'sold-boy']);
   });

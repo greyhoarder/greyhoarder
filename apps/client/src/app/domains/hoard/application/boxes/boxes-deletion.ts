@@ -56,13 +56,12 @@ export class BoxesDeletion {
   }
 
   /**
-   * Deletes the boxes asked about with all their minis, one box after the other; a box that fails
-   * stays asked about with those after it.
+   * Deletes the boxes asked about with all their minis, together or none of them.
    *
    * @returns whether every box is deleted
    */
   confirm(): Promise<boolean> {
-    return this.deleteAsked((id) => this.adapter.delete(id));
+    return this.deleteAsked((ids) => this.adapter.delete(ids));
   }
 
   /**
@@ -72,19 +71,19 @@ export class BoxesDeletion {
    * @returns whether every box is deleted
    */
   confirmKeepingBuiltMinis(): Promise<boolean> {
-    return this.deleteAsked((id) => this.adapter.delete(id, { keepBuiltMinis: true }));
+    return this.deleteAsked((ids) => this.adapter.delete(ids, { keepBuiltMinis: true }));
   }
 
-  private async deleteAsked(remove: (id: string) => ReturnType<HttpBoxesAdapter['delete']>): Promise<boolean> {
+  private async deleteAsked(
+    remove: (ids: readonly string[]) => ReturnType<HttpBoxesAdapter['delete']>,
+  ): Promise<boolean> {
     this.isDeleting.set(true);
     this.hasFailed.set(false);
     try {
-      for (const id of this.ids()) {
-        const { deletedMiniIds, minis } = await remove(id);
-        this.hoardChanges.removed(deletedMiniIds, minis);
-        this.boxesStore.remove([id]);
-        this.ids.update((ids) => ids.filter((asked) => asked !== id));
-      }
+      const { deletedMiniIds, minis } = await remove(this.ids());
+      this.hoardChanges.removed(deletedMiniIds, minis);
+      this.boxesStore.remove(this.ids());
+      this.ids.set([]);
       this.isAsking.set(false);
       return true;
     } catch {

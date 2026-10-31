@@ -435,7 +435,7 @@ describe('Box page', () => {
 
     await click(inDocument('box-empty-boxes-delete'));
 
-    expect(deleteBox).toHaveBeenCalledWith(BOYZ.id);
+    expect(deleteBox).toHaveBeenCalledWith([BOYZ.id]);
     expect(navigate).toHaveBeenCalledWith(['/hoard/boxes'], { replaceUrl: true });
   });
 

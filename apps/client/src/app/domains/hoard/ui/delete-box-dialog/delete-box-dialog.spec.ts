@@ -2,10 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { DeleteBoxDialog } from './delete-box-dialog';
 
 describe('Delete box dialog', () => {
-  const render = async ({ builtMiniCount = 2, sprueMiniCount = 8 } = {}) => {
+  const render = async ({ names = ['Boyz'], builtMiniCount = 2, sprueMiniCount = 8 } = {}) => {
     const fixture = TestBed.createComponent(DeleteBoxDialog);
     fixture.componentRef.setInput('isOpen', true);
-    fixture.componentRef.setInput('name', 'Boyz');
+    fixture.componentRef.setInput('names', names);
     fixture.componentRef.setInput('builtMiniCount', builtMiniCount);
     fixture.componentRef.setInput('sprueMiniCount', sprueMiniCount);
     await fixture.whenStable();
@@ -63,6 +63,28 @@ describe('Delete box dialog', () => {
 
     expect(find('box-delete-box-keep-minis')).toBeNull();
     expect(find('box-delete-box-confirm')?.textContent?.trim()).toBe('Delete box');
+  });
+
+  it('asks about the number of boxes when there are several', async () => {
+    const { find } = await render({ names: ['Boyz', 'Nobz'] });
+
+    expect(find('box-delete-box-dialog')?.querySelector('h2')?.textContent?.trim()).toBe('Delete 2 boxes for good?');
+  });
+
+  it('says how many built minis can stay and how many minis on the sprue go with several boxes', async () => {
+    const { description } = await render({ names: ['Boyz', 'Nobz'], builtMiniCount: 2, sprueMiniCount: 8 });
+
+    expect(description()).toBe(
+      'Their 2 built minis can stay in your hoard without a box, or be deleted with them, gone ones included. ' +
+        "Their 8 minis on the sprue are deleted with them. This can't be undone.",
+    );
+  });
+
+  it('offers only "Delete boxes" for several boxes without minis past the sprue', async () => {
+    const { find } = await render({ names: ['Boyz', 'Nobz'], builtMiniCount: 0, sprueMiniCount: 8 });
+
+    expect(find('box-delete-box-keep-minis')).toBeNull();
+    expect(find('box-delete-box-confirm')?.textContent?.trim()).toBe('Delete boxes');
   });
 
   it('closes without deleting when cancelled', async () => {

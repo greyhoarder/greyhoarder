@@ -36,7 +36,7 @@ import { sortRows } from '../../application/minis/mini-sort';
 import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
 import { hasPercent } from '../../models/box-progress';
-import { DeleteBoxDialog } from './delete-box-dialog/delete-box-dialog';
+import { DeleteBoxDialog } from '../../ui/delete-box-dialog/delete-box-dialog';
 import { BoxKind } from '../../ui/box-kind/box-kind';
 import { EditedBadge } from '../../ui/edited-badge/edited-badge';
 import { AddedBar } from '../../ui/added-bar/added-bar';

@@ -34,7 +34,10 @@ describe('Boxes page', () => {
         provideRouter([]),
         {
           provide: HttpBoxesAdapter,
-          useValue: { list: vi.fn(async () => ({ boxes: BOXES, factionNames: new Map() })) },
+          useValue: {
+            list: vi.fn(async () => ({ boxes: BOXES, factionNames: new Map() })),
+            delete: vi.fn(async () => ({ deletedMiniIds: MINIS.map((mini) => mini.id), minis: [] })),
+          },
         },
         {
           provide: HttpMinisAdapter,
@@ -50,6 +53,24 @@ describe('Boxes page', () => {
     });
   });
 
+  /** The page with the first two boxes selected and "Delete…" pressed. */
+  async function askToDeleteTwoBoxes() {
+    const fixture = TestBed.createComponent(BoxListPage);
+    await fixture.whenStable();
+    const page: HTMLElement = fixture.nativeElement;
+    for (const check of [...page.querySelectorAll<HTMLElement>('[data-testid="hoard-row-check"]')].slice(0, 2)) {
+      check.click();
+    }
+    await fixture.whenStable();
+    page.querySelector<HTMLElement>('[data-testid="hoard-box-selection-delete"]')?.click();
+    await fixture.whenStable();
+    // The dialog opens in an overlay outside the component.
+    const dialogButton = (testId: string) => document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+    return { fixture, page, dialogButton };
+  }
+
+  afterEach(() => TestBed.resetTestingModule());
+
   it('shows only the boxes whose name, kit or tag contains the search', async () => {
     const fixture = TestBed.createComponent(BoxListPage);
     await fixture.whenStable();
@@ -63,6 +84,35 @@ describe('Boxes page', () => {
     await fixture.whenStable();
 
     expect(page.querySelectorAll('[data-testid="hoard-box"]')).toHaveLength(2);
+  });
+
+  it('asks before deleting the selected boxes', async () => {
+    const { dialogButton } = await askToDeleteTwoBoxes();
+
+    expect(dialogButton('box-delete-box-dialog')?.querySelector('h2')?.textContent?.trim()).toBe(
+      'Delete 2 boxes for good?',
+    );
+    expect(TestBed.inject(HttpBoxesAdapter).delete).not.toHaveBeenCalled();
+  });
+
+  it('ends the selection once the boxes are deleted', async () => {
+    const { fixture, page, dialogButton } = await askToDeleteTwoBoxes();
+
+    dialogButton('box-delete-box-confirm')?.click();
+    await fixture.whenStable();
+
+    expect(TestBed.inject(HttpBoxesAdapter).delete).toHaveBeenCalledWith(['b1', 'b2']);
+    expect(page.querySelector('[data-testid="hoard-box-selection-bar"]')).toBeNull();
+  });
+
+  it('keeps the selection when deleting is cancelled', async () => {
+    const { fixture, page, dialogButton } = await askToDeleteTwoBoxes();
+
+    dialogButton('box-delete-box-cancel')?.click();
+    await fixture.whenStable();
+
+    expect(TestBed.inject(HttpBoxesAdapter).delete).not.toHaveBeenCalled();
+    expect(page.querySelector('[data-testid="hoard-box-selection-count"]')?.textContent).toContain('2');
   });
 
   it('says that there are no boxes yet while the hoard is empty', async () => {

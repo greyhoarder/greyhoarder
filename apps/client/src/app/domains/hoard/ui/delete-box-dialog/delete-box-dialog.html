@@ -9,7 +9,7 @@
       <hlm-alert-dialog-media class="bg-destructive/15 text-destructive">
         <ng-icon name="lucideTrash2" size="22" />
       </hlm-alert-dialog-media>
-      <h2 hlmAlertDialogTitle>Delete {{ name() }} for good?</h2>
+      <h2 hlmAlertDialogTitle>{{ title() }}</h2>
       <p hlmAlertDialogDescription>{{ text() }}</p>
     </hlm-alert-dialog-header>
     @if (hasFailed()) {
@@ -41,7 +41,7 @@
         data-testid="box-delete-box-confirm"
         (click)="delete()"
       >
-        {{ canKeep() ? 'Delete with minis' : 'Delete box' }}
+        {{ deleteLabel() }}
       </button>
     </hlm-alert-dialog-footer>
     <!-- Last, so the focus starts on "Cancel" and not here. -->

@@ -6,10 +6,12 @@ import { lucideSearch, lucideX } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInputGroupImports } from '@spartan-ng/helm/input-group';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
+import { BoxesDeletion } from '../../application/boxes/boxes-deletion';
 import { BoxesList } from '../../application/boxes/boxes-list';
 import { HoardView } from '../../application/hoard-view';
 import { BoxCard } from './box-card/box-card';
 import { type BoxSelection, BoxTable } from './box-table/box-table';
+import { DeleteBoxDialog } from '../../ui/delete-box-dialog/delete-box-dialog';
 import { FilterChip, type FilterOption } from '../../ui/filter-chip/filter-chip';
 import { LongPress } from '../../ui/long-press/long-press';
 import { PROGRESS_LABELS } from '../../util/box-labels';
@@ -19,14 +21,25 @@ import type { BoxRow } from '../../application/boxes/box-row';
 /** The Boxes tab of the hoard: search, filters, selection and the boxes as cards or table. */
 @Component({
   selector: 'app-box-list-page',
-  imports: [NgIcon, HlmButton, HlmInputGroupImports, HlmSkeleton, BoxCard, BoxTable, FilterChip, LongPress],
-  providers: [provideIcons({ lucideSearch, lucideX })],
+  imports: [
+    NgIcon,
+    HlmButton,
+    HlmInputGroupImports,
+    HlmSkeleton,
+    BoxCard,
+    BoxTable,
+    DeleteBoxDialog,
+    FilterChip,
+    LongPress,
+  ],
+  providers: [provideIcons({ lucideSearch, lucideX }), BoxesDeletion],
   templateUrl: './box-list-page.html',
   host: { class: '@container flex flex-col gap-3' },
 })
 export class BoxListPage {
   protected readonly store = inject(BoxesList);
   protected readonly view = inject(HoardView);
+  protected readonly deletion = inject(BoxesDeletion);
   private readonly router = inject(Router);
 
   protected readonly factionOptions = computed(() => optionsOf(this.store.boxes(), (box) => box.factions));
@@ -48,6 +61,22 @@ export class BoxListPage {
 
   protected select({ box, isSelected }: BoxSelection): void {
     this.store.select(box.id, isSelected);
+  }
+
+  protected askToDelete(): void {
+    this.deletion.ask([...this.store.selectedIds()]);
+  }
+
+  protected async delete(): Promise<void> {
+    if (await this.deletion.confirm()) {
+      this.store.finishSelecting();
+    }
+  }
+
+  protected async deleteKeepingBuiltMinis(): Promise<void> {
+    if (await this.deletion.confirmKeepingBuiltMinis()) {
+      this.store.finishSelecting();
+    }
   }
 
   protected open(box: BoxRow): void {

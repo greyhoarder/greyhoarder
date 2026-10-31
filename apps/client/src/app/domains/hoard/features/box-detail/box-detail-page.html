@@ -330,7 +330,7 @@
   />
   <app-delete-box-dialog
     [isOpen]="boxesDeletion.isAsking() && boxQuestion() === 'delete'"
-    [name]="boxesDeletion.names()[0] ?? ''"
+    [names]="boxesDeletion.names()"
     [builtMiniCount]="boxesDeletion.builtMiniCount()"
     [sprueMiniCount]="boxesDeletion.sprueMiniCount()"
     [isDeleting]="boxesDeletion.isDeleting()"

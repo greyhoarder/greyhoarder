@@ -5,8 +5,8 @@ import type {
   AddBoxesRequest,
   AddBoxesResponse,
   BoxesResponse,
-  DeleteBoxRequest,
-  DeleteBoxResponse,
+  DeleteBoxesRequest,
+  DeleteBoxesResponse,
   EditBoxRowsRequest,
   EditBoxRowsResponse,
 } from '@greyhoarder/protocol/hoard';
@@ -41,22 +41,20 @@ export class HttpBoxesAdapter {
   }
 
   /**
-   * Deletes the box for good with all its minis, gone ones included, or keeps those past the sprue
-   * in the hoard without a box when asked; its minis on the sprue always go with it.
+   * Deletes the boxes for good with all their minis, gone ones included, or keeps those past the
+   * sprue in the hoard without a box when asked; their minis on the sprue always go with them.
    */
   async delete(
-    id: string,
+    ids: readonly string[],
     { keepBuiltMinis = false }: { readonly keepBuiltMinis?: boolean } = {},
   ): Promise<{
-    /** The box's minis deleted with it. */
+    /** The boxes' minis deleted with them. */
     readonly deletedMiniIds: readonly string[];
     /** Other minis that changed: kept minis now without a box, and those whose recipients lost deleted ones. */
     readonly minis: readonly Mini[];
   }> {
-    const query: DeleteBoxRequest = { keepBuiltMinis: keepBuiltMinis ? 'true' : 'false' };
-    return firstValueFrom(
-      this.http.delete<DeleteBoxResponse>(`/api/hoard/boxes/${encodeURIComponent(id)}`, { params: query }),
-    );
+    const body: DeleteBoxesRequest = { ids, keepBuiltMinis };
+    return firstValueFrom(this.http.delete<DeleteBoxesResponse>('/api/hoard/boxes', { body }));
   }
 
   /** Counts the minis on the sprue of the box anew, per row of its kit; the box becomes an edited box. */

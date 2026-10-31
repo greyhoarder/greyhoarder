@@ -1,12 +1,21 @@
 <!-- While boxes are selected, the selection bar takes the place of the filters, so nothing moves. -->
 @if (store.isSelecting()) {
-  <!-- Actions on the selection come with the backend. -->
   <div class="sticky top-0 z-10 mb-3 bg-background" data-testid="hoard-box-selection-bar">
     <div class="flex min-h-13 items-center gap-2">
       <span class="min-w-0 truncate px-1 text-sm font-semibold" data-testid="hoard-box-selection-count">
         {{ store.selectedIds().size }}
         {{ store.selectedIds().size === 1 ? 'box' : 'boxes' }} selected
       </span>
+      <button
+        hlmBtn
+        variant="outline"
+        type="button"
+        class="h-10 border-destructive/50 px-3.5 text-sm text-destructive hover:text-destructive dark:border-destructive/50"
+        data-testid="hoard-box-selection-delete"
+        (click)="askToDelete()"
+      >
+        Delete…
+      </button>
       <button
         hlmBtn
         variant="ghost"
@@ -128,3 +137,15 @@
     }
   </div>
 }
+
+<app-delete-box-dialog
+  [isOpen]="deletion.isAsking()"
+  [names]="deletion.names()"
+  [builtMiniCount]="deletion.builtMiniCount()"
+  [sprueMiniCount]="deletion.sprueMiniCount()"
+  [isDeleting]="deletion.isDeleting()"
+  [hasFailed]="deletion.hasFailed()"
+  (confirmed)="delete()"
+  (keptBuiltMinis)="deleteKeepingBuiltMinis()"
+  (closed)="deletion.cancel()"
+/>
