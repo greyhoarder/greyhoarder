@@ -5,12 +5,14 @@ import {
   type ChangesToMinis,
   type Departure,
   type HobbyStatus,
+  haveSameName,
   isOwnFaction,
   kitReferenceOf,
   type Mini,
   type OwnFaction,
   parseDeparture,
   parseMini,
+  PartsOfDifferentMinisError,
   toKit,
   withChanges,
   withDeparture,
@@ -200,6 +202,7 @@ export class MinisService {
    * @throws UnknownMinisError when a mini is not in the owner's hoard
    * @throws UnknownPartError when a part refers to an id that is not in the owner's vocabulary
    * @throws UnknownFactionError when a faction is neither a catalog faction, a game system nor one of the owner's own
+   * @throws PartsOfDifferentMinisError when parts are changed on minis of different names
    */
   change(ownerId: string, ids: readonly string[], changes: ChangesToMinisByName): Promise<ChangedMinis> {
     return againIfNameTaken(() => this.tryChange(ownerId, ids, changes));
@@ -212,6 +215,10 @@ export class MinisService {
   ): Promise<ChangedMinis> {
     const { minis } = await this.findOwnMinis(ownerId, ids);
     const { addFactions, addParts, ...rest } = changes;
+    const changesParts = (addParts?.length ?? 0) + (rest.removePartIds?.length ?? 0) > 0;
+    if (changesParts && !haveSameName(minis)) {
+      throw new PartsOfDifferentMinisError();
+    }
     const factions = await this.resolveFactions(ownerId, addFactions ?? []);
     const resolved = resolveParts(await this.hoard.findParts(ownerId), addParts ?? [], randomUUID);
     const changed = minis.map((mini) =>

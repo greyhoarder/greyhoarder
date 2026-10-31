@@ -1,4 +1,10 @@
-import { LooseMiniOnSprueError, type Mini, type OwnFaction, type Part } from '@greyhoarder/domain/hoard';
+import {
+  LooseMiniOnSprueError,
+  type Mini,
+  type OwnFaction,
+  type Part,
+  PartsOfDifferentMinisError,
+} from '@greyhoarder/domain/hoard';
 import type { CatalogKitQueries } from '../../../catalog/api/index.js';
 import type { HoardRepository } from '../../ports/hoard-repository.js';
 import { UnknownFactionError } from './errors/unknown-faction.error.js';
@@ -258,7 +264,7 @@ describe('Minis service', () => {
     const choppa = { partId: 'choppa', isSwappable: false };
     const { hoard, updateMinis } = fakeHoard([
       { ...BOY, status: 'built', parts: [slugga] },
-      { ...BOY, id: 'boy-2', name: 'Nob', status: 'primed', parts: [choppa] },
+      { ...BOY, id: 'boy-2', status: 'primed', parts: [choppa] },
     ]);
     const service = new MinisService(hoard, CATALOG);
 
@@ -274,8 +280,19 @@ describe('Minis service', () => {
       stored?.changed.map(({ id, name, status, factionIds, parts }) => ({ id, name, status, factionIds, parts })),
     ).toEqual([
       { id: 'boy', name: 'Boy', status: 'painted', factionIds: ['warhammer-40000/orks'], parts: [slugga, klaw] },
-      { id: 'boy-2', name: 'Nob', status: 'painted', factionIds: ['warhammer-40000/orks'], parts: [choppa, klaw] },
+      { id: 'boy-2', name: 'Boy', status: 'painted', factionIds: ['warhammer-40000/orks'], parts: [choppa, klaw] },
     ]);
+  });
+
+  it('changes nothing when parts are changed on minis of different names', async () => {
+    const { hoard, updateMinis } = fakeHoard([BOY, { ...BOY, id: 'nob', name: 'Nob' }]);
+    const service = new MinisService(hoard, CATALOG);
+
+    await expect(
+      service.change('owner', ['boy', 'nob'], { addParts: [{ partId: 'power-klaw', isSwappable: true }] }),
+    ).rejects.toThrow(PartsOfDifferentMinisError);
+
+    expect(updateMinis).not.toHaveBeenCalled();
   });
 
   it('creates a new part and a new own faction when changing several minis', async () => {

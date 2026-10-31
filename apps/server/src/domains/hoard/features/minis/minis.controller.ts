@@ -8,7 +8,7 @@ import {
   Post,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { InvalidMiniError, LooseMiniOnSprueError } from '@greyhoarder/domain/hoard';
+import { InvalidMiniError, LooseMiniOnSprueError, PartsOfDifferentMinisError } from '@greyhoarder/domain/hoard';
 import type { User } from '@greyhoarder/domain/users';
 import {
   type AddMinisResponse,
@@ -113,7 +113,11 @@ async function changedMinisResponse(change: () => Promise<ChangedMinis>): Promis
     ) {
       throw new NotFoundException(error.message);
     }
-    if (error instanceof InvalidMiniError || error instanceof LooseMiniOnSprueError) {
+    if (
+      error instanceof InvalidMiniError ||
+      error instanceof LooseMiniOnSprueError ||
+      error instanceof PartsOfDifferentMinisError
+    ) {
       throw new UnprocessableEntityException(error.message);
     }
     throw error;

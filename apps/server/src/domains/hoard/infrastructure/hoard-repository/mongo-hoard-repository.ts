@@ -26,6 +26,7 @@ function toBox(stored: BoxDbo, number: number): Box {
     addedOn: stored.addedOn,
     number,
     ...(stored.isEdited === true ? { isEdited: true } : {}),
+    ...(stored.areSprues === true ? { areSprues: true } : {}),
   };
 }
 
@@ -45,6 +46,7 @@ function toBoxDbo(ownerId: string, box: Box): BoxDbo {
     addedOn: box.addedOn,
     number: box.number,
     ...(box.isEdited === true ? { isEdited: true } : {}),
+    ...(box.areSprues === true ? { areSprues: true } : {}),
   };
 }
 

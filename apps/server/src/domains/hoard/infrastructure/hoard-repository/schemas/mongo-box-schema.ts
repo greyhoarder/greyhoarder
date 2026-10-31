@@ -48,6 +48,10 @@ export class BoxDbo {
   /** Missing on boxes that were never edited, also those stored before boxes could be edited. */
   @Prop({ type: Boolean })
   isEdited?: boolean;
+
+  /** Missing on boxes that are not sprues bought without their box. */
+  @Prop({ type: Boolean })
+  areSprues?: boolean;
 }
 
 export const BoxSchema = SchemaFactory.createForClass(BoxDbo);
