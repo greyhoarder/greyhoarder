@@ -124,9 +124,6 @@ The system SHALL show the stored status again when saving a status fails.
   change it.
 - The box offers only built to done yet (PROGRESS-08 is new).
 - PROGRESS-09 is new.
-- The domain puts minis on the workbench several at once; today only
-  building does, and the hoard's "Edit" for selected minis has no function
-  yet.
 - Whether the status of a gone mini can be changed; neither screen offers
   it.
 - Where the workbench is shown: the dashboard's "On the workbench" is not

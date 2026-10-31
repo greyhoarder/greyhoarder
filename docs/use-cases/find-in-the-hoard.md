@@ -18,7 +18,8 @@ it has come or to open it.
 
 - What the user does with selected minis: leaving the hoard is
   [LEAVE](leave-the-hoard.md), deleting is
-  [DELETE](delete-minis-and-boxes.md); editing several at once comes later.
+  [DELETE](delete-minis-and-boxes.md), editing them is
+  [EDIT-MANY](edit-several-minis.md).
 - Progress per faction on the dashboard: [OVERVIEW](progress-by-faction.md).
 - Building the minis on the sprue of a box: [BUILD](build-minis.md),
   [BUILD-CUSTOM](build-custom-minis.md).

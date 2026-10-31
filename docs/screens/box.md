@@ -37,7 +37,9 @@ the sidebar, as wide as the hoard, from top to bottom:
    status in `muted-foreground` and its count, also 0, at the entry's
    right end. The entries have no surface of their own; they share the
    width in one row and wrap on narrow screens.
-4. While selecting, the selection bar of the [hoard](hoard.md#layout),
+4. After minis were changed on [Edit minis](edit-minis.md), the changed
+   bar of the [hoard](hoard.md#layout). While selecting, the selection
+   bar of the [hoard](hoard.md#layout),
    sticking to the top when scrolling.
 5. Two columns: on the left the built minis, below them the minis on
    the sprue and below those the gone minis (wide), on the right the kit
@@ -125,7 +127,7 @@ right. On narrow screens the dialog fills the screen and its rows scroll.
 | Progress percentage | {n}% |
 | Status legend | On the sprue / Built / Primed / Painted / Done, each with its count |
 | Minis heading | Minis {count of built minis} |
-| Selection bar, delete dialog, empty boxes dialog | as in the [hoard](hoard.md#content) |
+| Selection bar, changed bar, delete dialog, empty boxes dialog | as in the [hoard](hoard.md#content) |
 | Row check (accessible name) | Select {name} |
 | Group card | {name}, {parts}; legend: {count} {status} per status the group has; ×{count} |
 | Group toggle (accessible name) | {name} |
@@ -261,7 +263,8 @@ right. On narrow screens the dialog fills the screen and its rows scroll.
   on a mini's line selects or deselects it instead of opening it; the
   status controls still work. "Select all" selects every built and gone
   mini of the box, also those of closed groups and of the closed "Gone"
-  section. The actions of the selection bar work as in the hoard.
+  section. The actions of the selection bar work as in the hoard; "Edit"
+  opens [Edit minis](edit-minis.md) and leads back to the box.
 - The kit card shows the kit as it was when the box was added: the version
   the box records. A newer version of a catalog kit never changes it.
 - "Delete box…" opens the delete box dialog
@@ -318,7 +321,7 @@ right. On narrow screens the dialog fills the screen and its rows scroll.
 
 ## Test IDs
 
-`box-back`, `box-name`, `box-progress-badge`, `box-kit-line`, `box-meta`,
+`box-back`, `box-changed`, `box-changed-dismiss`, `box-name`, `box-progress-badge`, `box-kit-line`, `box-meta`,
 `box-number`,
 `box-tag`, `box-take`, `box-edit`, `box-menu`,
 `box-add-mini`, `box-delete`, `box-percent`, `box-progress`, `box-status`,

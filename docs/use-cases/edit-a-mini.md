@@ -19,7 +19,7 @@ changing the minis alike to it.
 - Minis on the sprue, whose changes wait for building:
   [BUILD](build-minis.md), [BUILD-CUSTOM](build-custom-minis.md).
 - Status and workbench: [PROGRESS](track-progress.md).
-- Editing several minis at once (later).
+- Editing several minis at once: [EDIT-MANY](edit-several-minis.md).
 - Leaving the hoard and coming back: [LEAVE](leave-the-hoard.md).
 - Photos and changing the origin box (later).
 
@@ -131,8 +131,6 @@ The system SHALL keep what the user entered when saving fails.
 
 ## Open questions
 
-- Editing several selected minis at once: the hoard's "Edit" has no
-  function yet.
 - "Counts as" is in the data model, but the screen has no field for it.
 - Whether renaming a built mini to a suggestion should preselect that
   name's parts, as building does.

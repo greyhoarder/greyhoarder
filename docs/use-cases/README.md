@@ -19,6 +19,7 @@ use case you build or change; how its screens look is in
 | `BUILD-CUSTOM` | [Build a custom mini from the sprue](build-custom-minis.md) | Draft |
 | `PROGRESS` | [Track hobby progress](track-progress.md) | Draft |
 | `EDIT-MINI` | [Edit a mini](edit-a-mini.md) | Draft |
+| `EDIT-MANY` | [Edit several minis at once](edit-several-minis.md) | Draft |
 | `EDIT-BOX` | [Edit a box](edit-a-box.md) | Draft |
 | `LEAVE` | [Let minis leave the hoard](leave-the-hoard.md) | Draft |
 | `DELETE` | [Delete minis and boxes](delete-minis-and-boxes.md) | Draft |

@@ -35,7 +35,10 @@ the sidebar, from top to bottom:
 3. Filter row: the search field, the filter chips "Faction", "Status" and
    "Box", then "Reset" while a filter is active. Inactive chips
    have a dashed border, active ones a solid border on the card surface.
-4. While selecting, the selection bar, sticking to the top when scrolling:
+4. After minis were changed on [Edit minis](edit-minis.md): the changed
+   bar below the filter row, built like the status bar of
+   [Add box](add-box.md), announced to screen readers; its × hides it.
+   While selecting, the selection bar, sticking to the top when scrolling:
    the number of selected minis; the actions "Edit", "Leave the hoard…"
    and "Delete…" (outline, "Delete…" in `destructive` text); a divider,
    "Select all" and "Done". On narrow screens "Select all", "Leave the
@@ -114,6 +117,7 @@ summary line.
 | Table headers | Name · Faction · Box · Status |
 | Selection bar | {count} mini(s) selected · Edit · Leave the hoard… · Delete… · Select all · Done |
 | Selection menu (accessible name) | More actions for the selection |
+| Changed bar | Changed {n} minis. · Dismiss (accessible name); one: Changed 1 mini. |
 | Delete dialog | Delete {n} minis for good? — one: Delete this mini for good? |
 | Delete dialog text | The names with their counts, e.g. "Boy ×2, Nob". This can't be undone. |
 | Delete dialog buttons | Cancel · Delete {n} minis — one: Delete mini |
@@ -243,7 +247,9 @@ summary line.
 - "Select all" selects every mini that is currently shown, also those of
   closed groups. "Done" ends the mode and clears the selection.
 - The actions of the selection bar act on the selected minis:
-  - "Edit" opens the bulk edit view; it has no function yet.
+  - "Edit" opens [Edit minis](edit-minis.md) for the selected minis;
+    after applying, the selection has ended and the status bar says
+    "Changed {n} minis."
   - "Leave the hoard…" is to lead to the leave page for the selected
     minis that are not gone; gone ones are left out. Until that page
     exists, it has no function.
@@ -302,7 +308,7 @@ summary line.
 
 ## Test IDs
 
-`hoard-summary`, `hoard-add-boxes`, `hoard-add-menu`, `hoard-add-sprues`,
+`hoard-summary`, `hoard-changed`, `hoard-changed-dismiss`, `hoard-add-boxes`, `hoard-add-menu`, `hoard-add-sprues`,
 `hoard-add-minis`, `hoard-add-custom`,
 `hoard-tab-minis`, `hoard-tab-minis-count`, `hoard-tab-boxes`,
 `hoard-view-cards`, `hoard-view-table`, `hoard-search`,
@@ -337,7 +343,6 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 - The leave page: one page to let one or several minis leave the hoard,
   with room to tell which minis got the parts of stripped ones; it
   replaces the leave panels of [Mini](mini.md) and [Box](box.md).
-- The bulk edit view for selected minis.
 - What acting on selected boxes offers; what the box menu offers.
 - Whether the box list should count "x of y" on its tab like the minis.
 - Photos in place of the placeholder.

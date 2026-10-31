@@ -16,6 +16,7 @@ below.
 | [Hoard](hoard.md) | `/hoard/minis`, `/hoard/boxes` | `hoard` |
 | [Box](box.md) | `/hoard/boxes/:id` | `hoard` |
 | [Mini](mini.md) | `/hoard/minis/:id` | `hoard` |
+| [Edit minis](edit-minis.md) | `/hoard/minis/edit` | `hoard` |
 | [Add box](add-box.md) | `/hoard/add/box`, `/hoard/add/sprues` | `hoard` |
 | [Add minis](add-minis.md) | `/hoard/add/minis` | `hoard` |
 | [Add custom](add-custom.md) | `/hoard/add/custom` | `hoard` |
