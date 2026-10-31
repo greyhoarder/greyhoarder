@@ -7,9 +7,8 @@ import {
   type Kit,
   type Mini,
   type MiniPart,
-  toKit,
 } from '@greyhoarder/domain/hoard';
-import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
+import { HttpCatalogPartsAdapter } from '../../../catalog/api';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import type { ChangedMinis } from '../../models/changed-minis';
 import { type FactionDraft, hasFaction, idsOf, toFactionChange } from '../../models/faction-draft';
@@ -21,6 +20,7 @@ import { eitherOrText } from '../../util/either-or';
 import { BoxesStore } from '../../data/boxes-store';
 import { FactionNames } from '../faction-names';
 import { HoardChanges } from '../hoard-changes';
+import { loadedKit } from '../loaded-kit';
 import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
 
@@ -57,7 +57,6 @@ export class MiniEditor {
   private readonly hoardChanges = inject(HoardChanges);
   private readonly factionNames = inject(FactionNames);
   private readonly minisAdapter = inject(HttpMinisAdapter);
-  private readonly catalogKits = inject(HttpKitsAdapter);
   private readonly catalogParts = inject(HttpCatalogPartsAdapter);
 
   /** The mini of the address, or the first of a row. */
@@ -103,15 +102,8 @@ export class MiniEditor {
     const mini = this.mini();
     return mini?.boxId === undefined ? mini?.kit : this.box()?.kit;
   });
-  private readonly loadedKit = resource({
-    params: () => this.kitReference(),
-    loader: async ({ params: { id, version } }): Promise<Kit | undefined> => {
-      const { kits, containedKits } = await this.catalogKits.find(id, version);
-      return kits[0] && toKit(kits[0], containedKits);
-    },
-  });
   /** The kit of the minis' box or of a mini without one; left out while loading, when it can't be loaded and without a kit. */
-  readonly kit = computed(() => (this.loadedKit.hasValue() ? this.loadedKit.value() : undefined));
+  readonly kit = loadedKit(() => this.kitReference()).kit;
   /** The name of the box, or else of the kit, as plain text, e.g. for "Suggested by {name}". */
   readonly originName = computed(() => {
     const name = this.box()?.name ?? this.kitReference()?.name;

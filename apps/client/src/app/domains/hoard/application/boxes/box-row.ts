@@ -27,6 +27,8 @@ export interface BoxRow {
   readonly number: number;
   /** Its minis on the sprue were counted by the user, not taken as its kit describes. */
   readonly isEdited?: boolean;
+  /** Sprues bought without their box. */
+  readonly areSprues?: boolean;
 }
 
 /** One row per box, counting the minis that came out of it; factions without a known name are left out. */
@@ -60,6 +62,7 @@ export function toBoxRows(
     tags: box.tags,
     number: box.number,
     isEdited: box.isEdited === true,
+    areSprues: box.areSprues === true,
   }));
 }
 

@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, resource, signal } from '@angular/core';
-import { type HobbyStatus, isGone, isOwnFaction } from '@greyhoarder/domain/hoard';
+import { haveSameName, type HobbyStatus, isGone, isOwnFaction } from '@greyhoarder/domain/hoard';
 import { HttpCatalogPartsAdapter } from '../../../catalog/api';
 import { FactionNames } from '../../application/faction-names';
 import { HoardChanges } from '../../application/hoard-changes';
@@ -139,6 +139,8 @@ export class SeveralMinisEditor {
   );
 
   // Parts
+  /** Parts are changed together only on minis of the same name. */
+  readonly canEditParts = computed(() => haveSameName(this.minis()));
   /** Parts to put on every mini, by id, glued or swappable; also ones some minis carry already. */
   private readonly chosenParts = signal<ReadonlyMap<string, boolean>>(new Map());
   private readonly newParts = signal<readonly NewPart[]>([]);
@@ -226,7 +228,8 @@ export class SeveralMinisEditor {
   addFaction({ id, name }: { readonly id: string; readonly name: string }): void {
     this.addedFactionNames.update((names) => new Map([...names, [id, name]]));
     this.undoRemovingFaction(id);
-    if (!hasFaction(this.addedFactions(), { id, name })) {
+    const isOnEveryMini = factionShares(this.minis()).some((share) => share.id === id && share.count === this.count());
+    if (!isOnEveryMini && !hasFaction(this.addedFactions(), { id, name })) {
       this.addedFactions.update((factions) => [...factions, { id, name }]);
     }
   }
@@ -275,11 +278,10 @@ export class SeveralMinisEditor {
     if (partId === undefined) {
       return;
     }
-    if (tile.mark === 'added') {
-      this.chosenParts.update((chosen) => new Map([...chosen].filter(([id]) => id !== partId)));
-      return;
+    this.chosenParts.update((chosen) => new Map([...chosen].filter(([id]) => id !== partId)));
+    if (tile.mark !== 'added') {
+      this.removedPartIds.update((ids) => new Set([...ids, partId]));
     }
-    this.removedPartIds.update((ids) => new Set([...ids, partId]));
   }
 
   undoRemovingPart(partId: string): void {

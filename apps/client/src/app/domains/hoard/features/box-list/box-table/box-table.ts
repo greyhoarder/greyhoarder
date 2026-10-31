@@ -3,6 +3,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTableImports } from '@spartan-ng/helm/table';
+import { BoxKind } from '../../../ui/box-kind/box-kind';
 import { kitLine } from '../../../util/box-labels';
 import { miniCount, paintedCount, percentOf, progressOf, sprueCount } from '../../../application/boxes/box-row';
 import { hasPercent } from '../../../models/box-progress';
@@ -41,6 +42,7 @@ const COLUMNS: readonly Column[] = [
 @Component({
   selector: 'app-box-table',
   imports: [
+    BoxKind,
     EditedBadge,
     EitherOrName,
     NgIcon,

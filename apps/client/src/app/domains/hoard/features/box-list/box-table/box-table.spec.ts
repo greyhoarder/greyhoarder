@@ -52,6 +52,16 @@ describe('Box table', () => {
     expect(firstBox()).toBe('Intercessors');
   });
 
+  it('shows the kind of the box before its kit line', async () => {
+    const fixture = TestBed.createComponent(BoxTable);
+    fixture.componentRef.setInput('boxes', [{ ...BOXES[0], areSprues: true }, BOXES[1]]);
+
+    await fixture.whenStable();
+
+    const kinds = [...(fixture.nativeElement as HTMLElement).querySelectorAll('[data-testid="box-kind"]')];
+    expect(kinds.map((kind) => kind.getAttribute('data-kind'))).toEqual(['sprues', 'box']);
+  });
+
   it('marks an edited box as "Edited"', async () => {
     const fixture = TestBed.createComponent(BoxTable);
     fixture.componentRef.setInput('boxes', [{ ...BOXES[0], isEdited: true }, BOXES[1]]);

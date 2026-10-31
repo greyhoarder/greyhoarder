@@ -45,6 +45,7 @@
         }
       </div>
       <div class="flex flex-wrap items-center gap-2">
+        <app-box-kind [areSprues]="box.areSprues === true" />
         <p class="text-muted-foreground" data-testid="box-kit-line">{{ kitLine() }}</p>
         @if (box.isEdited) {
           <app-edited-badge data-testid="box-edited" />
@@ -338,20 +339,6 @@
     (keptBuiltMinis)="deleteBoxKeepingBuiltMinis()"
     (closed)="boxesDeletion.cancel()"
   />
-  @if (kit(); as kit) {
-    @if (storedBox(); as storedBox) {
-      <app-edit-box-dialog
-        [isOpen]="isEditing()"
-        [box]="storedBox"
-        [kit]="kit"
-        [minis]="boxMinis()"
-        [isSaving]="isSavingEdit()"
-        [hasFailed]="hasEditFailed()"
-        (saved)="saveEdit($event)"
-        (closed)="isEditing.set(false)"
-      />
-    }
-  }
 } @else {
   <p class="text-muted-foreground" role="alert" data-testid="box-not-found">This box isn't in your hoard.</p>
 }

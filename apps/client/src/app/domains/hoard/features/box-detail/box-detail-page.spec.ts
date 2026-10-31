@@ -7,7 +7,6 @@ import { HttpCatalogPartsAdapter, HttpKitsAdapter } from '../../../catalog/api';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
-import { MinisStore } from '../../data/minis-store';
 import { MinisChangedNotice } from '../../application/minis/minis-changed-notice';
 import { BoxDetailPage } from './box-detail-page';
 
@@ -76,13 +75,11 @@ describe('Box page', () => {
   /** What the server answers when minis or a box are deleted. */
   let deleteMinis = vi.fn<HttpMinisAdapter['delete']>();
   let deleteBox = vi.fn<HttpBoxesAdapter['delete']>();
-  let editBoxRows = vi.fn<HttpBoxesAdapter['editRows']>();
 
   /** A fresh page for the box with this id, whose hoard holds what `loadMinis` answers. */
   function showBox(id: string, loadMinis: () => Promise<readonly Mini[]> = () => Promise.resolve(MINIS)): void {
     deleteMinis = vi.fn(async () => ({ emptiedBoxIds: [BOYZ.id], minis: [] }));
     deleteBox = vi.fn(async () => ({ deletedMiniIds: [], minis: [] }));
-    editBoxRows = vi.fn(async () => ({ box: EDITED, addedMinis: [], deletedMiniIds: [], minis: [] }));
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'hoard/minis', component: MinisTab }]),
@@ -94,7 +91,6 @@ describe('Box page', () => {
               factionNames: new Map([[ORKS, 'Orks']]),
             })),
             delete: deleteBox,
-            editRows: editBoxRows,
           },
         },
         { provide: HttpKitsAdapter, useValue: { find: findKit } },
@@ -478,6 +474,14 @@ describe('Box page', () => {
     expect(textOf('box-edited')).toBe('Edited');
   });
 
+  it('shows the kind of the box before its kit line', async () => {
+    showBox(BOYZ.id);
+
+    await fixture.whenStable();
+
+    expect(all('box-kind')[0]?.getAttribute('data-kind')).toBe('box');
+  });
+
   it('offers "Edit box" only for a box from a kit', async () => {
     showBox(BOYZ.id);
     await fixture.whenStable();
@@ -490,47 +494,13 @@ describe('Box page', () => {
     expect([fromKit, all('box-edit').length]).toEqual([1, 0]);
   });
 
-  it('asks whether to delete the box once editing took out its last minis', async () => {
-    showBox(BOYZ.id, () => Promise.resolve([mini('m1', 'sprue'), mini('m2', 'sprue')]));
-    editBoxRows.mockResolvedValueOnce({
-      box: { ...BOYZ, isEdited: true },
-      addedMinis: [],
-      deletedMiniIds: ['m1', 'm2'],
-      minis: [],
-    });
+  it('opens the page for editing with "Edit box"', async () => {
+    showBox(BOYZ.id);
     await fixture.whenStable();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
     await click(all('box-edit')[0]);
-    await click(inDocument('box-edit-less'));
-    await click(inDocument('box-edit-less'));
 
-    await click(inDocument('box-edit-save'));
-
-    expect(editBoxRows).toHaveBeenCalledWith(BOYZ.id, [0]);
-    expect(inDocument('box-empty-boxes-dialog')).not.toBeNull();
-  });
-
-  it('updates the minis that named a mini deleted while editing the box', async () => {
-    const stripped = mini('m5', 'built', {
-      departure: { reason: 'stripped', on: '2026-10-20', recipientMiniIds: ['m1'] },
-    });
-    const withoutRecipients = { ...stripped, departure: { reason: 'stripped' as const, on: '2026-10-20' } };
-    showBox(BOYZ.id, () => Promise.resolve([mini('m1', 'sprue'), mini('m2', 'sprue'), stripped]));
-    editBoxRows.mockResolvedValueOnce({
-      box: { ...BOYZ, isEdited: true },
-      addedMinis: [],
-      deletedMiniIds: ['m1'],
-      minis: [withoutRecipients],
-    });
-    await fixture.whenStable();
-    await click(all('box-edit')[0]);
-    await click(inDocument('box-edit-less'));
-
-    await click(inDocument('box-edit-save'));
-
-    expect(
-      TestBed.inject(MinisStore)
-        .minis()
-        .find((each) => each.id === 'm5'),
-    ).toEqual(withoutRecipients);
+    expect(navigate).toHaveBeenCalledWith(['/hoard/boxes', BOYZ.id, 'edit']);
   });
 });

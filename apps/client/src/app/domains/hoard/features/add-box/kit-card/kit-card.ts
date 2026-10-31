@@ -3,7 +3,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBox, lucideSplit } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { factionNamesOf, kitMeta, kitMinis } from '../../../util/kit-labels';
-import { type Kit, matchingRows, sprueMinis } from '@greyhoarder/domain/hoard';
+import { type Kit, matchingRows } from '@greyhoarder/domain/hoard';
 import type { BoxesToAdd } from '../../../models/boxes-to-add';
 import { BoxForm } from '../box-form/box-form';
 
@@ -57,11 +57,6 @@ import { BoxForm } from '../box-form/box-form';
         </span>
         <span class="truncate text-sm">{{ armies() }}</span>
         <span class="truncate text-xs text-muted-foreground">{{ meta() }}</span>
-        @if (matchedNames().length > 0) {
-          <span class="truncate text-xs text-muted-foreground" data-testid="add-box-kit-matches"
-            >With {{ matchedNames().join(' or ') }}</span
-          >
-        }
         <!-- On narrow screens the owned boxes move below, so the name keeps its room. -->
         @if (ownedBoxes() > 0) {
           <span class="truncate text-sm text-primary sm:hidden">{{ owned() }}</span>
@@ -118,11 +113,6 @@ export class KitCard {
   protected readonly meta = computed(() => kitMeta(this.kit()));
   protected readonly minis = computed(() => kitMinis(this.kit()));
   protected readonly matchedRows = computed(() => matchingRows(this.kit(), this.search()));
-  /** The suggested names of the matched slots, e.g. "Boy" and "Boss Nob" for "bo". */
-  protected readonly matchedNames = computed(() => {
-    const rows = sprueMinis(this.kit());
-    return [...new Set(this.matchedRows().flatMap((row) => rows[row]?.builds ?? []))];
-  });
   protected readonly owned = computed(() =>
     this.ownedBoxes() === 1 ? '1 box in your hoard' : `${this.ownedBoxes()} boxes in your hoard`,
   );

@@ -93,37 +93,4 @@ describe('Kit card', () => {
 
     expect((fixture.nativeElement as HTMLElement).querySelector('[data-testid="add-box-kit-builds"]')).toBeNull();
   });
-
-  it('says which slots match the search, e.g. "With Boy or Boss Nob"', async () => {
-    const fixture = TestBed.createComponent(KitCard);
-    fixture.componentRef.setInput('factionNames', new Map([['warhammer-40000/orks', 'Orks']]));
-    fixture.componentRef.setInput('kit', {
-      id: 'games-workshop/orks/boyz-2026',
-      name: 'Boyz',
-      names: ['Boyz'],
-      manufacturer: 'games-workshop',
-      factionIds: ['warhammer-40000/orks'],
-      isDraft: false,
-      variants: [
-        {
-          name: 'Boyz',
-          slots: [
-            { count: 9, names: ['Boy'], parts: [], factionIds: [] },
-            { count: 1, names: ['Boss Nob'], parts: [], factionIds: [] },
-            { count: 1, names: ['Ammo Runt'], parts: [], factionIds: [] },
-          ],
-          minis: 11,
-        },
-      ],
-      minis: 11,
-      contains: [],
-    });
-    fixture.componentRef.setInput('search', 'bo');
-
-    await fixture.whenStable();
-
-    expect(
-      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="add-box-kit-matches"]')?.textContent?.trim(),
-    ).toBe('With Boy or Boss Nob');
-  });
 });

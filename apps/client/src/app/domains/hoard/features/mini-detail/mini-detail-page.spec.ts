@@ -163,6 +163,55 @@ describe('Mini page', () => {
   const inPopover = (testId: string): HTMLElement | undefined =>
     document.querySelector<HTMLElement>(`[data-testid="${testId}"]`) ?? undefined;
 
+  const statusChip = (status: string): HTMLElement | undefined =>
+    all('mini-status').find((chip) => chip.dataset['status'] === status);
+
+  it('changes the status of a built mini at once', async () => {
+    showMini(
+      'm1',
+      () => Promise.resolve(BUILT),
+      async () => ({ minis: [{ ...BUILT[0], status: 'primed' } as Mini], ownFactionNames: new Map() }),
+    );
+    await fixture.whenStable();
+
+    await click(statusChip('primed'));
+
+    expect(update).toHaveBeenCalledWith(['m1'], { status: 'primed' });
+    expect(textsOf('mini-percent')).toEqual(['50%']);
+  });
+
+  it('offers no status control for a mini on the sprue', async () => {
+    showMini('m1');
+
+    await fixture.whenStable();
+
+    expect(all('mini-status')).toHaveLength(0);
+  });
+
+  it('offers no status control for a gone mini', async () => {
+    showMini('sold', () =>
+      Promise.resolve([mini('sold', { status: 'built', departure: { reason: 'sold', on: '2026-10-20' } })]),
+    );
+
+    await fixture.whenStable();
+
+    expect(all('mini-status')).toHaveLength(0);
+  });
+
+  it('shows the stored status again when saving it fails', async () => {
+    showMini(
+      'm1',
+      () => Promise.resolve(BUILT),
+      () => Promise.reject(new Error('offline')),
+    );
+    await fixture.whenStable();
+
+    await click(statusChip('primed'));
+
+    expect(textsOf('mini-save-error')).toEqual(["Can't save right now. Try again in a moment."]);
+    expect(statusChip('built')?.getAttribute('aria-checked')).toBe('true');
+  });
+
   it('says the name of the minis as the title until a name is chosen', async () => {
     showMini('m1');
     await fixture.whenStable();

@@ -6,20 +6,27 @@ import { STATUS_LABELS } from '../../util/status-labels';
 let nextId = 0;
 
 /**
- * "Status" and one toggle chip per offered status, one of them chosen, or none while minis don't share
- * one; arrow keys move the choice.
+ * "Status" and a segmented control of the offered statuses, one of them chosen, or none while minis
+ * don't share one; arrow keys move the choice.
  */
 @Component({
   selector: 'app-status-choice',
   template: `
-    <span class="text-sm font-semibold" [id]="labelId">Status</span>
-    <div class="flex flex-wrap gap-2" role="radiogroup" [attr.aria-labelledby]="labelId">
+    @if (!isLabelHidden()) {
+      <span class="text-sm font-medium tracking-wide text-muted-foreground" [id]="labelId">Status</span>
+    }
+    <div
+      class="flex w-fit overflow-hidden rounded-lg border bg-card"
+      role="radiogroup"
+      [attr.aria-labelledby]="isLabelHidden() ? null : labelId"
+      [attr.aria-label]="isLabelHidden() ? 'Status' : null"
+    >
       @for (status of statuses(); track status) {
         <button
           #chip
           type="button"
           role="radio"
-          class="inline-flex h-8 items-center rounded-full border px-3 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none aria-checked:border-primary aria-checked:bg-primary/10"
+          class="h-8 px-3 text-sm text-muted-foreground transition-colors not-first:border-l focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground"
           [attr.data-testid]="testId()"
           [attr.data-status]="status"
           [attr.aria-checked]="status === chosen()"
@@ -44,6 +51,8 @@ export class StatusChoice {
   readonly chosen = input.required<HobbyStatus | undefined>();
   /** Of each chip, which also carries its status as `data-status`. */
   readonly testId = input.required<string>();
+  /** For a page with a heading of its own; the group is still named "Status". */
+  readonly isLabelHidden = input(false);
   readonly chose = output<HobbyStatus>();
 
   protected readonly labelId = `status-choice-${nextId++}`;

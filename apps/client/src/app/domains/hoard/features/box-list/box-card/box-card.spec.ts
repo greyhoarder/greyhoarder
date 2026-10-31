@@ -46,6 +46,12 @@ describe('Box card', () => {
     expect(card.querySelector('[data-testid="hoard-box-number"]')?.textContent?.trim()).toBe('#2');
   });
 
+  it('shows the kind of the box before its kit line', async () => {
+    const card = await render({ ...BOYZ, areSprues: true });
+
+    expect(card.querySelector('[data-testid="box-kind"]')?.getAttribute('data-kind')).toBe('sprues');
+  });
+
   it('marks an edited box as "Edited"', async () => {
     const card = await render({ ...BOYZ, isEdited: true });
 

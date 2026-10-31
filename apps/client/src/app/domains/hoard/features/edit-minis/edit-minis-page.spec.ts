@@ -33,6 +33,8 @@ const MINIS: Mini[] = [
   mini('m5', { name: 'Nob', status: 'primed', factionIds: [ORKS, BLOOD_AXES] }),
   mini('done', { status: 'done' }),
   mini('sold', { departure: { reason: 'sold', on: '2026-10-20' } }),
+  mini('k1', { name: 'Nob', parts: [{ partId: 'klaw', isSwappable: false }] }),
+  mini('k2', { name: 'Nob', parts: [{ partId: 'klaw', isSwappable: false }] }),
 ];
 
 const ALL = 'm1,m2,m3,m4,m5';
@@ -99,6 +101,17 @@ describe('Edit minis page', () => {
   const removeButtonOf = (name: string): HTMLElement | null | undefined =>
     factionChip(name)?.querySelector<HTMLElement>('[data-testid="edit-minis-faction-remove"]');
 
+  /** Opens "+ Faction" and types into its search, which opens in a popover outside the page. */
+  async function searchFactions(text: string): Promise<void> {
+    await click(all('edit-minis-add-faction')[0]);
+    const field = document.querySelector<HTMLInputElement>('[data-testid="edit-minis-faction-search"]');
+    if (field) {
+      field.value = text;
+      field.dispatchEvent(new Event('input'));
+    }
+    await fixture.whenStable();
+  }
+
   it('says how many minis are edited and which, e.g. "Boy ×3, Nob ×2"', async () => {
     await showPage(ALL);
 
@@ -122,6 +135,15 @@ describe('Edit minis page', () => {
     const share = factionChip('Blood Axes')?.querySelector('[data-testid="edit-minis-faction-share"]');
 
     expect(share?.textContent?.trim()).toBe('2 of 5');
+  });
+
+  it('offers no parts for minis of different names', async () => {
+    await showPage(ALL);
+
+    const note = textOf('edit-minis-parts-note');
+
+    expect(note).toBe('Parts can be edited only for minis of the same name.');
+    expect(all('edit-minis-add-part')).toHaveLength(0);
   });
 
   it('keeps "Apply" disabled while nothing changed', async () => {
@@ -152,6 +174,31 @@ describe('Edit minis page', () => {
     expect(marked).toBe('Undo removing Blood Axes');
     expect(removeButtonOf('Blood Axes')?.getAttribute('aria-label')).toBe('Remove Blood Axes');
     expect(textOf('edit-minis-summary')).toBe('Nothing changed yet.');
+  });
+
+  it('changes nothing when a faction every mini carries is removed and added again', async () => {
+    await showPage('m4,m5');
+    vi.mocked(TestBed.inject(HttpCatalogFactionsAdapter).search).mockResolvedValue([
+      { id: BLOOD_AXES, name: 'Blood Axes', systemName: 'Warhammer 40,000' },
+    ]);
+    await click(removeButtonOf('Blood Axes') ?? undefined);
+    await searchFactions('Blood');
+
+    document.querySelector<HTMLElement>('[data-testid="edit-minis-faction-result"]')?.click();
+    await fixture.whenStable();
+
+    expect(textOf('edit-minis-summary')).toBe('Nothing changed yet.');
+    expect((all('edit-minis-apply')[0] as HTMLButtonElement | undefined)?.disabled).toBe(true);
+  });
+
+  it('removes a part after its glued or swappable was changed', async () => {
+    await showPage('k1,k2');
+    await click(all('edit-minis-part-swappable')[0]);
+    await click(all('edit-minis-part-remove')[0]);
+
+    await click(all('edit-minis-apply')[0]);
+
+    expect(change).toHaveBeenCalledWith(['k1', 'k2'], { removePartIds: ['klaw'] });
   });
 
   it("says how many minis can't go on the workbench when putting them on", async () => {

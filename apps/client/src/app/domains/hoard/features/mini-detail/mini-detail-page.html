@@ -209,12 +209,23 @@
           <span class="h-full flex-1" [class]="segment.color"></span>
         }
       </div>
-      <div class="grid grid-cols-4">
-        @for (segment of statusSegments(); track segment.status) {
-          <span class="text-right text-sm text-muted-foreground">{{ segment.label }}</span>
-        }
-      </div>
+      @if (!canChooseStatus()) {
+        <div class="grid grid-cols-4">
+          @for (segment of statusSegments(); track segment.status) {
+            <span class="text-right text-sm text-muted-foreground">{{ segment.label }}</span>
+          }
+        </div>
+      }
     </div>
+    @if (canChooseStatus()) {
+      <app-status-choice
+        testId="mini-status"
+        [isLabelHidden]="true"
+        [statuses]="statuses"
+        [chosen]="editor.status()"
+        (chose)="chooseStatus($event)"
+      />
+    }
   </section>
 
   <div class="@container">

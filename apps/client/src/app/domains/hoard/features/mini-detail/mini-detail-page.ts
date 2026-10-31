@@ -1,6 +1,6 @@
 import { Component, computed, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { isGone } from '@greyhoarder/domain/hoard';
+import { type HobbyStatus, isGone } from '@greyhoarder/domain/hoard';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBrush, lucideCamera, lucideChevronLeft, lucideEllipsisVertical, lucideX } from '@ng-icons/lucide';
@@ -20,6 +20,7 @@ import { StatusBadge } from '../../ui/status-badge/status-badge';
 import { progressPercent } from '../../models/box-progress';
 import { isOwnDraft } from '../../models/faction-draft';
 import { PROGRESS_STATUSES, STATUS_COLORS } from '../../ui/progress-bar/progress-bar';
+import { StatusChoice } from '../../ui/status-choice/status-choice';
 import { eitherOrText } from '../../util/either-or';
 import { formatDate } from '../../util/format-date';
 import { DEPARTURE_LABELS, STATUS_LABELS } from '../../util/status-labels';
@@ -43,6 +44,7 @@ import { MenuKeys } from '../../../../shared/ui/menu-keys/menu-keys';
     HlmPopoverImports,
     HlmSkeleton,
     StatusBadge,
+    StatusChoice,
     BuildAs,
     PartTiles,
     BuildBar,
@@ -91,6 +93,12 @@ export class MiniDetailPage {
   );
 
   /** Gives the faction to the minis and closes the search. */
+  protected chooseStatus(status: HobbyStatus): void {
+    if (status !== this.editor.status()) {
+      this.editor.setStatus(status);
+    }
+  }
+
   protected chooseFaction(faction: { readonly id: string; readonly name: string }): void {
     this.editor.addFaction(faction);
     this.factionSearch.close();
@@ -104,6 +112,9 @@ export class MiniDetailPage {
   /** How far the mini is, 0 to 100, weighted like a box's progress. */
   protected readonly percent = computed(() => progressPercent([this.editor.status()]));
   /** One segment per status past the sprue; those reached take the color of the current status. */
+  protected readonly statuses = PROGRESS_STATUSES;
+  /** Minis on the sprue are built here, and gone minis keep their status. */
+  protected readonly canChooseStatus = computed(() => !this.editor.isOnSprue() && !this.editor.isGone());
   protected readonly statusSegments = computed(() => {
     const status = this.editor.status();
     const current = PROGRESS_STATUSES.indexOf(status);

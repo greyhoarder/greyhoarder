@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideChevronDown, lucideList, lucidePlus, lucideRows2 } from '@ng-icons/lucide';
+import { lucideChevronDown, lucideList, lucidePlus, lucideLayoutGrid } from '@ng-icons/lucide';
 import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
 import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -41,7 +41,7 @@ const ADD_ITEMS = [
     AddedBar,
   ],
   providers: [
-    provideIcons({ lucideChevronDown, lucideList, lucidePlus, lucideRows2 }),
+    provideIcons({ lucideChevronDown, lucideList, lucidePlus, lucideLayoutGrid }),
     // The add menu is a menu, not a dialog; its list carries the role.
     provideBrnPopoverDefaultOptions({ role: undefined }),
   ],

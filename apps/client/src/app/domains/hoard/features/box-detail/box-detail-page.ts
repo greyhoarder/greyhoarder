@@ -7,14 +7,13 @@ import {
   inject,
   input,
   linkedSignal,
-  resource,
   signal,
   viewChildren,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
-import { type HobbyStatus, hobbyStatuses, isGone, type Kit, toKit, withStatus } from '@greyhoarder/domain/hoard';
+import { type HobbyStatus, hobbyStatuses, isGone, withStatus } from '@greyhoarder/domain/hoard';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideBox, lucideChevronDown, lucideChevronLeft, lucideEllipsisVertical } from '@ng-icons/lucide';
 import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
@@ -22,14 +21,12 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmPopoverImports } from '@spartan-ng/helm/popover';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
-import { HttpKitsAdapter } from '../../../catalog/api';
-import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { BoxesDeletion } from '../../application/boxes/boxes-deletion';
 import { BoxesStore } from '../../data/boxes-store';
 import { percentOf, progressOf, toBoxRows } from '../../application/boxes/box-row';
 import { FactionNames } from '../../application/faction-names';
-import { HoardChanges } from '../../application/hoard-changes';
+import { loadedKit } from '../../application/loaded-kit';
 import { toMiniGroups } from './mini-group';
 import { MiniSelection } from '../../application/minis/mini-selection';
 import { changedText, MinisChangedNotice } from '../../application/minis/minis-changed-notice';
@@ -40,7 +37,7 @@ import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
 import { hasPercent } from '../../models/box-progress';
 import { DeleteBoxDialog } from './delete-box-dialog/delete-box-dialog';
-import { EditBoxDialog } from './edit-box-dialog/edit-box-dialog';
+import { BoxKind } from '../../ui/box-kind/box-kind';
 import { EditedBadge } from '../../ui/edited-badge/edited-badge';
 import { AddedBar } from '../../ui/added-bar/added-bar';
 import { DeleteMinisDialog } from '../../ui/delete-minis-dialog/delete-minis-dialog';
@@ -85,7 +82,7 @@ import { MenuKeys } from '../../../../shared/ui/menu-keys/menu-keys';
     DeleteMinisDialog,
     EmptyBoxesDialog,
     DeleteBoxDialog,
-    EditBoxDialog,
+    BoxKind,
     EditedBadge,
     AddedBar,
   ],
@@ -114,10 +111,7 @@ export class BoxDetailPage {
   private readonly parts = inject(PartsStore);
   private readonly title = inject(Title);
   private readonly router = inject(Router);
-  private readonly catalogKits = inject(HttpKitsAdapter);
   private readonly minisAdapter = inject(HttpMinisAdapter);
-  private readonly boxesAdapter = inject(HttpBoxesAdapter);
-  private readonly hoardChanges = inject(HoardChanges);
   protected readonly deletion = inject(MinisDeletion);
   protected readonly boxesDeletion = inject(BoxesDeletion);
   /** What the box's dialog asks: whether to delete it now that it is empty, or from its menu. */
@@ -205,26 +199,11 @@ export class BoxDetailPage {
   protected readonly changedCount = computed(() => this.changedNotice.countFor(this.id()));
   protected readonly changedText = changedText;
 
-  /** The edit dialog is open; it counts the minis on the sprue anew. */
-  protected readonly isEditing = signal(false);
-  protected readonly isSavingEdit = signal(false);
-  protected readonly hasEditFailed = signal(false);
-
   /** The kit in the version the box records; none for boxes without a kit. */
-  private readonly loadedKit = resource({
-    params: () => this.storedBox()?.kit,
-    loader: async ({ params: { id, version } }): Promise<Kit | undefined> => {
-      const { kits, containedKits } = await this.catalogKits.find(id, version);
-      return kits[0] && toKit(kits[0], containedKits);
-    },
-  });
-  /** Left out while loading, when the kit can't be loaded and for boxes without a kit. */
-  protected readonly kit = computed(() => (this.loadedKit.hasValue() ? this.loadedKit.value() : undefined));
-  protected readonly hasKitFailed = computed(() => this.loadedKit.error() !== undefined);
-  /** The catalog answered, but without this version of the kit. */
-  protected readonly isKitMissing = computed(
-    () => this.loadedKit.status() === 'resolved' && this.loadedKit.value() === undefined,
-  );
+  private readonly loadedKit = loadedKit(() => this.storedBox()?.kit);
+  protected readonly kit = this.loadedKit.kit;
+  protected readonly hasKitFailed = this.loadedKit.hasFailed;
+  protected readonly isKitMissing = this.loadedKit.isMissing;
 
   protected readonly progress = computed(() => {
     const box = this.box();
@@ -317,29 +296,9 @@ export class BoxDetailPage {
     }
   }
 
+  /** Edit box leads back here. */
   protected edit(): void {
-    this.hasEditFailed.set(false);
-    this.isEditing.set(true);
-  }
-
-  /** Saves the counted rows; once the box has no minis left, asks whether to delete it. */
-  protected async saveEdit(rows: readonly number[]): Promise<void> {
-    this.isSavingEdit.set(true);
-    this.hasEditFailed.set(false);
-    try {
-      const { box, addedMinis, deletedMiniIds, minis } = await this.boxesAdapter.editRows(this.id(), rows);
-      this.boxes.apply([box]);
-      this.minis.add(addedMinis);
-      this.hoardChanges.removed(deletedMiniIds, minis);
-      this.isEditing.set(false);
-      if (this.boxMinis().length === 0) {
-        this.askIfEmptied([this.id()]);
-      }
-    } catch {
-      this.hasEditFailed.set(true);
-    } finally {
-      this.isSavingEdit.set(false);
-    }
+    void this.router.navigate(['/hoard/boxes', this.id(), 'edit']);
   }
 
   /** The mini page leads back here. */

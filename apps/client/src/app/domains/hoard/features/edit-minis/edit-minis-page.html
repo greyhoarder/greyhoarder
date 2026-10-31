@@ -72,7 +72,9 @@
   </section>
 
   <section class="flex flex-col gap-2">
-    <span class="text-sm font-semibold" id="edit-minis-workbench-label">Workbench</span>
+    <span class="text-sm font-medium tracking-wide text-muted-foreground" id="edit-minis-workbench-label"
+      >Workbench</span
+    >
     <div class="flex w-fit rounded-lg bg-muted p-0.5" role="radiogroup" aria-labelledby="edit-minis-workbench-label">
       @for (choice of workbenchChoices; track choice.value) {
         <button
@@ -172,107 +174,113 @@
 
   <section class="@container/main flex flex-col gap-4" aria-labelledby="edit-minis-parts-heading">
     <h2 class="font-semibold" id="edit-minis-parts-heading">Parts</h2>
-    <div class="grid grid-cols-1 gap-2 @md/main:grid-cols-2 @3xl/main:grid-cols-3">
-      @for (part of editor.parts(); track $index) {
-        @let isPartRemoved = part.mark === 'removed';
-        <div
-          class="flex flex-col gap-2 rounded-lg border px-3 py-2.5"
-          [class.border-dashed]="isPartRemoved"
-          [attr.data-mark]="part.mark"
-          data-testid="edit-minis-part"
-        >
-          <div class="flex items-start justify-between gap-2">
-            <div class="flex min-w-0 flex-col">
-              <span
-                class="font-semibold"
-                [class.line-through]="isPartRemoved"
-                [class.text-muted-foreground]="isPartRemoved"
-                >{{ part.name }}</span
-              >
-              @if (part.mark === 'removed') {
-                <span class="sr-only">to be removed</span>
-              } @else if (part.mark === 'added') {
-                <span class="text-sm text-muted-foreground">added</span>
-              } @else if (part.count < editor.count()) {
-                <span class="text-sm text-muted-foreground" data-testid="edit-minis-part-share">
-                  {{ part.count }} of {{ editor.count() }}
-                </span>
+    @if (editor.canEditParts()) {
+      <div class="grid grid-cols-1 gap-2 @md/main:grid-cols-2 @3xl/main:grid-cols-3">
+        @for (part of editor.parts(); track $index) {
+          @let isPartRemoved = part.mark === 'removed';
+          <div
+            class="flex flex-col gap-2 rounded-lg border px-3 py-2.5"
+            [class.border-dashed]="isPartRemoved"
+            [attr.data-mark]="part.mark"
+            data-testid="edit-minis-part"
+          >
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex min-w-0 flex-col">
+                <span
+                  class="font-semibold"
+                  [class.line-through]="isPartRemoved"
+                  [class.text-muted-foreground]="isPartRemoved"
+                  >{{ part.name }}</span
+                >
+                @if (part.mark === 'removed') {
+                  <span class="sr-only">to be removed</span>
+                } @else if (part.mark === 'added') {
+                  <span class="text-sm text-muted-foreground">added</span>
+                } @else if (part.count < editor.count()) {
+                  <span class="text-sm text-muted-foreground" data-testid="edit-minis-part-share">
+                    {{ part.count }} of {{ editor.count() }}
+                  </span>
+                }
+              </div>
+              @if (part.mark === 'removed' && part.partId !== undefined) {
+                <button
+                  type="button"
+                  class="text-sm text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  [attr.aria-label]="'Undo removing ' + part.name"
+                  data-testid="edit-minis-part-remove"
+                  (click)="editor.undoRemovingPart(part.partId)"
+                >
+                  Undo
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  class="text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  [attr.aria-label]="(part.mark === 'added' ? 'Don\'t add ' : 'Remove ') + part.name"
+                  data-testid="edit-minis-part-remove"
+                  (click)="editor.removePart(part)"
+                >
+                  <ng-icon name="lucideX" size="14" />
+                </button>
               }
             </div>
-            @if (part.mark === 'removed' && part.partId !== undefined) {
+            @if (part.mark !== 'removed') {
               <button
                 type="button"
-                class="text-sm text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                [attr.aria-label]="'Undo removing ' + part.name"
-                data-testid="edit-minis-part-remove"
-                (click)="editor.undoRemovingPart(part.partId)"
+                class="inline-flex h-7 w-fit items-center gap-1.5 rounded-full border px-2.5 text-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                [attr.aria-label]="'Swappable ' + part.name"
+                [attr.aria-pressed]="part.carried === 'mixed' ? 'mixed' : part.carried === 'swappable'"
+                data-testid="edit-minis-part-swappable"
+                (click)="editor.toggleSwappable(part)"
               >
-                Undo
-              </button>
-            } @else {
-              <button
-                type="button"
-                class="text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                [attr.aria-label]="(part.mark === 'added' ? 'Don\'t add ' : 'Remove ') + part.name"
-                data-testid="edit-minis-part-remove"
-                (click)="editor.removePart(part)"
-              >
-                <ng-icon name="lucideX" size="14" />
+                <ng-icon [name]="part.carried === 'swappable' ? 'lucideMagnet' : 'lucideDroplet'" size="12" />
+                @switch (part.carried) {
+                  @case ('swappable') {
+                    Swappable
+                  }
+                  @case ('mixed') {
+                    Mixed
+                  }
+                  @default {
+                    Glued
+                  }
+                }
               </button>
             }
           </div>
-          @if (part.mark !== 'removed') {
-            <button
-              type="button"
-              class="inline-flex h-7 w-fit items-center gap-1.5 rounded-full border px-2.5 text-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-              [attr.aria-label]="'Swappable ' + part.name"
-              [attr.aria-pressed]="part.carried === 'mixed' ? 'mixed' : part.carried === 'swappable'"
-              data-testid="edit-minis-part-swappable"
-              (click)="editor.toggleSwappable(part)"
-            >
-              <ng-icon [name]="part.carried === 'swappable' ? 'lucideMagnet' : 'lucideDroplet'" size="12" />
-              @switch (part.carried) {
-                @case ('swappable') {
-                  Swappable
-                }
-                @case ('mixed') {
-                  Mixed
-                }
-                @default {
-                  Glued
-                }
-              }
-            </button>
-          }
-        </div>
-      }
-      <button
-        type="button"
-        class="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg border text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-        [class.border-dashed]="!isPickerOpen()"
-        [class.bg-muted]="isPickerOpen()"
-        [class.border-muted-foreground]="isPickerOpen()"
-        [attr.aria-expanded]="isPickerOpen()"
-        [attr.aria-controls]="picker.id"
-        data-testid="edit-minis-add-part"
-        (click)="isPickerOpen.set(!isPickerOpen())"
-      >
-        <ng-icon
-          name="lucidePlus"
-          size="16"
-          class="transition-transform motion-reduce:transition-none"
-          [class.rotate-45]="isPickerOpen()"
-        />
-        {{ isPickerOpen() ? 'Close' : 'Add a part' }}
-      </button>
-    </div>
-    <app-part-picker
-      #picker
-      [isOpen]="isPickerOpen()"
-      [source]="editor.partSource()"
-      [rangeName]="editor.rangeName()"
-      (added)="editor.addPart($event)"
-    />
+        }
+        <button
+          type="button"
+          class="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg border text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          [class.border-dashed]="!isPickerOpen()"
+          [class.bg-muted]="isPickerOpen()"
+          [class.border-muted-foreground]="isPickerOpen()"
+          [attr.aria-expanded]="isPickerOpen()"
+          [attr.aria-controls]="picker.id"
+          data-testid="edit-minis-add-part"
+          (click)="isPickerOpen.set(!isPickerOpen())"
+        >
+          <ng-icon
+            name="lucidePlus"
+            size="16"
+            class="transition-transform motion-reduce:transition-none"
+            [class.rotate-45]="isPickerOpen()"
+          />
+          {{ isPickerOpen() ? 'Close' : 'Add a part' }}
+        </button>
+      </div>
+      <app-part-picker
+        #picker
+        [isOpen]="isPickerOpen()"
+        [source]="editor.partSource()"
+        [rangeName]="editor.rangeName()"
+        (added)="editor.addPart($event)"
+      />
+    } @else {
+      <p class="text-sm text-muted-foreground" data-testid="edit-minis-parts-note">
+        Parts can be edited only for minis of the same name.
+      </p>
+    }
   </section>
 
   <div class="sticky bottom-4 z-10 flex flex-wrap items-center gap-4 rounded-xl border bg-card p-4">
