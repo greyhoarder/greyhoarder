@@ -22,6 +22,8 @@ export {
   addMinisRequestSchema,
   type AddMinisResponse,
   addMinisResponseSchema,
+  type ChangeMinisRequest,
+  changeMinisRequestSchema,
   type DeleteMinisRequest,
   deleteMinisRequestSchema,
   type DeleteMinisResponse,

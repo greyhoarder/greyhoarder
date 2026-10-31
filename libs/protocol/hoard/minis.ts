@@ -81,6 +81,23 @@ export const updateMinisRequestSchema = z.object({
 
 export type UpdateMinisRequest = z.infer<typeof updateMinisRequestSchema>;
 
+/**
+ * Changes to several minis at once, `PATCH /api/hoard/minis/changes`: only what is given changes, and
+ * factions and parts are added or removed, never replaced (`ChangesToMinis`). New factions and parts
+ * are given by name. Answered like `updateMinisRequestSchema`.
+ */
+export const changeMinisRequestSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1).readonly(),
+  status: z.enum(hobbyStatuses).optional(),
+  workbench: z.enum(['put-on', 'take-off']).optional(),
+  addFactions: z.array(factionChangeSchema).readonly().optional(),
+  removeFactionIds: z.array(z.string().min(1)).readonly().optional(),
+  addParts: z.array(partChangeSchema).readonly().optional(),
+  removePartIds: z.array(z.string().min(1)).readonly().optional(),
+});
+
+export type ChangeMinisRequest = z.infer<typeof changeMinisRequestSchema>;
+
 export const updateMinisResponseSchema = z.object({
   minis: z.array(miniSchema).readonly(),
   /** The names of the user's own factions the minis carry, by id, also those the change added. */
