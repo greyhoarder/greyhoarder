@@ -1,4 +1,5 @@
 import { InvalidMiniError } from './errors/invalid-mini.error.js';
+import { LooseMiniOnSprueError } from './errors/loose-mini-on-sprue.error.js';
 import { type Mini, parseMini, withStatus } from './mini.js';
 
 function boy(mini: Partial<Mini> = {}): Mini {
@@ -8,6 +9,7 @@ function boy(mini: Partial<Mini> = {}): Mini {
     factionIds: ['warhammer-40000/orks'],
     status: 'sprue',
     parts: [],
+    boxId: 'b1',
     isOnWorkbench: false,
     ...mini,
   };
@@ -30,6 +32,18 @@ describe('Mini', () => {
     const mini = parseMini(boy({ name: ' Boy ' }));
 
     expect(mini.name).toBe('Boy');
+  });
+
+  it('refuses a mini on the sprue without a box', () => {
+    const parse = () => parseMini(boy({ status: 'sprue', boxId: undefined }));
+
+    expect(parse).toThrow(LooseMiniOnSprueError);
+  });
+
+  it('accepts a mini on the sprue of a box', () => {
+    const parse = () => parseMini(boy({ status: 'sprue', boxId: 'b1' }));
+
+    expect(parse).not.toThrow();
   });
 
   it('takes a mini off the workbench once it is done', () => {

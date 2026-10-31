@@ -1,4 +1,5 @@
 import { EmptyBoxError } from './errors/empty-box.error.js';
+import { InvalidRowsError } from './errors/invalid-rows.error.js';
 import type { Kit } from './kit.js';
 import { newBoxes } from './new-box.js';
 
@@ -138,4 +139,87 @@ describe('New boxes', () => {
 
     expect(boxes.map((box) => box.number)).toEqual([3, 4]);
   });
+
+  it('puts as many minis of a row on the sprue as counted', () => {
+    const { minis } = newBoxes(BOYZ, { boxes: 1, tags: [], rows: [7, 1] }, context());
+
+    expect(minis.map((mini) => mini.name)).toEqual([...Array<string>(7).fill('Boy'), 'Nob']);
+  });
+
+  it('gives every box the counted rows', () => {
+    const { boxes, minis } = newBoxes(BOYZ, { boxes: 2, tags: [], rows: [7, 0] }, context());
+
+    expect(boxes.map((box) => minis.filter((mini) => mini.boxId === box.id).length)).toEqual([7, 7]);
+  });
+
+  it('refuses to add a box whose rows are all at none', () => {
+    const add = () => newBoxes(BOYZ, { boxes: 1, tags: [], rows: [0, 0] }, context());
+
+    expect(add).toThrow(EmptyBoxError);
+  });
+
+  it('refuses rows that do not fit the kit', () => {
+    const adds = [[9], [9, -1], [9, 0.5]].map((rows) => () => newBoxes(BOYZ, { boxes: 1, tags: [], rows }, context()));
+
+    adds.forEach((add) => expect(add).toThrow(InvalidRowsError));
+  });
+
+  it('names the boxes as chosen', () => {
+    const { boxes } = newBoxes(BOYZ, { boxes: 2, tags: [], name: ' Boyz from Dad ' }, context());
+
+    expect(boxes.map((box) => box.name)).toEqual(['Boyz from Dad', 'Boyz from Dad']);
+  });
+
+  it('marks a box as edited when its rows differ from its kit', () => {
+    const { boxes } = newBoxes(BOYZ, { boxes: 1, tags: [], rows: [7, 1] }, context());
+
+    expect(boxes[0]?.isEdited).toBe(true);
+  });
+
+  it('does not mark a box as edited when its rows are as its kit describes', () => {
+    const { boxes } = newBoxes(BOYZ, { boxes: 1, tags: [], rows: [9, 1] }, context());
+
+    expect(boxes[0]?.isEdited).toBeFalsy();
+  });
+
+  it('marks a box of sprues as edited, also when counted as its kit describes', () => {
+    const { boxes } = newBoxes(BOYZ, { boxes: 1, tags: [], rows: [9, 1], areSprues: true }, context());
+
+    expect(boxes[0]?.isEdited).toBe(true);
+  });
+
+  it('names counted undecided minis of an either-or kit after the kit', () => {
+    const { minis } = newBoxes(LOOTAS_OR_BURNA_BOYZ, { boxes: 1, tags: [], rows: [3, 0], areSprues: true }, context());
+
+    expect(minis.map((mini) => [mini.name, mini.sprueName])).toEqual(
+      Array.from({ length: 3 }, () => ['Lootas / Burna Boyz', 'Lootas / Burna Boyz']),
+    );
+  });
+
+  it('puts only the counted rows of a bundle on the sprue', () => {
+    const { minis } = newBoxes(STARTER, { boxes: 1, tags: [], rows: [0, 10, 1] }, context());
+
+    expect(minis.map((mini) => mini.name)).toEqual([...Array<string>(10).fill('Boy'), 'Nob']);
+  });
 });
+
+const MARINES = 'warhammer-40000/space-marines';
+
+/** A starter set with Space Marines of its own and a box of Boyz. */
+const STARTER: Kit = {
+  id: 'games-workshop/starter-2026',
+  version: 1,
+  name: 'Starter',
+  names: ['Starter'],
+  manufacturer: 'games-workshop',
+  factionIds: [MARINES, ORKS],
+  isDraft: false,
+  variants: [{ name: 'Starter', slots: [{ count: 5, names: ['Marine'], parts: [], factionIds: [MARINES] }], minis: 5 }],
+  minis: 15,
+  contains: [{ kit: BOYZ, count: 1 }],
+};
+
+function context() {
+  let id = 0;
+  return { addedOn: '2026-10-24', newId: () => `${++id}` };
+}

@@ -8,7 +8,10 @@ export interface BoxKitReference {
   readonly sku?: string;
 }
 
-/** Something the user acquired that minis came out of: a kit, a starter set, a bundle (docs/domains/hoard.md). */
+/**
+ * Something the user acquired that minis came out of: a kit, a starter set, a bundle, or sprues of one
+ * bought without their box (docs/domains/hoard.md).
+ */
 export interface Box {
   readonly id: string;
   readonly name: string;
@@ -21,4 +24,6 @@ export interface Box {
   readonly addedOn: string;
   /** Tells boxes with the same name apart, from 1 in the order they were added (docs/domains/hoard.md). */
   readonly number: number;
+  /** Its minis on the sprue were counted by the user, when adding it or later, not taken as its kit describes. */
+  readonly isEdited?: boolean;
 }

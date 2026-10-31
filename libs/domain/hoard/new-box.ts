@@ -1,21 +1,76 @@
 import type { Box } from './box.js';
 import { EmptyBoxError } from './errors/empty-box.error.js';
-import { boxKitName, type Kit, kitReferenceOf } from './kit.js';
+import { InvalidRowsError } from './errors/invalid-rows.error.js';
+import { boxKitName, type Kit, kitName, kitReferenceOf } from './kit.js';
 import { type Mini, parseMini } from './mini.js';
-import { sprueMinis } from './sprue-minis.js';
+import { type SprueMinis, sprueMinis } from './sprue-minis.js';
 
 /** Adding always adds at least one box. */
 export const MIN_BOXES = 1;
 
+/** What the user chose for the boxes to add (docs/domains/hoard.md, Boxes and kits). */
+export interface BoxesOfKit {
+  readonly boxes: number;
+  readonly tags: readonly string[];
+  /** By default the kit's name with its year. */
+  readonly name?: string;
+  /** How many minis each row of the kit puts on the sprue of every box; by default as the kit describes. */
+  readonly rows?: readonly number[];
+  /** Sprues bought without their box, always an edited box. */
+  readonly areSprues?: boolean;
+}
+
 /**
- * One box per box counted, each with one mini on the sprue per mini its kit yields
- * (docs/domains/hoard.md).
+ * Counts of minis per row: whole numbers, none or more.
  *
- * @throws EmptyBoxError when the kit puts no minis on the sprue
+ * @throws InvalidRowsError otherwise
+ */
+export function parseRowCounts(rows: readonly number[]): readonly number[] {
+  if (rows.some((count) => !Number.isInteger(count) || count < 0)) {
+    throw new InvalidRowsError();
+  }
+  return rows;
+}
+
+/**
+ * Counts of minis for each row the kit puts on the sprue (`sprueMinis`), in its order.
+ *
+ * @throws InvalidRowsError when they do not fit the kit
+ */
+export function parseRows(kit: Kit, rows: readonly number[]): readonly number[] {
+  if (rows.length !== sprueMinis(kit).length) {
+    throw new InvalidRowsError();
+  }
+  return parseRowCounts(rows);
+}
+
+/** How many minis each row of the kit puts on the sprue, as the kit describes. */
+export function kitRowCounts(kit: Kit): number[] {
+  return sprueMinis(kit).map((row) => row.count);
+}
+
+/** Whether rows counted for the kit differ from what the kit puts on the sprue. */
+export function differFromKit(kit: Kit, rows: readonly number[]): boolean {
+  const counts = kitRowCounts(kit);
+  return rows.length !== counts.length || rows.some((count, index) => count !== counts[index]);
+}
+
+/** The name a box of sprues gets at first, e.g. "Boyz sprues (2026)". */
+export function sprueBoxName(kit: Kit): string {
+  const name = `${kitName(kit)} sprues`;
+  return kit.year === undefined ? name : `${name} (${kit.year})`;
+}
+
+/**
+ * One box per box counted, each with the minis of the counted rows on the sprue, as many per row as
+ * its kit puts there unless counted otherwise (docs/domains/hoard.md).
+ *
+ * @throws EmptyBoxError when the rows put no minis on the sprue
+ * @throws InvalidRowsError when the rows do not fit the kit
  */
 export function newBoxes(
   kit: Kit,
-  boxesToAdd: { readonly boxes: number; readonly tags: readonly string[] },
+  boxesToAdd: BoxesOfKit,
   context: {
     readonly addedOn: string;
     readonly newId: () => string;
@@ -24,11 +79,13 @@ export function newBoxes(
   },
 ): { boxes: Box[]; minis: Mini[] } {
   const { addedOn, newId, firstNumber = 1 } = context;
-  const name = boxKitName(kit);
+  const name = boxesToAdd.name?.trim() || boxKitName(kit);
   const kinds = sprueMinis(kit);
-  if (kinds.every((kind) => kind.count === 0)) {
+  const rows = parseRows(kit, boxesToAdd.rows ?? kinds.map((kind) => kind.count));
+  if (rows.every((count) => count === 0)) {
     throw new EmptyBoxError();
   }
+  const isEdited = boxesToAdd.areSprues === true || differFromKit(kit, rows);
   const boxes: Box[] = [];
   const minis: Mini[] = [];
   for (let index = 0; index < boxesToAdd.boxes; index++) {
@@ -40,25 +97,27 @@ export function newBoxes(
       tags: boxesToAdd.tags,
       addedOn,
       number: firstNumber + index,
+      ...(isEdited ? { isEdited } : {}),
     };
     boxes.push(box);
-    for (const kind of kinds) {
-      const factionIds = kind.factionIds.length > 0 ? kind.factionIds : kit.factionIds.slice(0, 1);
-      for (let mini = 0; mini < kind.count; mini++) {
-        minis.push(
-          parseMini({
-            id: newId(),
-            name: kind.name,
-            factionIds,
-            status: 'sprue',
-            parts: [],
-            sprueName: kind.name,
-            boxId: box.id,
-            isOnWorkbench: false,
-          }),
-        );
-      }
-    }
+    kinds.forEach((kind, row) => minis.push(...rowMinis(kit, kind, box.id, rows[row] ?? 0, newId)));
   }
   return { boxes, minis };
+}
+
+/** Minis of one row put on the sprue of a box, named after the row, with its factions or else the kit's first one. */
+export function rowMinis(kit: Kit, row: SprueMinis, boxId: string, count: number, newId: () => string): Mini[] {
+  const factionIds = row.factionIds.length > 0 ? row.factionIds : kit.factionIds.slice(0, 1);
+  return Array.from({ length: count }, () =>
+    parseMini({
+      id: newId(),
+      name: row.name,
+      factionIds,
+      status: 'sprue',
+      parts: [],
+      sprueName: row.name,
+      boxId,
+      isOnWorkbench: false,
+    }),
+  );
 }

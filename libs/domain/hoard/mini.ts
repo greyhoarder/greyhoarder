@@ -1,4 +1,5 @@
 import { InvalidMiniError } from './errors/invalid-mini.error.js';
+import { LooseMiniOnSprueError } from './errors/loose-mini-on-sprue.error.js';
 import type { BoxKitReference } from './box.js';
 import type { HobbyStatus } from './hobby-status.js';
 import type { Departure } from './mini-departure.js';
@@ -25,7 +26,7 @@ export interface Mini {
    * user's own uses up the suggestion it had on the sprue.
    */
   readonly sprueName?: string;
-  /** The box it came out of; minis bought loose have none. */
+  /** The box it came out of; minis bought built or further may have none, minis on the sprue always have one. */
   readonly boxId?: string;
   /**
    * The catalog kit a mini without a box was added from, as it was then; minis of a box have their
@@ -38,14 +39,18 @@ export interface Mini {
 }
 
 /**
- * A mini by the rules: a name without surrounding spaces.
+ * A mini by the rules: a name without surrounding spaces, and on the sprue only in a box.
  *
  * @throws InvalidMiniError for an empty name
+ * @throws LooseMiniOnSprueError for a mini on the sprue without a box
  */
 export function parseMini(mini: Mini): Mini {
   const name = mini.name.trim();
   if (name === '') {
     throw new InvalidMiniError();
+  }
+  if (mini.status === 'sprue' && mini.boxId === undefined) {
+    throw new LooseMiniOnSprueError();
   }
   return { ...mini, name };
 }
