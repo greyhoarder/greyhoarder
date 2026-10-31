@@ -2,6 +2,7 @@ import {
   afterNextRender,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   input,
@@ -31,6 +32,7 @@ import { FactionNames } from '../../application/faction-names';
 import { HoardChanges } from '../../application/hoard-changes';
 import { toMiniGroups } from './mini-group';
 import { MiniSelection } from '../../application/minis/mini-selection';
+import { changedText, MinisChangedNotice } from '../../application/minis/minis-changed-notice';
 import { MinisDeletion } from '../../application/minis/minis-deletion';
 import { countMinis, toMiniRows, toSingleRows } from '../../application/minis/mini-row';
 import { sortRows } from '../../application/minis/mini-sort';
@@ -40,6 +42,7 @@ import { hasPercent } from '../../models/box-progress';
 import { DeleteBoxDialog } from './delete-box-dialog/delete-box-dialog';
 import { EditBoxDialog } from './edit-box-dialog/edit-box-dialog';
 import { EditedBadge } from '../../ui/edited-badge/edited-badge';
+import { AddedBar } from '../../ui/added-bar/added-bar';
 import { DeleteMinisDialog } from '../../ui/delete-minis-dialog/delete-minis-dialog';
 import { EmptyBoxesDialog } from '../../ui/empty-boxes-dialog/empty-boxes-dialog';
 import { ProgressBadge } from '../../ui/progress-badge/progress-badge';
@@ -84,6 +87,7 @@ import { MenuKeys } from '../../../../shared/ui/menu-keys/menu-keys';
     DeleteBoxDialog,
     EditBoxDialog,
     EditedBadge,
+    AddedBar,
   ],
   providers: [
     provideIcons({
@@ -196,6 +200,11 @@ export class BoxDetailPage {
   /** Closed at first, open when nothing else is left. */
   protected readonly isGoneOpen = linkedSignal(() => this.progress() === 'all-gone');
 
+  protected readonly changedNotice = inject(MinisChangedNotice);
+  /** How many minis selected here were just changed on Edit minis; none to tell. */
+  protected readonly changedCount = computed(() => this.changedNotice.countFor(this.id()));
+  protected readonly changedText = changedText;
+
   /** The edit dialog is open; it counts the minis on the sprue anew. */
   protected readonly isEditing = signal(false);
   protected readonly isSavingEdit = signal(false);
@@ -264,6 +273,12 @@ export class BoxDetailPage {
     } else {
       this.openMini(id);
     }
+  }
+
+  /** Edit minis leads back here. */
+  protected editSelected(): void {
+    const ids = this.selectedMinis().map((mini) => mini.id);
+    void this.router.navigate(['/hoard/minis/edit'], { queryParams: { ids: ids.join(','), box: this.id() } });
   }
 
   protected async deleteSelected(): Promise<void> {
@@ -368,6 +383,8 @@ export class BoxDetailPage {
   }
 
   constructor() {
+    // Told once on coming back to the box; leaving it ends that.
+    inject(DestroyRef).onDestroy(() => this.changedNotice.dismiss());
     if (this.isEmptiedOnArrival) {
       // The id comes with the inputs, after construction.
       afterNextRender(() => this.askIfEmptied([this.id()]));

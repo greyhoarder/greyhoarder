@@ -8,6 +8,7 @@ import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { HttpPartsAdapter } from '../../infrastructure/http-parts-adapter';
 import { MinisStore } from '../../data/minis-store';
+import { MinisChangedNotice } from '../../application/minis/minis-changed-notice';
 import { BoxDetailPage } from './box-detail-page';
 
 const ORKS = 'warhammer-40000/orks';
@@ -400,6 +401,29 @@ describe('Box page', () => {
 
     expect(navigate).not.toHaveBeenCalled();
     expect(textOf('box-selection-count')).toBe('2 minis selected');
+  });
+
+  it('opens the selected minis of the box for editing with "Edit"', async () => {
+    showBox(BOYZ.id);
+    await fixture.whenStable();
+    await click(all('box-group-toggle')[0]);
+    await click(all('box-group-mini-check')[0]);
+    await click(all('box-group-mini-check')[1]);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    await click(all('box-selection-edit')[0]);
+
+    expect(navigate).toHaveBeenCalledWith(['/hoard/minis/edit'], { queryParams: { ids: 'm3,m4', box: BOYZ.id } });
+  });
+
+  it('says "Changed 2 minis." after minis of the box were edited', async () => {
+    showBox(BOYZ.id);
+    await fixture.whenStable();
+
+    TestBed.inject(MinisChangedNotice).tell({ count: 2, boxId: BOYZ.id });
+    await fixture.whenStable();
+
+    expect(textOf('box-changed')).toBe('Changed 2 minis.');
   });
 
   it('asks whether to delete the box once its last minis are deleted', async () => {

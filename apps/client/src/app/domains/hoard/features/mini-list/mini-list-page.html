@@ -6,6 +6,7 @@
     [count]="store.selectedCount()"
     [canLeave]="canLeave()"
     (finished)="store.finishSelecting()"
+    (editChosen)="editSelected()"
     (deleteChosen)="deletion.ask(store.selectedIds())"
   />
 } @else {

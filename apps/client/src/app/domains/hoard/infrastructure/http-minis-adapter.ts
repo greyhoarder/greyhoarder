@@ -4,6 +4,7 @@ import type { Mini } from '@greyhoarder/domain/hoard';
 import type {
   AddMinisRequest,
   AddMinisResponse,
+  ChangeMinisRequest,
   DeleteMinisRequest,
   DeleteMinisResponse,
   MinisResponse,
@@ -13,6 +14,7 @@ import type {
 import { firstValueFrom } from 'rxjs';
 import type { ChangedMinis } from '../models/changed-minis';
 import type { MiniChanges } from '../models/mini-changes';
+import type { ChangesToSelectedMinis } from '../models/selected-minis';
 import type { MinisToAdd } from '../models/minis-to-add';
 
 /** Talks to `hoard/minis` on the server. */
@@ -52,6 +54,20 @@ export class HttpMinisAdapter {
   async update(ids: readonly string[], changes: MiniChanges): Promise<ChangedMinis> {
     const body: UpdateMinisRequest = { ids, set: changes };
     const response = await firstValueFrom(this.http.patch<UpdateMinisResponse>('/api/hoard/minis', body));
+    return {
+      minis: response.minis,
+      ownFactionNames: new Map(Object.entries(response.ownFactionNames)),
+    };
+  }
+
+  /**
+   * Applies what the user changed to each given mini, all of them or none; factions and parts are
+   * added or removed, the rest stays as each mini has it. New factions and parts are created, and
+   * those no mini carries any more afterwards removed.
+   */
+  async change(ids: readonly string[], changes: ChangesToSelectedMinis): Promise<ChangedMinis> {
+    const body: ChangeMinisRequest = { ids, ...changes };
+    const response = await firstValueFrom(this.http.patch<UpdateMinisResponse>('/api/hoard/minis/changes', body));
     return {
       minis: response.minis,
       ownFactionNames: new Map(Object.entries(response.ownFactionNames)),

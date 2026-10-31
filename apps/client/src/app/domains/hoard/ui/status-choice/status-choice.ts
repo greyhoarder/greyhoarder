@@ -5,7 +5,10 @@ import { STATUS_LABELS } from '../../util/status-labels';
 /** Tells the groups apart for their labels. */
 let nextId = 0;
 
-/** "Status" and one toggle chip per offered status, exactly one of them chosen; arrow keys move the choice. */
+/**
+ * "Status" and one toggle chip per offered status, one of them chosen, or none while minis don't share
+ * one; arrow keys move the choice.
+ */
 @Component({
   selector: 'app-status-choice',
   template: `
@@ -20,7 +23,7 @@ let nextId = 0;
           [attr.data-testid]="testId()"
           [attr.data-status]="status"
           [attr.aria-checked]="status === chosen()"
-          [tabIndex]="status === chosen() ? 0 : -1"
+          [tabIndex]="status === chosen() || (chosen() === undefined && $first) ? 0 : -1"
           (click)="chose.emit(status)"
           (keydown.arrowRight)="move($event, 1)"
           (keydown.arrowDown)="move($event, 1)"
@@ -37,7 +40,8 @@ let nextId = 0;
 export class StatusChoice {
   /** In pipeline order. */
   readonly statuses = input.required<readonly HobbyStatus[]>();
-  readonly chosen = input.required<HobbyStatus>();
+  /** None while nothing is chosen; the first chip then takes the focus. */
+  readonly chosen = input.required<HobbyStatus | undefined>();
   /** Of each chip, which also carries its status as `data-status`. */
   readonly testId = input.required<string>();
   readonly chose = output<HobbyStatus>();
@@ -52,7 +56,10 @@ export class StatusChoice {
   protected move(event: Event, by: 1 | -1): void {
     event.preventDefault();
     const statuses = this.statuses();
-    const index = (statuses.indexOf(this.chosen()) + by + statuses.length) % statuses.length;
+    const chosen = this.chosen();
+    // Without a choice, the first or last status comes next.
+    const at = chosen === undefined ? (by > 0 ? -1 : statuses.length) : statuses.indexOf(chosen);
+    const index = (at + by + statuses.length) % statuses.length;
     const next = statuses[index];
     if (next === undefined) {
       return;

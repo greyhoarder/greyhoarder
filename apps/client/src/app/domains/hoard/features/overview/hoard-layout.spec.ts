@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
+import { MinisChangedNotice } from '../../application/minis/minis-changed-notice';
 import { MinisList } from '../../application/minis/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
@@ -105,6 +106,19 @@ describe('Hoard layout', () => {
     await showHoard();
 
     expect(textOf('hoard-error')).toBe("Can't load your hoard right now. Try again in a moment.");
+  });
+
+  it('says "Changed 5 minis." after minis were edited, until dismissed', async () => {
+    await showHoard({ boxes: BOXES, minis: MINIS });
+    TestBed.inject(MinisChangedNotice).tell({ count: 5 });
+    await fixture.whenStable();
+    const said = textOf('hoard-changed');
+
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-testid="hoard-changed-dismiss"]')?.click();
+    await fixture.whenStable();
+
+    expect(said).toBe('Changed 5 minis.');
+    expect(textOf('hoard-changed')).toBe('');
   });
 
   /** The menu opens in an overlay outside the layout. */

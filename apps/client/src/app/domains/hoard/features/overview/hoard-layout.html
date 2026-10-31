@@ -111,5 +111,14 @@
   </div>
 </div>
 
+@if (changedNotice.hoardCount(); as count) {
+  <app-added-bar
+    role="status"
+    testId="hoard-changed"
+    [message]="changedText(count)"
+    (dismissed)="changedNotice.dismiss()"
+  />
+}
+
 <!-- The page is rendered next to the outlet; hidden, the outlet adds no extra gap. -->
 <router-outlet class="hidden" />

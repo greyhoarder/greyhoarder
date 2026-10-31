@@ -83,6 +83,15 @@ export class MiniListPage {
     this.store.rows().some((row) => this.store.selectedIds().has(row.id) && !isGone(row)),
   );
 
+  /** Edit minis leads back here. */
+  protected editSelected(): void {
+    const ids = this.store
+      .rows()
+      .filter((row) => this.store.selectedIds().has(row.id))
+      .map((row) => row.id);
+    void this.router.navigate(['/hoard/minis/edit'], { queryParams: { ids: ids.join(',') } });
+  }
+
   protected async deleteSelected(): Promise<void> {
     const { isDeleted, emptiedBoxIds } = await this.deletion.confirm();
     if (isDeleted) {

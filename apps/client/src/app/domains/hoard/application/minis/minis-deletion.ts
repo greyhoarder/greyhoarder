@@ -1,9 +1,8 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import type { Mini } from '@greyhoarder/domain/hoard';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
-import { eitherOrText } from '../../util/either-or';
 import { MinisStore } from '../../data/minis-store';
 import { HoardChanges } from '../hoard-changes';
+import { namesOf } from './mini-names';
 
 /**
  * Deleting selected minis for good after asking: what the delete dialog says about them, and the
@@ -71,13 +70,4 @@ export class MinisDeletion {
       this.isDeleting.set(false);
     }
   }
-}
-
-function namesOf(minis: readonly Mini[]): string {
-  const counts = new Map<string, number>();
-  for (const { name } of minis) {
-    const text = eitherOrText(name);
-    counts.set(text, (counts.get(text) ?? 0) + 1);
-  }
-  return [...counts].map(([name, count]) => (count > 1 ? `${name} ×${count}` : name)).join(', ');
 }

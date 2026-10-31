@@ -346,6 +346,17 @@ describe('Minis page', () => {
     expect(inDocument('hoard-empty-boxes-dialog')?.textContent).toContain('Boyz');
   });
 
+  it('opens the selected minis for editing with "Edit"', async () => {
+    await showTable();
+    await click(byTestId('hoard-row-check')[0]);
+    await click(byTestId('hoard-row-check')[1]);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    await click(byTestId('hoard-selection-edit')[0]);
+
+    expect(navigate).toHaveBeenCalledWith(['/hoard/minis/edit'], { queryParams: { ids: 'm2,m3' } });
+  });
+
   it('selects a mini with a long press on a touch screen', async () => {
     await showTable();
     const line = byTestId('hoard-row')[0];

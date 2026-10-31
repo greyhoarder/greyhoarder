@@ -156,6 +156,15 @@
     </ul>
   </section>
 
+  @if (changedCount(); as count) {
+    <app-added-bar
+      role="status"
+      testId="box-changed"
+      [message]="changedText(count)"
+      (dismissed)="changedNotice.dismiss()"
+    />
+  }
+
   <div class="@container">
     <div class="flex flex-col gap-6 @[720px]:flex-row @[720px]:items-start">
       <div class="flex min-w-0 flex-1 flex-col gap-8">
@@ -176,6 +185,7 @@
             [count]="selectedCount()"
             [canLeave]="canLeave()"
             (finished)="selection.finish()"
+            (editChosen)="editSelected()"
             (deleteChosen)="deletion.ask(selection.selectedIds())"
           />
         </ng-template>

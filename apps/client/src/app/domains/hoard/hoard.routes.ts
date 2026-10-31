@@ -23,6 +23,11 @@ export default [
     loadComponent: async () => (await import('./features/add-custom/add-custom-page')).AddCustomPage,
   },
   {
+    path: 'hoard/minis/edit',
+    title: 'Edit minis · Greyhoarder',
+    loadComponent: async () => (await import('./features/edit-minis/edit-minis-page')).EditMinisPage,
+  },
+  {
     path: 'hoard/minis/:id',
     title: 'Mini · Greyhoarder',
     loadComponent: async () => (await import('./features/mini-detail/mini-detail-page')).MiniDetailPage,
