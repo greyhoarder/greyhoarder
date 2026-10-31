@@ -213,33 +213,12 @@ describe('Mini page', () => {
     ]);
   });
 
-  it('offers a mini on the sprue without a box its own name, chosen', async () => {
-    const loose: Mini = {
-      id: 'n1',
-      name: 'Nob',
-      factionIds: [ORKS],
-      status: 'sprue',
-      parts: [],
-      sprueName: 'Nob',
-      isOnWorkbench: false,
-    };
-    showMini('n1', () => Promise.resolve([loose]));
-
-    await fixture.whenStable();
-
-    const tiles = all('mini-build-as').map((tile) => [
-      tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim(),
-      tile.getAttribute('aria-pressed'),
-    ]);
-    expect(tiles).toEqual([['Nob', 'true']]);
-  });
-
   it("offers a mini without a box what its kit's slot can build it as", async () => {
     const loose: Mini = {
       id: 'l1',
-      name: 'Loota',
+      name: 'Big Loota',
       factionIds: [ORKS],
-      status: 'sprue',
+      status: 'built',
       parts: [],
       sprueName: 'Loota',
       kit: { id: LOOTAS_KIT.id, version: 1, name: 'Lootas / Burna Boyz (2008)' },
@@ -254,7 +233,7 @@ describe('Mini page', () => {
       tile.querySelector('[data-testid="mini-name-left"]'),
       tile.getAttribute('aria-pressed'),
     ]);
-    expect(tiles).toEqual([['Loota', null, 'true']]);
+    expect(tiles).toEqual([['Loota', null, 'false']]);
     expect(fixture.nativeElement.textContent).toContain('Suggested by Lootas or Burna Boyz (2008)');
   });
 

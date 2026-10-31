@@ -7,6 +7,12 @@ export default [
     loadComponent: async () => (await import('./features/add-box/add-box-page')).AddBoxPage,
   },
   {
+    path: 'hoard/add/sprues',
+    title: 'Add sprues · Greyhoarder',
+    data: { areSprues: true },
+    loadComponent: async () => (await import('./features/add-box/add-box-page')).AddBoxPage,
+  },
+  {
     path: 'hoard/add/minis',
     title: 'Add minis · Greyhoarder',
     loadComponent: async () => (await import('./features/add-minis/add-minis-page')).AddMinisPage,

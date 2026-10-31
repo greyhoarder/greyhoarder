@@ -1,34 +1,47 @@
+<div class="flex flex-col gap-2">
+  <label class="text-sm font-medium" [for]="idPrefix + '-name'">Name</label>
+  <input
+    hlmInput
+    type="text"
+    class="h-10 w-full"
+    data-testid="add-box-name"
+    [id]="idPrefix + '-name'"
+    [value]="name()"
+    [attr.aria-invalid]="isNameMissing() || null"
+    [attr.aria-describedby]="isNameMissing() ? idPrefix + '-name-error' : null"
+    (input)="rename($event)"
+  />
+  @if (isNameMissing()) {
+    <p class="text-sm text-destructive" data-testid="add-box-name-error" [id]="idPrefix + '-name-error'">
+      Give the box a name.
+    </p>
+  }
+</div>
+
 <ul class="flex flex-col gap-2">
-  @for (kind of sprue(); track $index) {
-    <li class="flex items-baseline gap-3" data-testid="add-box-slot">
-      <span class="w-12 shrink-0 font-semibold tabular-nums" data-testid="add-box-slot-count"
-        >{{ kind.count * boxes() }}×</span
-      >
-      @if (kind.isUndecided) {
-        <span class="flex flex-col gap-0.5">
-          <span>{{ kind.name }}</span>
-          <span class="text-sm text-muted-foreground" data-testid="add-box-slot-builds"
-            >Each can become {{ kind.builds.join(' or ') }}.</span
+  @for (kind of sprue(); track $index; let row = $index) {
+    <li class="flex" data-testid="add-box-slot" [attr.data-matched]="isMatched(row) ? '' : null">
+      <app-sprue-row testId="add-box-slot" [row]="kind" [count]="rows()[row] ?? 0" (changed)="changeRow(row, $event)">
+        @if (!areSprues() && rows()[row] !== kitCounts()[row]) {
+          <span class="text-sm text-muted-foreground" data-testid="add-box-slot-kit-count"
+            >of {{ kitCounts()[row] }}</span
           >
-          @if (kind.parts.length > 0) {
-            <span class="mt-1 flex flex-wrap gap-x-3 gap-y-1.5">
-              @for (part of kind.parts; track part) {
-                <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{ part }}</span>
-              }
-            </span>
-          }
-        </span>
-      } @else {
-        <span class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-          <span>{{ kind.builds.join(' or ') }}</span>
-          @for (part of kind.parts; track part) {
-            <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{ part }}</span>
-          }
-        </span>
-      }
+        }
+      </app-sprue-row>
     </li>
   }
 </ul>
+
+@if (isEdited()) {
+  <div class="flex flex-wrap items-center gap-3">
+    <p class="text-sm text-muted-foreground" data-testid="add-box-edited-note">
+      Counted by you: the box will be marked as edited.
+    </p>
+    <button hlmBtn variant="ghost" size="sm" type="button" data-testid="add-box-reset" (click)="resetRows()">
+      Reset to the kit
+    </button>
+  </div>
+}
 
 <div class="flex flex-wrap items-center gap-2 border-t pt-4" role="group" aria-label="Tags">
   @for (tag of tags(); track tag) {
@@ -54,42 +67,45 @@
 </div>
 
 <div class="flex flex-wrap items-center gap-3">
-  <div class="flex h-10 items-center rounded-lg border" role="group" aria-label="Boxes">
-    <button
-      hlmBtn
-      variant="ghost"
-      type="button"
-      class="size-10"
-      aria-label="One box less"
-      data-testid="add-box-less"
-      [disabled]="boxes() === 1"
-      (click)="changeBoxes(-1)"
-    >
-      <ng-icon name="lucideMinus" size="16" />
-    </button>
-    <span class="min-w-16 text-center text-sm" aria-live="polite" data-testid="add-box-count">
-      {{ boxes() === 1 ? '1 box' : boxes() + ' boxes' }}
-    </span>
-    <button
-      hlmBtn
-      variant="ghost"
-      type="button"
-      class="size-10"
-      aria-label="One box more"
-      data-testid="add-box-more"
-      (click)="changeBoxes(1)"
-    >
-      <ng-icon name="lucidePlus" size="16" />
-    </button>
-  </div>
+  @if (!areSprues()) {
+    <div class="flex h-10 items-center rounded-lg border" role="group" aria-label="Boxes">
+      <button
+        hlmBtn
+        variant="ghost"
+        type="button"
+        class="size-10"
+        aria-label="One box less"
+        data-testid="add-box-less"
+        [disabled]="boxes() === 1"
+        (click)="changeBoxes(-1)"
+      >
+        <ng-icon name="lucideMinus" size="16" />
+      </button>
+      <span class="min-w-16 text-center text-sm" aria-live="polite" data-testid="add-box-count">
+        {{ boxes() === 1 ? '1 box' : boxes() + ' boxes' }}
+      </span>
+      <button
+        hlmBtn
+        variant="ghost"
+        type="button"
+        class="size-10"
+        aria-label="One box more"
+        data-testid="add-box-more"
+        (click)="changeBoxes(1)"
+      >
+        <ng-icon name="lucidePlus" size="16" />
+      </button>
+    </div>
+  }
 
   <button
     hlmBtn
     type="button"
     class="ml-auto h-10 text-sm font-semibold"
     data-testid="add-box-submit"
+    [disabled]="!canAdd()"
     (click)="submit()"
   >
-    Add {{ minis() }} {{ minis() === 1 ? 'mini' : 'minis' }}
+    {{ addLabel() }}
   </button>
 </div>

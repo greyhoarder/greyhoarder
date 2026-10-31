@@ -45,4 +45,10 @@ describe('Box card', () => {
 
     expect(card.querySelector('[data-testid="hoard-box-number"]')?.textContent?.trim()).toBe('#2');
   });
+
+  it('marks an edited box as "Edited"', async () => {
+    const card = await render({ ...BOYZ, isEdited: true });
+
+    expect(card.querySelector('[data-testid="hoard-box-edited"]')?.textContent?.trim()).toBe('Edited');
+  });
 });

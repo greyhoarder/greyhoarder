@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
 import { MinisList } from '../../application/minis/minis-list';
 import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
@@ -105,5 +105,35 @@ describe('Hoard layout', () => {
     await showHoard();
 
     expect(textOf('hoard-error')).toBe("Can't load your hoard right now. Try again in a moment.");
+  });
+
+  /** The menu opens in an overlay outside the layout. */
+  async function openAddMenu(): Promise<HTMLElement | null> {
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-testid="hoard-add-menu"]')?.click();
+    await fixture.whenStable();
+    return document.querySelector<HTMLElement>('[role="menu"]');
+  }
+
+  it('offers Add sprues, Add minis and Add custom in the "Add…" menu', async () => {
+    await showHoard({ boxes: BOXES, minis: MINIS });
+
+    const menu = await openAddMenu();
+
+    const items = [...(menu?.querySelectorAll('[role="menuitem"]') ?? [])];
+    expect(items.map((item) => item.getAttribute('data-testid'))).toEqual([
+      'hoard-add-sprues',
+      'hoard-add-minis',
+      'hoard-add-custom',
+    ]);
+  });
+
+  it('leads to adding sprues from "Add sprues"', async () => {
+    await showHoard({ boxes: BOXES, minis: MINIS });
+    const menu = await openAddMenu();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+    menu?.querySelector<HTMLElement>('[data-testid="hoard-add-sprues"]')?.click();
+
+    expect(String(navigate.mock.calls[0]?.[0])).toBe('/hoard/add/sprues');
   });
 });

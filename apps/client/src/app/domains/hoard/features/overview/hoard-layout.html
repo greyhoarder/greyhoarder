@@ -9,26 +9,43 @@
       </p>
     }
   </div>
-  <!-- One button per way into the hoard, the primary one first; minis and custom come later. -->
+  <!-- The primary way into the hoard as a button, the others in a menu. -->
   <div class="flex flex-wrap gap-3">
     <a hlmBtn routerLink="/hoard/add/box" class="h-10 px-4 text-sm font-semibold" data-testid="hoard-add-boxes">
       <ng-icon name="lucidePlus" size="16" />
       Add boxes
     </a>
-    <a hlmBtn variant="outline" routerLink="/hoard/add/minis" class="h-10 px-3.5 text-sm" data-testid="hoard-add-minis">
-      <ng-icon name="lucidePlus" size="16" />
-      Add minis
-    </a>
-    <a
-      hlmBtn
-      variant="outline"
-      routerLink="/hoard/add/custom"
-      class="h-10 px-3.5 text-sm"
-      data-testid="hoard-add-custom"
-    >
-      <ng-icon name="lucidePlus" size="16" />
-      Add custom
-    </a>
+    <hlm-popover align="end" sideOffset="6">
+      <button
+        hlmPopoverTrigger
+        hlmBtn
+        variant="outline"
+        type="button"
+        class="h-10 px-3.5 text-sm"
+        [attr.aria-haspopup]="'menu'"
+        data-testid="hoard-add-menu"
+      >
+        Add…
+        <ng-icon name="lucideChevronDown" size="16" />
+      </button>
+      <ul hlmPopoverContent class="w-48 gap-0 p-1" role="menu" aria-label="Add" *hlmPopoverPortal="let menu">
+        @for (item of addItems; track item.testId; let first = $first) {
+          <li role="none">
+            <a
+              role="menuitem"
+              class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent"
+              [routerLink]="item.link"
+              [attr.tabindex]="first ? 0 : -1"
+              [attr.data-testid]="item.testId"
+              appMenuKeys
+              (click)="menu.close()"
+            >
+              {{ item.label }}
+            </a>
+          </li>
+        }
+      </ul>
+    </hlm-popover>
   </div>
 </header>
 

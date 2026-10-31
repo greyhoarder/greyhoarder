@@ -5,6 +5,14 @@ import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { AddBoxPage } from './add-box-page';
 
+/** Boyz with one slot of ten Boyz. */
+function boyzKit(): VersionedCatalogKit {
+  return {
+    ...catalogKit('games-workshop/orks/boyz-2026'),
+    variants: [{ name: 'Boyz', slots: [{ count: 10, buildsAs: ['Boy'], parts: [], factionIds: [] }] }],
+  };
+}
+
 function catalogKit(id: string): VersionedCatalogKit {
   return {
     id,
@@ -52,6 +60,26 @@ describe('Add box page', () => {
   const page = (): HTMLElement => fixture.nativeElement;
   const kits = (): NodeListOf<Element> => page().querySelectorAll('[data-testid="add-box-kit"]');
   const byTestId = (id: string): Element | null => page().querySelector(`[data-testid="${id}"]`);
+
+  const allText = (id: string): string[] =>
+    [...page().querySelectorAll(`[data-testid="${id}"]`)].map((element) => (element.textContent ?? '').trim());
+
+  async function click(id: string): Promise<void> {
+    (byTestId(id) as HTMLElement).click();
+    await fixture.whenStable();
+  }
+
+  async function openForSprues(): Promise<void> {
+    fixture.componentRef.setInput('areSprues', true);
+    await fixture.whenStable();
+  }
+
+  /** Opens the card of the Boyz kit found for "boyz". */
+  async function openBoyz(): Promise<void> {
+    search.mockResolvedValue({ kits: [boyzKit()], containedKits: new Map(), factionNames: new Map() });
+    await searchFor('boyz');
+    await click('add-box-kit');
+  }
 
   async function searchFor(text: string): Promise<void> {
     const field = page().querySelector<HTMLInputElement>('[data-testid="add-box-search"]');
@@ -116,5 +144,70 @@ describe('Add box page', () => {
 
     expect(byTestId('add-box-add-error')).not.toBeNull();
     expect(byTestId('add-box-submit')).not.toBeNull();
+  });
+
+  it('says "Add sprues" and how to search for sprues when opened for sprues', async () => {
+    await openForSprues();
+
+    expect(page().querySelector('h1')?.textContent?.trim()).toBe('Add sprues');
+    expect(byTestId('add-box-hint')?.textContent?.trim()).toBe(
+      'Search the catalog for the kit your sprues come from, by its name or a model on them.',
+    );
+  });
+
+  it('sends the name and the counted rows of the box when adding', async () => {
+    addBoxes.mockResolvedValue({ boxes: [], minis: [] });
+    await openBoyz();
+    await click('add-box-slot-less');
+
+    await click('add-box-submit');
+
+    expect(addBoxes).toHaveBeenCalledExactlyOnceWith(
+      'games-workshop/orks/boyz-2026',
+      { boxes: 1, name: 'Boyz', rows: [9], tags: [], areSprues: false },
+      expect.any(String),
+    );
+  });
+
+  it('says which box of sprues was added with how many minis', async () => {
+    addBoxes.mockResolvedValue({
+      boxes: [{ id: 'box-1', name: 'Boyz sprues', factionIds: [], tags: [], addedOn: '2026-10-31', number: 1 }],
+      minis: [{ id: 'mini-1' }, { id: 'mini-2' }, { id: 'mini-3' }],
+    });
+    await openForSprues();
+    await openBoyz();
+    await click('add-box-slot-more');
+    await click('add-box-slot-more');
+    await click('add-box-slot-more');
+
+    await click('add-box-submit');
+
+    expect(byTestId('add-box-added')?.textContent?.replace(/\s+/g, ' ').trim()).toContain(
+      'Added Boyz sprues with 3 minis to your hoard.',
+    );
+  });
+
+  it('moves the focus to the search with its text selected after adding', async () => {
+    addBoxes.mockResolvedValue({ boxes: [], minis: [] });
+    await openBoyz();
+
+    await click('add-box-submit');
+
+    const field = byTestId('add-box-search') as HTMLInputElement;
+    expect(document.activeElement).toBe(field);
+    expect([field.selectionStart, field.selectionEnd]).toEqual([0, 'boyz'.length]);
+  });
+
+  it("says that the sprues can't be added when the server does not answer, keeping the counted rows", async () => {
+    addBoxes.mockRejectedValue(new Error('offline'));
+    await openForSprues();
+    await openBoyz();
+    await click('add-box-slot-more');
+    await click('add-box-slot-more');
+
+    await click('add-box-submit');
+
+    expect(byTestId('add-box-add-error')).not.toBeNull();
+    expect(allText('add-box-slot-count')).toEqual(['2']);
   });
 });

@@ -55,9 +55,14 @@ const LOOTAS_OR_BURNA_BOYZ: Kit = {
 describe('Box form', () => {
   let fixture: ComponentFixture<BoxForm>;
 
-  async function openForm(kit: Kit): Promise<void> {
+  async function openForm(
+    kit: Kit,
+    { areSprues = false, matchedRows = [] }: { areSprues?: boolean; matchedRows?: number[] } = {},
+  ): Promise<void> {
     fixture = TestBed.createComponent(BoxForm);
     fixture.componentRef.setInput('kit', kit);
+    fixture.componentRef.setInput('areSprues', areSprues);
+    fixture.componentRef.setInput('matchedRows', matchedRows);
     await fixture.whenStable();
   }
 
@@ -69,15 +74,31 @@ describe('Box form', () => {
       (element.textContent ?? '').replace(/\s+/g, ' ').trim(),
     );
 
-  /** The texts of a row, piece by piece, e.g. ['9×', 'Boy', 'Slugga', 'Choppa']. */
-  const rowTexts = (index: number): string[] =>
-    [...form().querySelectorAll('[data-testid="add-box-slot"]')[index].querySelectorAll('span')]
-      .filter((span) => span.children.length === 0)
-      .map((span) => (span.textContent ?? '').trim());
-
-  async function click(id: string): Promise<void> {
-    byTestId(id)?.click();
+  async function click(id: string, index = 0): Promise<void> {
+    form().querySelectorAll<HTMLElement>(`[data-testid="${id}"]`)[index]?.click();
     await fixture.whenStable();
+  }
+
+  async function typeName(name: string): Promise<void> {
+    const input = byTestId<HTMLInputElement>('add-box-name');
+    if (input) {
+      input.value = name;
+      input.dispatchEvent(new Event('input'));
+    }
+    await fixture.whenStable();
+  }
+
+  /** What a row shows, by part, wherever in the row it is. */
+  function rowParts(index: number): Record<'count' | 'name' | 'builds' | 'parts', string[]> {
+    const row = form().querySelectorAll<HTMLElement>('[data-testid="add-box-slot"]')[index];
+    const texts = (testId: string) =>
+      [...row.querySelectorAll(`[data-testid="${testId}"]`)].map((element) => element.textContent?.trim() ?? '');
+    return {
+      count: texts('add-box-slot-count'),
+      name: texts('add-box-slot-name'),
+      builds: texts('add-box-slot-builds'),
+      parts: texts('add-box-slot-part'),
+    };
   }
 
   async function typeTag(tag: string): Promise<void> {
@@ -89,24 +110,23 @@ describe('Box form', () => {
     await fixture.whenStable();
   }
 
-  it('shows one row per slot for a kit with one variant', async () => {
+  it('shows one row per slot for a kit with one variant, each counting the minis of one box', async () => {
     await openForm(BOYZ);
 
-    expect(allText('add-box-slot-count')).toEqual(['9×', '1×', '1×']);
-    expect(rowTexts(0)).toEqual(['9×', 'Boy', 'Slugga', 'Choppa']);
+    expect(allText('add-box-slot-count')).toEqual(['9', '1', '1']);
+    expect(rowParts(0)).toEqual({ count: ['9'], name: ['Boy'], builds: [], parts: ['Slugga', 'Choppa'] });
   });
 
   it('shows an either-or kit as undecided minis named after the kit, with the parts of every variant', async () => {
     await openForm(LOOTAS_OR_BURNA_BOYZ);
 
     expect(allText('add-box-slot')).toHaveLength(1);
-    expect(rowTexts(0)).toEqual([
-      '5×',
-      'Lootas / Burna Boyz',
-      'Each can become Loota or Burna Boy.',
-      'Deffgun',
-      'Burna',
-    ]);
+    expect(rowParts(0)).toEqual({
+      count: ['5'],
+      name: ['Lootas / Burna Boyz'],
+      builds: ['Each can become Loota or Burna Boy.'],
+      parts: ['Deffgun', 'Burna'],
+    });
   });
 
   it('counts the minis of every box', async () => {
@@ -114,7 +134,7 @@ describe('Box form', () => {
 
     await click('add-box-more');
 
-    expect(allText('add-box-slot-count')).toEqual(['10×']);
+    expect(allText('add-box-slot-count')).toEqual(['5']);
     expect(allText('add-box-submit')).toEqual(['Add 10 minis']);
   });
 
@@ -134,17 +154,119 @@ describe('Box form', () => {
     expect(tag?.getAttribute('aria-pressed')).toBe('true');
   });
 
-  it('hands over the number of boxes and the selected tags when adding', async () => {
+  it('hands over the number of boxes, the name, the counted rows and the selected tags when adding', async () => {
     await openForm(BOYZ);
     const added: BoxesToAdd[] = [];
     fixture.componentInstance.add.subscribe((choice) => added.push(choice));
     await click('add-box-more');
+    await typeName('Birthday Boyz');
+    await click('add-box-slot-more', 0);
     await typeTag('Birthday');
     await typeTag('Second hand');
     await click('add-box-tag');
 
     await click('add-box-submit');
 
-    expect(added).toEqual([{ boxes: 2, tags: ['Second hand'] }]);
+    expect(added).toEqual([
+      { boxes: 2, name: 'Birthday Boyz', rows: [10, 1, 1], tags: ['Second hand'], areSprues: false },
+    ]);
+  });
+
+  it('names the box after its kit and year, e.g. "Boyz (2026)"', async () => {
+    await openForm(BOYZ);
+
+    expect(byTestId<HTMLInputElement>('add-box-name')?.value).toBe('Boyz (2026)');
+  });
+
+  it('names sprues after their kit, e.g. "Boyz sprues (2026)"', async () => {
+    await openForm(BOYZ, { areSprues: true });
+
+    expect(byTestId<HTMLInputElement>('add-box-name')?.value).toBe('Boyz sprues (2026)');
+  });
+
+  it('says "Give the box a name." and adds nothing while the name is empty', async () => {
+    await openForm(BOYZ);
+
+    await typeName('');
+
+    expect(byTestId('add-box-name-error')?.textContent?.trim()).toBe('Give the box a name.');
+    expect(byTestId<HTMLButtonElement>('add-box-submit')?.disabled).toBe(true);
+  });
+
+  it('counts one more and one fewer in a row', async () => {
+    await openForm(BOYZ);
+
+    await click('add-box-slot-more', 0);
+    await click('add-box-slot-more', 0);
+    await click('add-box-slot-less', 0);
+
+    expect(allText('add-box-slot-count')).toEqual(['10', '1', '1']);
+  });
+
+  it('does not go below no minis in a row', async () => {
+    await openForm(BOYZ);
+
+    await click('add-box-slot-less', 2);
+    await click('add-box-slot-less', 2);
+
+    expect(allText('add-box-slot-count')).toEqual(['9', '1', '0']);
+  });
+
+  it('says "of 10" after a row that differs from the kit', async () => {
+    await openForm({
+      ...BOYZ,
+      variants: [{ name: 'Boyz', slots: [{ count: 10, names: ['Boy'], parts: [], factionIds: [] }], minis: 10 }],
+      minis: 10,
+    });
+
+    await click('add-box-slot-less');
+
+    expect(allText('add-box-slot-count')).toEqual(['9']);
+    expect(allText('add-box-slot-kit-count')).toEqual(['of 10']);
+  });
+
+  it('says that the box will be marked as edited while a row differs from the kit', async () => {
+    await openForm(BOYZ);
+
+    await click('add-box-slot-more', 1);
+
+    expect(byTestId('add-box-edited-note')?.textContent?.trim()).toBe(
+      'Counted by you: the box will be marked as edited.',
+    );
+  });
+
+  it('sets every row back to the kit with "Reset to the kit"', async () => {
+    await openForm(BOYZ);
+    await click('add-box-slot-more', 0);
+    await click('add-box-slot-less', 2);
+
+    await click('add-box-reset');
+
+    expect(allText('add-box-slot-count')).toEqual(['9', '1', '1']);
+    expect(byTestId('add-box-edited-note')).toBeNull();
+  });
+
+  it('adds nothing while every row is at none', async () => {
+    await openForm(LOOTAS_OR_BURNA_BOYZ);
+
+    for (let mini = 0; mini < 5; mini++) {
+      await click('add-box-slot-less');
+    }
+
+    expect(byTestId<HTMLButtonElement>('add-box-submit')?.disabled).toBe(true);
+  });
+
+  it('starts every row of sprues at none, without a box stepper', async () => {
+    await openForm(BOYZ, { areSprues: true });
+
+    expect(allText('add-box-slot-count')).toEqual(['0', '0', '0']);
+    expect(byTestId('add-box-count')).toBeNull();
+  });
+
+  it('marks the rows whose slots matched the search', async () => {
+    await openForm(BOYZ, { matchedRows: [1] });
+
+    const rows = [...form().querySelectorAll('[data-testid="add-box-slot"]')];
+    expect(rows.map((row) => row.hasAttribute('data-matched'))).toEqual([false, true, false]);
   });
 });

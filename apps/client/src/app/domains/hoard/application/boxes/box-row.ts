@@ -25,6 +25,8 @@ export interface BoxRow {
   readonly tags: readonly string[];
   /** Tells boxes with the same name apart, e.g. 2 for "Boyz (2026) #2". */
   readonly number: number;
+  /** Its minis on the sprue were counted by the user, not taken as its kit describes. */
+  readonly isEdited?: boolean;
 }
 
 /** One row per box, counting the minis that came out of it; factions without a known name are left out. */
@@ -57,6 +59,7 @@ export function toBoxRows(
     addedOn: box.addedOn,
     tags: box.tags,
     number: box.number,
+    isEdited: box.isEdited === true,
   }));
 }
 

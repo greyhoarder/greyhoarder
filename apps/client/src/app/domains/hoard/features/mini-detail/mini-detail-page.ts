@@ -25,6 +25,7 @@ import { formatDate } from '../../util/format-date';
 import { DEPARTURE_LABELS, STATUS_LABELS } from '../../util/status-labels';
 import { MiniBoxCard } from './mini-box-card/mini-box-card';
 import { EitherOrName } from '../../ui/either-or-name/either-or-name';
+import { MenuKeys } from '../../../../shared/ui/menu-keys/menu-keys';
 
 /**
  * One mini: building it while on the sprue, editing it afterwards, letting it leave the hoard or
@@ -33,6 +34,7 @@ import { EitherOrName } from '../../ui/either-or-name/either-or-name';
 @Component({
   selector: 'app-mini-detail-page',
   imports: [
+    MenuKeys,
     AddFaction,
     EitherOrName,
     RouterLink,
@@ -214,26 +216,6 @@ export class MiniDetailPage {
   protected typeNotes(event: Event): void {
     if (event.target instanceof HTMLTextAreaElement) {
       this.editor.notes.set(event.target.value);
-    }
-  }
-
-  /** Arrow keys, Home and End move between the items of the mini menu. */
-  protected moveFocus(event: KeyboardEvent): void {
-    const menu = event.target instanceof HTMLElement ? event.target.closest('[role="menu"]') : null;
-    if (!menu) {
-      return;
-    }
-    const items = [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')];
-    const current = items.findIndex((item) => item === document.activeElement);
-    const next = {
-      ArrowDown: (current + 1) % items.length,
-      ArrowUp: (current - 1 + items.length) % items.length,
-      Home: 0,
-      End: items.length - 1,
-    }[event.key];
-    if (next !== undefined) {
-      event.preventDefault();
-      items[next]?.focus();
     }
   }
 }

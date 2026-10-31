@@ -1,4 +1,4 @@
-import { isGone, type Kit, type Mini, type MiniPart, sprueMinis } from '@greyhoarder/domain/hoard';
+import { type Kit, type Mini, type MiniPart, sprueMinis } from '@greyhoarder/domain/hoard';
 import { slotsOf, sprueOffer } from './kit-slots';
 
 // Building minis that were on the sprue (docs/screens/mini.md).
@@ -39,12 +39,12 @@ export function buildSuggestions(kit: Kit, minisOfBox: readonly Mini[], sprueNam
 /**
  * What a mini without a box can be built as: added from a catalog kit, the names of the kit's slots
  * that offer its name, each once in the kit's order, or without one every name of the kit; without
- * a kit, its own name while it is on the sprue. Nothing is left to count without a box.
+ * a kit nothing. Nothing is left to count without a box.
  */
 export function looseSuggestions(mini: Mini, kit: Kit | undefined): BuildSuggestion[] {
   const name = mini.sprueName ?? mini.name;
   if (kit === undefined) {
-    return mini.status === 'sprue' && !isGone(mini) ? [{ name }] : [];
+    return [];
   }
   const slots = slotsOf(kit);
   const offering = slots.filter((slot) => slot.names.includes(name));

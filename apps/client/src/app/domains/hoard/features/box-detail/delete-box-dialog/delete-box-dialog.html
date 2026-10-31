@@ -17,18 +17,31 @@
         Can't delete right now. Try again in a moment.
       </p>
     }
-    <hlm-alert-dialog-footer>
+    <!-- Three buttons wrap on narrow screens instead of squeezing into two columns. -->
+    <hlm-alert-dialog-footer class="flex flex-wrap *:grow *:basis-32">
       <button hlmAlertDialogCancel [disabled]="isDeleting()" data-testid="box-delete-box-cancel">Cancel</button>
+      @if (canKeep()) {
+        <button
+          hlmAlertDialogAction
+          variant="outline"
+          [disabled]="isDeleting()"
+          [attr.aria-busy]="isDeleting() && chosen() === 'keep'"
+          data-testid="box-delete-box-keep-minis"
+          (click)="keep()"
+        >
+          Keep built minis
+        </button>
+      }
       <button
         hlmAlertDialogAction
         variant="destructive"
         class="font-semibold"
         [disabled]="isDeleting()"
-        [attr.aria-busy]="isDeleting()"
+        [attr.aria-busy]="isDeleting() && chosen() === 'delete'"
         data-testid="box-delete-box-confirm"
-        (click)="confirmed.emit()"
+        (click)="delete()"
       >
-        Delete box
+        {{ canKeep() ? 'Delete with minis' : 'Delete box' }}
       </button>
     </hlm-alert-dialog-footer>
     <!-- Last, so the focus starts on "Cancel" and not here. -->

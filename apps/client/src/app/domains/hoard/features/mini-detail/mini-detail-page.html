@@ -137,7 +137,7 @@
                 class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent"
                 [class.text-destructive]="item.isDestructive"
                 [attr.data-testid]="item.testId"
-                (keydown)="moveFocus($event)"
+                appMenuKeys
                 (click)="openMenuPanel(item.panel); menu.close()"
               >
                 {{ item.label }}

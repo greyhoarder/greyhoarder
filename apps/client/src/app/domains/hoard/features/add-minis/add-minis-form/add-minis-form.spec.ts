@@ -47,14 +47,13 @@ describe('Add minis form', () => {
     await fixture.whenStable();
   };
 
-  it('offers every status, also on the sprue', () => {
-    expect(byTestId('add-minis-status').map((chip) => chip.textContent?.trim())).toEqual([
-      'On the sprue',
-      'Built',
-      'Primed',
-      'Painted',
-      'Done',
-    ]);
+  it('offers Built, Primed, Painted and Done, with Built chosen', () => {
+    const chips = byTestId('add-minis-status');
+
+    expect(chips.map((chip) => chip.textContent?.trim())).toEqual(['Built', 'Primed', 'Painted', 'Done']);
+    expect(
+      chips.filter((chip) => chip.getAttribute('aria-checked') === 'true').map((chip) => chip.textContent?.trim()),
+    ).toEqual(['Built']);
   });
 
   it('adds as many minis of the mini as counted', async () => {
@@ -67,7 +66,7 @@ describe('Add minis form', () => {
     expect(addMinis).toHaveBeenCalledExactlyOnceWith({
       name: 'Boy',
       factions: [{ id: 'warhammer-40000/orks' }],
-      status: 'sprue',
+      status: 'built',
       parts: [],
       count: 3,
     });

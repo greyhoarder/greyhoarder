@@ -14,6 +14,7 @@ import type { SortDirection } from '../../../util/sort-direction';
 import { ProgressBar } from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
+import { EditedBadge } from '../../../ui/edited-badge/edited-badge';
 import { LongPress } from '../../../ui/long-press/long-press';
 
 export interface BoxSelection {
@@ -39,7 +40,17 @@ const COLUMNS: readonly Column[] = [
 /** The boxes as a table, sorted by clicking a column header; starts with the newest. */
 @Component({
   selector: 'app-box-table',
-  imports: [EitherOrName, NgIcon, HlmButton, HlmTableImports, LongPress, ProgressBadge, ProgressBar, RowCheck],
+  imports: [
+    EditedBadge,
+    EitherOrName,
+    NgIcon,
+    HlmButton,
+    HlmTableImports,
+    LongPress,
+    ProgressBadge,
+    ProgressBar,
+    RowCheck,
+  ],
   providers: [provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical })],
   templateUrl: './box-table.html',
   host: { class: 'block rounded-xl border bg-card' },

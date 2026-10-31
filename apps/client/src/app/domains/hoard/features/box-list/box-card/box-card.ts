@@ -13,11 +13,12 @@ import { ProgressBadge } from '../../../ui/progress-badge/progress-badge';
 import { PROGRESS_STATUSES, ProgressBar, STATUS_COLORS } from '../../../ui/progress-bar/progress-bar';
 import { RowCheck } from '../../../ui/row-check/row-check';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
+import { EditedBadge } from '../../../ui/edited-badge/edited-badge';
 
 /** One box as a card: photo, kit, how far its minis have come, factions, date and tags. */
 @Component({
   selector: 'app-box-card',
-  imports: [EitherOrName, NgIcon, HlmBadge, HlmButton, ProgressBadge, ProgressBar, RowCheck],
+  imports: [EditedBadge, EitherOrName, NgIcon, HlmBadge, HlmButton, ProgressBadge, ProgressBar, RowCheck],
   providers: [provideIcons({ lucideEllipsisVertical })],
   templateUrl: './box-card.html',
   host: {

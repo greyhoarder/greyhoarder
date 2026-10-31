@@ -53,5 +53,6 @@ export class AddMinisForm {
   /** The kit the mini comes from, for "From the kit · {kit}" in the part picker. */
   readonly kit = input.required<string>();
 
-  protected readonly statuses = hobbyStatuses;
+  /** Minis on the sprue always belong to a box. */
+  protected readonly statuses = hobbyStatuses.filter((status) => status !== 'sprue');
 }

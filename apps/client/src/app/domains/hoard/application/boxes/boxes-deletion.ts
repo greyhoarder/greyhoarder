@@ -6,9 +6,9 @@ import { MinisStore } from '../../data/minis-store';
 import { HoardChanges } from '../hoard-changes';
 
 /**
- * Deleting boxes for good after asking, with all their minis: boxes left empty by deleting minis,
- * or a box from its menu (docs/domains/hoard.md, Boxes and kits). Provided by each screen that
- * asks.
+ * Deleting boxes for good after asking, with all their minis or keeping those past the sprue
+ * without a box: boxes left empty by deleting minis, or a box from its menu (docs/domains/hoard.md,
+ * Boxes and kits). Provided by each screen that asks.
  */
 @Injectable()
 export class BoxesDeletion {
@@ -22,24 +22,29 @@ export class BoxesDeletion {
   /** What the dialog says about the boxes, kept while it closes so its text stays as it was. */
   private readonly asked = signal<{
     readonly names: readonly string[];
-    readonly miniCount: number;
-  }>({ names: [], miniCount: 0 });
+    readonly builtMiniCount: number;
+    readonly sprueMiniCount: number;
+  }>({ names: [], builtMiniCount: 0, sprueMiniCount: 0 });
   readonly isAsking = signal(false);
   readonly isDeleting = signal(false);
   readonly hasFailed = signal(false);
 
   /** The boxes' names as plain text, in the order asked. */
   readonly names = computed(() => this.asked().names);
-  /** How many minis go with the boxes, gone ones included. */
-  readonly miniCount = computed(() => this.asked().miniCount);
+  /** How many minis of the boxes are past the sprue, gone ones included: those that can stay. */
+  readonly builtMiniCount = computed(() => this.asked().builtMiniCount);
+  /** How many minis of the boxes are on the sprue, gone ones included: those that always go with them. */
+  readonly sprueMiniCount = computed(() => this.asked().sprueMiniCount);
 
   ask(ids: readonly string[]): void {
     const asked = new Set(ids);
     const boxes = this.boxesStore.boxes().filter((box) => asked.has(box.id));
+    const minis = this.minisStore.minis().filter((mini) => mini.boxId !== undefined && asked.has(mini.boxId));
     this.ids.set(boxes.map((box) => box.id));
     this.asked.set({
       names: boxes.map((box) => eitherOrText(box.name)),
-      miniCount: this.minisStore.minis().filter((mini) => mini.boxId !== undefined && asked.has(mini.boxId)).length,
+      builtMiniCount: minis.filter((mini) => mini.status !== 'sprue').length,
+      sprueMiniCount: minis.filter((mini) => mini.status === 'sprue').length,
     });
     this.hasFailed.set(false);
     this.isAsking.set(true);
@@ -56,12 +61,26 @@ export class BoxesDeletion {
    *
    * @returns whether every box is deleted
    */
-  async confirm(): Promise<boolean> {
+  confirm(): Promise<boolean> {
+    return this.deleteAsked((id) => this.adapter.delete(id));
+  }
+
+  /**
+   * Deletes the boxes asked about with their minis on the sprue, keeping the others in the hoard
+   * without a box, as `confirm` does.
+   *
+   * @returns whether every box is deleted
+   */
+  confirmKeepingBuiltMinis(): Promise<boolean> {
+    return this.deleteAsked((id) => this.adapter.delete(id, { keepBuiltMinis: true }));
+  }
+
+  private async deleteAsked(remove: (id: string) => ReturnType<HttpBoxesAdapter['delete']>): Promise<boolean> {
     this.isDeleting.set(true);
     this.hasFailed.set(false);
     try {
       for (const id of this.ids()) {
-        const { deletedMiniIds, minis } = await this.adapter.delete(id);
+        const { deletedMiniIds, minis } = await remove(id);
         this.hoardChanges.removed(deletedMiniIds, minis);
         this.boxesStore.remove([id]);
         this.ids.update((ids) => ids.filter((asked) => asked !== id));

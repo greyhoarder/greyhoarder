@@ -1,0 +1,62 @@
+<hlm-alert-dialog
+  #dialog="hlmAlertDialog"
+  role="dialog"
+  [state]="isOpen() ? 'open' : 'closed'"
+  [disableClose]="isSaving()"
+  autoFocus="[data-testid=box-edit-row] button:not(:disabled)"
+  (closed)="closed.emit()"
+>
+  <hlm-alert-dialog-content
+    *hlmAlertDialogPortal
+    class="flex max-h-dvh flex-col max-sm:h-dvh max-sm:w-screen max-sm:max-w-none max-sm:rounded-none"
+    data-testid="box-edit-dialog"
+  >
+    <hlm-alert-dialog-header>
+      <h2 hlmAlertDialogTitle>{{ title() }}</h2>
+      <p hlmAlertDialogDescription>Count the minis on the sprue in this box. Built and gone minis stay as they are.</p>
+    </hlm-alert-dialog-header>
+    <!-- The rows of the kit as on the open kit card of Add box; only they scroll. -->
+    <ul class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-6 pt-5">
+      @for (kind of sprueRows(); track $index; let row = $index) {
+        <li class="py-1" data-testid="box-edit-row">
+          <app-sprue-row
+            testId="box-edit"
+            [row]="kind"
+            [count]="rows()[row] ?? 0"
+            [isDisabled]="isSaving()"
+            (changed)="changeRow(row, $event)"
+          />
+        </li>
+      }
+    </ul>
+    <div class="flex flex-col gap-2 px-6 pt-4 empty:hidden" aria-live="polite">
+      @if (deleteCount() > 0) {
+        <p class="text-sm text-destructive" data-testid="box-edit-delete-note">
+          {{
+            deleteCount() === 1
+              ? '1 mini on the sprue will be deleted for good.'
+              : deleteCount() + ' minis on the sprue will be deleted for good.'
+          }}
+        </p>
+      }
+      @if (hasFailed()) {
+        <p class="text-sm text-destructive" role="alert" data-testid="box-edit-error">
+          Can't save right now. Try again in a moment.
+        </p>
+      }
+    </div>
+    <hlm-alert-dialog-footer class="flex justify-end">
+      <button hlmAlertDialogCancel [disabled]="isSaving()" data-testid="box-edit-cancel">Cancel</button>
+      <button
+        hlmAlertDialogAction
+        class="font-semibold"
+        [disabled]="isSaving()"
+        [attr.aria-busy]="isSaving()"
+        data-testid="box-edit-save"
+        (click)="save(dialog)"
+      >
+        Save
+      </button>
+    </hlm-alert-dialog-footer>
+  </hlm-alert-dialog-content>
+</hlm-alert-dialog>

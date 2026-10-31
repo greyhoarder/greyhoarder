@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import type { Box, Mini } from '@greyhoarder/domain/hoard';
-import type { AddBoxesRequest, AddBoxesResponse, BoxesResponse, DeleteBoxResponse } from '@greyhoarder/protocol/hoard';
+import type {
+  AddBoxesRequest,
+  AddBoxesResponse,
+  BoxesResponse,
+  DeleteBoxRequest,
+  DeleteBoxResponse,
+  EditBoxRowsRequest,
+  EditBoxRowsResponse,
+} from '@greyhoarder/protocol/hoard';
 import { firstValueFrom } from 'rxjs';
 import type { BoxesToAdd } from '../models/boxes-to-add';
 
@@ -19,7 +27,10 @@ export class HttpBoxesAdapter {
     return { boxes: response.boxes, factionNames: new Map(Object.entries(response.factionNames)) };
   }
 
-  /** Boxes of the catalog kit's latest version, each with the minis it puts on the sprue. */
+  /**
+   * Boxes of the catalog kit's latest version with the chosen name, each with the minis of the
+   * counted rows on the sprue, or those the kit puts there.
+   */
   async add(
     kitId: string,
     boxesToAdd: BoxesToAdd,
@@ -29,13 +40,39 @@ export class HttpBoxesAdapter {
     return firstValueFrom(this.http.post<AddBoxesResponse>('/api/hoard/boxes', body));
   }
 
-  /** Deletes the box for good with all its minis, gone ones included. */
-  async delete(id: string): Promise<{
-    /** The box's minis. */
+  /**
+   * Deletes the box for good with all its minis, gone ones included, or keeps those past the sprue
+   * in the hoard without a box when asked; its minis on the sprue always go with it.
+   */
+  async delete(
+    id: string,
+    { keepBuiltMinis = false }: { readonly keepBuiltMinis?: boolean } = {},
+  ): Promise<{
+    /** The box's minis deleted with it. */
     readonly deletedMiniIds: readonly string[];
-    /** Other minis whose recipients lost the deleted ones. */
+    /** Other minis that changed: kept minis now without a box, and those whose recipients lost deleted ones. */
     readonly minis: readonly Mini[];
   }> {
-    return firstValueFrom(this.http.delete<DeleteBoxResponse>(`/api/hoard/boxes/${encodeURIComponent(id)}`));
+    const query: DeleteBoxRequest = { keepBuiltMinis: keepBuiltMinis ? 'true' : 'false' };
+    return firstValueFrom(
+      this.http.delete<DeleteBoxResponse>(`/api/hoard/boxes/${encodeURIComponent(id)}`, { params: query }),
+    );
+  }
+
+  /** Counts the minis on the sprue of the box anew, per row of its kit; the box becomes an edited box. */
+  async editRows(
+    id: string,
+    rows: readonly number[],
+  ): Promise<{
+    readonly box: Box;
+    /** Minis put on the sprue of raised rows. */
+    readonly addedMinis: readonly Mini[];
+    /** Minis on the sprue of lowered rows, deleted for good. */
+    readonly deletedMiniIds: readonly string[];
+    /** Other minis that no longer name a deleted mini as a recipient of their parts. */
+    readonly minis: readonly Mini[];
+  }> {
+    const body: EditBoxRowsRequest = { rows };
+    return firstValueFrom(this.http.put<EditBoxRowsResponse>(`/api/hoard/boxes/${encodeURIComponent(id)}/rows`, body));
   }
 }

@@ -44,7 +44,12 @@
           <app-progress-badge [progress]="progress" data-testid="box-progress-badge" />
         }
       </div>
-      <p class="text-muted-foreground" data-testid="box-kit-line">{{ kitLine() }}</p>
+      <div class="flex flex-wrap items-center gap-2">
+        <p class="text-muted-foreground" data-testid="box-kit-line">{{ kitLine() }}</p>
+        @if (box.isEdited) {
+          <app-edited-badge data-testid="box-edited" />
+        }
+      </div>
       <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
         <span data-testid="box-meta">{{ meta() }}</span>
         <span
@@ -59,7 +64,6 @@
         }
       </div>
     </div>
-    <!-- Editing comes later. -->
     <div class="flex flex-wrap gap-3">
       @if (hasMinisOnSprue()) {
         <button
@@ -72,9 +76,20 @@
           Take from the sprue
         </button>
       }
-      <button hlmBtn variant="outline" type="button" class="h-10 px-3.5 text-sm" data-testid="box-edit">
-        Edit box
-      </button>
+      <!-- Only boxes from a kit have rows to count; the kit has to be there to show them. -->
+      @if (box.kit) {
+        <button
+          hlmBtn
+          variant="outline"
+          type="button"
+          class="h-10 px-3.5 text-sm"
+          data-testid="box-edit"
+          [disabled]="!kit()"
+          (click)="edit()"
+        >
+          Edit box
+        </button>
+      }
       <hlm-popover align="end" sideOffset="6">
         <button
           hlmPopoverTrigger
@@ -94,7 +109,7 @@
             <button
               type="button"
               role="menuitem"
-              (keydown)="moveFocus($event)"
+              appMenuKeys
               tabindex="0"
               class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent"
               data-testid="box-add-mini"
@@ -106,7 +121,7 @@
             <button
               type="button"
               role="menuitem"
-              (keydown)="moveFocus($event)"
+              appMenuKeys
               tabindex="-1"
               class="flex w-full rounded-md px-2 py-1.5 text-left text-sm text-destructive outline-none hover:bg-accent focus-visible:bg-accent"
               data-testid="box-delete"
@@ -305,12 +320,28 @@
   <app-delete-box-dialog
     [isOpen]="boxesDeletion.isAsking() && boxQuestion() === 'delete'"
     [name]="boxesDeletion.names()[0] ?? ''"
-    [miniCount]="boxesDeletion.miniCount()"
+    [builtMiniCount]="boxesDeletion.builtMiniCount()"
+    [sprueMiniCount]="boxesDeletion.sprueMiniCount()"
     [isDeleting]="boxesDeletion.isDeleting()"
     [hasFailed]="boxesDeletion.hasFailed()"
     (confirmed)="deleteBox()"
+    (keptBuiltMinis)="deleteBoxKeepingBuiltMinis()"
     (closed)="boxesDeletion.cancel()"
   />
+  @if (kit(); as kit) {
+    @if (storedBox(); as storedBox) {
+      <app-edit-box-dialog
+        [isOpen]="isEditing()"
+        [box]="storedBox"
+        [kit]="kit"
+        [minis]="boxMinis()"
+        [isSaving]="isSavingEdit()"
+        [hasFailed]="hasEditFailed()"
+        (saved)="saveEdit($event)"
+        (closed)="isEditing.set(false)"
+      />
+    }
+  }
 } @else {
   <p class="text-muted-foreground" role="alert" data-testid="box-not-found">This box isn't in your hoard.</p>
 }

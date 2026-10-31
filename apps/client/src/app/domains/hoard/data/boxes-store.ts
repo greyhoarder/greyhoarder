@@ -19,6 +19,12 @@ export class BoxesStore {
   readonly isLoading = computed(() => this.loaded.status() === 'loading');
   readonly hasFailed = computed(() => this.loaded.error() !== undefined);
 
+  /** Puts boxes the server changed in place of their old versions, without loading every box again. */
+  apply(changed: readonly Box[]): void {
+    const byId = new Map(changed.map((box) => [box.id, box]));
+    this.loaded.update((loaded) => loaded && { ...loaded, boxes: loaded.boxes.map((box) => byId.get(box.id) ?? box) });
+  }
+
   /** Takes boxes the server deleted out of the hoard. */
   remove(ids: readonly string[]): void {
     const deleted = new Set(ids);

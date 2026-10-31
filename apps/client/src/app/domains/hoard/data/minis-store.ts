@@ -43,6 +43,11 @@ export class MinisStore {
     );
   }
 
+  /** Puts minis the server added into the hoard, without loading every mini again. */
+  add(added: readonly Mini[]): void {
+    this.loaded.update((loaded) => loaded && { ...loaded, minis: [...loaded.minis, ...added] });
+  }
+
   /** Takes minis the server deleted out of the hoard. */
   remove(ids: readonly string[]): void {
     const deleted = new Set(ids);

@@ -1,4 +1,4 @@
-import { Component, computed, inject, resource, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, resource, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft, lucideCircleCheck, lucideScanBarcode, lucideSearch, lucideX } from '@ng-icons/lucide';
@@ -16,8 +16,9 @@ import { today } from '../../util/today';
 import { KitCard } from './kit-card/kit-card';
 
 /**
- * Adding a box to the hoard: finding its kit in the catalog by name, product code or barcode,
- * and adding boxes of it from its opened card. Specified in docs/screens/add-box.md.
+ * Adding a box to the hoard: finding its kit in the catalog by name, model, product code or barcode,
+ * and adding boxes of it from its opened card; or adding sprues bought without their box as one box.
+ * Specified in docs/screens/add-box.md.
  */
 @Component({
   selector: 'app-add-box-page',
@@ -31,6 +32,11 @@ export class AddBoxPage {
   private readonly boxesAdapter = inject(HttpBoxesAdapter);
   private readonly boxesStore = inject(BoxesStore);
   private readonly minisStore = inject(MinisStore);
+
+  /** Opened for sprues bought without their box, from the route's data. */
+  readonly areSprues = input(false);
+
+  private readonly searchField = viewChild.required<ElementRef<HTMLInputElement>>('searchField');
 
   protected readonly query = signal('');
   protected readonly isSearching = computed(() => this.query().trim() !== '');
@@ -86,9 +92,18 @@ export class AddBoxPage {
     const { boxes, minis } = addedBoxes;
     this.boxesStore.reload();
     this.minisStore.reload();
-    const count = minis.length;
-    const boxCount = boxes.length === 1 ? '1 box' : `${boxes.length} boxes`;
-    this.added.set(`Added ${boxCount} of ${boxKitName(kit)} with ${minisLabel(count)} to your hoard.`);
+    this.added.set(this.addedMessage(boxes.length, boxesToAdd.name ?? boxKitName(kit), minis.length));
     this.openKitId.set(undefined);
+    // The next kit of the same purchase can be typed right away.
+    this.searchField().nativeElement.focus();
+    this.searchField().nativeElement.select();
+  }
+
+  private addedMessage(boxCount: number, name: string, miniCount: number): string {
+    if (this.areSprues()) {
+      return `Added ${name} with ${minisLabel(miniCount)} to your hoard.`;
+    }
+    const boxes = boxCount === 1 ? '1 box' : `${boxCount} boxes`;
+    return `Added ${boxes} of ${name} with ${minisLabel(miniCount)} to your hoard.`;
   }
 }

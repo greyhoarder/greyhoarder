@@ -7,7 +7,7 @@
     <ng-icon name="lucideChevronLeft" size="16" />
     Hoard
   </a>
-  <h1 class="text-2xl font-semibold">Add to hoard</h1>
+  <h1 class="text-2xl font-semibold">{{ areSprues() ? 'Add sprues' : 'Add to hoard' }}</h1>
 </header>
 
 <div class="flex gap-3">
@@ -16,9 +16,10 @@
       <ng-icon name="lucideSearch" size="18" />
     </div>
     <input
+      #searchField
       hlmInputGroupInput
       type="search"
-      placeholder="Name, product code or barcode"
+      placeholder="Name, model, product code or barcode"
       aria-label="Search kits"
       data-testid="add-box-search"
       [value]="query()"
@@ -68,7 +69,11 @@
 
 @if (!isSearching()) {
   <p class="py-8 text-center text-muted-foreground" data-testid="add-box-hint">
-    Search the catalog by name, product code or barcode.
+    @if (areSprues()) {
+      Search the catalog for the kit your sprues come from, by its name or a model on them.
+    } @else {
+      Search the catalog by name, product code or barcode.
+    }
   </p>
 } @else if (matches.error()) {
   <p class="py-8 text-center text-destructive" role="alert" data-testid="add-box-error">
@@ -85,6 +90,8 @@
             [factionNames]="factionNames()"
             [isOpen]="openKitId() === kit.id"
             [ownedBoxes]="ownedBoxes(kit)"
+            [search]="query()"
+            [areSprues]="areSprues()"
             (toggled)="toggle(kit)"
             (add)="add(kit, $event)"
           />

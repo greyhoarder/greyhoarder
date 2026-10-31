@@ -22,11 +22,13 @@ import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmPopoverImports } from '@spartan-ng/helm/popover';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { HttpKitsAdapter } from '../../../catalog/api';
+import { HttpBoxesAdapter } from '../../infrastructure/http-boxes-adapter';
 import { HttpMinisAdapter } from '../../infrastructure/http-minis-adapter';
 import { BoxesDeletion } from '../../application/boxes/boxes-deletion';
 import { BoxesStore } from '../../data/boxes-store';
 import { percentOf, progressOf, toBoxRows } from '../../application/boxes/box-row';
 import { FactionNames } from '../../application/faction-names';
+import { HoardChanges } from '../../application/hoard-changes';
 import { toMiniGroups } from './mini-group';
 import { MiniSelection } from '../../application/minis/mini-selection';
 import { MinisDeletion } from '../../application/minis/minis-deletion';
@@ -36,6 +38,8 @@ import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
 import { hasPercent } from '../../models/box-progress';
 import { DeleteBoxDialog } from './delete-box-dialog/delete-box-dialog';
+import { EditBoxDialog } from './edit-box-dialog/edit-box-dialog';
+import { EditedBadge } from '../../ui/edited-badge/edited-badge';
 import { DeleteMinisDialog } from '../../ui/delete-minis-dialog/delete-minis-dialog';
 import { EmptyBoxesDialog } from '../../ui/empty-boxes-dialog/empty-boxes-dialog';
 import { ProgressBadge } from '../../ui/progress-badge/progress-badge';
@@ -52,11 +56,13 @@ import { BoxGroupCard, type MiniSelectionChange, type StatusChoice } from './box
 import { BoxSprueCard, type SpruePanel } from './box-sprue-card/box-sprue-card';
 import { EitherOrName } from '../../ui/either-or-name/either-or-name';
 import { LongPress } from '../../ui/long-press/long-press';
+import { MenuKeys } from '../../../../shared/ui/menu-keys/menu-keys';
 
 /** Everything about one box of the hoard; specified in docs/screens/box.md. */
 @Component({
   selector: 'app-box-detail-page',
   imports: [
+    MenuKeys,
     NgTemplateOutlet,
     EitherOrName,
     RouterLink,
@@ -76,6 +82,8 @@ import { LongPress } from '../../ui/long-press/long-press';
     DeleteMinisDialog,
     EmptyBoxesDialog,
     DeleteBoxDialog,
+    EditBoxDialog,
+    EditedBadge,
   ],
   providers: [
     provideIcons({
@@ -104,6 +112,8 @@ export class BoxDetailPage {
   private readonly router = inject(Router);
   private readonly catalogKits = inject(HttpKitsAdapter);
   private readonly minisAdapter = inject(HttpMinisAdapter);
+  private readonly boxesAdapter = inject(HttpBoxesAdapter);
+  private readonly hoardChanges = inject(HoardChanges);
   protected readonly deletion = inject(MinisDeletion);
   protected readonly boxesDeletion = inject(BoxesDeletion);
   /** What the box's dialog asks: whether to delete it now that it is empty, or from its menu. */
@@ -114,7 +124,7 @@ export class BoxDetailPage {
   protected readonly isLoading = computed(() => this.boxes.isLoading() || this.minis.isLoading());
   protected readonly hasFailed = computed(() => this.boxes.hasFailed() || this.minis.hasFailed());
 
-  private readonly storedBox = computed(() => this.boxes.boxes().find((box) => box.id === this.id()));
+  protected readonly storedBox = computed(() => this.boxes.boxes().find((box) => box.id === this.id()));
   /** Undefined while loading and for a box that isn't in the hoard. */
   protected readonly box = computed(() => {
     const box = this.storedBox();
@@ -125,7 +135,7 @@ export class BoxDetailPage {
   protected readonly hasSaveFailed = signal(false);
 
   /** The box's minis, with the statuses being saved. */
-  private readonly boxMinis = computed(() => {
+  protected readonly boxMinis = computed(() => {
     const boxId = this.storedBox()?.id;
     const pending = this.pendingStatuses();
     return this.minis
@@ -185,6 +195,11 @@ export class BoxDetailPage {
   protected readonly canLeave = computed(() => this.selectedMinis().some((mini) => !isGone(mini)));
   /** Closed at first, open when nothing else is left. */
   protected readonly isGoneOpen = linkedSignal(() => this.progress() === 'all-gone');
+
+  /** The edit dialog is open; it counts the minis on the sprue anew. */
+  protected readonly isEditing = signal(false);
+  protected readonly isSavingEdit = signal(false);
+  protected readonly hasEditFailed = signal(false);
 
   /** The kit in the version the box records; none for boxes without a kit. */
   private readonly loadedKit = resource({
@@ -280,6 +295,38 @@ export class BoxDetailPage {
     }
   }
 
+  /** Gone with its minis on the sprue, the others stay without a box; the Boxes tab is left. */
+  protected async deleteBoxKeepingBuiltMinis(): Promise<void> {
+    if (await this.boxesDeletion.confirmKeepingBuiltMinis()) {
+      this.toBoxes();
+    }
+  }
+
+  protected edit(): void {
+    this.hasEditFailed.set(false);
+    this.isEditing.set(true);
+  }
+
+  /** Saves the counted rows; once the box has no minis left, asks whether to delete it. */
+  protected async saveEdit(rows: readonly number[]): Promise<void> {
+    this.isSavingEdit.set(true);
+    this.hasEditFailed.set(false);
+    try {
+      const { box, addedMinis, deletedMiniIds, minis } = await this.boxesAdapter.editRows(this.id(), rows);
+      this.boxes.apply([box]);
+      this.minis.add(addedMinis);
+      this.hoardChanges.removed(deletedMiniIds, minis);
+      this.isEditing.set(false);
+      if (this.boxMinis().length === 0) {
+        this.askIfEmptied([this.id()]);
+      }
+    } catch {
+      this.hasEditFailed.set(true);
+    } finally {
+      this.isSavingEdit.set(false);
+    }
+  }
+
   /** The mini page leads back here. */
   protected openMini(id: string): void {
     void this.router.navigate(['/hoard/minis', id], { queryParams: { from: 'box' } });
@@ -317,26 +364,6 @@ export class BoxDetailPage {
         rest.delete(miniId);
         return rest;
       });
-    }
-  }
-
-  /** Arrow keys, Home and End move between the items of the box menu. */
-  protected moveFocus(event: KeyboardEvent): void {
-    const menu = event.target instanceof HTMLElement ? event.target.closest('[role="menu"]') : null;
-    if (!menu) {
-      return;
-    }
-    const items = [...menu.querySelectorAll<HTMLElement>('[role="menuitem"]')];
-    const current = items.findIndex((item) => item === document.activeElement);
-    const next = {
-      ArrowDown: (current + 1) % items.length,
-      ArrowUp: (current - 1 + items.length) % items.length,
-      Home: 0,
-      End: items.length - 1,
-    }[event.key];
-    if (next !== undefined) {
-      event.preventDefault();
-      items[next]?.focus();
     }
   }
 

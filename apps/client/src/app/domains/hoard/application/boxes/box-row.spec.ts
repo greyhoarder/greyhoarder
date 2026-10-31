@@ -27,7 +27,7 @@ describe('Box rows', () => {
   });
 
   it('leaves minis without a box out of every box', () => {
-    const minis = [mini('1', { boxId: 'a', status: 'sprue' }), mini('2', { status: 'sprue' })];
+    const minis = [mini('1', { boxId: 'a', status: 'sprue' }), mini('2', { status: 'built' })];
 
     const rows = toBoxRows([box('a')], minis, NAMES);
 
@@ -40,5 +40,13 @@ describe('Box rows', () => {
     const rows = toBoxRows([box('a', [ORKS, 'warhammer-40000/unknown'])], minis, NAMES);
 
     expect(rows.map((row) => row.factions)).toEqual([['Orks']]);
+  });
+
+  it('tells which boxes are edited', () => {
+    const boxes = [{ ...box('a'), isEdited: true }, box('b')];
+
+    const rows = toBoxRows(boxes, [], NAMES);
+
+    expect(rows.map((row) => row.isEdited)).toEqual([true, false]);
   });
 });

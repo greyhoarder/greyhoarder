@@ -36,8 +36,8 @@ const MINIS = [
 ];
 
 describe('Boxes deletion', () => {
-  /** The deletion of a hoard holding `BOXES` and `MINIS`, whose server answers deleting as `remove` does. */
-  async function deletionWith(remove: HttpBoxesAdapter['delete']) {
+  /** The deletion of a hoard holding `BOXES` and these minis, whose server answers deleting as `remove` does. */
+  async function deletionWith(remove: HttpBoxesAdapter['delete'], hoardMinis: readonly Mini[] = MINIS) {
     TestBed.configureTestingModule({
       providers: [
         BoxesDeletion,
@@ -45,7 +45,7 @@ describe('Boxes deletion', () => {
           provide: HttpMinisAdapter,
           useValue: {
             list: vi.fn(async () => ({
-              minis: MINIS,
+              minis: hoardMinis,
               factionNames: new Map(),
               systemNames: new Map(),
             })),
@@ -95,11 +95,31 @@ describe('Boxes deletion', () => {
     expect(idsOf(minis.minis())).toEqual(['boy-1', 'boy-2', 'sold-boy', 'nob']);
   });
 
-  it('counts the minis that go with the box, gone ones included', async () => {
-    const { deletion } = await deletionWith(vi.fn());
+  it('counts the built minis and the minis on the sprue of the box, gone ones included', async () => {
+    const { deletion } = await deletionWith(vi.fn(), [
+      ...MINIS,
+      mini('sprue-boy-1', 'boyz', { status: 'sprue' }),
+      mini('sprue-boy-2', 'boyz', { status: 'sprue', departure: { reason: 'lost', on: '2026-10-21' } }),
+      mini('sprue-nob', 'nobz', { status: 'sprue' }),
+    ]);
 
     deletion.ask(['boyz']);
 
-    expect(deletion.miniCount()).toBe(3);
+    expect([deletion.builtMiniCount(), deletion.sprueMiniCount()]).toEqual([3, 2]);
+  });
+
+  it('keeps the built minis of a deleted box in the hoard without a box when asked', async () => {
+    const remove = vi.fn<HttpBoxesAdapter['delete']>(async () => ({
+      deletedMiniIds: [],
+      minis: MINIS.filter((each) => each.boxId === 'boyz').map((each) => ({ ...each, boxId: undefined })),
+    }));
+    const { deletion, minis, boxes } = await deletionWith(remove);
+    deletion.ask(['boyz']);
+
+    await deletion.confirmKeepingBuiltMinis();
+
+    expect(remove).toHaveBeenCalledWith('boyz', { keepBuiltMinis: true });
+    expect(idsOf(boxes.boxes())).toEqual(['nobz']);
+    expect(idsOf(minis.minis().filter((each) => each.boxId === undefined))).toEqual(['boy-1', 'boy-2', 'sold-boy']);
   });
 });

@@ -164,15 +164,6 @@ describe('Minis page', () => {
     expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([expect.stringContaining('Nob')]);
   });
 
-  it('lists minis on the sprue without a box', async () => {
-    showPage(() => Promise.resolve([mini('s1', { name: 'Grot' })]));
-    await fixture.whenStable();
-
-    await showTable();
-
-    expect(byTestId('hoard-row').map((row) => row.textContent)).toEqual([expect.stringContaining('Grot')]);
-  });
-
   it('shows a table line for every mini', async () => {
     showPage(() => Promise.resolve(['b1', 'b2', 'b3'].map((id) => mini(id, { status: 'built' }))));
     await fixture.whenStable();

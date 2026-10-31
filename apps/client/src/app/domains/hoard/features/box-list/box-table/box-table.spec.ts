@@ -52,6 +52,19 @@ describe('Box table', () => {
     expect(firstBox()).toBe('Intercessors');
   });
 
+  it('marks an edited box as "Edited"', async () => {
+    const fixture = TestBed.createComponent(BoxTable);
+    fixture.componentRef.setInput('boxes', [{ ...BOXES[0], isEdited: true }, BOXES[1]]);
+
+    await fixture.whenStable();
+
+    const lines = [...(fixture.nativeElement as HTMLElement).querySelectorAll('[data-testid="hoard-box"]')];
+    expect(lines.map((line) => line.querySelector('[data-testid="hoard-box-edited"]')?.textContent?.trim())).toEqual([
+      'Edited',
+      undefined,
+    ]);
+  });
+
   describe('with the check in the header', () => {
     const render = async (selectedIds: string[]) => {
       const fixture = TestBed.createComponent(BoxTable);
