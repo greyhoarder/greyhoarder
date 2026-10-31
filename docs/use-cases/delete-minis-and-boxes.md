@@ -100,6 +100,31 @@ box's kit.
   Boyz stay in the hoard without a box, and renaming one of them still
   suggests the names of the Boyz kit
 
+### Requirement: Delete several boxes at once
+
+The system SHALL let the user delete several selected boxes at once,
+asking once for all of them whether their minis go with them.
+
+#### Scenario: Selected boxes with their minis (DELETE-12)
+
+- **Given** 2 boxes with built minis are selected
+- **When** the user deletes them with their minis
+- **Then** both boxes and all their minis are gone for good, and the
+  selection ends
+
+#### Scenario: Keeping the minis of selected boxes (DELETE-13)
+
+- **Given** 2 boxes with built minis are selected
+- **When** the user deletes them and keeps the minis
+- **Then** both boxes and their minis on the sprue are gone, and the
+  built minis stay in the hoard without a box
+
+#### Scenario: Selected boxes not confirmed (DELETE-14)
+
+- **Given** boxes are selected and the user chose to delete them
+- **When** the user cancels
+- **Then** nothing is deleted and the boxes stay selected
+
 ### Requirement: Deleted minis leave no traces
 
 The system SHALL remove deleted minis from the sources and recipients of
@@ -118,7 +143,7 @@ The system MUST NOT delete anything when deleting fails.
 #### Scenario: The server does not delete (DELETE-10)
 
 - **Given** the server can't delete
-- **When** the user confirms deleting minis or a box
+- **When** the user confirms deleting minis, a box or several boxes
 - **Then** the user is told that it can't be deleted right now, and
   nothing is deleted
 

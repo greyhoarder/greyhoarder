@@ -74,7 +74,8 @@ sideways on narrow screens.
 
 The same tab bar; below it a filter row with "Search boxes" and the filter
 chips "Faction", "Progress" and "Tag" (plus "Reset"), then, while
-selecting, a selection bar ("{n} box(es) selected", "Select all", "Done"),
+selecting, a selection bar in place of the filter row ("{n} box(es)
+selected", "Delete…" (outline, in `destructive` text) and "Reset"),
 then the boxes as cards or as a table. Boxes are selected like minis: a
 round check on the photo's top left corner (cards) or at the start of the
 line (table).
@@ -148,7 +149,10 @@ summary line.
 | Progress percentage | {n}% |
 | Progress bar (tooltip and accessible name) | Counts per status past the sprue, in pipeline order, e.g. "5 primed, 5 done" |
 | Status line (cards) | {n} built · {n} primed · {n} painted · {n} done |
-| Box selection bar | {n} box(es) selected · Select all · Done |
+| Box selection bar | {n} box(es) selected · Delete… · Reset |
+| Delete boxes dialog | Delete {n} boxes for good? — one: Delete {box name} for good? |
+| Delete boxes text | Their {n} built minis can stay in your hoard without a box, or be deleted with them, gone ones included. — one mini: Their built mini can stay in your hoard without a box, or be deleted with them. — one box: as in the delete box dialog of [Box](box.md#content). — none: leaves the sentence out. Then, when they have minis on the sprue: Their {m} minis on the sprue are deleted with them. — one: Their mini on the sprue is deleted with them. Then: This can't be undone. |
+| Delete boxes buttons | Cancel · Keep built minis · Delete with minis; for boxes without minis past the sprue: Cancel · Delete boxes — one: Delete box |
 | Box meta line (cards) | {factions} · added {date} |
 | Date | e.g. 12 Oct 2026 |
 | Box table headers | Box · Faction · Progress · On the sprue · Painted · Added |
@@ -180,6 +184,8 @@ summary line.
 | Selected | A mini is selected | Its check is filled gold and its line gets a faint gold background; a group card with selected minis gets a gold border |
 | Boxes | The "Boxes" tab is active | The boxes as cards or table, depending on the view switch |
 | Boxes filtered | Search text or ticked values on the Boxes tab | Only matching boxes; the table's summary counts what is shown |
+| Confirming delete of boxes | "Delete…" pressed on the Boxes tab | The delete boxes dialog over the dimmed screen |
+| Deleting boxes | A delete button of the dialog pressed | The button shows the busy stripes until the server answers; when it does not, no box is deleted and the delete-failed message appears in the dialog, announced to screen readers |
 
 ## Behavior
 
@@ -263,6 +269,16 @@ summary line.
   - When boxes have no minis left afterwards, gone ones included, the
     empty boxes dialog asks once for all of them: "Delete box(es)"
     deletes them, "Keep box(es)" and Escape keep them as empty boxes.
+- "Delete…" in the selection bar of the Boxes tab opens the delete boxes
+  dialog, asked once for all selected boxes. "Delete with minis" deletes
+  the boxes and all their minis for good, gone ones included; "Keep built
+  minis" deletes the boxes and their minis on the sprue, gone ones
+  included, and keeps the others in the hoard without a box, with the
+  box's kit ([domain](../domains/hoard.md#boxes-and-kits)); boxes without
+  minis past the sprue offer "Delete boxes". All boxes are deleted
+  together, or none. Afterwards the dialog closes and the selection ends.
+  "Cancel" and Escape close it and keep the selection. Boxes can't be
+  edited together.
 - A box's progress follows the [domain rule](../domains/hoard.md#boxes-and-kits):
   untouched, started or done, and a percentage weighted by status. The bar
   is split by status in the colors of the status badges and always in the
@@ -334,6 +350,9 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 `hoard-box-progress`, `hoard-box-percent`, `hoard-box-statuses`, `hoard-box-number`,
 `box-kind` (with `data-kind`), `hoard-box-edited`,
 `hoard-box-menu`, `hoard-box-selection-bar`, `hoard-box-selection-count`,
+`hoard-box-selection-delete`, `box-delete-box-dialog`,
+`box-delete-box-cancel`, `box-delete-box-keep-minis`,
+`box-delete-box-confirm`, `box-delete-box-error`,
 `hoard-box-select-all`, `hoard-box-select-done`, `hoard-box-table`,
 `hoard-box-sort-<column>`, `hoard-box-summary`, `hoard-box-no-results`,
 `hoard-loading`, `hoard-box-loading`, `hoard-empty`, `hoard-box-empty`,
@@ -349,7 +368,7 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 - The leave page: one page to let one or several minis leave the hoard,
   with room to tell which minis got the parts of stripped ones; it
   replaces the leave panels of [Mini](mini.md) and [Box](box.md).
-- What acting on selected boxes offers; what the box menu offers.
+- What the box menu offers.
 - Whether the box list should count "x of y" on its tab like the minis.
 - Photos in place of the placeholder.
 - Whether sorting by faction should follow the hierarchy of factions
