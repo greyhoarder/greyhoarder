@@ -12,11 +12,11 @@ export {
 } from './box-rows.js';
 export { type BoxesResponse, boxesResponseSchema } from './boxes.js';
 export {
-  type DeleteBoxRequest,
-  deleteBoxRequestSchema,
-  type DeleteBoxResponse,
-  deleteBoxResponseSchema,
-} from './delete-box.js';
+  type DeleteBoxesRequest,
+  deleteBoxesRequestSchema,
+  type DeleteBoxesResponse,
+  deleteBoxesResponseSchema,
+} from './delete-boxes.js';
 export {
   type AddMinisRequest,
   addMinisRequestSchema,
