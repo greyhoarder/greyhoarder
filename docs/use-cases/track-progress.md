@@ -27,8 +27,9 @@ follow.
 
 ### Requirement: Change the status of a built mini
 
-The system SHALL let the user set a built mini of a box to built, primed,
-painted or done, also backwards, and save it at once for that one mini.
+The system SHALL let the user set a built mini to built, primed, painted
+or done, also backwards, on its box and on the mini itself, and save it at
+once for that one mini.
 
 #### Scenario: Primed (PROGRESS-01)
 
@@ -42,6 +43,18 @@ painted or done, also backwards, and save it at once for that one mini.
 - **Given** a painted mini that was stripped of its paint
 - **When** the user sets it to built
 - **Then** the mini is built
+
+#### Scenario: On the mini itself (PROGRESS-10)
+
+- **Given** the screen of a built mini, with a box or without
+- **When** the user sets it to primed
+- **Then** the mini is primed, and the percentage and the bar follow
+
+#### Scenario: Not on the sprue or gone (PROGRESS-11)
+
+- **Given** the screen of a mini on the sprue or of a gone mini
+- **When** the screen opens
+- **Then** it offers no control for the status
 
 ### Requirement: Back to the sprue
 
@@ -120,11 +133,9 @@ The system SHALL show the stored status again when saving a status fails.
 
 ## Open questions
 
-- The mini screen only shows the status; whether it gets a control to
-  change it.
-- The box offers only built to done yet (PROGRESS-08 is new).
+- The box and the mini offer only built to done yet (PROGRESS-08 is new).
 - PROGRESS-09 is new.
 - Whether the status of a gone mini can be changed; neither screen offers
-  it.
+  it, but [Edit minis](../screens/edit-minis.md) does.
 - Where the workbench is shown: the dashboard's "On the workbench" is not
   built yet.

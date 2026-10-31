@@ -100,7 +100,6 @@ border:
 | Draft badge | Not checked |
 | Factions line | The kit's factions, joined with " · " |
 | Release line | {manufacturer} · {product code}, leaving out the code when the kit has none |
-| Matching slots | With {suggested names of the matching slots, joined with " or "}, e.g. "With Boy or Boss Nob" |
 | Name label | Name |
 | Name | {kit name} ({year}), e.g. "Boyz (2026)"; Sprues: {kit name} sprues ({year}), e.g. "Boyz sprues (2026)"; without a known year no parentheses |
 | Name missing | Give the box a name. |
@@ -212,7 +211,7 @@ border:
 `add-box-back`, `add-box-search`, `add-box-scan`, `add-box-hint`,
 `add-box-kit`, `add-box-kit-name`, `add-box-kit-year`, `add-box-kit-draft`,
 `add-box-kit-minis`, `add-box-kit-builds`,
-`add-box-kit-owned`, `add-box-kit-matches`, `add-box-name`, `add-box-name-error`,
+`add-box-kit-owned`, `add-box-name`, `add-box-name-error`,
 `add-box-slot`, `add-box-slot-builds`, `add-box-slot-count`,
 `add-box-slot-less`, `add-box-slot-more`, `add-box-slot-kit-count`,
 `add-box-edited-note`, `add-box-reset`,

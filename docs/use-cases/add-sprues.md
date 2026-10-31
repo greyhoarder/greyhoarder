@@ -59,11 +59,11 @@ add anything before a row has at least one mini.
 - **When** the user has not counted any minis
 - **Then** every row shows none, and nothing can be added
 
-### Requirement: Add the sprues as one edited box
+### Requirement: Add the sprues as one box of sprues
 
 The system SHALL add one box per adding, with the counted minis on the
 sprue named as adding the box would, the kit's factions, the chosen
-name, day and tags, marked as an edited box.
+name, day and tags, marked as sprues and not as an edited box.
 
 #### Scenario: Part of a starter set (ADD-SPRUES-04)
 
@@ -72,7 +72,7 @@ name, day and tags, marked as an edited box.
   faction at none
 - **When** the user adds them
 - **Then** the hoard has one box more, named after the starter set and
-  marked as edited, with 10 Boys and 1 Warboss on the sprue and nothing
+  marked as sprues, with 10 Boys and 1 Warboss on the sprue and nothing
   of the other faction
 
 #### Scenario: An either-or kit (ADD-SPRUES-05)

@@ -31,8 +31,8 @@ the sidebar, as wide as the hoard, from top to bottom:
       below it the factions found, one per line, the user's own first;
       then, separated by a border, the group "New faction" with a dashed
       chip to create the typed name and a hint below it.
-   3. The status: one toggle chip per status, "Built" to "Done"; exactly
-      one is chosen.
+   3. The status: a segmented control "Built" to "Done", as on
+      [Box](box.md#layout); exactly one is chosen.
    4. The parts: the chosen parts as tiles like on [Mini](mini.md), then
       "Add a part", which opens the part picker below the tiles with the
       groups "Your parts" and the range of the chosen factions.
@@ -62,7 +62,7 @@ the sidebar, as wide as the hoard, from top to bottom:
 | Create faction chip | Create “{typed name}” |
 | Create faction hint | Becomes a faction of your own. |
 | Status label | Status |
-| Status chips | Built · Primed · Painted · Done |
+| Status control | Built · Primed · Painted · Done |
 | Parts label | Parts |
 | Add part button | Add a part |
 | Vocabulary group | Your parts |
@@ -119,7 +119,7 @@ the sidebar, as wide as the hoard, from top to bottom:
 - The name field is a combobox: the suggestions are a listbox, chosen with
   the arrow keys and Enter, closed with Escape.
 - Each faction chip's "×" is named "Remove {faction}".
-- The status chips are a radio group named "Status".
+- The status control is a radio group named "Status".
 - The status bar and the mini count are live regions.
 
 ## Test IDs

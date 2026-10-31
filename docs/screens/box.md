@@ -22,7 +22,8 @@ the sidebar, as wide as the hoard, from top to bottom:
    - left, a 112 × 112 photo placeholder with rounded corners, muted with
      diagonal stripes and a box icon;
    - middle, stacked: the box name as the title, followed by the progress
-     badge; the kit line in `muted-foreground`, followed by the "Edited"
+     badge; the kit line in `muted-foreground` with the kind icon of the
+     [hoard](hoard.md#behavior) before it, followed by the "Edited"
      badge of the [hoard](hoard.md#content) for edited boxes; a smaller line with the
      factions and the date, followed by the box's number as a small muted
      round badge "#{n}" and the tags as small outlined badges;
@@ -101,15 +102,6 @@ count stepper.
    either-or row first, as there.
 3. A border, then a muted note that kits only suggest.
 
-**Edit dialog**, opened by "Edit box": a dialog titled after the box,
-with a muted line saying what it changes; the rows of the box's kit as on
-the open kit card of [Add box](add-box.md#kit-card-open), each with a row
-stepper that counts the box's minis on the sprue of that row, also rows
-that have none; below them, while rows were lowered, a line in
-`destructive` saying how many minis on the sprue will be deleted for
-good; the buttons "Cancel" (outline) and "Save" (primary) at the bottom
-right. On narrow screens the dialog fills the screen and its rows scroll.
-
 ## Content
 
 | Element | Text or content |
@@ -156,13 +148,6 @@ right. On narrow screens the dialog fills the screen and its rows scroll.
 | Slot row | {count}× · the suggested names joined with " or " · the parts |
 | Kit note | Kits only suggest. Changing the kit never changes this box. |
 | Edited badge | as in the [hoard](hoard.md#content) |
-| Edit dialog title | Edit {box name} |
-| Edit dialog text | Count the minis on the sprue in this box. Built and gone minis stay as they are. |
-| Edit row | − {n on the sprue} + · the suggested names joined with " or " · the parts, as on [Add box](add-box.md#content) |
-| Edit row buttons (accessible names) | One fewer: {row name} · One more: {row name} |
-| Edit delete note | {n} minis on the sprue will be deleted for good. — one: 1 mini on the sprue will be deleted for good. |
-| Edit dialog buttons | Cancel · Save |
-| Edit failed | Can't save right now. Try again in a moment. |
 | No minis | No minis in this box. |
 | Delete box dialog | Delete {box name} for good? |
 | Delete box text | Its {n} built minis can stay in your hoard without a box, or be deleted with it, gone ones included. — one: Its built mini can stay in your hoard without a box, or be deleted with it. — none: leaves the sentence out. Then, when it has minis on the sprue: Its {m} minis on the sprue are deleted with it. — one: Its mini on the sprue is deleted with it. Then: This can't be undone. |
@@ -195,9 +180,6 @@ right. On narrow screens the dialog fills the screen and its rows scroll.
 | Nothing gone | No mini of the box is gone | No "Gone" section |
 | Empty | The box has no minis | The progress badge "Empty", no percentage, an empty bar; no "Minis", "On the sprue" or "Gone" section; the no-minis message in their place |
 | Boxes emptied | The minis deleted from the box were its last, gone ones included | The empty boxes dialog of the [hoard](hoard.md#states) for this box |
-| Editing | "Edit box" pressed | The edit dialog over the dimmed screen, each row at the number of the box's minis on the sprue of that row |
-| Rows lowered | A row in the edit dialog is below the number it started with | The edit delete note |
-| Saving the edit | "Save" pressed | The button shows the busy stripes until the server answers; when it does not, nothing is changed and the edit-failed message appears in the dialog, announced to screen readers |
 | Deleting the box | "Delete box…" chosen in the box menu | The delete box dialog; the chosen button shows the busy stripes until the server answers; when it does not, nothing is deleted and the delete-box-failed message appears in the dialog |
 | All gone | Every mini of the box is gone | The progress badge "All gone", no percentage, an empty bar; no "Minis" and no "On the sprue" section; the "Gone" section open |
 | Not found | No box with this id in the user's hoard, also one of another user | The not-found message below the back link |
@@ -276,16 +258,7 @@ right. On narrow screens the dialog fills the screen and its rows scroll.
   deletes it with its minis on the sprue. Each
   leads to the Boxes tab of the hoard; "Cancel" and Escape close the
   dialog.
-- "Edit box" opens the edit dialog
-  ([domain](../domains/hoard.md#boxes-and-kits)). Each row starts at the
-  number of the box's minis on the sprue of that row, goes from 0 up and
-  has no upper limit. Nothing is saved until "Save"; "Cancel" and Escape
-  close the dialog and forget the changes. "Save" with unchanged rows
-  only closes it. Otherwise it puts further minis on the sprue as adding
-  the box would, deletes minis on the sprue of lowered rows for good, and
-  marks the box as edited; afterwards the dialog closes and the screen
-  shows the box as saved. When the box has no minis left afterwards, the
-  empty boxes dialog asks whether to delete it, as after deleting minis.
+- "Edit box" opens [Edit box](edit-box.md); it leads back here.
 - "Add a mini to this box" has no function yet.
 
 ## Accessibility
@@ -309,11 +282,6 @@ right. On narrow screens the dialog fills the screen and its rows scroll.
   and the dialogs are accessible as in the
   [hoard](hoard.md#accessibility); the delete box dialog is an alert
   dialog as well and opens with the focus on "Cancel".
-- The edit dialog is a dialog named by its title and described by its
-  text; it opens with the focus on the first row stepper, keeps the focus
-  inside while open, and gives it back to "Edit box" when it closes. Each
-  row stepper is a group named after its row; the delete note and the
-  edit-failed message are announced to screen readers.
 - The "Gone" heading is a button with `aria-expanded` and
   `aria-controls` for its cards.
 - The save-failed message is announced to screen readers.
@@ -337,9 +305,7 @@ right. On narrow screens the dialog fills the screen and its rows scroll.
 `box-empty-boxes-dialog`, `box-empty-boxes-keep`, `box-empty-boxes-delete`,
 `box-empty-boxes-error`, `box-delete-box-dialog`, `box-delete-box-cancel`,
 `box-delete-box-confirm`, `box-delete-box-keep-minis`, `box-delete-box-error`, `box-no-minis`,
-`box-edited`, `box-edit-dialog`, `box-edit-row`, `box-edit-less`,
-`box-edit-more`, `box-edit-count`, `box-edit-delete-note`,
-`box-edit-cancel`, `box-edit-save`, `box-edit-error`;
+`box-edited`;
 inside an open card on the sprue the build, leave and delete panels carry
 the test IDs of [Mini](mini.md#test-ids); `box-save-error`, `box-kit`,
 `box-kit-draft`, `box-kit-slot`, `box-kit-error`, `box-kit-missing`, `box-loading`, `box-not-found`, `box-error` (ADR-0013).

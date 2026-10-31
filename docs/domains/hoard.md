@@ -19,7 +19,7 @@ exactly one user, and users see only their own hoard.
 |------|---------|
 | **Mini** | One physical miniature, built or still on the sprue. The only thing with a hobby status. |
 | **Box** | Something the user acquired that minis came out of: a kit, a starter set, a bundle, or sprues of one bought without their box. |
-| **Edited box** | A box whose minis on the sprue the user counted themselves, when adding it or later, instead of taking them as its kit describes. |
+| **Edited box** | A box whose minis on the sprue the user counted themselves, when adding it or later, instead of taking them as its kit describes. Sprues bought without their box are never edited boxes. |
 | **Tag** | A user's own label for boxes, e.g. "Gift", "Second hand", "Shelf of shame". |
 | **Progress** | How far the minis of a box have come: untouched, started or done. |
 | **Kit** | A template for what a box can become: its variants and, per variant, its slots. Either a user's own kit or a [catalog](catalog.md) kit. |
@@ -94,7 +94,8 @@ exactly one user, and users see only their own hoard.
   edited box.
 - Sprues bought without their box are added the same way, as one box
   whose rows start at none; the user counts the minis they have. Such a
-  box is always an edited box. The kit is found by its name, a variant,
+  box is recorded as sprues and never counts as an edited box, also when
+  its rows change later. The kit is found by its name, a variant,
   its product code or barcode, or a name its slots can be built as; a
   bundle can be chosen as well, e.g. the Ork half of a starter set.
 - A box's minis on the sprue can be changed later, row by row of its
@@ -243,7 +244,8 @@ alike (same
 name, factions, parts and notes) share a row with a count, from which the
 user picks how many to build, to let depart or to delete. Minis past the
 sprue and gone minis are acted on several at once by selecting them, one
-by one, in a list.
+by one, in a list; their parts can be changed together only while all of
+them have the same name.
 
 A separate list of boxes shows what was bought: per box its kit, factions,
 progress, how many minis are still on the sprue and how many are painted,

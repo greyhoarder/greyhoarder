@@ -49,8 +49,8 @@ Texts are cut off with an ellipsis instead of wrapping.
 The open card has a gold border. Below the header, without a further
 border:
 
-1. The status: the label "Status" and one toggle chip per status,
-   "Built" to "Done"; exactly one is chosen.
+1. The status: the label "Status" and a segmented control "Built" to
+   "Done", as on [Box](box.md#layout); exactly one is chosen.
 2. The parts: the chosen parts as tiles like on [Mini](mini.md), each with
    its swappable switch and a remove button, then "Add a part", which opens
    the part picker below the tiles with the groups "From the kit" (the
@@ -76,7 +76,7 @@ border:
 | Kit line | From {kit} · {year}, e.g. "From Boyz · 2026" |
 | Minis in the hoard | {n} in your hoard |
 | Status label | Status |
-| Status chips | Built · Primed · Painted · Done |
+| Status control | Built · Primed · Painted · Done |
 | Add part button | Add a part |
 | Suggestion group | From the kit · {kit as in the kit line, without "From"}, e.g. "From the kit · Boyz · 2026" |
 | Vocabulary group | Your parts |
@@ -134,7 +134,7 @@ border:
 
 - Each card header is a button with `aria-expanded` that controls its
   form.
-- The status chips are a radio group named "Status".
+- The status control is a radio group named "Status".
 - The status bar and the mini count are live regions.
 
 ## Test IDs

@@ -84,6 +84,7 @@ changes when the sidebar collapses: four columns from 1280 px, three from
 1024 px, two from 672 px, one below; newest box first. A card holds a striped photo placeholder
 with the round check and the progress badge on its top left and a "⋮"
 button on its top right; below it the box name with the kit line under it,
+the kind icon before the line,
 followed by the "Edited" badge for edited boxes,
 and the progress percentage on the right, the progress bar with a status
 line under it in one line (a colored dot and the count for built, primed,
@@ -92,7 +93,8 @@ the tags as small outlined badges, with the box's number "#{n}" in muted
 text at its right end.
 
 **Table**: the round check, Box (name followed by its number "#{n}" in
-muted text, kit line below in small text followed by the "Edited" badge
+muted text, kit line below in small text with the kind icon before it,
+followed by the "Edited" badge
 for edited boxes), Faction, Progress
 (bar with the percentage on its right), On the sprue, Painted ("{n} of
 {all}"), Added and the "⋮" button. Sorted by Added, newest first; every
@@ -278,6 +280,10 @@ summary line.
   "Add sprues" opens [Add box](add-box.md) for sprues
   (`/hoard/add/sprues`), "Add minis" opens [Add minis](add-minis.md) and
   "Add custom" opens [Add custom](add-custom.md).
+- The kind icon stands before a box's kit line in muted text: the box icon
+  for a box, four squares with one corner lifted out for sprues
+  ([domain](../domains/hoard.md#boxes-and-kits)); its accessible name is
+  "Box" or "Sprues".
 - The "Edited" badge is a small outlined badge in muted text, on box cards
   and in the boxes table, for boxes whose minis on the sprue the user
   counted themselves ([domain](../domains/hoard.md#boxes-and-kits)).
@@ -326,7 +332,7 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 `hoard-box-filter-progress`, `hoard-box-filter-tag`,
 `hoard-box-filter-option`, `hoard-box-filter-reset`, `hoard-box`,
 `hoard-box-progress`, `hoard-box-percent`, `hoard-box-statuses`, `hoard-box-number`,
-`hoard-box-edited`,
+`box-kind` (with `data-kind`), `hoard-box-edited`,
 `hoard-box-menu`, `hoard-box-selection-bar`, `hoard-box-selection-count`,
 `hoard-box-select-all`, `hoard-box-select-done`, `hoard-box-table`,
 `hoard-box-sort-<column>`, `hoard-box-summary`, `hoard-box-no-results`,

@@ -9,7 +9,8 @@
 ## Purpose
 
 Changing several selected minis in one go: their status, their workbench
-place, their factions and their parts. The page shows what the minis have
+place, their factions and, for minis of the same name, their parts. The
+page shows what the minis have
 now, values they don't share as mixed, and changes only what the user
 touches; nothing is saved until the user applies the changes.
 
@@ -24,11 +25,11 @@ the sidebar, as wide as the hoard, from top to bottom:
    with their counts, e.g. "Boy ×3, Nob ×2", followed by "· {n} gone"
    when gone minis are among them. Texts are cut off with an ellipsis.
 3. The "Status" section: the label "Status" in small `muted-foreground`
-   text; below it one toggle chip per status, "Built" to "Done", as on
-   [Add minis](add-minis.md#mini-card-open). While the minis share a
-   status, its chip is chosen; while they don't, none is, and a muted line
-   says how they are mixed. A changed status shows a ghost button "Keep as
-   it is" beside the chips.
+   text; below it a segmented control "Built" to "Done", as on
+   [Box](box.md#layout), with the chosen status on the `muted` surface.
+   While the minis share a status, it is chosen; while they don't, none
+   is, and a muted line says how they are mixed. A changed status shows a
+   ghost button "Keep as it is" beside the control.
 4. The "Workbench" section: the label "Workbench" and a segmented control
    "Keep · Put on · Take off" on the `muted` surface, "Keep" chosen at
    first; below it a muted line with how many are on the workbench now,
@@ -41,8 +42,9 @@ the sidebar, as wide as the hoard, from top to bottom:
    search of [Mini](mini.md#layout). A faction to be removed shows its
    chip dashed and struck through, with "Undo" in place of the "×"; one to
    be added shows a muted "· added" and a "×" that takes it back.
-6. The "Parts" section: the heading "Parts"; below it one tile per part
-   any of the minis carries, built like the part tiles of
+6. The "Parts" section: the heading "Parts"; while the minis have
+   different names, only a muted note below it. Otherwise, below it one
+   tile per part any of the minis carries, built like the part tiles of
    [Mini](mini.md#layout), with "{k} of {n}" below the name unless all
    carry it; the swappable toggle reads "Mixed" while the minis carry the
    part glued and swappable. A part to be removed shows its tile dashed
@@ -66,7 +68,7 @@ Sections have no card of their own and are separated by space, as on
 | Title | Edit {n} minis |
 | Minis line | {name} ×{count}, joined with ", "; one of a name without count; then · {n} gone |
 | Status label | Status |
-| Status chips | Built · Primed · Painted · Done |
+| Status control | Built · Primed · Painted · Done |
 | Mixed status | Mixed: {count} {status}, … in pipeline order, e.g. "Mixed: 3 built, 2 primed" |
 | Keep button | Keep as it is |
 | Workbench label | Workbench |
@@ -78,6 +80,7 @@ Sections have no card of their own and are separated by space, as on
 | Faction chip buttons (accessible names) | Remove {faction} · Undo removing {faction} · Don't add {faction} |
 | Added mark | · added (factions) · added (parts) |
 | Parts heading | Parts |
+| Parts note | Parts can be edited only for minis of the same name. |
 | Part share | {k} of {n} |
 | Mixed toggle | Mixed |
 | Part tile buttons (accessible names) | Remove {part} · Undo removing {part} · Don't add {part} |
@@ -98,7 +101,8 @@ Sections have no card of their own and are separated by space, as on
 | Loading | The hoard is loaded | The back link; skeletons in the shape of the header and the sections |
 | Unchanged | The page is open and nothing was changed | Every section as the minis have it; "Nothing changed yet."; the apply button disabled |
 | Changed | Something was changed | The changed parts marked as described in Layout; the summary lists the changes; the apply button enabled |
-| Mixed status | The minis don't share a status | No chip chosen; the mixed line |
+| Mixed status | The minis don't share a status | No status chosen; the mixed line |
+| Different names | The minis don't share a name | The parts note in place of the tiles; parts can't be changed |
 | Some missing | Ids of the address are not in the user's hoard | The some-missing message below the header; the page for the others |
 | None found | No id of the address is in the user's hoard, also those of another user | The none-found message below the back link; no sections, no apply bar |
 | Applying | The apply button pressed | The button shows the busy stripes and "Applying…" until the server answers |
@@ -140,8 +144,8 @@ Sections have no card of their own and are separated by space, as on
 
 ## Accessibility
 
-- The status chips are a radio group named "Status"; while mixed, none is
-  checked.
+- The status control is a radio group named "Status"; while mixed, none
+  is checked.
 - The workbench control is a radio group named "Workbench".
 - Each chip and tile button is named as in Content; a struck-through
   faction or part is announced as "to be removed".
@@ -157,6 +161,7 @@ Sections have no card of their own and are separated by space, as on
 `edit-minis-faction-share`, `edit-minis-faction-remove`,
 `edit-minis-add-faction`, `edit-minis-part`, `edit-minis-part-share`,
 `edit-minis-part-remove`, `edit-minis-part-swappable`,
+`edit-minis-parts-note`,
 `edit-minis-add-part`, `edit-minis-summary`, `edit-minis-cancel`,
 `edit-minis-apply`, `edit-minis-apply-error`, `edit-minis-missing`,
 `edit-minis-none`, `edit-minis-error`, `edit-minis-loading` (ADR-0013).

@@ -15,7 +15,7 @@
 The user changes the status, the workbench place, the factions or the
 parts of several selected minis in one go, on a page of its own, instead
 of opening each mini; what the user does not touch stays as each mini has
-it.
+it. Parts can be edited only for minis of the same name.
 
 ## Not in scope
 
@@ -62,7 +62,7 @@ whole.
 
 #### Scenario: Adding a part keeps the others (EDIT-MANY-04)
 
-- **Given** one selected mini carries a "Slugga", the other a "Choppa"
+- **Given** one selected Boy carries a "Slugga", the other a "Choppa"
 - **When** the user adds "Stikkbomb" and applies
 - **Then** the first carries "Slugga" and "Stikkbomb", the second
   "Choppa" and "Stikkbomb"
@@ -76,9 +76,28 @@ whole.
 
 #### Scenario: A part already there (EDIT-MANY-06)
 
-- **Given** one of 2 selected minis carries a glued "Power Klaw"
+- **Given** one of 2 selected Nobz carries a glued "Power Klaw"
 - **When** the user adds a swappable "Power Klaw" and applies
 - **Then** both carry the "Power Klaw" once, swappable
+
+### Requirement: Parts only for minis of the same name
+
+The system SHALL offer the parts of the selected minis for editing only
+while all of them have the same name, and MUST NOT change any mini when
+parts are to be changed on minis of different names.
+
+#### Scenario: Different names (EDIT-MANY-13)
+
+- **Given** 3 Boyz and 2 Nobz are selected
+- **When** the page opens
+- **Then** it says that parts can be edited only for minis of the same
+  name, and offers no parts
+
+#### Scenario: Refused by the server (EDIT-MANY-14)
+
+- **Given** minis of different names
+- **When** a change of their parts reaches the server
+- **Then** it is refused and no mini is changed
 
 ### Requirement: Workbench by the rules
 

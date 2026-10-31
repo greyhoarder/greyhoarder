@@ -2,7 +2,7 @@
 
 - **ID:** EDIT-BOX
 - **Status:** Draft
-- **Screens:** [Box](../screens/box.md)
+- **Screens:** [Box](../screens/box.md), [Edit box](../screens/edit-box.md)
 - **Domain rules:** [hoard: Boxes and kits](../domains/hoard.md#boxes-and-kits)
 
 ## Goal

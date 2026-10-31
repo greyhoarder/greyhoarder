@@ -55,10 +55,12 @@ on the right; on narrow content widths the box card moves below them.
 3. The status, without a card: the label "Status" in small
    `muted-foreground` text and on its right the share as a percentage, as
    on [Box](box.md); below it a thin bar of four segments, one per status
-   past the sprue, and below each segment, right-aligned, its status. The
-   segments up to the current status take the color of the current status
-   (as on its badge), the others are `muted`; on the sprue none is
-   colored. The bar only shows the status.
+   past the sprue. The segments up to the current status take the color
+   of the current status (as on its badge), the others are `muted`; on the
+   sprue none is colored. Below the bar, for a built mini that is not
+   gone, the status control "Built" to "Done", a segmented control as on
+   [Box](box.md#layout); otherwise below each segment, right-aligned, its
+   status.
 4. The "Build as" section: the heading "Build as" and on its right, muted,
    "Suggested by {box name}"; below it one tile per suggested name, each
    with the name and a small line "{n} left in this box", and last a
@@ -153,6 +155,7 @@ muted line, the "or" is plain.
 | Parts from card | Parts from; per source: {name}, below: Stripped on {date} |
 | Status label | Status; on its right {percent}% (sprue 0, built 25, primed 50, painted 75, done 100) |
 | Status bar labels | Built · Primed · Painted · Done |
+| Status control | Built · Primed · Painted · Done; group named "Status" |
 | Build as heading | Build as |
 | Suggestions note | Suggested by {box name} |
 | Name tile | {name}; below: {n} left in this box · None left in this box |
@@ -213,8 +216,10 @@ muted line, the "or" is plain.
   [box](box.md) of the mini when it was opened there, also after reloading
   the page, else to the Minis tab of the hoard. The browser's back button
   does the same. Search, filters and view of the hoard stay as they were.
-- **Status:** the bar and the percentage only show the status; there is no
-  control to change it yet.
+- **Status:** choosing a status in the control saves it at once for this
+  mini, also backwards ([use case](../use-cases/track-progress.md)); the
+  bar, the percentage and the badge follow. When saving fails, the
+  save-failed message appears and the stored status is shown again.
 - **Build as:** the tiles offer what the minis' slot can be built as: the
   names of the slots a box of the kit put minis of their sprue name on the
   sprue from, kits in it included, each once in the kit's order. A Boy of
@@ -312,7 +317,7 @@ muted line, the "or" is plain.
 - The name tiles and the swappable toggles are toggle buttons with
   `aria-pressed`; the name tiles are a group labelled by their heading.
 - The status bar is hidden from screen readers; the status badge names the
-  status.
+  status. The status control is a radio group named "Status".
 - The swappable toggle is named "Swappable {part}" for screen readers,
   whatever it reads; the workbench toggle is named "On the workbench" and
   pressed while the minis are on it.
@@ -332,6 +337,7 @@ muted line, the "or" is plain.
 ## Test IDs
 
 `mini-back`, `mini-save-note`, `mini-name`, `mini-status-badge`,
+`mini-status`,
 `mini-faction`, `mini-add-faction`, `mini-faction-search`,
 `mini-faction-result`, `mini-faction-create`, `mini-workbench`,
 `mini-menu`, `mini-change-origin`, `mini-leave`, `mini-delete`,
@@ -360,8 +366,7 @@ muted line, the "or" is plain.
 ## Open questions
 
 - Photos: how many per mini, and where files are stored.
-- How the status is changed past the sprue, and set back; the bar only
-  shows it.
+- How a mini is set back on the sprue from this screen.
 - Minis on the sprue will soon be handled apart from built minis in the
   data model ([domain](../domains/hoard.md#open-questions)); building on
   this screen changes with it.
