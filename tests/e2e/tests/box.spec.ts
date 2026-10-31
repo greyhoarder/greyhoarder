@@ -112,7 +112,7 @@ test.describe('Box', () => {
 
     await page.getByTestId('box-edit-save').click();
 
-    await expect(page.getByTestId('box-edit-dialog')).toHaveCount(0);
+    await expect(page).toHaveURL(/\/hoard\/boxes\/[^/]+$/);
     await expect(page.getByTestId('box-edited')).toBeVisible();
     // Sorted by name: Ammo Runt, Boy, Nob.
     await expect(page.getByTestId('box-sprue').nth(1)).toContainText('×8');

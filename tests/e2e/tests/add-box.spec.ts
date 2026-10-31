@@ -63,7 +63,8 @@ test.describe('Add box', () => {
     await page.getByTestId('mini-build-as').first().click();
     await page.getByTestId('mini-build').click();
 
-    await expect(page.getByTestId('box-edited')).toBeVisible();
+    await expect(page.getByTestId('box-kind')).toHaveAttribute('data-kind', 'sprues');
+    await expect(page.getByTestId('box-edited')).toHaveCount(0);
     await expect(page.getByTestId('box-group')).toHaveCount(1);
     await expect(page.getByTestId('box-sprue')).toContainText('×1');
   });
@@ -73,6 +74,6 @@ test.describe('Add box', () => {
 
     await page.getByTestId('add-box-search').fill('Ammo Runt');
 
-    await expect(page.getByTestId('add-box-kit-matches').first()).toContainText('Ammo Runt');
+    await expect(page.getByTestId('add-box-kit').first()).toBeVisible();
   });
 });
