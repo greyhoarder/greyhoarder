@@ -253,6 +253,69 @@ describe('Minis service', () => {
     expect(updateMinis).not.toHaveBeenCalled();
   });
 
+  it('changes several minis at once, each keeping what was not changed', async () => {
+    const slugga = { partId: 'slugga', isSwappable: false };
+    const choppa = { partId: 'choppa', isSwappable: false };
+    const { hoard, updateMinis } = fakeHoard([
+      { ...BOY, status: 'built', parts: [slugga] },
+      { ...BOY, id: 'boy-2', name: 'Nob', status: 'primed', parts: [choppa] },
+    ]);
+    const service = new MinisService(hoard, CATALOG);
+
+    await service.change('owner', ['boy', 'boy-2'], {
+      status: 'painted',
+      addParts: [{ partId: 'power-klaw', isSwappable: true }],
+    });
+
+    expect(updateMinis).toHaveBeenCalledOnce();
+    const [, stored] = updateMinis.mock.calls[0] ?? [];
+    const klaw = { partId: 'power-klaw', isSwappable: true };
+    expect(
+      stored?.changed.map(({ id, name, status, factionIds, parts }) => ({ id, name, status, factionIds, parts })),
+    ).toEqual([
+      { id: 'boy', name: 'Boy', status: 'painted', factionIds: ['warhammer-40000/orks'], parts: [slugga, klaw] },
+      { id: 'boy-2', name: 'Nob', status: 'painted', factionIds: ['warhammer-40000/orks'], parts: [choppa, klaw] },
+    ]);
+  });
+
+  it('creates a new part and a new own faction when changing several minis', async () => {
+    const { hoard, updateMinis } = fakeHoard([BOY, { ...BOY, id: 'boy-2' }]);
+    const service = new MinisService(hoard, CATALOG);
+
+    const { minis, ownFactionNames } = await service.change('owner', ['boy', 'boy-2'], {
+      addParts: [{ name: 'Rokkit pack', isSwappable: false }],
+      addFactions: [{ name: 'Blood Axes' }, { name: 'blood axes' }],
+    });
+
+    const [, stored] = updateMinis.mock.calls[0] ?? [];
+    const [newPart] = stored?.newParts ?? [];
+    const [newFaction] = stored?.newFactions ?? [];
+    expect(stored?.newParts.map((part) => part.name)).toEqual(['Rokkit pack']);
+    expect(stored?.newFactions.map((faction) => faction.name)).toEqual(['Blood Axes']);
+    expect(minis.map((mini) => mini.parts)).toEqual([
+      [{ partId: newPart?.id, isSwappable: false }],
+      [{ partId: newPart?.id, isSwappable: false }],
+    ]);
+    expect(minis.map((mini) => mini.factionIds)).toEqual([
+      ['warhammer-40000/orks', newFaction?.id],
+      ['warhammer-40000/orks', newFaction?.id],
+    ]);
+    expect(ownFactionNames).toEqual(new Map([[newFaction?.id, 'Blood Axes']]));
+  });
+
+  it('deletes an own faction the changed minis no longer carry', async () => {
+    const wolf = { ...BOY, status: 'built' as const, factionIds: ['warhammer-40000/orks', 'own/crimson-wolves'] };
+    const { hoard, updateMinis } = fakeHoard([wolf, { ...wolf, id: 'boy-2' }], [POWER_KLAW], [CRIMSON_WOLVES]);
+    const service = new MinisService(hoard, CATALOG);
+
+    await service.change('owner', ['boy', 'boy-2'], { removeFactionIds: ['own/crimson-wolves'] });
+
+    expect(updateMinis).toHaveBeenCalledWith(
+      'owner',
+      expect.objectContaining({ droppedFactionIds: ['own/crimson-wolves'] }),
+    );
+  });
+
   it('keeps the boxes of deleted minis', async () => {
     const { hoard, deleteMinis } = fakeHoard([{ ...BOY, boxId: 'boyz' }]);
     const service = new MinisService(hoard, CATALOG);

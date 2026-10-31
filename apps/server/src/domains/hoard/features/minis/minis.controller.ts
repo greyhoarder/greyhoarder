@@ -22,6 +22,7 @@ import {
 } from '@greyhoarder/protocol/hoard';
 import { ZodSerializerDto } from 'nestjs-zod';
 import { CurrentUser } from '../../../../shared/auth/current-user.decorator.js';
+import { ChangeMinisRequestDto } from './dtos/change-minis-request.dto.js';
 import { AddMinisRequestDto } from './dtos/add-minis-request.dto.js';
 import { DeleteMinisRequestDto } from './dtos/delete-minis-request.dto.js';
 import { UpdateMinisRequestDto } from './dtos/update-minis-request.dto.js';
@@ -29,11 +30,12 @@ import { UnknownMinisError } from './errors/unknown-minis.error.js';
 import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 import { UnknownPartError } from '../../models/errors/unknown-part.error.js';
 import { UnknownFactionError } from './errors/unknown-faction.error.js';
-import { MinisService } from './minis.service.js';
+import { type ChangedMinis, MinisService } from './minis.service.js';
 
 /**
  * The minis of the signed-in user's hoard: list them (GET), add alike ones without a box (POST),
- * change several alike at once (PATCH), delete them for good (DELETE).
+ * change several alike at once (PATCH), change several each keeping what is not changed
+ * (PATCH changes), delete them for good (DELETE).
  */
 @Controller('hoard/minis')
 export class MinisController {
@@ -74,22 +76,14 @@ export class MinisController {
   @Patch()
   @ZodSerializerDto(updateMinisResponseSchema)
   async update(@CurrentUser() user: User, @Body() body: UpdateMinisRequestDto): Promise<UpdateMinisResponse> {
-    try {
-      const { minis, ownFactionNames } = await this.minis.update(user.id, body.ids, body.set);
-      return { minis, ownFactionNames: Object.fromEntries(ownFactionNames) };
-    } catch (error) {
-      if (
-        error instanceof UnknownMinisError ||
-        error instanceof UnknownPartError ||
-        error instanceof UnknownFactionError
-      ) {
-        throw new NotFoundException(error.message);
-      }
-      if (error instanceof InvalidMiniError || error instanceof LooseMiniOnSprueError) {
-        throw new UnprocessableEntityException(error.message);
-      }
-      throw error;
-    }
+    return changedMinisResponse(() => this.minis.update(user.id, body.ids, body.set));
+  }
+
+  @Patch('changes')
+  @ZodSerializerDto(updateMinisResponseSchema)
+  async change(@CurrentUser() user: User, @Body() body: ChangeMinisRequestDto): Promise<UpdateMinisResponse> {
+    const { ids, ...changes } = body;
+    return changedMinisResponse(() => this.minis.change(user.id, ids, changes));
   }
 
   @Delete()
@@ -103,5 +97,25 @@ export class MinisController {
       }
       throw error;
     }
+  }
+}
+
+/** The response to a change of minis, with its errors as HTTP errors. */
+async function changedMinisResponse(change: () => Promise<ChangedMinis>): Promise<UpdateMinisResponse> {
+  try {
+    const { minis, ownFactionNames } = await change();
+    return { minis, ownFactionNames: Object.fromEntries(ownFactionNames) };
+  } catch (error) {
+    if (
+      error instanceof UnknownMinisError ||
+      error instanceof UnknownPartError ||
+      error instanceof UnknownFactionError
+    ) {
+      throw new NotFoundException(error.message);
+    }
+    if (error instanceof InvalidMiniError || error instanceof LooseMiniOnSprueError) {
+      throw new UnprocessableEntityException(error.message);
+    }
+    throw error;
   }
 }

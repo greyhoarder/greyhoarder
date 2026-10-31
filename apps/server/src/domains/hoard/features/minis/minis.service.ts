@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import {
   type BoxKitReference,
+  type ChangesToMinis,
   type Departure,
   type HobbyStatus,
   isOwnFaction,
@@ -11,6 +12,7 @@ import {
   parseDeparture,
   parseMini,
   toKit,
+  withChanges,
   withDeparture,
   withStatus,
 } from '@greyhoarder/domain/hoard';
@@ -24,6 +26,7 @@ import { type FactionChange, resolveFactions } from '../../models/faction-change
 import { NameTakenMeanwhileError } from '../../models/errors/name-taken-meanwhile.error.js';
 import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 import { type PartChange, resolveParts } from '../../models/part-changes.js';
+import type { HoardChange } from '../../models/hoard-change.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { UnknownMinisError } from './errors/unknown-minis.error.js';
 import { UnknownFactionError } from './errors/unknown-faction.error.js';
@@ -60,6 +63,15 @@ export interface MiniChanges {
   readonly departure?: Departure | null;
 }
 
+/**
+ * What to change on several minis at once, each keeping what is left out; factions and parts to add as
+ * in `MiniChanges`, by id or by a name.
+ */
+export type ChangesToMinisByName = Omit<ChangesToMinis, 'addFactionIds' | 'addParts'> & {
+  readonly addFactions?: readonly FactionChange[];
+  readonly addParts?: readonly PartChange[];
+};
+
 /** Alike minis to add without a box; factions and parts as in changes. */
 export type MinisToAdd = Omit<LooseMinis, 'factionIds' | 'parts' | 'kit'> & {
   readonly factions: readonly FactionChange[];
@@ -76,7 +88,10 @@ export interface MinisDeletion {
   readonly minis: readonly Mini[];
 }
 
-/** The minis of the signed-in user's hoard: listing them, adding them without a box and changing several alike at once. */
+/**
+ * The minis of the signed-in user's hoard: listing them, adding them without a box, changing several
+ * alike at once and changing several each keeping what is not changed.
+ */
 @Injectable()
 export class MinisService {
   constructor(
@@ -153,11 +168,7 @@ export class MinisService {
   }
 
   private async tryUpdate(ownerId: string, ids: readonly string[], changes: MiniChanges): Promise<ChangedMinis> {
-    const uniqueIds = [...new Set(ids)];
-    const minis = await this.hoard.findMinisByIds(ownerId, uniqueIds);
-    if (minis.length !== uniqueIds.length) {
-      throw new UnknownMinisError();
-    }
+    const { uniqueIds, minis } = await this.findOwnMinis(ownerId, ids);
     const factions = changes.factions && (await this.resolveFactions(ownerId, changes.factions));
     const departure = changes.departure && (await this.checkDeparture(ownerId, uniqueIds, changes.departure));
     const { parts, status, departure: _checked, factions: _resolved, ...rest } = changes;
@@ -173,14 +184,83 @@ export class MinisService {
       next = departure === undefined ? next : withDeparture(next, departure ?? undefined);
       return parseMini(next);
     });
-    await this.hoard.updateMinis(ownerId, {
-      changed,
+    return this.storeChanged(ownerId, minis, changed, {
       newParts: resolved?.newParts ?? [],
       newFactions: factions?.newFactions ?? [],
-      droppedPartIds: droppedParts(minis, changed),
-      droppedFactionIds: droppedFactions(minis, changed),
+      ownFactions: factions?.ownFactions ?? [],
     });
-    return { minis: changed, ownFactionNames: ownFactionNamesOf(changed, factions?.ownFactions ?? []) };
+  }
+
+  /**
+   * Changes every mini by itself: only what is given changes, and factions and parts are added or
+   * removed, never replaced; part names the vocabulary does not know are added to it and faction names
+   * to the owner's own factions, and own factions and parts no mini carries any more are dropped; all
+   * or nothing.
+   *
+   * @throws UnknownMinisError when a mini is not in the owner's hoard
+   * @throws UnknownPartError when a part refers to an id that is not in the owner's vocabulary
+   * @throws UnknownFactionError when a faction is neither a catalog faction, a game system nor one of the owner's own
+   */
+  change(ownerId: string, ids: readonly string[], changes: ChangesToMinisByName): Promise<ChangedMinis> {
+    return againIfNameTaken(() => this.tryChange(ownerId, ids, changes));
+  }
+
+  private async tryChange(
+    ownerId: string,
+    ids: readonly string[],
+    changes: ChangesToMinisByName,
+  ): Promise<ChangedMinis> {
+    const { minis } = await this.findOwnMinis(ownerId, ids);
+    const { addFactions, addParts, ...rest } = changes;
+    const factions = await this.resolveFactions(ownerId, addFactions ?? []);
+    const resolved = resolveParts(await this.hoard.findParts(ownerId), addParts ?? [], randomUUID);
+    const changed = minis.map((mini) =>
+      withChanges(mini, { ...rest, addFactionIds: factions.factionIds, addParts: resolved.parts }),
+    );
+    return this.storeChanged(ownerId, minis, changed, {
+      newParts: resolved.newParts,
+      newFactions: factions.newFactions,
+      ownFactions: factions.ownFactions,
+    });
+  }
+
+  /**
+   * The owner's minis with these ids, each once.
+   *
+   * @throws UnknownMinisError when a mini is not in the owner's hoard
+   */
+  private async findOwnMinis(ownerId: string, ids: readonly string[]): Promise<{ uniqueIds: string[]; minis: Mini[] }> {
+    const uniqueIds = [...new Set(ids)];
+    const minis = await this.hoard.findMinisByIds(ownerId, uniqueIds);
+    if (minis.length !== uniqueIds.length) {
+      throw new UnknownMinisError();
+    }
+    return { uniqueIds, minis };
+  }
+
+  /**
+   * Stores the changed minis with the new parts and own factions in one write, dropping the parts and
+   * own factions they no longer carry.
+   */
+  private async storeChanged(
+    ownerId: string,
+    before: readonly Mini[],
+    changed: readonly Mini[],
+    {
+      ownFactions,
+      ...added
+    }: Pick<HoardChange, 'newParts' | 'newFactions'> & {
+      /** The owner's own factions, the new ones included, to name those the minis carry. */
+      readonly ownFactions: readonly OwnFaction[];
+    },
+  ): Promise<ChangedMinis> {
+    await this.hoard.updateMinis(ownerId, {
+      ...added,
+      changed,
+      droppedPartIds: droppedParts(before, changed),
+      droppedFactionIds: droppedFactions(before, changed),
+    });
+    return { minis: changed, ownFactionNames: ownFactionNamesOf(changed, ownFactions) };
   }
 
   /**
