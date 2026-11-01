@@ -1,8 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideEllipsisVertical } from '@ng-icons/lucide';
 import { HlmBadge } from '@spartan-ng/helm/badge';
-import { HlmButton } from '@spartan-ng/helm/button';
 import { BoxKind } from '../../../ui/box-kind/box-kind';
 import { kitLine } from '../../../util/box-labels';
 import { percentOf, progressOf } from '../../../application/boxes/box-row';
@@ -19,8 +16,7 @@ import { EditedBadge } from '../../../ui/edited-badge/edited-badge';
 /** One box as a card: photo, kit, how far its minis have come, factions, date and tags. */
 @Component({
   selector: 'app-box-card',
-  imports: [BoxKind, EditedBadge, EitherOrName, NgIcon, HlmBadge, HlmButton, ProgressBadge, ProgressBar, RowCheck],
-  providers: [provideIcons({ lucideEllipsisVertical })],
+  imports: [BoxKind, EditedBadge, EitherOrName, HlmBadge, ProgressBadge, ProgressBar, RowCheck],
   templateUrl: './box-card.html',
   host: {
     class: 'group flex cursor-pointer flex-col overflow-hidden rounded-xl border bg-card transition-colors',

@@ -1,7 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical } from '@ng-icons/lucide';
-import { HlmButton } from '@spartan-ng/helm/button';
+import { lucideArrowDown, lucideArrowUp, lucideChevronsUpDown } from '@ng-icons/lucide';
 import { HlmTableImports } from '@spartan-ng/helm/table';
 import { BoxKind } from '../../../ui/box-kind/box-kind';
 import { kitLine } from '../../../util/box-labels';
@@ -46,14 +45,13 @@ const COLUMNS: readonly Column[] = [
     EditedBadge,
     EitherOrName,
     NgIcon,
-    HlmButton,
     HlmTableImports,
     LongPress,
     ProgressBadge,
     ProgressBar,
     RowCheck,
   ],
-  providers: [provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown, lucideEllipsisVertical })],
+  providers: [provideIcons({ lucideArrowDown, lucideArrowUp, lucideChevronsUpDown })],
   templateUrl: './box-table.html',
   host: { class: 'block rounded-xl border bg-card' },
 })

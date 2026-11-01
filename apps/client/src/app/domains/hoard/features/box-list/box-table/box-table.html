@@ -31,7 +31,6 @@
             </button>
           </th>
         }
-        <th hlmTh class="w-10"><span class="sr-only">Menu</span></th>
       </tr>
     </thead>
     <tbody hlmTBody>
@@ -90,21 +89,6 @@
           <td hlmTd class="text-right tabular-nums">{{ sprueCount(box) }}</td>
           <td hlmTd class="text-right tabular-nums">{{ paintedText(box) }}</td>
           <td hlmTd class="text-muted-foreground">{{ formatDate(box.addedOn) }}</td>
-          <td hlmTd>
-            <!-- The menu of the box comes with editing. -->
-            <button
-              hlmBtn
-              variant="ghost"
-              size="icon"
-              type="button"
-              class="text-muted-foreground"
-              aria-label="More actions"
-              data-testid="hoard-box-menu"
-              (click)="$event.stopPropagation()"
-            >
-              <ng-icon name="lucideEllipsisVertical" size="16" />
-            </button>
-          </td>
         </tr>
       }
     </tbody>
