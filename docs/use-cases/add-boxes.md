@@ -16,7 +16,6 @@ catalog, so the minis in them are there on the sprue, ready to be built.
 - Minis without a box: [Add minis](add-minis.md) and
   [Add custom minis](add-custom-minis.md).
 - Sprues bought without their box: [Add sprues](add-sprues.md).
-- Changing a box's minis on the sprue later: [Edit a box](edit-a-box.md).
 - Splitting a bundle by faction or kit in one step (later).
 - Deciding what the minis become; that happens when they are built:
   [Build minis](build-minis.md) and

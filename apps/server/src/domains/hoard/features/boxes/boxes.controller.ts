@@ -18,16 +18,12 @@ import {
   boxesResponseSchema,
   type DeleteBoxesResponse,
   deleteBoxesResponseSchema,
-  type EditBoxRowsResponse,
-  editBoxRowsResponseSchema,
 } from '@greyhoarder/protocol/hoard';
 import { ZodSerializerDto } from 'nestjs-zod';
 import { CurrentUser } from '../../../../shared/auth/current-user.decorator.js';
 import { BoxesService } from './boxes.service.js';
 import { AddBoxesRequestDto } from './dtos/add-boxes-request.dto.js';
 import { DeleteBoxesRequestDto } from './dtos/delete-boxes-request.dto.js';
-import { EditBoxRowsRequestDto } from './dtos/edit-box-rows-request.dto.js';
-import { BoxWithoutKitError } from './errors/box-without-kit.error.js';
 import { UnknownBoxError } from './errors/unknown-box.error.js';
 import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 
@@ -57,26 +53,6 @@ export class BoxesController {
         throw new NotFoundException(error.message);
       }
       if (error instanceof EmptyBoxError || error instanceof InvalidRowsError) {
-        throw new UnprocessableEntityException(error.message);
-      }
-      throw error;
-    }
-  }
-
-  @Put(':id/rows')
-  @ZodSerializerDto(editBoxRowsResponseSchema)
-  async editRows(
-    @CurrentUser() user: User,
-    @Param('id') id: string,
-    @Body() body: EditBoxRowsRequestDto,
-  ): Promise<EditBoxRowsResponse> {
-    try {
-      return await this.boxes.editRows(user.id, id, body.rows);
-    } catch (error) {
-      if (error instanceof UnknownBoxError || error instanceof UnknownKitError) {
-        throw new NotFoundException(error.message);
-      }
-      if (error instanceof BoxWithoutKitError || error instanceof InvalidRowsError) {
         throw new UnprocessableEntityException(error.message);
       }
       throw error;

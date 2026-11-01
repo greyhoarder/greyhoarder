@@ -7,8 +7,6 @@ import type {
   BoxesResponse,
   DeleteBoxesRequest,
   DeleteBoxesResponse,
-  EditBoxRowsRequest,
-  EditBoxRowsResponse,
 } from '@greyhoarder/protocol/hoard';
 import { firstValueFrom } from 'rxjs';
 import type { BoxesToAdd } from '../models/boxes-to-add';
@@ -55,22 +53,5 @@ export class HttpBoxesAdapter {
   }> {
     const body: DeleteBoxesRequest = { ids, keepBuiltMinis };
     return firstValueFrom(this.http.delete<DeleteBoxesResponse>('/api/hoard/boxes', { body }));
-  }
-
-  /** Counts the minis on the sprue of the box anew, per row of its kit; the box becomes an edited box. */
-  async editRows(
-    id: string,
-    rows: readonly number[],
-  ): Promise<{
-    readonly box: Box;
-    /** Minis put on the sprue of raised rows. */
-    readonly addedMinis: readonly Mini[];
-    /** Minis on the sprue of lowered rows, deleted for good. */
-    readonly deletedMiniIds: readonly string[];
-    /** Other minis that no longer name a deleted mini as a recipient of their parts. */
-    readonly minis: readonly Mini[];
-  }> {
-    const body: EditBoxRowsRequest = { rows };
-    return firstValueFrom(this.http.put<EditBoxRowsResponse>(`/api/hoard/boxes/${encodeURIComponent(id)}/rows`, body));
   }
 }

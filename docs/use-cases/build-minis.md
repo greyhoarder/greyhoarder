@@ -19,7 +19,7 @@ minis at once on their box, or one mini on its own.
 
 - Building under a name of one's own: [BUILD-CUSTOM](build-custom-minis.md).
 - Getting minis onto the sprue: [ADD-BOXES](add-boxes.md),
-  [ADD-SPRUES](add-sprues.md), [EDIT-BOX](edit-a-box.md).
+  [ADD-SPRUES](add-sprues.md).
 - Priming, painting and the workbench after building:
   [PROGRESS](track-progress.md).
 - Changing a built mini: [EDIT-MINI](edit-a-mini.md).

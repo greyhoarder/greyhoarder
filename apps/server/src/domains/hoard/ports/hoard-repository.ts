@@ -44,18 +44,6 @@ export abstract class HoardRepository {
   ): Promise<string[]>;
 
   /**
-   * Stores a box with its minis on the sprue counted anew: the box as edited, the added minis and
-   * the deleted ones, with the change it makes to other minis and the vocabulary, all or nothing.
-   */
-  abstract editBoxRows(
-    ownerId: string,
-    box: Box,
-    added: readonly Mini[],
-    deletedMiniIds: readonly string[],
-    change: HoardChange,
-  ): Promise<void>;
-
-  /**
    * Stores new minis together with the parts and own factions they added, all or nothing.
    *
    * @throws NameTakenMeanwhileError when another change added a part or faction of the same name meanwhile

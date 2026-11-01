@@ -273,31 +273,6 @@ export class MongoHoardRepository extends HoardRepository {
     );
   }
 
-  async editBoxRows(
-    ownerId: string,
-    box: Box,
-    added: readonly Mini[],
-    deletedMiniIds: readonly string[],
-    change: HoardChange,
-  ): Promise<void> {
-    await this.connection.transaction(async (session) => {
-      if (box.isEdited === true) {
-        await this.boxes.updateOne({ ownerId, _id: box.id }, { $set: { isEdited: true } }, { session });
-      }
-      if (added.length > 0) {
-        await this.minis.insertMany(
-          added.map((mini) => toMiniDbo(ownerId, mini)),
-          { session },
-        );
-      }
-      if (deletedMiniIds.length > 0) {
-        await this.minis.deleteMany({ ownerId, boxId: box.id, _id: { $in: deletedMiniIds } }, { session });
-      }
-      await this.writeMinis(ownerId, change.changed, session);
-      await this.deleteDropped(ownerId, change, session);
-    });
-  }
-
   /**
    * Stores the parts and own factions a change added.
    *

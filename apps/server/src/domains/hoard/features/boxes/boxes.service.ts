@@ -1,17 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
-import {
-  type Box,
-  type BoxKitReference,
-  boxKitName,
-  editedRows,
-  type Kit,
-  type Mini,
-  newBoxes,
-  parseTags,
-  toKit,
-} from '@greyhoarder/domain/hoard';
+import { type Box, boxKitName, type Kit, type Mini, newBoxes, parseTags, toKit } from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries, findContainedKits, type VersionedEntry } from '../../../catalog/api/index.js';
 import { boxDeletion } from '../../models/box-deletion.js';
 import { nextBoxNumber } from '../../models/box-numbers.js';
@@ -19,7 +9,6 @@ import { droppedFactions } from '../../models/dropped-factions.js';
 import { droppedParts } from '../../models/dropped-parts.js';
 import { withoutDeletedRecipients } from '../../models/mini-deletion.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
-import { BoxWithoutKitError } from './errors/box-without-kit.error.js';
 import { UnknownBoxError } from './errors/unknown-box.error.js';
 import { UnknownKitError } from '../../models/errors/unknown-kit.error.js';
 
@@ -115,56 +104,6 @@ export class BoxesService {
     );
     await this.hoard.addBoxes(ownerId, boxes, minis);
     return { boxes, minis };
-  }
-
-  /**
-   * Counts the minis on the sprue of the box anew, row by row of the kit version it records: adds or
-   * deletes minis on the sprue and marks the box as edited, all or nothing (docs/domains/hoard.md,
-   * Boxes and kits).
-   *
-   * @throws UnknownBoxError when the box is not in the owner's hoard
-   * @throws BoxWithoutKitError when the box records no kit
-   * @throws UnknownKitError when the catalog has no such version of the kit
-   * @throws InvalidRowsError when the rows do not fit the kit
-   */
-  async editRows(ownerId: string, boxId: string, rows: readonly number[]): Promise<EditedBox> {
-    const box = (await this.hoard.findBoxes(ownerId)).find((candidate) => candidate.id === boxId);
-    if (box === undefined) {
-      throw new UnknownBoxError();
-    }
-    if (box.kit === undefined) {
-      throw new BoxWithoutKitError();
-    }
-    const kit = await this.kitOfBox(box.kit);
-    const all = await this.hoard.findMinis(ownerId);
-    const edited = editedRows(
-      kit,
-      box,
-      all.filter((mini) => mini.boxId === boxId),
-      rows,
-      randomUUID,
-    );
-    const deleted = new Set(edited.deletedIds);
-    const deletedMinis = all.filter((mini) => deleted.has(mini.id));
-    const changed = withoutDeletedRecipients(
-      all.filter((mini) => !deleted.has(mini.id)),
-      deleted,
-    );
-    await this.hoard.editBoxRows(ownerId, edited.box, edited.added, edited.deletedIds, {
-      changed,
-      droppedPartIds: droppedParts(deletedMinis, []),
-      droppedFactionIds: droppedFactions(deletedMinis, []),
-    });
-    return { box: edited.box, addedMinis: edited.added, deletedMiniIds: edited.deletedIds, minis: changed };
-  }
-
-  /** The kit in the version the box records, with the latest kits it contains. */
-  private async kitOfBox(reference: BoxKitReference): Promise<Kit> {
-    const found = await this.catalog.findKitVersion(reference.id, reference.version);
-    if (found === undefined) {
-      throw new UnknownKitError(reference.id);
-    }
-    return this.toKit(found);
   }
 
   private async toKit(found: VersionedEntry<CatalogKit>): Promise<Kit> {

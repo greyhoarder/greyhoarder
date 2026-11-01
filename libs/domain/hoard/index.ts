@@ -1,5 +1,4 @@
 export type { Box, BoxKitReference } from './box.js';
-export { editedRows, sprueRowCounts } from './box-rows.js';
 export { type ChangesToMinis, haveSameName, withChanges } from './changes-to-minis.js';
 export { EmptyBoxError } from './errors/empty-box.error.js';
 export { hasReached, type HobbyStatus, hobbyStatuses } from './hobby-status.js';

@@ -33,11 +33,6 @@ export default [
     loadComponent: async () => (await import('./features/mini-detail/mini-detail-page')).MiniDetailPage,
   },
   {
-    path: 'hoard/boxes/:id/edit',
-    title: 'Edit box · Greyhoarder',
-    loadComponent: async () => (await import('./features/edit-box/edit-box-page')).EditBoxPage,
-  },
-  {
     path: 'hoard/boxes/:id',
     title: 'Box · Greyhoarder',
     loadComponent: async () => (await import('./features/box-detail/box-detail-page')).BoxDetailPage,

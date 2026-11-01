@@ -20,8 +20,6 @@ be built like the minis of any box.
 - Whole boxes: [ADD-BOXES](add-boxes.md).
 - Minis bought built or further: [ADD-MINIS](add-minis.md),
   [ADD-CUSTOM](add-custom-minis.md).
-- A sprue that turns up later for a box the user has:
-  [EDIT-BOX](edit-a-box.md).
 - Splitting a bundle by faction or kit in one step, and sprues of several
   kits in one box (later; until then one box per kit).
 
