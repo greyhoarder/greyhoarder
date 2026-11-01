@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { CurrentSession } from '../domains/auth/api';
+import type { SessionUser } from '../domains/auth/infrastructure/http-session-adapter';
 import { AppShell } from './app-shell';
 
 @Component({ template: '' })
@@ -11,9 +12,11 @@ describe('Shell', () => {
   let fixture: ComponentFixture<AppShell>;
   let shell: HTMLElement;
   const signOut = vi.fn();
+  const user = signal<SessionUser>({ id: '1', username: 'mira', role: 'admin' });
 
   beforeEach(async () => {
     signOut.mockReset().mockResolvedValue(undefined);
+    user.set({ id: '1', username: 'mira', role: 'admin' });
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
@@ -24,7 +27,7 @@ describe('Shell', () => {
         ]),
         {
           provide: CurrentSession,
-          useValue: { user: signal({ id: '1', username: 'mira', role: 'admin' }), signOut },
+          useValue: { user, signOut },
         },
       ],
     });
@@ -70,6 +73,14 @@ describe('Shell', () => {
     expect(toggle?.getAttribute('aria-label')).toBe('Collapse navigation');
     expect(toggle?.getAttribute('aria-expanded')).toBe('true');
     expect(dashboard?.hasAttribute('title')).toBe(false);
+  });
+
+  it('shows the display name and the picture of the signed-in user', async () => {
+    user.set({ id: '1', username: 'mira', role: 'admin', displayName: 'Mira K.', avatarId: 'picture' });
+    await fixture.whenStable();
+
+    expect(shell.querySelector('[data-testid="shell-username"]')?.textContent).toBe('Mira K.');
+    expect(shell.querySelector('app-avatar img')?.getAttribute('src')).toBe('/api/users/1/avatar?v=picture');
   });
 
   it('opens the profile from the row of the signed-in user', async () => {

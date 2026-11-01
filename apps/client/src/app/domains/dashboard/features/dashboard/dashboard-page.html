@@ -1,5 +1,5 @@
 <header>
-  <h1 class="text-2xl font-semibold" data-testid="dashboard-greeting">Welcome back, {{ user()?.username }}</h1>
+  <h1 class="text-2xl font-semibold" data-testid="dashboard-greeting">Welcome back, {{ name() }}</h1>
 </header>
 
 @for (section of upcomingSections; track section.id) {

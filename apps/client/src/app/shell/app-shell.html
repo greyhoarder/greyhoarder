@@ -91,17 +91,12 @@
       <a
         routerLink="/profile"
         data-testid="shell-profile"
-        [attr.title]="collapsed() ? signedIn.username : null"
+        [attr.title]="collapsed() ? shownName(signedIn) : null"
         class="flex items-center gap-3 rounded-lg whitespace-nowrap transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
       >
-        <span
-          aria-hidden="true"
-          class="flex size-10 shrink-0 items-center justify-center rounded-full bg-sidebar-accent font-semibold uppercase md:ml-1"
-        >
-          {{ signedIn.username[0] }}
-        </span>
+        <app-avatar class="bg-sidebar-accent md:ml-1" [name]="shownName(signedIn)" [url]="avatarUrl(signedIn)" />
         <div class="flex min-w-0 flex-1 flex-col transition-opacity duration-200" [class.md:opacity-0]="collapsed()">
-          <span class="truncate font-medium" data-testid="shell-username">{{ signedIn.username }}</span>
+          <span class="truncate font-medium" data-testid="shell-username">{{ shownName(signedIn) }}</span>
           <span class="text-sm text-muted-foreground">{{ roleLabels[signedIn.role] }}</span>
         </div>
       </a>

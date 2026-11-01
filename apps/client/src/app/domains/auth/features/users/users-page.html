@@ -1,0 +1,228 @@
+<div class="mb-3 flex min-h-13 flex-wrap items-center gap-3">
+  <div hlmInputGroup class="h-10 w-full sm:w-80">
+    <div hlmInputGroupAddon>
+      <ng-icon name="lucideSearch" size="18" />
+    </div>
+    <input
+      hlmInputGroupInput
+      type="search"
+      placeholder="Search users"
+      aria-label="Search users"
+      data-testid="users-search"
+      [value]="query()"
+      (input)="search($event)"
+    />
+  </div>
+</div>
+
+@if (users.error()) {
+  <p class="text-destructive" role="alert" data-testid="users-error">
+    Can't load the users right now. Try again in a moment.
+  </p>
+} @else {
+  <ul class="flex flex-col gap-2">
+    @for (user of visible(); track user.id) {
+      @let isOpen = openIds().has(user.id);
+      @let isLastAdmin = isLast(user);
+      <li
+        class="rounded-xl border bg-card transition-colors"
+        data-testid="users-row"
+        [class.border-primary/40]="isOpen"
+      >
+        <button
+          type="button"
+          class="flex w-full items-center gap-3 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          data-testid="users-toggle"
+          [attr.aria-expanded]="isOpen"
+          [attr.aria-controls]="'users-details-' + user.id"
+          (click)="toggle(user)"
+        >
+          <app-avatar [name]="shownName(user)" [url]="avatarUrl(user)" />
+          <span class="flex min-w-0 flex-1 flex-col">
+            <span class="truncate font-semibold">{{ shownName(user) }}</span>
+            <span class="truncate text-sm text-muted-foreground">
+              {{ '@' + user.username }} ·
+              {{ user.lastLoginAt ? 'Last login ' + (lastLogin(user.lastLoginAt) | lowercase) : 'Never signed in' }}
+            </span>
+          </span>
+          @if (user.disabled) {
+            <span class="rounded-full border px-2.5 py-0.5 text-xs text-muted-foreground" data-testid="users-disabled">
+              Disabled
+            </span>
+          }
+          <span class="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+            {{ roleLabels[user.role] }}
+          </span>
+          <ng-icon
+            name="lucideChevronDown"
+            size="18"
+            class="shrink-0 text-muted-foreground transition-transform"
+            [class.rotate-180]="isOpen"
+          />
+        </button>
+
+        @if (isOpen) {
+          <div class="flex flex-col gap-5 border-t p-4 sm:pl-17" [id]="'users-details-' + user.id">
+            <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
+              <div class="flex flex-col gap-0.5">
+                <dt class="text-muted-foreground">Username</dt>
+                <dd class="truncate font-medium">{{ '@' + user.username }}</dd>
+              </div>
+              <div class="flex flex-col gap-0.5" data-testid="users-created">
+                <dt class="text-muted-foreground">Created</dt>
+                <dd class="font-medium">{{ user.createdAt ? (user.createdAt | date: 'd MMM y') : 'Unknown' }}</dd>
+              </div>
+              <div class="flex flex-col gap-0.5" data-testid="users-last-login">
+                <dt class="text-muted-foreground">Last login</dt>
+                <dd class="font-medium">{{ user.lastLoginAt ? lastLogin(user.lastLoginAt) : 'Never' }}</dd>
+              </div>
+            </dl>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium" [id]="'users-role-label-' + user.id">Role</span>
+                <div
+                  class="flex w-fit overflow-hidden rounded-lg border bg-card"
+                  role="radiogroup"
+                  [attr.aria-labelledby]="'users-role-label-' + user.id"
+                >
+                  @for (role of roles; track role) {
+                    <button
+                      type="button"
+                      role="radio"
+                      class="h-9 px-3 text-sm text-muted-foreground transition-colors not-first:border-l focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset disabled:opacity-50 aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground"
+                      data-testid="users-role"
+                      [attr.data-role]="role"
+                      [attr.aria-checked]="role === user.role"
+                      [disabled]="isLastAdmin"
+                      (click)="chooseRole(user, role)"
+                    >
+                      {{ roleLabels[role] }}
+                    </button>
+                  }
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  hlmBtn
+                  variant="outline"
+                  type="button"
+                  class="h-9"
+                  data-testid="users-reset-password"
+                  [attr.aria-expanded]="resettingId() === user.id"
+                  (click)="toggleReset(user)"
+                >
+                  Reset password…
+                </button>
+                <button
+                  hlmBtn
+                  variant="outline"
+                  type="button"
+                  class="h-9"
+                  data-testid="users-toggle-access"
+                  [disabled]="isLastAdmin"
+                  (click)="toggleAccess(user)"
+                >
+                  {{ user.disabled ? 'Enable' : 'Disable' }}
+                </button>
+                <button
+                  hlmBtn
+                  variant="outline"
+                  type="button"
+                  class="h-9 border-destructive/50 text-destructive hover:text-destructive dark:border-destructive/50"
+                  data-testid="users-delete"
+                  [disabled]="isLastAdmin"
+                  (click)="askToDelete(user)"
+                >
+                  Delete…
+                </button>
+              </div>
+            </div>
+
+            @if (resettingId() === user.id) {
+              <div class="flex flex-wrap items-center justify-end gap-2">
+                <input
+                  hlmInput
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="New password"
+                  aria-label="New password"
+                  class="h-9 w-56"
+                  data-testid="users-new-password"
+                  [value]="newPasswords().get(user.id) ?? ''"
+                  (input)="typePassword(user, $event)"
+                />
+                <button
+                  hlmBtn
+                  type="button"
+                  class="h-9 font-semibold"
+                  data-testid="users-set-password"
+                  (click)="setPassword(user)"
+                >
+                  Set password
+                </button>
+              </div>
+            }
+
+            @if (isLastAdmin) {
+              <p class="text-sm text-muted-foreground" data-testid="users-last-admin">
+                This is the last active administrator.
+              </p>
+            }
+            @let shownNote = note();
+            @if (shownNote?.id === user.id) {
+              @if (shownNote?.hasFailed) {
+                <p class="text-sm text-destructive" role="alert" data-testid="users-change-error">
+                  {{ shownNote?.text }}
+                </p>
+              } @else {
+                <p class="text-sm" role="status" data-testid="users-message">{{ shownNote?.text }}</p>
+              }
+            }
+          </div>
+        }
+      </li>
+    }
+  </ul>
+  @if (users.hasValue() && visible().length === 0) {
+    <p class="rounded-xl border border-dashed p-8 text-center text-muted-foreground" data-testid="users-no-results">
+      No users match "{{ query() }}".
+    </p>
+  }
+}
+
+<hlm-alert-dialog
+  [state]="deleting() ? 'open' : 'closed'"
+  [disableClose]="isDeleting()"
+  autoFocus="[data-slot=alert-dialog-cancel]"
+  (closed)="deleting.set(undefined)"
+>
+  <hlm-alert-dialog-content *hlmAlertDialogPortal data-testid="users-delete-dialog">
+    <hlm-alert-dialog-header>
+      <hlm-alert-dialog-media class="bg-destructive/15 text-destructive">
+        <ng-icon name="lucideTrash2" size="22" />
+      </hlm-alert-dialog-media>
+      <h2 hlmAlertDialogTitle>Delete {{ deleting() ? shownName(deleting()!) : '' }} for good?</h2>
+      <p hlmAlertDialogDescription>Their whole hoard is deleted with them. This can't be undone.</p>
+    </hlm-alert-dialog-header>
+    @if (hasDeleteFailed()) {
+      <p class="px-6 pt-5 text-sm text-destructive" role="alert" data-testid="users-delete-error">
+        Can't change this account right now. Try again in a moment.
+      </p>
+    }
+    <hlm-alert-dialog-footer>
+      <button hlmAlertDialogCancel [disabled]="isDeleting()" data-testid="users-delete-cancel">Cancel</button>
+      <button
+        hlmAlertDialogAction
+        variant="destructive"
+        class="font-semibold"
+        data-testid="users-delete-confirm"
+        [disabled]="isDeleting()"
+        [attr.aria-busy]="isDeleting()"
+        (click)="delete()"
+      >
+        Delete account
+      </button>
+    </hlm-alert-dialog-footer>
+  </hlm-alert-dialog-content>
+</hlm-alert-dialog>

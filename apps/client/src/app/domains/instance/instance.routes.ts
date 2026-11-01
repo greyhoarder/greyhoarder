@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 export default [
   {
-    path: 'settings',
+    path: 'general',
     title: 'Settings · Greyhoarder',
     loadComponent: async () => (await import('./features/settings/settings-page')).SettingsPage,
   },

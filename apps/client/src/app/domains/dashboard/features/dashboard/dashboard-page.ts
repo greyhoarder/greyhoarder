@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
+import { shownName } from '@greyhoarder/domain/users';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { CurrentSession } from '../../../auth/api';
 import { type FactionOverview, HoardByFaction, STATUS_LABELS } from '../../../hoard/api';
@@ -15,7 +16,11 @@ const DOT_ORDER: readonly HobbyStatus[] = [...hobbyStatuses].reverse();
   host: { class: 'flex w-full flex-col gap-10 p-4 sm:p-8 lg:p-10' },
 })
 export class DashboardPage {
-  protected readonly user = inject(CurrentSession).user;
+  private readonly user = inject(CurrentSession).user;
+  protected readonly name = computed(() => {
+    const user = this.user();
+    return user && shownName(user);
+  });
   protected readonly hoard = inject(HoardByFaction);
 
   /** The sections whose content does not exist yet. */

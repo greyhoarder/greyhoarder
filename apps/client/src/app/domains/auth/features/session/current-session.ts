@@ -16,6 +16,11 @@ export class CurrentSession {
     return user;
   }
 
+  /** Takes the user as the server stored it after a change of the profile. */
+  replace(user: SessionUser): void {
+    this.signedInUser.set(user);
+  }
+
   async signOut(): Promise<void> {
     await this.sessions.signOut();
     this.signedInUser.set(undefined);

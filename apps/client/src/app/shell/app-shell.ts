@@ -14,7 +14,9 @@ import {
   lucideShield,
   lucideSlidersHorizontal,
 } from '@ng-icons/lucide';
-import { CurrentSession, ROLE_LABELS } from '../domains/auth/api';
+import { shownName } from '@greyhoarder/domain/users';
+import { avatarUrl, CurrentSession, ROLE_LABELS } from '../domains/auth/api';
+import { Avatar } from '../shared/ui/avatar/avatar';
 import { Logo } from '../shared/ui/logo/logo';
 
 interface NavigationEntry {
@@ -37,7 +39,7 @@ const SETTINGS_ENTRY: NavigationEntry = { label: 'Settings', icon: 'lucideSlider
 /** Frame of every page behind the login: navigation beside the current page. */
 @Component({
   selector: 'app-shell',
-  imports: [NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, NgIcon, Logo],
+  imports: [Avatar, NgTemplateOutlet, RouterOutlet, RouterLink, RouterLinkActive, NgIcon, Logo],
   providers: [
     provideIcons({
       lucideBox,
@@ -63,6 +65,8 @@ export class AppShell {
   protected readonly settingsEntry = SETTINGS_ENTRY;
   protected readonly roleLabels = ROLE_LABELS;
   protected readonly user = this.session.user;
+  protected readonly shownName = shownName;
+  protected readonly avatarUrl = avatarUrl;
   /** On wide screens, the sidebar shows only the icons of its entries. */
   protected readonly collapsed = signal(false);
 

@@ -24,6 +24,6 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withFetch()),
     provideSpartanHlm(),
-    provideAppInitializer(() => inject(ColorScheme).followSystem()),
+    provideAppInitializer(() => inject(ColorScheme).start()),
   ],
 };

@@ -1,0 +1,80 @@
+<a
+  routerLink="/settings/users"
+  class="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+  data-testid="add-user-back"
+>
+  <ng-icon name="lucideChevronLeft" size="16" />
+  Users
+</a>
+
+<h2 class="font-semibold">Add user</h2>
+
+<form hlmFieldGroup novalidate (submit)="add($event)">
+  <div hlmField>
+    <label hlmFieldLabel for="add-user-username" class="text-base">Username</label>
+    <input
+      hlmInput
+      id="add-user-username"
+      data-testid="add-user-username"
+      type="text"
+      autocomplete="off"
+      autocapitalize="none"
+      spellcheck="false"
+      class="h-10"
+      (input)="typeUsername($event)"
+    />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <span class="text-base font-medium" id="add-user-role-label">Role</span>
+    <div
+      class="flex w-fit overflow-hidden rounded-lg border bg-card"
+      role="radiogroup"
+      aria-labelledby="add-user-role-label"
+    >
+      @for (each of roles; track each) {
+        <button
+          type="button"
+          role="radio"
+          class="h-8 px-3 text-sm text-muted-foreground transition-colors not-first:border-l focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground"
+          data-testid="add-user-role"
+          [attr.aria-checked]="each === role()"
+          (click)="role.set(each)"
+        >
+          {{ roleLabels[each] }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div hlmField>
+    <label hlmFieldLabel for="add-user-password" class="text-base">First password</label>
+    <input
+      hlmInput
+      id="add-user-password"
+      data-testid="add-user-password"
+      type="password"
+      autocomplete="new-password"
+      class="h-10"
+      (input)="typePassword($event)"
+    />
+    <app-password-strength [password]="password()" />
+  </div>
+
+  @if (failure(); as text) {
+    <p class="text-sm text-destructive" role="alert" data-testid="add-user-error">{{ text }}</p>
+  }
+  <div class="flex justify-end gap-2">
+    <a hlmBtn variant="ghost" class="h-10" routerLink="/settings/users" data-testid="add-user-cancel">Cancel</a>
+    <button
+      hlmBtn
+      type="submit"
+      class="h-10 font-semibold"
+      data-testid="add-user-submit"
+      [disabled]="isAdding()"
+      [attr.aria-busy]="isAdding()"
+    >
+      Add user
+    </button>
+  </div>
+</form>
