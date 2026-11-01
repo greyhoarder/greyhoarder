@@ -1,4 +1,4 @@
-import { userRoles } from '@greyhoarder/domain/users';
+import { languages, userRoles } from '@greyhoarder/domain/users';
 import { z } from 'zod';
 
 export const loginRequestSchema = z.object({
@@ -15,6 +15,9 @@ export const sessionResponseSchema = z.object({
     id: z.string(),
     username: z.string(),
     role: z.enum(userRoles),
+    displayName: z.string().optional(),
+    language: z.enum(languages).optional(),
+    avatarId: z.string().optional(),
   }),
 });
 
