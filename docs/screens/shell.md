@@ -24,8 +24,9 @@ to bottom in the sidebar:
    entries.
 4. Below a border: the button that collapses or expands the sidebar, an
    icon only, on the right.
-5. The user row, a link to [Profile](profile.md): avatar with the first
-   letter of the username, username and role.
+5. The user row, a link to [Profile](profile.md): the user's picture, or
+   the first letter of their name; the display name, or else the username;
+   and the role.
 
 The logo, the icons of the entries and the avatar share one vertical axis.
 

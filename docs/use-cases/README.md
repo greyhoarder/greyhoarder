@@ -10,6 +10,11 @@ use case you build or change; how its screens look is in
 |----|----------|--------|
 | `SET-UP` | [Set up the instance](set-up-the-instance.md) | Draft |
 | `SIGN-IN` | [Sign in and out](sign-in-and-out.md) | Draft |
+| `ACCOUNTS` | [Add accounts](add-accounts.md) | Draft |
+| `MANAGE` | [Manage accounts](manage-accounts.md) | Draft |
+| `PASSWORD` | [Change one's own password](change-password.md) | Draft |
+| `PROFILE` | [Edit your profile](edit-your-profile.md) | Draft |
+| `APPEARANCE` | [Choose the appearance](choose-appearance.md) | Draft |
 | `ADD-BOXES` | [Add boxes from the catalog](add-boxes.md) | Draft |
 | `ADD-SPRUES` | [Add sprues bought without their box](add-sprues.md) | Draft |
 | `ADD-MINIS` | [Add minis from the catalog](add-minis.md) | Draft |

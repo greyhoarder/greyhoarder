@@ -151,5 +151,3 @@ The system MUST NOT delete anything when deleting fails.
 
 - The app deletes a box with all its minis without asking yet
   (DELETE-11 is new).
-- Deleting a box from the "⋮" menu of the list of boxes: the menu has no
-  entries yet.

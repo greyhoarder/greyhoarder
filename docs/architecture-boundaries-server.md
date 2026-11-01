@@ -134,12 +134,14 @@ _(derived from [ADR-0023](adr/0023-startup-sequence-and-migrations.md))_
     errors are logged and whose loss is acceptable.
 - Name synchronous events in the present participle (`UserDeleting`) and
   asynchronous events in the past tense (`BoxAdded`).
-- Events are classes, never strings. Define an event where it is published
-  and re-export it through the publishing domain's `api/`.
+- Events are classes, never strings. Events that another domain hears live
+  in `apps/server/src/shared/events/`; only events within one domain stay
+  in that domain.
 - Listeners are entry points in `features/` of the listening domain and
   are idempotent.
 - Destructive flows: make the subject inactive, dispatch the synchronous
   event, then remove the subject.
 - No command bus, no event sourcing, no message broker.
 
-_(derived from [ADR-0016](adr/0016-in-process-events-between-domains.md))_
+_(derived from [ADR-0016](adr/0016-in-process-events-between-domains.md),
+[ADR-0029](adr/0029-shared-events-between-domains.md))_

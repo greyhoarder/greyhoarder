@@ -21,7 +21,7 @@ below.
 | [Add box](add-box.md) | `/hoard/add/box`, `/hoard/add/sprues` | `hoard` |
 | [Add minis](add-minis.md) | `/hoard/add/minis` | `hoard` |
 | [Add custom](add-custom.md) | `/hoard/add/custom` | `hoard` |
-| [Profile](profile.md) | `/profile` | `auth` |
-| [Settings](settings.md) | `/settings` | `instance` |
+| [Profile](profile.md) | `/profile`, `/profile/password` | `auth` |
+| [Settings](settings.md) | `/settings/general`, `/settings/users`, `/settings/users/add` | app level |
 | [Shell](shell.md) | every route behind the login | app level |
 | [Navigation error](navigation-error.md) | in place of any page that fails to open | app level |

@@ -38,3 +38,5 @@ update the guide.
 | 0025 | [Semantic versioning of releases](0025-semantic-versioning-of-releases.md)                               | Proposed |
 | 0026 | [Local releases with release-it](0026-local-releases-with-release-it.md)                                 | Proposed |
 | 0027 | [Use-case specs with acceptance criteria](0027-use-case-specs-with-acceptance-criteria.md)               | Proposed |
+| 0028 | [Translations with Transloco](0028-translations-with-transloco.md)                                       | Proposed |
+| 0029 | [Events between domains live in shared code](0029-shared-events-between-domains.md)                      | Proposed |

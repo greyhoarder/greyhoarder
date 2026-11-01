@@ -21,9 +21,10 @@ what was bought: each box with its progress, date and tags.
 Inside the [shell](shell.md), one content column over the full width beside
 the sidebar, from top to bottom:
 
-1. Header: title and summary on the left; on the right "Add boxes"
-   (primary) and "Add…" (outline, with a chevron down), which opens a menu
-   with the other ways into the hoard: "Add sprues", "Add minis" and "Add
+1. Header: title and summary on the left; on the right the primary action
+   of the open tab, "Add minis" on Minis and "Add boxes" on Boxes, and
+   "Add…" (outline, with a chevron down), which opens a menu with the other
+   ways into the hoard of "Add boxes", "Add sprues", "Add minis" and "Add
    custom".
 2. Tab bar over the full width with a bottom border: the tabs "Minis" and
    "Boxes" as links to their routes, with their counts as badges, the
@@ -83,8 +84,7 @@ line (table).
 **Cards**: a grid whose columns follow the width of the content, so it
 changes when the sidebar collapses: four columns from 1280 px, three from
 1024 px, two from 672 px, one below; newest box first. A card holds a striped photo placeholder
-with the round check and the progress badge on its top left and a "⋮"
-button on its top right; below it the box name with the kit line under it,
+with the round check and the progress badge on its top left; below it the box name with the kit line under it,
 the kind icon before the line,
 followed by the "Edited" badge for edited boxes,
 and the progress percentage on the right, the progress bar with a status
@@ -98,8 +98,7 @@ muted text, kit line below in small text with the kind icon before it,
 followed by the "Edited" badge
 for edited boxes), Faction, Progress
 (bar with the percentage on its right), On the sprue, Painted ("{n} of
-{all}"), Added and the "⋮" button. Sorted by Added, newest first; every
-header except the menu sorts it like the minis table. Below the table a
+{all}") and Added. Sorted by Added, newest first; every header sorts it like the minis table. Below the table a
 summary line.
 
 ## Content
@@ -109,8 +108,8 @@ summary line.
 | Browser tab title | Hoard · Greyhoarder |
 | Title | Hoard |
 | Summary | {minis} minis from {boxes} boxes · {painted} painted |
-| Add buttons | Add boxes · Add… |
-| Add menu | Add sprues · Add minis · Add custom |
+| Add buttons | Add minis (Minis tab) · Add boxes (Boxes tab) · Add… |
+| Add menu | Minis tab: Add boxes · Add sprues · Add custom; Boxes tab: Add sprues · Add minis · Add custom |
 | Tabs | Minis {count} · Boxes {count}; while a search or filter narrows the list: Minis {shown} of {all} |
 | View switch (accessible names) | Cards / Table |
 | Search placeholder | Search name, part or box |
@@ -292,7 +291,8 @@ summary line.
   tag filter when it carries any of the ticked tags.
 - Until the hoard comes from the server, the screen shows placeholder rows
   and boxes.
-- "Add boxes" opens [Add box](add-box.md). "Add…" opens its menu:
+- "Add boxes" opens [Add box](add-box.md). "Add…" opens its menu with the
+  ways the tab does not offer as its button:
   "Add sprues" opens [Add box](add-box.md) for sprues
   (`/hoard/add/sprues`), "Add minis" opens [Add minis](add-minis.md) and
   "Add custom" opens [Add custom](add-custom.md).
@@ -349,7 +349,7 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 `hoard-box-filter-option`, `hoard-box-filter-reset`, `hoard-box`,
 `hoard-box-progress`, `hoard-box-percent`, `hoard-box-statuses`, `hoard-box-number`,
 `box-kind` (with `data-kind`), `hoard-box-edited`,
-`hoard-box-menu`, `hoard-box-selection-bar`, `hoard-box-selection-count`,
+`hoard-box-selection-bar`, `hoard-box-selection-count`,
 `hoard-box-selection-delete`, `box-delete-box-dialog`,
 `box-delete-box-cancel`, `box-delete-box-keep-minis`,
 `box-delete-box-confirm`, `box-delete-box-error`,
@@ -368,7 +368,6 @@ table), `hoard-row-check`, `hoard-row-open`, `hoard-status`, `hoard-gone`, `hoar
 - The leave page: one page to let one or several minis leave the hoard,
   with room to tell which minis got the parts of stripped ones; it
   replaces the leave panels of [Mini](mini.md) and [Box](box.md).
-- What the box menu offers.
 - Whether the box list should count "x of y" on its tab like the minis.
 - Photos in place of the placeholder.
 - Whether sorting by faction should follow the hierarchy of factions
