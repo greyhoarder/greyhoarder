@@ -8,4 +8,10 @@ export abstract class SessionRegistry {
   abstract remove(userId: string, sessionId: string): Promise<void>;
 
   abstract has(userId: string, sessionId: string): Promise<boolean>;
+
+  /** Ends every session of the user. */
+  abstract removeAll(userId: string): Promise<void>;
+
+  /** Ends every session of the user but this one. */
+  abstract keepOnly(userId: string, sessionId: string): Promise<void>;
 }

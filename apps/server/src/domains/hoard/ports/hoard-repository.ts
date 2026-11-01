@@ -27,6 +27,9 @@ export abstract class HoardRepository {
   /** Deletes the minis and stores the change it makes to other minis and the vocabulary, all or nothing. */
   abstract deleteMinis(ownerId: string, miniIds: readonly string[], change: HoardChange): Promise<void>;
 
+  /** Deletes everything the owner has: boxes, minis, parts and own factions; all or nothing. */
+  abstract deleteHoard(ownerId: string): Promise<void>;
+
   /**
    * Deletes the boxes with every mini they have at that moment, gone ones included, except the kept
    * minis, which stay without a box and with their kit; stores the change it makes to other minis

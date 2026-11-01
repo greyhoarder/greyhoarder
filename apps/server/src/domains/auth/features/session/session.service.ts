@@ -48,12 +48,38 @@ export class SessionService {
     return user;
   }
 
-  startSession(userId: string, sessionId: string): Promise<void> {
-    return this.sessions.add(userId, sessionId);
+  async startSession(userId: string, sessionId: string): Promise<void> {
+    await this.sessions.add(userId, sessionId);
+    await this.accounts.recordLogin(userId);
   }
 
   endSession(userId: string, sessionId: string): Promise<void> {
     return this.sessions.remove(userId, sessionId);
+  }
+
+  /** Signs the user's other devices out. */
+  endOtherSessions(userId: string, sessionId: string): Promise<void> {
+    return this.sessions.keepOnly(userId, sessionId);
+  }
+
+  /**
+   * Replaces the user's password, rate-limited like signing in, and ends their other sessions.
+   *
+   * @throws TooManyLoginAttemptsError while changing it is locked
+   * @throws InvalidCredentialsError when the current password is wrong
+   */
+  async changePassword(user: User, sessionId: string, currentPassword: string, newPassword: string): Promise<void> {
+    const subjects = [`password:${user.id}`];
+
+    await this.assertNotLocked(subjects);
+    if (!(await this.checkPassword(user.username, currentPassword))) {
+      await this.recordFailure(subjects);
+      throw new InvalidCredentialsError();
+    }
+
+    await this.accounts.changePasswordHash(user.id, await this.passwords.hash(newPassword));
+    await this.attempts.reset(`password:${user.id}`);
+    await this.sessions.keepOnly(user.id, sessionId);
   }
 
   private async assertNotLocked(subjects: readonly string[]): Promise<void> {

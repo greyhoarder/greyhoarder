@@ -11,4 +11,7 @@ export abstract class UserQueries {
   abstract findByUsername(username: string): Promise<User | undefined>;
 
   abstract hasAny(): Promise<boolean>;
+
+  /** Every account, sorted by username. */
+  abstract findAll(): Promise<User[]>;
 }

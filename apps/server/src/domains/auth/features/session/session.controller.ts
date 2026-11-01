@@ -7,9 +7,11 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Put,
   Req,
   Res,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import type { User } from '@greyhoarder/domain/users';
 import { type SessionResponse, sessionResponseSchema } from '@greyhoarder/protocol/auth';
@@ -20,6 +22,7 @@ import { destroySession, regenerateSession, SESSION_COOKIE } from '../../util/ex
 import { CurrentUser } from '../../../../shared/auth/current-user.decorator.js';
 import { Public } from '../../../../shared/auth/public.decorator.js';
 import { InvalidCredentialsError } from './errors/invalid-credentials.error.js';
+import { ChangePasswordRequestDto } from './dtos/change-password-request.dto.js';
 import { LoginRequestDto } from './dtos/login-request.dto.js';
 import { SessionService } from './session.service.js';
 import { TooManyLoginAttemptsError } from './errors/too-many-login-attempts.error.js';
@@ -66,6 +69,37 @@ export class SessionController {
     await destroySession(request);
     await this.sessions.endSession(user.id, sessionId);
     response.clearCookie(SESSION_COOKIE, { path: '/' });
+  }
+
+  /** Signs the user's other devices out; this one stays signed in. */
+  @Delete('others')
+  @HttpCode(204)
+  async signOutOthers(@CurrentUser() user: User, @Req() request: Request): Promise<void> {
+    await this.sessions.endOtherSessions(user.id, request.sessionID);
+  }
+
+  /** A wrong current password is 422, not 401: the session itself is valid. */
+  @Put('password')
+  @HttpCode(204)
+  async changePassword(
+    @CurrentUser() user: User,
+    @Req() request: Request,
+    @Body() body: ChangePasswordRequestDto,
+  ): Promise<void> {
+    try {
+      await this.sessions.changePassword(user, request.sessionID, body.currentPassword, body.newPassword);
+    } catch (error) {
+      if (error instanceof InvalidCredentialsError) {
+        throw new UnprocessableEntityException(error.message);
+      }
+      if (error instanceof TooManyLoginAttemptsError) {
+        throw new HttpException(
+          { message: error.message, retryAfterSeconds: Math.ceil(error.retryAfterMs / 1000) },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+      throw error;
+    }
   }
 
   private async verify(username: string, password: string, clientIp: string): Promise<User> {

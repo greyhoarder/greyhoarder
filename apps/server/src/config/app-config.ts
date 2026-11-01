@@ -6,6 +6,7 @@ const DEVELOPMENT_DEFAULTS = {
   MONGODB_URI: 'mongodb://127.0.0.1:27017/greyhoarder?directConnection=true',
   REDIS_URL: 'redis://127.0.0.1:6379',
   SESSION_SECRETS: 'insecure-development-secret',
+  AVATARS_DIR: fileURLToPath(new URL('../../../../tmp/avatars/', import.meta.url)),
 };
 
 /** The catalog submodule this release ships with (ADR-0020); the same depth from `src/` and `dist/`. */
@@ -33,6 +34,8 @@ const environmentSchema = z.object({
   SESSION_MAX_DAYS: z.coerce.number().int().positive().default(30),
   /** The client build; without it the server serves only the API (ADR-0017). */
   WEB_APP_DIR: z.string().min(1).optional(),
+  /** The pictures of the users, on a volume so that they outlive the container. */
+  AVATARS_DIR: z.string().min(1).default('/var/lib/greyhoarder/avatars'),
 });
 
 /** Validated configuration from environment variables; no `.env` files. */
@@ -44,6 +47,7 @@ export class AppConfig {
   readonly sessionIdleSeconds: number;
   readonly sessionMaxLifetimeMs: number;
   readonly webAppDirectory: string | undefined;
+  readonly avatarsDirectory: string;
   readonly catalogDirectory = CATALOG_DIRECTORY;
 
   constructor(environment: NodeJS.ProcessEnv, development: boolean) {
@@ -63,5 +67,6 @@ export class AppConfig {
     this.sessionIdleSeconds = env.SESSION_IDLE_MINUTES * 60;
     this.sessionMaxLifetimeMs = env.SESSION_MAX_DAYS * 24 * 60 * 60 * 1000;
     this.webAppDirectory = env.WEB_APP_DIR;
+    this.avatarsDirectory = env.AVATARS_DIR;
   }
 }

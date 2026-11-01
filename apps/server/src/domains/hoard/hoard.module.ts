@@ -5,6 +5,7 @@ import { BoxesController } from './features/boxes/boxes.controller.js';
 import { BoxesService } from './features/boxes/boxes.service.js';
 import { MinisController } from './features/minis/minis.controller.js';
 import { MinisService } from './features/minis/minis.service.js';
+import { UserDeletingListener } from './features/owner/listeners/user-deleting.listener.js';
 import { PartsController } from './features/parts/parts.controller.js';
 import { PartsService } from './features/parts/parts.service.js';
 import { MongoHoardRepository } from './infrastructure/hoard-repository/mongo-hoard-repository.js';
@@ -26,6 +27,12 @@ import { HoardRepository } from './ports/hoard-repository.js';
     ]),
   ],
   controllers: [BoxesController, MinisController, PartsController],
-  providers: [BoxesService, MinisService, PartsService, { provide: HoardRepository, useClass: MongoHoardRepository }],
+  providers: [
+    BoxesService,
+    MinisService,
+    PartsService,
+    UserDeletingListener,
+    { provide: HoardRepository, useClass: MongoHoardRepository },
+  ],
 })
 export class HoardModule {}

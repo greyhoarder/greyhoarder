@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { UserRole } from '@greyhoarder/domain/users';
 import type { UserCredentials } from '../../models/user-credentials.js';
 import { UserRepository } from '../../ports/user-repository.js';
 
@@ -24,5 +25,24 @@ export class AccountsService {
    */
   createInitialAdmin(username: string, passwordHash: string): Promise<void> {
     return this.users.createInitialAdmin(username, passwordHash);
+  }
+
+  /**
+   * Creates a further account; the hash is stored as given (ADR-0007).
+   *
+   * @throws UsernameTakenError when the name is taken
+   */
+  create(username: string, role: UserRole, passwordHash: string): Promise<void> {
+    return this.users.create(username, role, passwordHash);
+  }
+
+  /** Notes this moment as the user's last sign-in. */
+  recordLogin(id: string): Promise<void> {
+    return this.users.recordLogin(id, new Date());
+  }
+
+  /** The hash is stored as given (ADR-0007). */
+  changePasswordHash(id: string, passwordHash: string): Promise<void> {
+    return this.users.changePasswordHash(id, passwordHash);
   }
 }

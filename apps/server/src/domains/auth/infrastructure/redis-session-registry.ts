@@ -25,6 +25,17 @@ export class RedisSessionRegistry extends SessionRegistry {
   async has(userId: string, sessionId: string): Promise<boolean> {
     return (await this.redis.sIsMember(keyFor(userId), sessionId)) === 1;
   }
+
+  async removeAll(userId: string): Promise<void> {
+    await this.redis.del(keyFor(userId));
+  }
+
+  async keepOnly(userId: string, sessionId: string): Promise<void> {
+    const others = (await this.redis.sMembers(keyFor(userId))).filter((id) => id !== sessionId);
+    if (others.length > 0) {
+      await this.redis.sRem(keyFor(userId), others);
+    }
+  }
 }
 
 function keyFor(userId: string): string {

@@ -220,6 +220,15 @@ export class MongoHoardRepository extends HoardRepository {
     });
   }
 
+  async deleteHoard(ownerId: string): Promise<void> {
+    await this.connection.transaction(async (session) => {
+      await this.minis.deleteMany({ ownerId }, { session });
+      await this.boxes.deleteMany({ ownerId }, { session });
+      await this.parts.deleteMany({ ownerId }, { session });
+      await this.ownFactions.deleteMany({ ownerId }, { session });
+    });
+  }
+
   async deleteBoxes(
     ownerId: string,
     boxIds: readonly string[],

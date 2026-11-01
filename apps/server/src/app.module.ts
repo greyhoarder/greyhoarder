@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { AuthModule } from './domains/auth/api/index.js';
@@ -10,11 +11,14 @@ import { UsersModule } from './domains/users/api/index.js';
 import { AppConfig } from './config/app-config.js';
 import { ConfigModule } from './config/config.module.js';
 import { RedisModule } from './platform/redis/redis.module.js';
+import { EventsModule } from './shared/events/events.module.js';
 import { WebAppModule } from './web-app.module.js';
 
 @Module({
   imports: [
     ConfigModule,
+    EventEmitterModule.forRoot(),
+    EventsModule,
     MongooseModule.forRootAsync({
       inject: [AppConfig],
       useFactory: (config: AppConfig) => ({ uri: config.mongodbUri }),

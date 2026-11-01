@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { UsersModule } from '../users/api/index.js';
+import { AccountsController } from './features/accounts/accounts.controller.js';
+import { AccountsManagementService } from './features/accounts/accounts-management.service.js';
 import { AuthenticateService } from './features/authenticate/authenticate.service.js';
 import { AuthenticationGuard } from './features/authenticate/guards/authentication.guard.js';
 import { SessionController } from './features/session/session.controller.js';
@@ -17,8 +19,9 @@ import { SessionRegistry } from './ports/session-registry.js';
 /** Passwords, the initial setup, sessions (sign in, sign out) and the global authentication guard (ADR-0007, -0009, -0010). Depends only on users. */
 @Module({
   imports: [UsersModule],
-  controllers: [SessionController, SetupController],
+  controllers: [AccountsController, SessionController, SetupController],
   providers: [
+    AccountsManagementService,
     SessionService,
     SetupService,
     AuthenticateService,
