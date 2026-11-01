@@ -1,6 +1,5 @@
 import { Component, computed, DestroyRef, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown, lucideList, lucidePlus, lucideLayoutGrid } from '@ng-icons/lucide';
 import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
@@ -8,7 +7,7 @@ import { HlmBadge } from '@spartan-ng/helm/badge';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmPopoverImports } from '@spartan-ng/helm/popover';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
-import { filter, map } from 'rxjs';
+import { currentUrl } from '../../../../shared/routing/current-url';
 import { BoxesList } from '../../application/boxes/boxes-list';
 import { HoardView } from '../../application/hoard-view';
 import { changedText, MinisChangedNotice } from '../../application/minis/minis-changed-notice';
@@ -17,12 +16,11 @@ import { AddedBar } from '../../ui/added-bar/added-bar';
 import { MenuKeys } from '../../../../shared/ui/menu-keys/menu-keys';
 
 /** The ways into the hoard; the one of the open tab is the primary action, the others are in the "Add…" menu. */
-const ADD_ACTIONS = [
-  { label: 'Add boxes', link: '/hoard/add/box', testId: 'hoard-add-boxes' },
-  { label: 'Add sprues', link: '/hoard/add/sprues', testId: 'hoard-add-sprues' },
-  { label: 'Add minis', link: '/hoard/add/minis', testId: 'hoard-add-minis' },
-  { label: 'Add custom', link: '/hoard/add/custom', testId: 'hoard-add-custom' },
-] as const;
+const ADD_BOXES = { label: 'Add boxes', link: '/hoard/add/box', testId: 'hoard-add-boxes' };
+const ADD_SPRUES = { label: 'Add sprues', link: '/hoard/add/sprues', testId: 'hoard-add-sprues' };
+const ADD_MINIS = { label: 'Add minis', link: '/hoard/add/minis', testId: 'hoard-add-minis' };
+const ADD_CUSTOM = { label: 'Add custom', link: '/hoard/add/custom', testId: 'hoard-add-custom' };
+const ADD_ACTIONS = [ADD_BOXES, ADD_SPRUES, ADD_MINIS, ADD_CUSTOM] as const;
 
 /**
  * The frame of the hoard: summary, the primary way into it for the open tab and the menu of the others, the tabs
@@ -58,19 +56,9 @@ export class HoardLayout {
 
   protected readonly changedNotice = inject(MinisChangedNotice);
 
-  private readonly router = inject(Router);
-  private readonly url = toSignal(
-    this.router.events.pipe(
-      filter((event) => event instanceof NavigationEnd),
-      map(() => this.router.url),
-    ),
-    { initialValue: this.router.url },
-  );
+  private readonly url = currentUrl();
 
-  protected readonly primaryAdd = computed(() => {
-    const testId = this.url().startsWith('/hoard/boxes') ? 'hoard-add-boxes' : 'hoard-add-minis';
-    return ADD_ACTIONS.find((action) => action.testId === testId) ?? ADD_ACTIONS[0];
-  });
+  protected readonly primaryAdd = computed(() => (this.url().startsWith('/hoard/boxes') ? ADD_BOXES : ADD_MINIS));
   protected readonly addItems = computed(() => ADD_ACTIONS.filter((action) => action !== this.primaryAdd()));
   protected readonly changedText = changedText;
 

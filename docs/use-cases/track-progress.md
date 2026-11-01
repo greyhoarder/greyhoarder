@@ -48,7 +48,7 @@ once for that one mini.
 
 - **Given** the screen of a built mini, with a box or without
 - **When** the user sets it to primed
-- **Then** the mini is primed, and the percentage and the bar follow
+- **Then** the mini is primed, and the status control and the badge follow
 
 #### Scenario: Not on the sprue or gone (PROGRESS-11)
 

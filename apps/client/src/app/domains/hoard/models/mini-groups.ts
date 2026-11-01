@@ -16,7 +16,7 @@ export function builtGroups(minis: readonly Mini[]): Mini[][] {
 
 /** Equal for the minis of a group, different otherwise. */
 export function groupKey(mini: Mini): string {
-  return JSON.stringify([mini.name, mini.factionIds, mini.parts.map((part) => part.partId)]);
+  return JSON.stringify([mini.name, mini.factionIds, mini.parts.map((part) => part.partId).sort()]);
 }
 
 /** Groups by their first mini, which has their furthest status. */

@@ -128,6 +128,10 @@ describe('Hoard layout', () => {
     return document.querySelector<HTMLElement>('[role="menu"]');
   }
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   const menuItems = (menu: HTMLElement | null): (string | null)[] =>
     [...(menu?.querySelectorAll('[role="menuitem"]') ?? [])].map((item) => item.getAttribute('data-testid'));
 
@@ -144,14 +148,13 @@ describe('Hoard layout', () => {
   });
 
   it('offers adding boxes first on the Boxes tab', async () => {
-    const url = vi.spyOn(Router.prototype, 'url', 'get').mockReturnValue('/hoard/boxes');
+    vi.spyOn(Router.prototype, 'url', 'get').mockReturnValue('/hoard/boxes');
     await showHoard({ boxes: BOXES, minis: MINIS });
 
     const menu = await openAddMenu();
 
     expect(primaryAction()?.textContent?.trim()).toBe('Add boxes');
     expect(menuItems(menu)).toEqual(['hoard-add-sprues', 'hoard-add-minis', 'hoard-add-custom']);
-    url.mockRestore();
   });
 
   it('leads to adding sprues from "Add sprues"', async () => {
