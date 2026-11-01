@@ -177,7 +177,7 @@ describe('Mini page', () => {
     await click(statusChip('primed'));
 
     expect(update).toHaveBeenCalledWith(['m1'], { status: 'primed' });
-    expect(textsOf('mini-percent')).toEqual(['50%']);
+    expect(textsOf('mini-status-badge')).toEqual(['Primed']);
   });
 
   it('offers no status control for a mini on the sprue', async () => {
@@ -238,12 +238,11 @@ describe('Mini page', () => {
     expect(textsOf('mini-faction')).toEqual(['Orks']);
   });
 
-  it('shows how far the minis are', async () => {
+  it('names the status of the minis', async () => {
     showMini('m1', () => Promise.resolve(BUILT));
 
     await fixture.whenStable();
 
-    expect(textsOf('mini-percent')).toEqual(['25%']);
     expect(textsOf('mini-status-badge')).toEqual(['Built']);
   });
 

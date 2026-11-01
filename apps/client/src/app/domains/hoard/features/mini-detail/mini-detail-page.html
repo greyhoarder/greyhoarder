@@ -92,6 +92,15 @@
           (toggled)="factionSearch.toggle()"
         />
       </div>
+      @if (canChooseStatus()) {
+        <app-status-choice
+          testId="mini-status"
+          [isLabelHidden]="true"
+          [statuses]="statuses"
+          [chosen]="editor.status()"
+          (chose)="chooseStatus($event)"
+        />
+      }
     </div>
 
     <div class="flex flex-wrap gap-3">
@@ -195,53 +204,9 @@
     </div>
   }
 
-  <section class="flex flex-col gap-3" aria-labelledby="mini-status-heading">
-    <div class="flex items-baseline justify-between gap-4">
-      <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="mini-status-heading">Status</h2>
-      <span class="text-lg font-semibold tabular-nums" data-testid="mini-percent">
-        {{ percent() }}<span class="text-sm text-muted-foreground">%</span>
-      </span>
-    </div>
-    <!-- Shows the status only; the badge names it. -->
-    <div class="flex flex-col gap-2" aria-hidden="true">
-      <div class="flex h-1.5 gap-0.5 overflow-hidden rounded-full">
-        @for (segment of statusSegments(); track segment.status) {
-          <span class="h-full flex-1" [class]="segment.color"></span>
-        }
-      </div>
-      @if (!canChooseStatus()) {
-        <div class="grid grid-cols-4">
-          @for (segment of statusSegments(); track segment.status) {
-            <span class="text-right text-sm text-muted-foreground">{{ segment.label }}</span>
-          }
-        </div>
-      }
-    </div>
-    @if (canChooseStatus()) {
-      <app-status-choice
-        testId="mini-status"
-        [isLabelHidden]="true"
-        [statuses]="statuses"
-        [chosen]="editor.status()"
-        (chose)="chooseStatus($event)"
-      />
-    }
-  </section>
-
   <div class="@container">
     <div class="flex flex-col gap-8 @[720px]:flex-row @[720px]:items-start">
       <div class="@container/main flex min-w-0 flex-1 flex-col gap-8">
-        <app-build-as
-          [suggestions]="editor.suggestions()"
-          [name]="editor.name()"
-          [ownName]="editor.ownName()"
-          [boxName]="editor.originName()"
-          [count]="editor.isOnSprue() ? 1 : 0"
-          (nameChosen)="editor.chooseName($event)"
-          (ownNameChange)="editor.ownName.set($event)"
-          (ownNameCommitted)="editor.commitOwnName()"
-        />
-
         <app-part-tiles
           [parts]="editor.parts()"
           [hint]="partsHint()"
@@ -253,6 +218,17 @@
           (swappableToggled)="editor.toggleSwappable($event)"
           (added)="editor.addPart($event)"
           (pickerToggled)="togglePicker()"
+        />
+
+        <app-build-as
+          [suggestions]="editor.suggestions()"
+          [name]="editor.name()"
+          [ownName]="editor.ownName()"
+          [boxName]="editor.originName()"
+          [count]="editor.isOnSprue() ? 1 : 0"
+          (nameChosen)="editor.chooseName($event)"
+          (ownNameChange)="editor.ownName.set($event)"
+          (ownNameCommitted)="editor.commitOwnName()"
         />
 
         <section class="flex flex-col gap-3">

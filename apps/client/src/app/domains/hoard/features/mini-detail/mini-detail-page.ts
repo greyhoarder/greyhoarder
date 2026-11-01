@@ -19,11 +19,11 @@ import { PartTiles } from '../../ui/part-tiles/part-tiles';
 import { StatusBadge } from '../../ui/status-badge/status-badge';
 import { progressPercent } from '../../models/box-progress';
 import { isOwnDraft } from '../../models/faction-draft';
-import { PROGRESS_STATUSES, STATUS_COLORS } from '../../ui/progress-bar/progress-bar';
+import { PROGRESS_STATUSES } from '../../ui/progress-bar/progress-bar';
 import { StatusChoice } from '../../ui/status-choice/status-choice';
 import { eitherOrText } from '../../util/either-or';
 import { formatDate } from '../../util/format-date';
-import { DEPARTURE_LABELS, STATUS_LABELS } from '../../util/status-labels';
+import { DEPARTURE_LABELS } from '../../util/status-labels';
 import { MiniBoxCard } from './mini-box-card/mini-box-card';
 import { EitherOrName } from '../../ui/either-or-name/either-or-name';
 import { MenuKeys } from '../../../../shared/ui/menu-keys/menu-keys';
@@ -109,21 +109,10 @@ export class MiniDetailPage {
     this.editor.createFaction(name);
     this.factionSearch.close();
   }
-  /** How far the mini is, 0 to 100, weighted like a box's progress. */
-  protected readonly percent = computed(() => progressPercent([this.editor.status()]));
-  /** One segment per status past the sprue; those reached take the color of the current status. */
+  /** The statuses past the sprue, to choose from. */
   protected readonly statuses = PROGRESS_STATUSES;
   /** Minis on the sprue are built here, and gone minis keep their status. */
   protected readonly canChooseStatus = computed(() => !this.editor.isOnSprue() && !this.editor.isGone());
-  protected readonly statusSegments = computed(() => {
-    const status = this.editor.status();
-    const current = PROGRESS_STATUSES.indexOf(status);
-    return PROGRESS_STATUSES.map((segment, index) => ({
-      status: segment,
-      label: STATUS_LABELS[segment],
-      color: index <= current ? STATUS_COLORS[status] : 'bg-muted',
-    }));
-  });
   /** How far the minis' box is, 0 to 100; none without a box or when all of its minis are gone. */
   protected readonly boxPercent = computed(() => {
     const minis = this.editor.minisOfBox().filter((mini) => !isGone(mini));
