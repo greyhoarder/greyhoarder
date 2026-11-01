@@ -2,7 +2,7 @@ import { expect, test } from '../fixtures.js';
 
 test.describe('Add box', () => {
   test('opens from the hoard and says to search for a kit', async ({ page, signedIn }) => {
-    await page.goto(`${signedIn.url}/hoard`);
+    await page.goto(`${signedIn.url}/hoard/boxes`);
 
     await page.getByTestId('hoard-add-boxes').click();
 

@@ -3,6 +3,8 @@ import { type ChildProcess, spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { once } from 'node:events';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { MongoClient } from 'mongodb';
@@ -83,6 +85,7 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
           REDIS_URL: redisUrl,
           SESSION_SECRETS: randomBytes(32).toString('hex'),
           WEB_APP_DIR,
+          AVATARS_DIR: join(tmpdir(), `greyhoarder-e2e-avatars-${index}`),
         },
         stdio: ['ignore', 'ignore', 'inherit'],
       });

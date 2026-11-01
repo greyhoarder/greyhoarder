@@ -12,6 +12,6 @@ test.describe('Navigation error', () => {
     await page.unroute('**/api/auth/session');
     await page.getByTestId('navigation-error-retry').click();
 
-    await expect(page.getByTestId('hoard-add-boxes')).toBeVisible();
+    await expect(page.getByTestId('hoard-add-minis')).toBeVisible();
   });
 });
