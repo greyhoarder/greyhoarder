@@ -104,20 +104,6 @@ test.describe('Box', () => {
     await expect(page.getByTestId('hoard-box-empty')).toBeVisible();
   });
 
-  test('edits the minis on the sprue of a box and marks it as edited', async ({ page, signedIn }) => {
-    await openBoyz(page, signedIn.url);
-    await page.getByTestId('box-edit').click();
-    // The rows of Boyz: Boy, Nob, Ammo Runt.
-    await page.getByTestId('box-edit-less').first().click();
-
-    await page.getByTestId('box-edit-save').click();
-
-    await expect(page).toHaveURL(/\/hoard\/boxes\/[^/]+$/);
-    await expect(page.getByTestId('box-edited')).toBeVisible();
-    // Sorted by name: Ammo Runt, Boy, Nob.
-    await expect(page.getByTestId('box-sprue').nth(1)).toContainText('×8');
-  });
-
   test('keeps the built minis without a box when a box is deleted', async ({ page, signedIn }) => {
     await openBoyz(page, signedIn.url);
     await buildThroughApi(page, signedIn.url, (name) => name === 'Boy', { count: 2 });
@@ -149,6 +135,54 @@ test.describe('Box', () => {
 
     await expect(page.getByTestId('hoard-box-number')).toHaveCount(2);
     expect((await page.getByTestId('hoard-box-number').allTextContents()).sort()).toEqual(['#1', '#2']);
+  });
+
+  test('shows the minis on the sprue of a box of two armies under a heading per army', async ({ page, signedIn }) => {
+    const added = await page.request.post(`${signedIn.url}/api/hoard/boxes`, {
+      data: {
+        kitId: 'games-workshop/warhammer-40000/sets/assault-on-black-reach-2008',
+        boxes: 1,
+        tags: [],
+        addedOn: '2026-10-25',
+      },
+      headers: { Origin: signedIn.url },
+    });
+    expect(added.ok()).toBe(true);
+
+    await page.goto(`${signedIn.url}/hoard/boxes`);
+    await page.getByTestId('hoard-box').click();
+
+    await expect(page.getByRole('region', { name: /On the sprue/ }).getByTestId('army-heading')).toHaveText([
+      'Space Marines · 17 minis',
+      'Orks · 29 minis',
+    ]);
+  });
+
+  test('lets a whole group leave the hoard from its menu', async ({ page, signedIn }) => {
+    await openBoyz(page, signedIn.url);
+    await buildThroughApi(page, signedIn.url, (name) => name === 'Boy', { count: 2 });
+    await page.reload();
+
+    await page.getByTestId('box-group-menu').click();
+    await page.getByTestId('box-group-leave').click();
+    await page.locator('[data-testid="mini-leave-reason"][data-reason="sold"]').click();
+    await page.getByTestId('mini-leave-confirm').click();
+
+    await expect(page.getByTestId('box-group')).toHaveCount(0);
+    await expect(page.getByTestId('box-gone-toggle')).toContainText('2');
+  });
+
+  test('deletes a whole group from its menu', async ({ page, signedIn }) => {
+    await openBoyz(page, signedIn.url);
+    await buildThroughApi(page, signedIn.url, (name) => name === 'Boy', { count: 2 });
+    await page.reload();
+
+    await page.getByTestId('box-group-menu').click();
+    await page.getByTestId('box-group-delete').click();
+    await page.getByTestId('box-delete-confirm').click();
+
+    await expect(page.getByTestId('box-group')).toHaveCount(0);
+    await expect(page.getByTestId('box-name')).toBeVisible();
   });
 });
 

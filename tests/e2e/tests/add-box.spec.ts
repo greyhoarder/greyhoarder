@@ -76,4 +76,19 @@ test.describe('Add box', () => {
 
     await expect(page.getByTestId('add-box-kit').first()).toBeVisible();
   });
+
+  test('adds only the Orks of a box of two armies and marks it as edited', async ({ page, signedIn }) => {
+    await page.goto(`${signedIn.url}/hoard/add/box`);
+    await page.getByTestId('add-box-search').fill('Assault on Black Reach');
+    await page.getByTestId('add-box-kit').click();
+
+    await page.getByTestId('add-box-armies').click();
+    await page.getByTestId('add-box-army').filter({ hasText: 'Only Orks' }).click();
+    await page.getByTestId('add-box-submit').click();
+    await page.getByTestId('add-box-added-show').click();
+    await page.getByTestId('hoard-box').click();
+
+    await expect(page.getByTestId('box-edited')).toBeVisible();
+    await expect(page.getByRole('region', { name: /On the sprue/ })).toContainText('29');
+  });
 });

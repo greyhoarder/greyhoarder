@@ -25,7 +25,7 @@ use case you build or change; how its screens look is in
 | `PROGRESS` | [Track hobby progress](track-progress.md) | Draft |
 | `EDIT-MINI` | [Edit a mini](edit-a-mini.md) | Draft |
 | `EDIT-MANY` | [Edit several minis at once](edit-several-minis.md) | Draft |
-| `EDIT-BOX` | [Edit a box](edit-a-box.md) | Draft |
+| `BOX-ARMIES` | [See the armies of a box](see-the-armies-of-a-box.md) | Draft |
 | `LEAVE` | [Let minis leave the hoard](leave-the-hoard.md) | Draft |
 | `DELETE` | [Delete minis and boxes](delete-minis-and-boxes.md) | Draft |
 | `OVERVIEW` | [See progress by faction](progress-by-faction.md) | Draft |

@@ -18,19 +18,31 @@
   }
 </div>
 
-<ul class="flex flex-col gap-2">
-  @for (kind of sprue(); track $index; let row = $index) {
-    <li class="flex" data-testid="add-box-slot" [attr.data-matched]="isMatched(row) ? '' : null">
-      <app-sprue-row testId="add-box-slot" [row]="kind" [count]="rows()[row] ?? 0" (changed)="changeRow(row, $event)">
-        @if (!areSprues() && rows()[row] !== kitCounts()[row]) {
-          <span class="text-sm text-muted-foreground" data-testid="add-box-slot-kit-count"
-            >of {{ kitCounts()[row] }}</span
+@for (section of sections(); track section.army) {
+  <section class="flex flex-col gap-2">
+    @if (sections().length > 1) {
+      <app-army-heading hasLine [army]="section.army" [count]="sectionCount(section)" />
+    }
+    <ul class="flex flex-col gap-2">
+      @for (entry of section.items; track entry.index) {
+        <li class="flex" data-testid="add-box-slot" [attr.data-matched]="isMatched(entry.index) ? '' : null">
+          <app-sprue-row
+            testId="add-box-slot"
+            [row]="entry.kind"
+            [count]="rows()[entry.index] ?? 0"
+            (changed)="changeRow(entry.index, $event)"
           >
-        }
-      </app-sprue-row>
-    </li>
-  }
-</ul>
+            @if (!areSprues() && rows()[entry.index] !== kitCounts()[entry.index]) {
+              <span class="text-sm text-muted-foreground" data-testid="add-box-slot-kit-count"
+                >of {{ kitCounts()[entry.index] }}</span
+              >
+            }
+          </app-sprue-row>
+        </li>
+      }
+    </ul>
+  </section>
+}
 
 @if (isEdited()) {
   <div class="flex flex-wrap items-center gap-3">

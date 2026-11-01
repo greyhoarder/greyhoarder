@@ -23,9 +23,9 @@ the sidebar, from top to bottom:
 
 1. Header: title and summary on the left; on the right the primary action
    of the open tab, "Add minis" on Minis and "Add boxes" on Boxes, and
-   "Add…" (outline, with a chevron down), which opens a menu with the other
-   ways into the hoard of "Add boxes", "Add sprues", "Add minis" and "Add
-   custom".
+   "Add…" (outline, with a chevron down), which opens a menu with the ways
+   into the hoard the tab does not show as its button: "Add boxes", "Add
+   sprues", "Add minis" or "Add custom".
 2. Tab bar over the full width with a bottom border: the tabs "Minis" and
    "Boxes" as links to their routes, with their counts as badges, the
    active one underlined in gold; switching tabs keeps search, filters and
@@ -84,7 +84,7 @@ line (table).
 **Cards**: a grid whose columns follow the width of the content, so it
 changes when the sidebar collapses: four columns from 1280 px, three from
 1024 px, two from 672 px, one below; newest box first. A card holds a striped photo placeholder
-with the round check and the progress badge on its top left; below it the box name with the kit line under it,
+with the round check on its top left and the progress badge on its top right; below it the box name with the kit line under it,
 the kind icon before the line,
 followed by the "Edited" badge for edited boxes,
 and the progress percentage on the right, the progress bar with a status
@@ -195,7 +195,8 @@ summary line.
   ([domain](../domains/hoard.md#minis)), so the Status filter has no "On
   the sprue".
 - A group holds the minis past the sprue with the same name, factions
-  and parts, glued or swappable, from any box
+  and parts, glued or swappable, from any box; it shows the parts of its
+  first mini
   ([domain](../domains/hoard.md#lists-of-minis)). Its bar and legend count
   its minis as the box's bar counts a box. A group lists its minis sorted
   by status, furthest first, then by box.

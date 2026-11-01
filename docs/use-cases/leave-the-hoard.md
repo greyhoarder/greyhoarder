@@ -74,6 +74,13 @@ user counts; the rest stay on the sprue.
 - **When** the user lets 4 of them leave as given away
 - **Then** the box has 6 Boyz on the sprue and 4 gone Boyz
 
+#### Scenario: A whole group (LEAVE-11)
+
+- **Given** a box with 3 built Nobz of the same name, parts and factions
+- **When** the user lets the group leave the hoard from its menu
+- **Then** all 3 Nobz are gone with the same reason and day, without
+  being asked how many
+
 ### Requirement: Gone minis no longer count
 
 The system MUST NOT count gone minis in the hoard, the workbench or the

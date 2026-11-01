@@ -45,9 +45,10 @@ const LOOTAS: Kit = {
 };
 
 describe('Kit card of a box', () => {
-  const render = async (kit: Kit): Promise<HTMLElement> => {
+  const render = async (kit: Kit, factionNames = new Map<string, string>()): Promise<HTMLElement> => {
     const fixture = TestBed.createComponent(BoxKitCard);
     fixture.componentRef.setInput('kit', kit);
+    fixture.componentRef.setInput('factionNames', factionNames);
     await fixture.whenStable();
     return fixture.nativeElement;
   };
@@ -91,5 +92,37 @@ describe('Kit card of a box', () => {
     const card = await render(LOOTAS);
 
     expect(slotTexts(card)[0]).toContain('Lootas / Burna Boyz');
+  });
+
+  it('lists what the kit suggests under a heading per army', async () => {
+    const marines = 'warhammer-40000/space-marines';
+    const kit: Kit = {
+      ...BOYZ,
+      factionIds: [marines, 'warhammer-40000/orks'],
+      variants: [
+        {
+          name: 'Starter',
+          slots: [
+            { count: 2, names: ['Marine'], parts: [], factionIds: [marines] },
+            { count: 3, names: ['Boy'], parts: [], factionIds: ['warhammer-40000/orks'] },
+          ],
+          minis: 5,
+        },
+      ],
+    };
+
+    const card = await render(
+      kit,
+      new Map([
+        [marines, 'Space Marines'],
+        ['warhammer-40000/orks', 'Orks'],
+      ]),
+    );
+
+    const headings = [...card.querySelectorAll('[data-testid="army-heading"]')];
+    expect(headings.map((heading) => heading.textContent?.trim())).toEqual([
+      'Space Marines · 2 minis',
+      'Orks · 3 minis',
+    ]);
   });
 });

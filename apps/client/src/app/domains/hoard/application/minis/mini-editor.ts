@@ -66,6 +66,8 @@ export class MiniEditor {
    * mini page only the one mini.
    */
   readonly withAlike = signal(false);
+  /** Minis leaving together with this one, which can't get its parts. */
+  readonly leavingWith = signal<ReadonlySet<string>>(new Set());
 
   readonly isLoading = computed(() => this.minisStore.isLoading() || this.boxesStore.isLoading());
   readonly hasFailed = computed(() => this.minisStore.hasFailed() || this.boxesStore.hasFailed());
@@ -233,7 +235,7 @@ export class MiniEditor {
   });
   /** What can get the parts of these minis: every other mini past the sprue that is not gone. */
   readonly recipientChoices = computed(() => {
-    const ids = new Set(this.row().map((mini) => mini.id));
+    const ids = new Set([...this.row().map((mini) => mini.id), ...this.leavingWith()]);
     return this.links(
       this.minisStore.minis().filter((mini) => !ids.has(mini.id) && !isGone(mini) && mini.status !== 'sprue'),
     );
@@ -367,7 +369,11 @@ export class MiniEditor {
 
   /** Lets as many minis of the row as given leave the hoard, the first one first. */
   async leave(departure: Departure, count: number): Promise<boolean> {
-    const ids = this.firstOfRow(count);
+    return this.leaveMinis(this.firstOfRow(count), departure);
+  }
+
+  /** Lets the given minis leave the hoard. */
+  async leaveMinis(ids: readonly string[], departure: Departure): Promise<boolean> {
     this.saveState.set('saving');
     try {
       this.afterSave(await this.minisAdapter.update(ids, { departure }));

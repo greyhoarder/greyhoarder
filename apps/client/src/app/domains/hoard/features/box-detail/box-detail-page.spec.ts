@@ -482,25 +482,51 @@ describe('Box page', () => {
     expect(all('box-kind')[0]?.getAttribute('data-kind')).toBe('box');
   });
 
-  it('offers "Edit box" only for a box from a kit', async () => {
-    showBox(BOYZ.id);
-    await fixture.whenStable();
-    const fromKit = all('box-edit').length;
-    TestBed.resetTestingModule();
+  const armyHeadings = (): (string | undefined)[] => all('army-heading').map((each) => each.textContent?.trim());
 
-    showBox(LOOSE.id, () => Promise.resolve([mini('m1', 'built', { boxId: LOOSE.id })]));
+  it('shows army headings only in the section with more than one army', async () => {
+    showBox(BOYZ.id, async () => [
+      mini('m1', 'built'),
+      mini('m2', 'sprue'),
+      mini('m3', 'sprue'),
+      mini('m4', 'sprue', { factionIds: [FREEBOOTERZ] }),
+    ]);
+
     await fixture.whenStable();
 
-    expect([fromKit, all('box-edit').length]).toEqual([1, 0]);
+    expect(armyHeadings()).toEqual(['Orks · 2 minis', 'Freebooterz · 1 mini']);
   });
 
-  it('opens the page for editing with "Edit box"', async () => {
+  it('lists minis without a faction last under "No faction"', async () => {
+    showBox(BOYZ.id, async () => [mini('m1', 'built', { factionIds: [] }), mini('m2', 'built')]);
+
+    await fixture.whenStable();
+
+    expect(armyHeadings()).toEqual(['Orks · 1 mini', 'No faction · 1 mini']);
+  });
+
+  it('asks before deleting a whole group from its menu', async () => {
     showBox(BOYZ.id);
     await fixture.whenStable();
-    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
-    await click(all('box-edit')[0]);
+    await click(all('box-group-menu')[0]);
+    await click(document.querySelector<HTMLElement>('[data-testid="box-group-delete"]'));
 
-    expect(navigate).toHaveBeenCalledWith(['/hoard/boxes', BOYZ.id, 'edit']);
+    expect(document.querySelector('[data-testid="box-delete-dialog"]')).not.toBeNull();
+    expect(deleteMinis).not.toHaveBeenCalled();
+  });
+
+  it('keeps the other selected minis when a group is deleted from its menu', async () => {
+    showBox(BOYZ.id, async () => [mini('m1', 'built'), mini('m2', 'built', { name: 'Nob' })]);
+    await fixture.whenStable();
+    deleteMinis.mockResolvedValue({ emptiedBoxIds: [], minis: [] });
+    await click(all('box-group-toggle')[1]);
+    await click(all('box-group-mini-check')[0]);
+
+    await click(all('box-group-menu')[0]);
+    await click(document.querySelector<HTMLElement>('[data-testid="box-group-delete"]'));
+    await click(document.querySelector<HTMLElement>('[data-testid="box-delete-confirm"]'));
+
+    expect(textOf('box-selection-count')).toBe('1 mini selected');
   });
 });

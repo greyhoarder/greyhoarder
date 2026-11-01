@@ -19,7 +19,7 @@ exactly one user, and users see only their own hoard.
 |------|---------|
 | **Mini** | One physical miniature, built or still on the sprue. The only thing with a hobby status. |
 | **Box** | Something the user acquired that minis came out of: a kit, a starter set, a bundle, or sprues of one bought without their box. |
-| **Edited box** | A box whose minis on the sprue the user counted themselves, when adding it or later, instead of taking them as its kit describes. Sprues bought without their box are never edited boxes. |
+| **Edited box** | A box whose minis on the sprue the user counted themselves when adding it, instead of taking them as its kit describes. Sprues bought without their box are never edited boxes. |
 | **Tag** | A user's own label for boxes, e.g. "Gift", "Second hand", "Shelf of shame". |
 | **Progress** | How far the minis of a box have come: untouched, started or done. |
 | **Kit** | A template for what a box can become: its variants and, per variant, its slots. Either a user's own kit or a [catalog](catalog.md) kit. |
@@ -231,8 +231,9 @@ Interfaces list minis, not boxes, wherever the hobby is concerned. Minis
 past the sprue with the same name, factions and parts, glued or
 swappable, form a group, whatever their box, status or workbench place: the group is shown with its count and its minis per status
 ("Boy · Slugga, Choppa · ×9"), and opened it lists each mini on its own.
-The user acts on single minis, one at a time or several selected
-together, never on a group as a whole; as soon as a mini's name, factions
+The user changes single minis, one at a time or several selected
+together, never a group as a whole; only leaving the hoard and deleting
+also work for a whole group of a box; as soon as a mini's name, factions
 or parts change, it belongs to another group. A table lists every mini on its own
 line. The origin box is shown as a detail of each mini and can be used as
 a filter, never as a level to navigate through.
@@ -277,7 +278,6 @@ Filtering by faction depends on what the list is for:
 
 ## Open questions
 
-- What happens to a box's number when editing it changes its name.
 
 - How tags are stored and managed (renaming, deleting); they have no data
   model yet.

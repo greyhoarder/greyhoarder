@@ -77,20 +77,6 @@
           Take from the sprue
         </button>
       }
-      <!-- Only boxes from a kit have rows to count; the kit has to be there to show them. -->
-      @if (box.kit) {
-        <button
-          hlmBtn
-          variant="outline"
-          type="button"
-          class="h-10 px-3.5 text-sm"
-          data-testid="box-edit"
-          [disabled]="!kit()"
-          (click)="edit()"
-        >
-          Edit box
-        </button>
-      }
       <hlm-popover align="end" sideOffset="6">
         <button
           hlmPopoverTrigger
@@ -205,17 +191,25 @@
                 <ng-container *ngTemplateOutlet="selectionBar" />
               }
             </div>
-            <div class="flex flex-col gap-2">
-              @for (group of groups(); track group.id) {
-                <app-box-group-card
-                  [group]="group"
-                  [boxFactions]="box.factions"
-                  [isSelectionMode]="selection.isSelecting()"
-                  [selectedIds]="selection.selectedIds()"
-                  (statusChosen)="chooseStatus($event)"
-                  (miniOpened)="openMini($event)"
-                  (selectedChange)="selectMini($event)"
-                />
+            <div class="flex flex-col gap-6">
+              @for (section of groupSections(); track section.army) {
+                <div class="flex flex-col gap-2">
+                  @if (groupSections().length > 1) {
+                    <app-army-heading [army]="section.army" [count]="groupCount(section)" />
+                  }
+                  @for (group of section.items; track group.id) {
+                    <app-box-group-card
+                      [group]="group"
+                      [boxFactions]="box.factions"
+                      [isSelectionMode]="selection.isSelecting()"
+                      [selectedIds]="selection.selectedIds()"
+                      (statusChosen)="chooseStatus($event)"
+                      (miniOpened)="openMini($event)"
+                      (selectedChange)="selectMini($event)"
+                      (deleteChosen)="deletion.ask($event)"
+                    />
+                  }
+                </div>
               }
             </div>
           </section>
@@ -226,14 +220,21 @@
               On the sprue
               <span class="font-normal text-muted-foreground">{{ sprueCount() }}</span>
             </h2>
-            <div class="flex flex-col gap-2">
-              @for (row of sprueRows(); track row.id) {
-                <app-box-sprue-card
-                  [row]="row"
-                  [panel]="openSprue()?.rowId === row.id ? openSprue()?.panel : undefined"
-                  (panelChange)="openSprueCard(row.id, $event)"
-                  (boxesEmptied)="askIfEmptied($event)"
-                />
+            <div class="flex flex-col gap-6">
+              @for (section of sprueSections(); track section.army) {
+                <div class="flex flex-col gap-2">
+                  @if (sprueSections().length > 1) {
+                    <app-army-heading [army]="section.army" [count]="sprueSectionCount(section)" />
+                  }
+                  @for (row of section.items; track row.id) {
+                    <app-box-sprue-card
+                      [row]="row"
+                      [panel]="openSprue()?.rowId === row.id ? openSprue()?.panel : undefined"
+                      (panelChange)="openSprueCard(row.id, $event)"
+                      (boxesEmptied)="askIfEmptied($event)"
+                    />
+                  }
+                </div>
               }
             </div>
           </section>
@@ -295,7 +296,7 @@
         }
       </div>
       @if (kit(); as kit) {
-        <app-box-kit-card class="@[720px]:w-80 @[720px]:shrink-0" [kit]="kit" />
+        <app-box-kit-card class="@[720px]:w-80 @[720px]:shrink-0" [kit]="kit" [factionNames]="factionNames.names()" />
       } @else if (hasKitFailed()) {
         <p class="text-sm text-muted-foreground @[720px]:w-80 @[720px]:shrink-0" data-testid="box-kit-error">
           Can't load the kit right now. Try again in a moment.

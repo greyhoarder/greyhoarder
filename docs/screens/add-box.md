@@ -76,6 +76,19 @@ border:
      for a kit with one variant;
    - for a bundle, after its own rows, the rows of every kit in it; a kit
      that comes twice shows twice the minis.
+
+   Rows of more than one army stand under an army heading each, in the
+   order of the kit's factions: small and muted as the "Progress" heading
+   of the [box](box.md), with a border below it, "{army} · {count} minis"
+   with the minis the rows put on the sprue. A row at 0 stays under its army.
+
+   The factions line reads "{a} and {b}", or "{a}, {b} and {c}" for three
+   armies. On an open card of such a kit, not for sprues, it is a menu with
+   a chevron: "Whole box", then "Only {army}" per army, each with its minis
+   on the right and a gold check on the chosen one; the button then shows
+   that army. "Only {army}" hides the rows of the other armies and sets
+   them to 0; the box counts as edited, and resetting the rows also goes
+   back to "Whole box".
 3. Not for sprues, while a row differs from the kit: a muted note that the
    box will be marked as edited, and a ghost button to reset the rows.
 4. A border, then the tags: the tags typed in this card as toggle chips

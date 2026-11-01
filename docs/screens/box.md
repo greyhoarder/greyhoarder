@@ -27,8 +27,7 @@ the sidebar, as wide as the hoard, from top to bottom:
      badge of the [hoard](hoard.md#content) for edited boxes; a smaller line with the
      factions and the date, followed by the box's number as a small muted
      round badge "#{n}" and the tags as small outlined badges;
-   - right: "Take from the sprue" (primary), "Edit box" (outline, only for
-     boxes from a kit) and the
+   - right: "Take from the sprue" (primary) and the
      "⋮" button (outline, `size-10`) for the box menu. On narrow screens
      the buttons move below the middle column.
 3. The progress, without a card: the label "Progress" in small
@@ -50,14 +49,19 @@ the sidebar, as wide as the hoard, from top to bottom:
 **Minis**: the minis past the sprue. The heading "Minis" with their count,
 Below it
 one card per group, stacked with a small gap. A group holds the built
-minis of the box with the same name, parts and factions; their status and
-workbench place may differ.
+minis of the box with the same name, parts and factions; their status,
+workbench place and whether a part is glued or swappable may differ, and
+the card shows the parts of its first mini.
 
 - Closed, a card shows on the left the name and below it the parts as
   small muted chips (the factions first when they differ from the box's);
   on the right a small progress bar of the group's minis, as the box's
   bar, with a legend below it of the statuses the group has, each a
-  colored dot, the count and the status; then "×{count}" and a chevron.
+  colored dot, the count and the status; then "×{count}", a chevron and
+  the "⋮" button for the group's menu: "Leave the hoard…" and "Delete…",
+  both for every mini of the group, as on the cards on the sprue but
+  without a count stepper. Leaving opens the leave panel of
+  [Mini](mini.md#layout) in the card; deleting asks as for selected minis.
 - Opened, below a border, one line per mini of the group: the round
   check of the [hoard](hoard.md#layout), a small square photo
   placeholder, the name, the "Workbench" tag when the mini is on
@@ -65,9 +69,16 @@ workbench place may differ.
   Painted · Done" with the mini's status on the `muted` surface. The
   lines follow the group's order: furthest status first.
 
+With minis of more than one army, the cards stand under an army heading
+each: small and muted as the "Progress" heading, without a border,
+"{army} · {count} minis",
+the armies in the order of the kit's factions, others by name, minis
+without a faction last under "No faction". A section with one army has no
+heading, whatever the other section has.
+
 **On the sprue**: the minis still on the sprue, below the built ones. The
 heading "On the sprue" with their count; below it one card per row of alike minis
-([domain](../domains/hoard.md#lists-of-minis)), at most one of them open.
+([domain](../domains/hoard.md#lists-of-minis)), at most one of them open. Under army headings as in "Minis".
 
 - Closed, a card shows the name, "×{count}", a chevron and the "⋮"
   button for the row's menu. No status badge: on the sprue there is none.
@@ -99,7 +110,8 @@ count stepper.
    slot as on the open kit card of [Add box](add-box.md#kit-card-open):
    the number of minis in a fixed column, the suggested names, and below
    them the parts as small muted chips, wrapping. Either-or kits show the
-   either-or row first, as there.
+   either-or row first, as there. Rows of more than one army stand under
+   army headings, as there.
 3. A border, then a muted note that kits only suggest.
 
 ## Content
@@ -112,7 +124,7 @@ count stepper.
 | Progress badge | Untouched / Started / Done / All gone / Empty |
 | Kit line | {kit name} · {product code, if any}; "No kit" for boxes without one |
 | Meta line | {factions} · added {date}, then the number badge #{number} |
-| Buttons | Take from the sprue · Edit box |
+| Buttons | Take from the sprue |
 | Box menu button (accessible name) | More actions |
 | Box menu | Add a mini to this box · Delete box… |
 | Progress heading | Progress |
@@ -243,9 +255,7 @@ count stepper.
 - **Selecting** works as in the [hoard](hoard.md#behavior), for the built
   minis in the group cards and the gone minis. In selection mode a click
   on a mini's line selects or deselects it instead of opening it; the
-  status controls still work. "Select all" selects every built and gone
-  mini of the box, also those of closed groups and of the closed "Gone"
-  section. The actions of the selection bar work as in the hoard; "Edit"
+  status controls still work. The actions of the selection bar work as in the hoard; "Edit"
   opens [Edit minis](edit-minis.md) and leads back to the box.
 - The kit card shows the kit as it was when the box was added: the version
   the box records. A newer version of a catalog kit never changes it.
@@ -258,7 +268,6 @@ count stepper.
   deletes it with its minis on the sprue. Each
   leads to the Boxes tab of the hoard; "Cancel" and Escape close the
   dialog.
-- "Edit box" opens [Edit box](edit-box.md); it leads back here.
 - "Add a mini to this box" has no function yet.
 
 ## Accessibility
@@ -291,9 +300,10 @@ count stepper.
 
 `box-back`, `box-changed`, `box-changed-dismiss`, `box-name`, `box-progress-badge`, `box-kit-line`, `box-meta`,
 `box-number`,
-`box-tag`, `box-take`, `box-edit`, `box-menu`,
+`box-tag`, `box-take`, `box-menu`,
 `box-add-mini`, `box-delete`, `box-percent`, `box-progress`, `box-status`,
-`box-group`, `box-group-toggle`, `box-group-progress`, `box-group-mini`,
+`box-group`, `box-group-toggle`, `box-group-menu`, `box-group-leave`,
+`box-group-delete`, `box-group-panel`, `box-group-progress`, `box-group-mini`,
 `box-group-mini-open`, `box-group-status` (with `data-status`),
 `box-sprue`, `box-sprue-toggle`, `box-sprue-panel`, `box-sprue-menu`,
 `box-sprue-leave`, `box-sprue-delete`, `box-gone-toggle`, `box-gone`,
@@ -312,7 +322,6 @@ the test IDs of [Mini](mini.md#test-ids); `box-save-error`, `box-kit`,
 
 ## Open questions
 
-- Whether "Edit box" also edits the name, factions, tags and date.
 - Whether boxes without a kit get a way to change their minis on the
   sprue.
 - The leave page of the [hoard](hoard.md#open-questions), which replaces

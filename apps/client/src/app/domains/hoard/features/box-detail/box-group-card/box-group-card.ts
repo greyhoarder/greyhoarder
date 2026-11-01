@@ -1,8 +1,13 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
 import { type HobbyStatus } from '@greyhoarder/domain/hoard';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideChevronDown } from '@ng-icons/lucide';
+import { lucideChevronDown, lucideEllipsisVertical } from '@ng-icons/lucide';
+import { provideBrnPopoverDefaultOptions } from '@spartan-ng/brain/popover';
 import { HlmBadge } from '@spartan-ng/helm/badge';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmPopoverImports } from '@spartan-ng/helm/popover';
+import { MiniEditor } from '../../../application/minis/mini-editor';
+import { type Leaving, LeavePanel } from '../../../ui/leave-panel/leave-panel';
 import type { MiniGroup } from '../mini-group';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 import { LongPress } from '../../../ui/long-press/long-press';
@@ -29,11 +34,17 @@ export interface MiniSelectionChange {
 /**
  * Built minis of a box with the same name, parts and factions as a card that opens to show each
  * of them with its status, which can be chosen there; each mini can be selected by its check.
+ * Its menu lets the whole group leave the hoard or deletes it.
  */
 @Component({
   selector: 'app-box-group-card',
-  imports: [NgIcon, HlmBadge, EitherOrName, LongPress, ProgressBar, RowCheck],
-  providers: [provideIcons({ lucideChevronDown })],
+  imports: [NgIcon, HlmBadge, HlmButton, HlmPopoverImports, EitherOrName, LongPress, ProgressBar, RowCheck, LeavePanel],
+  providers: [
+    MiniEditor,
+    provideIcons({ lucideChevronDown, lucideEllipsisVertical }),
+    // The group menu is a menu, not a dialog; its list carries the role.
+    provideBrnPopoverDefaultOptions({ role: undefined }),
+  ],
   templateUrl: './box-group-card.html',
   host: {
     class: 'block rounded-xl border bg-card',
@@ -50,8 +61,16 @@ export class BoxGroupCard {
   readonly isSelectionMode = input(false);
   readonly selectedIds = input<ReadonlySet<string>>(new Set());
   readonly selectedChange = output<MiniSelectionChange>();
+  /** Every mini of the group is to be deleted. */
+  readonly deleteChosen = output<ReadonlySet<string>>();
+
+  protected readonly editor = inject(MiniEditor);
+  private readonly menuButton = viewChild<ElementRef<HTMLElement>>('menuButton');
 
   protected readonly isOpen = signal(false);
+  protected readonly isLeavePanelOpen = signal(false);
+  protected readonly isLeaving = signal(false);
+  protected readonly miniIds = computed(() => new Set(this.group().minis.map((mini) => mini.id)));
 
   protected readonly listId = `box-group-${nextId++}-minis`;
   protected readonly count = computed(() => this.group().minis.length);
@@ -79,6 +98,13 @@ export class BoxGroupCard {
     }),
   );
 
+  constructor() {
+    effect(() => {
+      this.editor.miniId.set(this.group().minis[0]?.id ?? '');
+      this.editor.leavingWith.set(this.miniIds());
+    });
+  }
+
   protected toggle(): void {
     this.isOpen.update((isOpen) => !isOpen);
   }
@@ -89,6 +115,20 @@ export class BoxGroupCard {
       this.selectedChange.emit({ miniId, isSelected: !this.selectedIds().has(miniId) });
     } else {
       this.miniOpened.emit(miniId);
+    }
+  }
+
+  protected closeLeavePanel(): void {
+    this.isLeavePanelOpen.set(false);
+    this.menuButton()?.nativeElement.focus();
+  }
+
+  protected async leave({ departure }: Leaving): Promise<void> {
+    this.isLeaving.set(true);
+    const hasLeft = await this.editor.leaveMinis([...this.miniIds()], departure);
+    this.isLeaving.set(false);
+    if (hasLeft) {
+      this.isLeavePanelOpen.set(false);
     }
   }
 }

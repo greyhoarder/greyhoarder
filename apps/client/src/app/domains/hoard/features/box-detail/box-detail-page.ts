@@ -27,11 +27,13 @@ import { BoxesStore } from '../../data/boxes-store';
 import { percentOf, progressOf, toBoxRows } from '../../application/boxes/box-row';
 import { FactionNames } from '../../application/faction-names';
 import { loadedKit } from '../../application/loaded-kit';
-import { toMiniGroups } from './mini-group';
+import { type MiniGroup, toMiniGroups } from './mini-group';
+import { type ArmySection, armySections } from '../../models/army-sections';
+import { ArmyHeading } from '../../ui/army-heading/army-heading';
 import { MiniSelection } from '../../application/minis/mini-selection';
 import { changedText, MinisChangedNotice } from '../../application/minis/minis-changed-notice';
 import { MinisDeletion } from '../../application/minis/minis-deletion';
-import { countMinis, toMiniRows, toSingleRows } from '../../application/minis/mini-row';
+import { countMinis, type MiniRow, toMiniRows, toSingleRows } from '../../application/minis/mini-row';
 import { sortRows } from '../../application/minis/mini-sort';
 import { MinisStore } from '../../data/minis-store';
 import { PartsStore } from '../../data/parts-store';
@@ -62,6 +64,7 @@ import { MenuKeys } from '../../../../shared/ui/menu-keys/menu-keys';
 @Component({
   selector: 'app-box-detail-page',
   imports: [
+    ArmyHeading,
     MenuKeys,
     NgTemplateOutlet,
     EitherOrName,
@@ -107,7 +110,7 @@ export class BoxDetailPage {
 
   private readonly boxes = inject(BoxesStore);
   private readonly minis = inject(MinisStore);
-  private readonly factionNames = inject(FactionNames);
+  protected readonly factionNames = inject(FactionNames);
   private readonly parts = inject(PartsStore);
   private readonly title = inject(Title);
   private readonly router = inject(Router);
@@ -149,6 +152,9 @@ export class BoxDetailPage {
   protected readonly groups = computed(() =>
     toMiniGroups(this.presentMinis(), this.factionNames.names(), this.parts.names()),
   );
+  protected readonly groupSections = computed(() =>
+    armySections(this.groups(), (group) => group.factions[0], this.box()?.factions ?? []),
+  );
   protected readonly builtCount = computed(() => this.groups().reduce((sum, group) => sum + group.minis.length, 0));
   /** Alike minis on the sprue as one row, by name. */
   protected readonly sprueRows = computed(() => {
@@ -161,6 +167,9 @@ export class BoxDetailPage {
     return sortRows(rows, 'name', 'ascending');
   });
   protected readonly sprueCount = computed(() => countMinis(this.sprueRows()));
+  protected readonly sprueSections = computed(() =>
+    armySections(this.sprueRows(), (row) => row.factions[0], this.box()?.factions ?? []),
+  );
   /** The card on the sprue that is open, and with which panel; at most one is. */
   protected readonly openSprue = signal<{ rowId: string; panel: SpruePanel } | undefined>(undefined);
   private readonly sprueCards = viewChildren(BoxSprueCard);
@@ -241,6 +250,14 @@ export class BoxDetailPage {
 
   protected readonly minisLabel = minisLabel;
 
+  protected groupCount(section: ArmySection<MiniGroup>): number {
+    return section.items.reduce((sum, group) => sum + group.minis.length, 0);
+  }
+
+  protected sprueSectionCount(section: ArmySection<MiniRow>): number {
+    return countMinis(section.items);
+  }
+
   protected selectMini({ miniId, isSelected }: MiniSelectionChange): void {
     this.selection.select(miniId, isSelected);
   }
@@ -265,7 +282,10 @@ export class BoxDetailPage {
     if (!isDeleted) {
       return;
     }
-    this.selection.finish();
+    // A group deleted from its menu leaves the other selected minis selected.
+    if (this.selectedCount() === 0) {
+      this.selection.finish();
+    }
     this.askIfEmptied(emptiedBoxIds);
   }
 
@@ -297,10 +317,6 @@ export class BoxDetailPage {
   }
 
   /** Edit box leads back here. */
-  protected edit(): void {
-    void this.router.navigate(['/hoard/boxes', this.id(), 'edit']);
-  }
-
   /** The mini page leads back here. */
   protected openMini(id: string): void {
     void this.router.navigate(['/hoard/minis', id], { queryParams: { from: 'box' } });

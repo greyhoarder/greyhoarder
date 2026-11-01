@@ -52,6 +52,12 @@ and MUST NOT delete their box with them.
 - **When** the user deletes 3 of them
 - **Then** the box has 7 Boyz on the sprue
 
+#### Scenario: A whole group (DELETE-15)
+
+- **Given** a box with 3 built Nobz of the same name, parts and factions
+- **When** the user deletes the group from its menu and confirms
+- **Then** all 3 Nobz are gone for good and the box stays
+
 ### Requirement: Ask about boxes left without minis
 
 The system SHALL ask once, after deleting minis, whether to delete the

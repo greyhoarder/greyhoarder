@@ -3,16 +3,10 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMinus, lucidePlus } from '@ng-icons/lucide';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmInput } from '@spartan-ng/helm/input';
-import {
-  boxKitName,
-  differFromKit,
-  type Kit,
-  kitRowCounts,
-  MIN_BOXES,
-  sprueBoxName,
-  sprueMinis,
-} from '@greyhoarder/domain/hoard';
+import { boxKitName, differFromKit, type Kit, kitRowCounts, MIN_BOXES, sprueBoxName } from '@greyhoarder/domain/hoard';
 import { type BoxesToAdd, parseBoxesToAdd } from '../../../models/boxes-to-add';
+import { type ArmySection, type KitRow, kitSections } from '../../../models/army-sections';
+import { ArmyHeading } from '../../../ui/army-heading/army-heading';
 import { minisLabel } from '../../../util/kit-labels';
 import { SprueRow } from '../../../ui/sprue-row/sprue-row';
 
@@ -24,7 +18,7 @@ import { SprueRow } from '../../../ui/sprue-row/sprue-row';
  */
 @Component({
   selector: 'app-box-form',
-  imports: [NgIcon, HlmButton, HlmInput, SprueRow],
+  imports: [NgIcon, HlmButton, HlmInput, SprueRow, ArmyHeading],
   providers: [provideIcons({ lucideMinus, lucidePlus })],
   templateUrl: './box-form.html',
   host: { class: 'flex flex-col gap-4 px-3 pb-4 sm:px-5' },
@@ -37,7 +31,12 @@ export class BoxForm {
   readonly areSprues = input(false);
   /** The rows whose minis can be built as what was searched for. */
   readonly matchedRows = input<readonly number[]>([]);
+  /** The names of the kit's factions, by id. */
+  readonly factionNames = input<ReadonlyMap<string, string>>(new Map());
+  /** The one army of the kit to take; the rows of the others are hidden and at none. */
+  readonly onlyArmy = input<string>();
   readonly add = output<BoxesToAdd>();
+  readonly wholeBoxChosen = output();
 
   protected readonly idPrefix = `box-form-${BoxForm.nextId++}`;
 
@@ -48,10 +47,16 @@ export class BoxForm {
   protected readonly tags = signal<readonly string[]>([]);
   protected readonly selectedTags = signal<ReadonlySet<string>>(new Set());
 
-  protected readonly sprue = computed(() => sprueMinis(this.kit()));
+  private readonly allSections = computed(() => kitSections(this.kit(), this.factionNames()));
+  protected readonly sections = computed(() =>
+    this.allSections().filter((section) => (this.onlyArmy() ?? section.army) === section.army),
+  );
   protected readonly kitCounts = computed(() => kitRowCounts(this.kit()));
   /** Minis per box of each row. */
-  protected readonly rows = linkedSignal(() => (this.areSprues() ? this.kitCounts().map(() => 0) : this.kitCounts()));
+  protected readonly rows = linkedSignal(() => {
+    const shown = new Set(this.sections().flatMap((section) => section.items.map((item) => item.index)));
+    return this.kitCounts().map((count, row) => (!this.areSprues() && shown.has(row) ? count : 0));
+  });
   /** Sprues are always an edited box; only a box differing from its kit says so. */
   protected readonly isEdited = computed(() => !this.areSprues() && differFromKit(this.kit(), this.rows()));
   protected readonly minis = computed(() => this.rows().reduce((sum, count) => sum + count, 0) * this.boxes());
@@ -74,6 +79,11 @@ export class BoxForm {
 
   protected resetRows(): void {
     this.rows.set(this.kitCounts());
+    this.wholeBoxChosen.emit();
+  }
+
+  protected sectionCount(section: ArmySection<KitRow>): number {
+    return section.items.reduce((sum, { index }) => sum + (this.rows()[index] ?? 0), 0);
   }
 
   protected changeBoxes(by: number): void {

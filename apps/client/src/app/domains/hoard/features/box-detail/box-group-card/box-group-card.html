@@ -1,42 +1,108 @@
-<button
-  type="button"
-  class="flex w-full items-center gap-4 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-  [attr.aria-expanded]="isOpen()"
-  [attr.aria-controls]="listId"
-  data-testid="box-group-toggle"
-  (click)="toggle()"
->
-  <span class="flex min-w-0 flex-1 flex-col gap-1.5">
-    <span class="truncate font-semibold"><app-either-or-name [name]="group().name" /></span>
-    <!-- Always present, so groups without parts are as tall as the others. -->
-    <span class="flex min-h-6 flex-wrap gap-1.5">
-      @for (chip of chips(); track chip) {
-        <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{ chip }}</span>
-      }
+<div class="flex items-center gap-1 pr-2">
+  <button
+    type="button"
+    class="flex min-w-0 flex-1 items-center gap-4 rounded-xl p-4 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-controls]="listId"
+    data-testid="box-group-toggle"
+    (click)="toggle()"
+  >
+    <span class="flex min-w-0 flex-1 flex-col gap-1.5">
+      <span class="truncate font-semibold"><app-either-or-name [name]="group().name" /></span>
+      <!-- Always present, so groups without parts are as tall as the others. -->
+      <span class="flex min-h-6 flex-wrap gap-1.5">
+        @for (chip of chips(); track chip) {
+          <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{ chip }}</span>
+        }
+      </span>
     </span>
-  </span>
 
-  <span class="hidden w-56 shrink-0 flex-col gap-1.5 sm:flex">
-    <app-progress-bar [box]="{ minis: group().counts }" data-testid="box-group-progress" />
-    <span class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground" aria-hidden="true">
-      @for (entry of legend(); track entry.status) {
-        <span class="inline-flex items-center gap-1.5">
-          <span class="size-2 rounded-full" [class]="statusColor[entry.status]"></span>
-          <span class="font-semibold text-foreground tabular-nums">{{ entry.count }}</span>
-          {{ entry.label }}
-        </span>
-      }
+    <span class="hidden w-56 shrink-0 flex-col gap-1.5 sm:flex">
+      <app-progress-bar [box]="{ minis: group().counts }" data-testid="box-group-progress" />
+      <span class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground" aria-hidden="true">
+        @for (entry of legend(); track entry.status) {
+          <span class="inline-flex items-center gap-1.5">
+            <span class="size-2 rounded-full" [class]="statusColor[entry.status]"></span>
+            <span class="font-semibold text-foreground tabular-nums">{{ entry.count }}</span>
+            {{ entry.label }}
+          </span>
+        }
+      </span>
     </span>
-  </span>
 
-  <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(count())"> ×{{ count() }} </span>
-  <ng-icon
-    name="lucideChevronDown"
-    size="16"
-    class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
-    [class.rotate-180]="isOpen()"
-  />
-</button>
+    <span class="w-10 shrink-0 text-right font-semibold" [attr.aria-label]="minisLabel(count())"> ×{{ count() }} </span>
+    <ng-icon
+      name="lucideChevronDown"
+      size="16"
+      class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
+      [class.rotate-180]="isOpen()"
+    />
+  </button>
+  <hlm-popover align="end" sideOffset="6">
+    <button
+      #menuButton
+      hlmPopoverTrigger
+      hlmBtn
+      variant="ghost"
+      size="icon"
+      type="button"
+      class="shrink-0 text-muted-foreground"
+      aria-label="More actions"
+      [attr.aria-haspopup]="'menu'"
+      data-testid="box-group-menu"
+    >
+      <ng-icon name="lucideEllipsisVertical" size="16" />
+    </button>
+    <ul
+      hlmPopoverContent
+      class="w-48 gap-0 p-1"
+      role="menu"
+      [attr.aria-label]="group().name"
+      *hlmPopoverPortal="let menu"
+    >
+      <li role="none">
+        <button
+          type="button"
+          role="menuitem"
+          tabindex="0"
+          class="flex w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent"
+          data-testid="box-group-leave"
+          (click)="isLeavePanelOpen.set(true); menu.close()"
+        >
+          Leave the hoard…
+        </button>
+      </li>
+      <li role="none">
+        <button
+          type="button"
+          role="menuitem"
+          tabindex="-1"
+          class="flex w-full rounded-md px-2 py-1.5 text-left text-sm text-destructive outline-none hover:bg-accent focus-visible:bg-accent"
+          data-testid="box-group-delete"
+          (click)="deleteChosen.emit(miniIds()); menu.close()"
+        >
+          Delete…
+        </button>
+      </li>
+    </ul>
+  </hlm-popover>
+</div>
+
+@if (isLeavePanelOpen()) {
+  <div class="flex flex-col gap-6 border-t p-4" data-testid="box-group-panel">
+    @if (editor.saveState() === 'failed') {
+      <p class="text-sm text-destructive" role="alert" data-testid="mini-save-error">
+        Can't save right now. Try again in a moment.
+      </p>
+    }
+    <app-leave-panel
+      [recipientChoices]="editor.recipientChoices()"
+      [isLeaving]="isLeaving()"
+      (left)="leave($event)"
+      (closed)="closeLeavePanel()"
+    />
+  </div>
+}
 
 @if (isOpen()) {
   <ul class="flex flex-col gap-1 border-t p-2" [id]="listId">

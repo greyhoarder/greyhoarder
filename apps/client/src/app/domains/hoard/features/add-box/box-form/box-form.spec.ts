@@ -52,17 +52,52 @@ const LOOTAS_OR_BURNA_BOYZ: Kit = {
   contains: [],
 };
 
+const ORKS = 'warhammer-40000/orks';
+const MARINES = 'warhammer-40000/space-marines';
+const FACTION_NAMES = new Map([
+  [ORKS, 'Orks'],
+  [MARINES, 'Space Marines'],
+]);
+
+const TWO_ARMIES: Kit = {
+  id: 'games-workshop/sets/starter',
+  version: 1,
+  name: 'Starter',
+  names: ['Starter'],
+  manufacturer: 'games-workshop',
+  factionIds: [MARINES, ORKS],
+  isDraft: false,
+  variants: [
+    {
+      name: 'Starter',
+      slots: [
+        { count: 2, names: ['Marine'], parts: [], factionIds: [MARINES] },
+        { count: 3, names: ['Boy'], parts: [], factionIds: [ORKS] },
+      ],
+      minis: 5,
+    },
+  ],
+  minis: 5,
+  contains: [],
+};
+
 describe('Box form', () => {
   let fixture: ComponentFixture<BoxForm>;
 
   async function openForm(
     kit: Kit,
-    { areSprues = false, matchedRows = [] }: { areSprues?: boolean; matchedRows?: number[] } = {},
+    {
+      areSprues = false,
+      matchedRows = [],
+      onlyArmy,
+    }: { areSprues?: boolean; matchedRows?: number[]; onlyArmy?: string } = {},
   ): Promise<void> {
     fixture = TestBed.createComponent(BoxForm);
     fixture.componentRef.setInput('kit', kit);
     fixture.componentRef.setInput('areSprues', areSprues);
     fixture.componentRef.setInput('matchedRows', matchedRows);
+    fixture.componentRef.setInput('factionNames', FACTION_NAMES);
+    fixture.componentRef.setInput('onlyArmy', onlyArmy);
     await fixture.whenStable();
   }
 
@@ -268,5 +303,38 @@ describe('Box form', () => {
 
     const rows = [...form().querySelectorAll('[data-testid="add-box-slot"]')];
     expect(rows.map((row) => row.hasAttribute('data-matched'))).toEqual([false, true, false]);
+  });
+
+  it('lists the rows of a kit of two armies under a heading each', async () => {
+    await openForm(TWO_ARMIES);
+
+    expect(allText('army-heading')).toEqual(['Space Marines · 2 minis', 'Orks · 3 minis']);
+  });
+
+  it('shows no heading for a kit of one army', async () => {
+    await openForm(BOYZ);
+
+    expect(allText('army-heading')).toEqual([]);
+  });
+
+  it('keeps a row at none under its army and lowers the count of the heading', async () => {
+    await openForm(TWO_ARMIES);
+
+    await click('add-box-slot-less', 0);
+    await click('add-box-slot-less', 0);
+
+    expect(allText('add-box-slot')).toHaveLength(2);
+    expect(allText('army-heading')).toEqual(['Space Marines · 0 minis', 'Orks · 3 minis']);
+  });
+
+  it('adds only the minis of the chosen army and hides the rows of the others', async () => {
+    await openForm(TWO_ARMIES, { onlyArmy: 'Orks' });
+    const added: BoxesToAdd[] = [];
+    fixture.componentInstance.add.subscribe((choice) => added.push(choice));
+
+    await click('add-box-submit');
+
+    expect(allText('add-box-slot')).toHaveLength(1);
+    expect(added[0]?.rows).toEqual([0, 3]);
   });
 });
