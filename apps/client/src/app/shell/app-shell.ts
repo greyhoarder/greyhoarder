@@ -14,7 +14,7 @@ import {
   lucideShield,
   lucideSlidersHorizontal,
 } from '@ng-icons/lucide';
-import { CurrentSession } from '../domains/auth/api';
+import { CurrentSession, ROLE_LABELS } from '../domains/auth/api';
 import { Logo } from '../shared/ui/logo/logo';
 
 interface NavigationEntry {
@@ -32,9 +32,7 @@ const MAIN_ENTRIES: readonly NavigationEntry[] = [
   { label: 'Armies', icon: 'lucideShield' },
 ];
 
-const SETTINGS_ENTRY: NavigationEntry = { label: 'Settings', icon: 'lucideSlidersHorizontal' };
-
-const ROLE_LABELS = { admin: 'Admin', member: 'Member' } as const;
+const SETTINGS_ENTRY: NavigationEntry = { label: 'Settings', icon: 'lucideSlidersHorizontal', link: '/settings' };
 
 /** Frame of every page behind the login: navigation beside the current page. */
 @Component({

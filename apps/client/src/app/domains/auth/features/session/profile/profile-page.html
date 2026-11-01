@@ -1,0 +1,18 @@
+<h1 class="text-2xl font-semibold" data-testid="profile-title">Profile</h1>
+
+@if (user(); as signedIn) {
+  <div class="flex items-center gap-3">
+    <span
+      aria-hidden="true"
+      class="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted font-semibold uppercase"
+    >
+      {{ signedIn.username[0] }}
+    </span>
+    <div class="flex min-w-0 flex-col">
+      <span class="truncate font-medium" data-testid="profile-username">{{ signedIn.username }}</span>
+      <span class="text-sm text-muted-foreground" data-testid="profile-role">{{ roleLabels[signedIn.role] }}</span>
+    </div>
+  </div>
+}
+
+<p class="text-muted-foreground">Details come later.</p>

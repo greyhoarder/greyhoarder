@@ -19,6 +19,8 @@ describe('Shell', () => {
         provideRouter([
           { path: 'login', component: StubPage },
           { path: 'dashboard', component: StubPage },
+          { path: 'profile', component: StubPage },
+          { path: 'settings', component: StubPage },
         ]),
         {
           provide: CurrentSession,
@@ -68,6 +70,20 @@ describe('Shell', () => {
     expect(toggle?.getAttribute('aria-label')).toBe('Collapse navigation');
     expect(toggle?.getAttribute('aria-expanded')).toBe('true');
     expect(dashboard?.hasAttribute('title')).toBe(false);
+  });
+
+  it('opens the profile from the row of the signed-in user', async () => {
+    shell.querySelector<HTMLElement>('[data-testid="shell-profile"]')?.click();
+    await fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/profile');
+  });
+
+  it('offers the settings as a link', () => {
+    const settings = shell.querySelector<HTMLElement>('[data-testid="shell-nav-settings"]');
+
+    expect(settings?.tagName).toBe('A');
+    expect(settings?.getAttribute('href')).toBe('/settings');
   });
 
   it('marks entries whose screen does not exist yet as not available', () => {

@@ -88,7 +88,12 @@
     </button>
 
     @if (user(); as signedIn) {
-      <div class="flex items-center gap-3 whitespace-nowrap">
+      <a
+        routerLink="/profile"
+        data-testid="shell-profile"
+        [attr.title]="collapsed() ? signedIn.username : null"
+        class="flex items-center gap-3 rounded-lg whitespace-nowrap transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      >
         <span
           aria-hidden="true"
           class="flex size-10 shrink-0 items-center justify-center rounded-full bg-sidebar-accent font-semibold uppercase md:ml-1"
@@ -99,7 +104,7 @@
           <span class="truncate font-medium" data-testid="shell-username">{{ signedIn.username }}</span>
           <span class="text-sm text-muted-foreground">{{ roleLabels[signedIn.role] }}</span>
         </div>
-      </div>
+      </a>
     }
   </div>
 </aside>

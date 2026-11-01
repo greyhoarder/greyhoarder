@@ -16,3 +16,12 @@ export default [
     loadComponent: async () => (await import('./features/setup/setup-page')).SetupPage,
   },
 ] satisfies Routes;
+
+/** The pages of the signed-in user, inside the shell. */
+export const profileRoutes = [
+  {
+    path: 'profile',
+    title: 'Profile · Greyhoarder',
+    loadComponent: async () => (await import('./features/session/profile/profile-page')).ProfilePage,
+  },
+] satisfies Routes;

@@ -2,3 +2,5 @@
 export { signedInGuard } from '../features/session/guards/session.guard';
 /** The signed-in user, set by `signedInGuard`, and signing out. */
 export { CurrentSession } from '../features/session/current-session';
+/** How a role is shown to users. */
+export { ROLE_LABELS } from '../models/role-labels';
