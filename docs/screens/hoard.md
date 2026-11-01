@@ -196,7 +196,7 @@ summary line.
   ([domain](../domains/hoard.md#minis)), so the Status filter has no "On
   the sprue".
 - A group holds the minis past the sprue with the same name, factions
-  and parts, each glued or swappable alike, from any box
+  and parts, glued or swappable, from any box
   ([domain](../domains/hoard.md#lists-of-minis)). Its bar and legend count
   its minis as the box's bar counts a box. A group lists its minis sorted
   by status, furthest first, then by box.

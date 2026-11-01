@@ -24,8 +24,8 @@ to bottom in the sidebar:
    entries.
 4. Below a border: the button that collapses or expands the sidebar, an
    icon only, on the right.
-5. The user row: avatar with the first letter of the username, username
-   and role.
+5. The user row, a link to [Profile](profile.md): avatar with the first
+   letter of the username, username and role.
 
 The logo, the icons of the entries and the avatar share one vertical axis.
 
@@ -55,7 +55,7 @@ Each entry has an outline icon before its label.
 | State | When | What the user sees |
 |-------|------|--------------------|
 | Current entry | Its page is open | Entry on the accent background, icon in gold |
-| Not available yet | The entry's screen does not exist | Entry dimmed with a small lock after its label (collapsed: on the corner of its icon), not a link; its tooltip and screen readers say "{label}: not available yet" (currently all but Dashboard and Hoard) |
+| Not available yet | The entry's screen does not exist | Entry dimmed with a small lock after its label (collapsed: on the corner of its icon), not a link; its tooltip and screen readers say "{label}: not available yet" (currently all but Dashboard, Hoard and Settings) |
 | Collapsed | Collapse button pressed (wide screens only) | Only icons; each entry shows its label as a tooltip; the sidebar stays collapsed until it is expanded or the page is reloaded |
 | Signed out | "Sign out" pressed | The session ends and the user is taken to the [login](login.md) |
 
@@ -64,6 +64,13 @@ Each entry has an outline icon before its label.
 - The entries are a fixed list in the shell; an entry becomes a link once
   its screen exists.
 - The current entry is marked for screen readers (`aria-current="page"`).
+- "Settings" opens [Settings](settings.md), the user row opens
+  [Profile](profile.md).
+
+## Test IDs
+
+`shell-profile`, besides those of the entries, sign out and the collapse
+button (ADR-0013).
 
 ## Open questions
 

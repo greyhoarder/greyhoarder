@@ -228,9 +228,8 @@ exactly one user, and users see only their own hoard.
 ## Lists of minis
 
 Interfaces list minis, not boxes, wherever the hobby is concerned. Minis
-past the sprue with the same name, factions and parts (each glued or
-swappable alike) form a group, whatever their box, status or workbench
-place: the group is shown with its count and its minis per status
+past the sprue with the same name, factions and parts, glued or
+swappable, form a group, whatever their box, status or workbench place: the group is shown with its count and its minis per status
 ("Boy · Slugga, Choppa · ×9"), and opened it lists each mini on its own.
 The user acts on single minis, one at a time or several selected
 together, never on a group as a whole; as soon as a mini's name, factions

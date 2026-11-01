@@ -17,7 +17,7 @@ own: the user picks a name and parts and builds it.
 ## Layout
 
 Inside the [shell](shell.md), one content column over the full width beside
-the sidebar, as wide as the hoard. Below the status, the column splits like
+the sidebar, as wide as the hoard. Below the header, the column splits like
 on [Box](box.md): the sections on the left, the box card in a side column
 on the right; on narrow content widths the box card moves below them.
 
@@ -29,7 +29,9 @@ on the right; on narrow content widths the box card moves below them.
      diagonal stripes, a camera icon and "Add photo";
    - middle, stacked: the name as the title, followed by the status
      badge; below it the factions as chips (an own faction followed by a
-     muted "· own") and a dashed chip "+ Faction";
+     muted "· own") and a dashed chip "+ Faction"; below them, for a built
+     mini that is not gone, the status control "Built" to "Done", a
+     segmented control as on [Box](box.md#layout), without a label;
    - right: the workbench toggle (outline, `h-10`, a brush icon) and the
      "⋮" button (outline, `size-10`) for the mini menu.
 
@@ -52,22 +54,7 @@ on the right; on narrow content widths the box card moves below them.
    departure ("Sold on {date}") and, for minis stripped for parts, "Parts
    went to {names}", each name a link; on the right "Back to hoard"
    (outline).
-3. The status, without a card: the label "Status" in small
-   `muted-foreground` text and on its right the share as a percentage, as
-   on [Box](box.md); below it a thin bar of four segments, one per status
-   past the sprue. The segments up to the current status take the color
-   of the current status (as on its badge), the others are `muted`; on the
-   sprue none is colored. Below the bar, for a built mini that is not
-   gone, the status control "Built" to "Done", a segmented control as on
-   [Box](box.md#layout); otherwise below each segment, right-aligned, its
-   status.
-4. The "Build as" section: the heading "Build as" and on its right, muted,
-   "Suggested by {box name}"; below it one tile per suggested name, each
-   with the name and a small line "{n} left in this box", and last a
-   dashed tile "Your own name" with an input. The chosen tile has the
-   `muted` surface and a `muted-foreground` border; a typed own name turns
-   its tile solid and chooses it.
-5. The "Parts" section: the heading "Parts" with their count in muted text,
+3. The "Parts" section: the heading "Parts" with their count in muted text,
    and on its right a muted hint; below it one tile per part, each with
    the part's name, a "×" button to remove it and below the name the
    swappable toggle, a small outlined rounded button reading "Glued" with a
@@ -94,10 +81,16 @@ on the right; on narrow content widths the box card moves below them.
    All chips wrap; there is no dropdown and no scrolling list of its own.
    While open, the tile reads "Close" with a solid border and its plus
    turned into a ×.
-6. The "Notes" section: the heading "Notes" and a text area.
+4. The "Build as" section: the heading "Build as" and on its right, muted,
+   "Suggested by {box name}"; below it one tile per suggested name, each
+   with the name and a small line "{n} left in this box", and last a
+   dashed tile "Your own name" with an input. The chosen tile has the
+   `muted` surface and a `muted-foreground` border; a typed own name turns
+   its tile solid and chooses it.
+5. The "Notes" section: the heading "Notes" and a text area.
 
-   Build as, Parts and Notes have no card of their own.
-7. In the side column, the box card (card surface, border): the label
+   Parts, Build as and Notes have no card of their own.
+6. In the side column, the box card (card surface, border): the label
    "From the box"; the box's photo placeholder (48 × 48, muted with
    stripes) with the kit's name and year and below it the manufacturer and
    product code, the whole line a link with a right chevron; below it
@@ -113,7 +106,7 @@ on the right; on narrow content widths the box card moves below them.
    Below it, only for minis that got the parts of stripped minis, a card
    "Parts from": one line per source mini, its name as a link and below
    it, muted, "Stripped on {date}".
-8. Only while the minis are on the sprue: the build bar, sticking to the
+7. Only while the minis are on the sprue: the build bar, sticking to the
    bottom of the screen while scrolling, on the card surface with a
    border and without a shadow: the summary on the left; on the right the
    checkbox "Put on workbench" and the primary button.
@@ -153,8 +146,6 @@ muted line, the "or" is plain.
 | Recipients line | Parts went to {names} |
 | Back button | Back to hoard |
 | Parts from card | Parts from; per source: {name}, below: Stripped on {date} |
-| Status label | Status; on its right {percent}% (sprue 0, built 25, primed 50, painted 75, done 100) |
-| Status bar labels | Built · Primed · Painted · Done |
 | Status control | Built · Primed · Painted · Done; group named "Status" |
 | Build as heading | Build as |
 | Suggestions note | Suggested by {box name} |
@@ -218,7 +209,7 @@ muted line, the "or" is plain.
   does the same. Search, filters and view of the hoard stay as they were.
 - **Status:** choosing a status in the control saves it at once for this
   mini, also backwards ([use case](../use-cases/track-progress.md)); the
-  bar, the percentage and the badge follow. When saving fails, the
+  control and the badge follow. When saving fails, the
   save-failed message appears and the stored status is shown again.
 - **Build as:** the tiles offer what the minis' slot can be built as: the
   names of the slots a box of the kit put minis of their sprue name on the
@@ -316,8 +307,8 @@ muted line, the "or" is plain.
 
 - The name tiles and the swappable toggles are toggle buttons with
   `aria-pressed`; the name tiles are a group labelled by their heading.
-- The status bar is hidden from screen readers; the status badge names the
-  status. The status control is a radio group named "Status".
+- The status badge names the status. The status control is a radio group
+  named "Status".
 - The swappable toggle is named "Swappable {part}" for screen readers,
   whatever it reads; the workbench toggle is named "On the workbench" and
   pressed while the minis are on it.
@@ -350,7 +341,7 @@ muted line, the "or" is plain.
 `mini-delete-cancel`, `mini-delete-confirm`, `mini-gone`,
 `mini-gone-recipient`, `mini-back-to-hoard`, `mini-parts-from`,
 `mini-parts-from-source`,
-`mini-percent`, `mini-build-as`, `mini-build-as-name`, `mini-name-left`
+`mini-build-as`, `mini-build-as-name`, `mini-name-left`
 (with `data-warning` while it warns), `mini-own-name`,
 `mini-part`, `mini-part-name`, `mini-part-remove`, `mini-part-swappable`,
 `mini-add-part`, `mini-part-filter`, `mini-part-group` (with `data-group`:
