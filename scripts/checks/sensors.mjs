@@ -11,6 +11,8 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const lastRunFile = join(root, '.git', 'greyhoarder-sensors');
 const failureLines = 30;
+const oxfmt = join(root, 'node_modules/oxfmt/bin/oxfmt');
+const FORMAT_BATCH = 100;
 
 const CLIENT = '@greyhoarder/client';
 const SERVER = '@greyhoarder/server';
@@ -77,10 +79,14 @@ export function rememberChecked(state) {
 export function runSensors(files, workspaces) {
   const failures = [];
   const existing = files.filter((file) => existsSync(join(root, file)));
-  if (existing.length > 0) {
-    const run = shell(
-      `npx --no-install oxfmt --check --no-error-on-unmatched-pattern ${existing.map((file) => `"${file}"`).join(' ')}`,
-    );
+  // Without a shell and in batches, as many changed files would exceed the length of a command line.
+  for (let start = 0; start < existing.length; start += FORMAT_BATCH) {
+    const batch = existing.slice(start, start + FORMAT_BATCH);
+    const run = spawnSync(process.execPath, [oxfmt, '--check', '--no-error-on-unmatched-pattern', ...batch], {
+      cwd: root,
+      encoding: 'utf8',
+    });
+
     if (run.status !== 0) {
       failures.push({
         workspace: 'changed files',
@@ -89,6 +95,7 @@ export function runSensors(files, workspaces) {
       });
     }
   }
+
   for (const workspace of workspaces) {
     const scripts = Object.keys(packageOf(workspace).scripts ?? {});
     for (const step of steps.filter((name) => scripts.includes(name))) {
