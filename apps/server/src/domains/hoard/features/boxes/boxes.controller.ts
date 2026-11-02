@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  Post,
-  Put,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Post, UnprocessableEntityException } from '@nestjs/common';
 import { EmptyBoxError, InvalidRowsError } from '@greyhoarder/domain/hoard';
 import type { User } from '@greyhoarder/domain/users';
 import {

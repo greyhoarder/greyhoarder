@@ -6,6 +6,7 @@ import {
   type Departure,
   type HobbyStatus,
   haveSameName,
+  isoDay,
   isOwnFaction,
   kitReferenceOf,
   type Mini,
@@ -13,6 +14,8 @@ import {
   parseDeparture,
   parseMini,
   PartsOfDifferentMinisError,
+  stepChange,
+  stepsOfDeleted,
   toKit,
   withChanges,
   withDeparture,
@@ -279,6 +282,7 @@ export class MinisService {
     await this.hoard.updateMinis(ownerId, {
       ...added,
       changed,
+      steps: stepChange(before, changed, isoDay(new Date())),
       droppedPartIds: droppedParts(before, changed),
       droppedFactionIds: droppedFactions(before, changed),
     });
@@ -305,6 +309,7 @@ export class MinisService {
     const changed = withoutDeletedRecipients(staying, deleted);
     await this.hoard.deleteMinis(ownerId, [...deleted], {
       changed,
+      steps: stepsOfDeleted([...deleted]),
       droppedPartIds: droppedParts(minis, []),
       droppedFactionIds: droppedFactions(minis, []),
     });

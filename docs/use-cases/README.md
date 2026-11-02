@@ -28,6 +28,7 @@ use case you build or change; how its screens look is in
 | `BOX-ARMIES` | [See the armies of a box](see-the-armies-of-a-box.md) | Draft |
 | `LEAVE` | [Let minis leave the hoard](leave-the-hoard.md) | Draft |
 | `DELETE` | [Delete minis and boxes](delete-minis-and-boxes.md) | Draft |
+| `ACTIVITY` | [See activity](see-activity.md) | Draft |
 | `OVERVIEW` | [See progress by faction](progress-by-faction.md) | Draft |
 
 ## When a spec is needed

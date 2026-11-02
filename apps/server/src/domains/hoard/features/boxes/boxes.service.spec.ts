@@ -297,4 +297,39 @@ describe('Boxes', () => {
     ]);
     expect(deleteBoxes).toHaveBeenCalledWith('owner', ['boyz'], expect.objectContaining({ keptMinis: deletion.minis }));
   });
+
+  it('removes the steps of the minis deleted with a box', async () => {
+    const box: Box = { id: 'boyz', name: 'Boyz', factionIds: [], tags: [], addedOn: '2026-10-25', number: 1 };
+
+    const mini: Mini = {
+      id: 'boy',
+      name: 'Boy',
+      factionIds: [],
+      status: 'painted',
+      parts: [],
+      boxId: 'boyz',
+      isOnWorkbench: false,
+    };
+
+    const deleteBoxes = vi.fn<HoardRepository['deleteBoxes']>(() => Promise.resolve(['boy']));
+
+    const hoard = {
+      findBoxes: vi.fn(() => Promise.resolve([box])),
+      findMinis: vi.fn(() => Promise.resolve([mini])),
+      findMinisByIds: vi.fn(),
+      findParts: vi.fn(),
+      addBoxes: vi.fn(),
+      updateMinis: vi.fn(),
+      deleteMinis: vi.fn(),
+      deleteBoxes,
+    };
+
+    const service = new BoxesService(hoard, fakeCatalog(BOYZ, 3));
+
+    await service.delete('owner', ['boyz']);
+
+    expect(deleteBoxes.mock.calls[0]?.[2].steps?.undone).toEqual([
+      { miniId: 'boy', statuses: ['built', 'primed', 'painted', 'done'] },
+    ]);
+  });
 });

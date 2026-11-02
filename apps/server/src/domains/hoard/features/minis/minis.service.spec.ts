@@ -43,7 +43,9 @@ function fakeHoard(
     findMinisByIds: vi.fn((_owner, ids) => Promise.resolve(minis.filter((mini) => ids.includes(mini.id)))),
     findParts: vi.fn(() => Promise.resolve([...parts])),
     findOwnFactions: vi.fn(() => Promise.resolve([...ownFactions])),
+    findSteps: vi.fn(),
     addBoxes: vi.fn(),
+    addMinis: vi.fn(() => Promise.resolve()),
     updateMinis,
     deleteMinis,
     deleteBoxes: vi.fn(),
@@ -422,5 +424,74 @@ describe('Minis service', () => {
 
     await expect(update).rejects.toThrow(LooseMiniOnSprueError);
     expect(updateMinis).not.toHaveBeenCalled();
+  });
+
+  describe('steps', () => {
+    const today = '2026-11-02';
+
+    beforeEach(() => {
+      vi.useFakeTimers({ now: new Date(`${today}T12:00:00`), toFake: ['Date'] });
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('records the step of a mini whose status changes', async () => {
+      const { hoard, updateMinis } = fakeHoard([{ ...BOY, status: 'built' }]);
+      const service = new MinisService(hoard, CATALOG);
+
+      await service.update('owner', ['boy'], { status: 'painted' });
+
+      expect(updateMinis.mock.calls[0]?.[1].steps?.reached).toEqual([{ miniId: 'boy', status: 'painted', on: today }]);
+    });
+
+    it('records one step for today when a mini reaches a status again', async () => {
+      const { hoard, updateMinis } = fakeHoard([{ ...BOY, status: 'primed' }]);
+      const service = new MinisService(hoard, CATALOG);
+
+      await service.update('owner', ['boy'], { status: 'painted' });
+
+      expect(updateMinis.mock.calls[0]?.[1].steps).toEqual({
+        reached: [{ miniId: 'boy', status: 'painted', on: today }],
+        undone: [],
+      });
+    });
+
+    it('records no step for a mini added as painted', async () => {
+      const { hoard, updateMinis } = fakeHoard([]);
+      const service = new MinisService(hoard, CATALOG);
+
+      await service.add('owner', {
+        name: 'Boy',
+        count: 1,
+        status: 'painted',
+        factions: [],
+        parts: [],
+      });
+
+      expect(hoard.addMinis).toHaveBeenCalled();
+      expect(updateMinis).not.toHaveBeenCalled();
+    });
+
+    it('removes the steps of deleted minis', async () => {
+      const { hoard, deleteMinis } = fakeHoard([{ ...BOY, status: 'painted' }]);
+      const service = new MinisService(hoard, CATALOG);
+
+      await service.delete('owner', ['boy']);
+
+      expect(deleteMinis.mock.calls[0]?.[2].steps?.undone).toEqual([
+        { miniId: 'boy', statuses: ['built', 'primed', 'painted', 'done'] },
+      ]);
+    });
+
+    it('keeps the steps of a mini that left the hoard', async () => {
+      const { hoard, updateMinis } = fakeHoard([{ ...BOY, status: 'painted' }]);
+      const service = new MinisService(hoard, CATALOG);
+
+      await service.update('owner', ['boy'], { departure: { reason: 'sold', on: today } });
+
+      expect(updateMinis.mock.calls[0]?.[1].steps).toEqual({ reached: [], undone: [] });
+    });
   });
 });

@@ -1,0 +1,115 @@
+<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+  <h2 class="text-lg font-semibold" id="dashboard-activity">Activity</h2>
+  <p class="text-sm text-muted-foreground" data-testid="dashboard-activity-total">
+    {{ totalText() }}
+  </p>
+</div>
+
+<div class="flex flex-col gap-2 rounded-xl border bg-card p-3">
+  <div class="overflow-x-auto" #grid>
+    <div
+      class="grid w-fit gap-0.5 text-xs leading-none text-muted-foreground"
+      [style.grid-template-columns]="gridColumns"
+      [style.grid-template-rows]="gridRows"
+      role="img"
+      [attr.aria-label]="totalText()"
+    >
+      @for (month of monthLabels(); track month.column) {
+        <span class="col-span-3 whitespace-nowrap" [style.grid-column-start]="month.column + 1" [style.grid-row]="1">{{
+          month.label
+        }}</span>
+      }
+      <span class="col-start-1 row-start-2 self-center">Mon</span>
+      <span class="col-start-1 row-start-4 self-center">Wed</span>
+      <span class="col-start-1 row-start-6 self-center">Fri</span>
+      @for (cell of cells(); track cell.date; let index = $index) {
+        <span
+          class="rounded-xs"
+          [class]="cell.shade"
+          [style.grid-column]="(index - (index % 7)) / 7 + 2"
+          [style.grid-row]="(index % 7) + 2"
+          [title]="cell.label"
+          data-testid="dashboard-activity-day"
+        ></span>
+      }
+    </div>
+  </div>
+  @if (total() === 0) {
+    <p class="text-sm text-muted-foreground" data-testid="dashboard-activity-empty">
+      No activity yet. Steps show up here from now on.
+    </p>
+  }
+  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-muted-foreground">
+    <span>Counts every mini that moved a step: built, primed, painted, done.</span>
+    <span class="flex items-center gap-1" aria-hidden="true">
+      Less
+      @for (shade of shades; track shade) {
+        <span class="size-2.5 rounded-xs" [class]="shade"></span>
+      }
+      More
+    </span>
+  </div>
+</div>
+
+@for (month of shownMonths(); track month.title) {
+  <section class="flex flex-col gap-1" data-testid="dashboard-activity-month">
+    <h3 class="border-b pb-1.5 text-sm font-semibold">{{ month.title }}</h3>
+    <ul class="flex flex-col">
+      @for (entry of month.entries; track entry.id) {
+        <li>
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 rounded-md px-1 py-1.5 text-left text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            [attr.aria-expanded]="openEntryId() === entry.id"
+            data-testid="dashboard-activity-entry"
+            (click)="toggle(entry.id)"
+          >
+            <span class="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted" aria-hidden="true">
+              @if (entry.kind === 'box') {
+                <ng-icon name="lucidePlus" size="12" class="text-muted-foreground" />
+              } @else {
+                <span class="size-2.5 rounded-xs" [class]="iconColors[entry.kind]"></span>
+              }
+            </span>
+            <span class="min-w-0 flex-1 truncate">
+              <span class="font-medium">{{ entry.text }}</span>
+              <span class="text-muted-foreground"> {{ entry.detail }}</span>
+            </span>
+            <ng-icon
+              name="lucideChevronDown"
+              size="14"
+              class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
+              [class.rotate-180]="openEntryId() === entry.id"
+            />
+          </button>
+          @if (openEntryId() === entry.id) {
+            <ul class="ml-10 flex flex-wrap gap-x-3 gap-y-1 pt-1 pb-2 text-sm">
+              @for (item of entry.items; track item.id) {
+                <li>
+                  <a
+                    class="text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                    [routerLink]="item.link"
+                    >{{ item.name }}</a
+                  >
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+}
+
+@if (hasMoreMonths()) {
+  <button
+    hlmBtn
+    variant="outline"
+    type="button"
+    class="w-full"
+    data-testid="dashboard-activity-more"
+    (click)="showMore()"
+  >
+    Show more activity
+  </button>
+}

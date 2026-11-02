@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import type { Mini } from '@greyhoarder/domain/hoard';
-import type { MinisResponse } from '@greyhoarder/protocol/hoard';
+import type { ActivityResponse, MinisResponse } from '@greyhoarder/protocol/hoard';
 import { NEVER, type Observable, of, throwError } from 'rxjs';
 import { CurrentSession } from '../../../auth/api';
 import { DashboardPage } from './dashboard-page';
@@ -37,14 +37,20 @@ describe('Dashboard page', () => {
   let fixture: ComponentFixture<DashboardPage>;
 
   /** A fresh page whose hoard holds what `minis` answers. */
-  function showDashboard(minis: Observable<MinisResponse> = of(HOARD)): void {
+  function showDashboard(
+    minis: Observable<MinisResponse> = of(HOARD),
+    activity: Observable<ActivityResponse> = of({ days: [], months: [] }),
+  ): void {
     TestBed.configureTestingModule({
       providers: [
         {
           provide: CurrentSession,
           useValue: { user: signal({ id: '1', username: 'lucas', role: 'admin' }) },
         },
-        { provide: HttpClient, useValue: { get: vi.fn(() => minis) } },
+        {
+          provide: HttpClient,
+          useValue: { get: vi.fn((url: string) => (url === '/api/hoard/activity' ? activity : minis)) },
+        },
       ],
     });
     fixture = TestBed.createComponent(DashboardPage);
@@ -174,5 +180,17 @@ describe('Dashboard page', () => {
     await fixture.whenStable();
 
     expect(textsOf('dashboard-hoard-empty')).toEqual(['No minis yet. Add a box and its minis appear here.']);
+  });
+
+  it("says when the activity can't be loaded", async () => {
+    showDashboard(
+      of(HOARD),
+      throwError(() => new Error('offline')),
+    );
+
+    await fixture.whenStable();
+
+    const error = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="dashboard-activity-error"]');
+    expect(error?.textContent?.trim()).toBe("Can't load your activity right now. Try again in a moment.");
   });
 });

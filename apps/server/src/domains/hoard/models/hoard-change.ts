@@ -1,9 +1,11 @@
-import type { Mini, OwnFaction, Part } from '@greyhoarder/domain/hoard';
+import type { Mini, OwnFaction, Part, StepChange } from '@greyhoarder/domain/hoard';
 
 /** What a change of minis stores, all or nothing. */
 export interface HoardChange {
   /** The minis as they are to be stored. */
   readonly changed: readonly Mini[];
+  /** What the change does to the recorded steps of minis. */
+  readonly steps?: StepChange;
   /** The parts the change added to the vocabulary. */
   readonly newParts?: readonly Part[];
   /** The own factions the change added. */

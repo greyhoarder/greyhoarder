@@ -2,13 +2,14 @@
 
 - **Route:** `/dashboard`; `/` leads here while signed in
 - **Domain:** `dashboard`
+- **Use cases:** [See activity](../use-cases/see-activity.md)
 - **Related:** [Login](login.md), [Shell](shell.md), [Hoard](hoard.md),
   [Domain: hoard](../domains/hoard.md)
 
 ## Purpose
 
 The start page after signing in: a greeting and an overview of the hoard by
-faction; activity and the workbench follow later.
+faction, and what got done lately; the workbench follows later.
 
 ## Layout
 
@@ -20,7 +21,24 @@ the sidebar, on the `background`, from top to bottom:
 3. The section "On the workbench".
 4. The section "In the hoard".
 
-Each section has its heading above its content. Until the content exists,
+### Activity
+
+Compact: the heatmap is at most about 110 px high. Next to the heading
+the total in muted text. Below, on the card surface, one row of month
+labels and seven rows of cells of about 10 px, Monday on top, with "Mon",
+"Wed" and "Fri" before them, the last 52 weeks left to right; it scrolls
+sideways when too narrow, showing the newest week. Cells have 4 shades of
+gold by steps per day, an empty one for none; each has a tooltip. Below
+the grid, in small muted text, the note on the left and the legend "Less …
+More" on the right.
+
+Below the card, per month the newest first, a small semibold heading with
+a border, and one line per entry: a round icon of the status color, or
+a plus for boxes, on a thin vertical line; the text; a chevron. An opened
+line lists its minis or boxes as links. Two months show at first; below
+them an outline button over the full width.
+
+Each other section has its heading above its content. Until the content exists,
 a section shows an empty area with a dashed border. For "In the hoard",
 that is the case while the hoard has no minis; the area then holds the
 empty message.
@@ -46,6 +64,13 @@ Each card is a bordered card on the card surface with rounded corners:
 | Browser tab title | Dashboard · Greyhoarder |
 | Heading | Welcome back, {username} |
 | Section headings | Activity · On the workbench · In the hoard |
+| Activity total | {n} minis moved a step in the last year |
+| Activity note | Counts every mini that moved a step: built, primed, painted, done. |
+| Cell tooltip | {n} steps on {date}; No steps on {date} |
+| Activity lines | Built / Primed / Painted / Finished {n} minis · {faction}, or in {n} factions; Added {n} boxes · {m} minis |
+| Activity empty | No activity yet. Steps show up here from now on. |
+| More button | Show more activity |
+| Activity failed | Can't load your activity right now. Try again in a moment. |
 | Hoard summary | {n} minis · {p} painted, "1 mini" |
 | Legend | On the sprue · Built · Primed · Painted · Done |
 | Game system | The name of the faction's game system, e.g. "Warhammer 40,000" |

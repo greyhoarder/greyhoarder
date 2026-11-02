@@ -2,6 +2,19 @@
   <h1 class="text-2xl font-semibold" data-testid="dashboard-greeting">Welcome back, {{ name() }}</h1>
 </header>
 
+@if (activity.hasFailed()) {
+  <section class="flex flex-col gap-4" aria-labelledby="dashboard-activity-heading">
+    <h2 class="text-lg font-semibold" id="dashboard-activity-heading">Activity</h2>
+    <p class="text-destructive" role="alert" data-testid="dashboard-activity-error">
+      Can't load your activity right now. Try again in a moment.
+    </p>
+  </section>
+} @else if (activity.isLoading()) {
+  <hlm-skeleton class="h-36 w-full rounded-xl" data-testid="dashboard-activity-loading" />
+} @else {
+  <app-activity-section [days]="activityDays()" [months]="activityMonths()" />
+}
+
 @for (section of upcomingSections; track section.id) {
   <section class="flex flex-col gap-4" [attr.aria-labelledby]="'dashboard-' + section.id">
     <h2 class="text-lg font-semibold" [id]="'dashboard-' + section.id">{{ section.title }}</h2>

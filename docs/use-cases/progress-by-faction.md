@@ -13,8 +13,8 @@ army: how many minis each faction has and how many of them are painted.
 
 ## Not in scope
 
-- The sections "Activity" and "On the workbench" of the dashboard; their
-  content is not decided yet.
+- The section "On the workbench" of the dashboard, its content is not
+  decided yet, and [ACTIVITY](see-activity.md).
 - Finding single minis or boxes: [Find what is in the hoard](find-in-the-hoard.md).
 - Changing a mini's status: [Track progress](track-progress.md).
 

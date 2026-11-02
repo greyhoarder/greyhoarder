@@ -3,7 +3,9 @@ import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { shownName } from '@greyhoarder/domain/users';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { CurrentSession } from '../../../auth/api';
-import { type FactionOverview, HoardByFaction, STATUS_LABELS } from '../../../hoard/api';
+import { type FactionOverview, HoardActivity, HoardByFaction, STATUS_LABELS } from '../../../hoard/api';
+import { ActivitySection } from './activity-section/activity-section';
+import { activityDays, activityMonths } from './activity-section/activity';
 
 /** The dots of a card, from the furthest status to the sprue. */
 const DOT_ORDER: readonly HobbyStatus[] = [...hobbyStatuses].reverse();
@@ -11,7 +13,8 @@ const DOT_ORDER: readonly HobbyStatus[] = [...hobbyStatuses].reverse();
 /** Where signed-in users land; specified in docs/screens/dashboard.md. */
 @Component({
   selector: 'app-dashboard-page',
-  imports: [HlmSkeleton],
+  imports: [HlmSkeleton, ActivitySection],
+  providers: [HoardActivity],
   templateUrl: './dashboard-page.html',
   host: { class: 'flex w-full flex-col gap-10 p-4 sm:p-8 lg:p-10' },
 })
@@ -23,12 +26,12 @@ export class DashboardPage {
     return user && shownName(user);
   });
   protected readonly hoard = inject(HoardByFaction);
+  protected readonly activity = inject(HoardActivity);
+  protected readonly activityDays = computed(() => activityDays(this.activity.days(), new Date()));
+  protected readonly activityMonths = computed(() => activityMonths(this.activity.months()));
 
   /** The sections whose content does not exist yet. */
-  protected readonly upcomingSections = [
-    { id: 'activity', title: 'Activity' },
-    { id: 'workbench', title: 'On the workbench' },
-  ] as const;
+  protected readonly upcomingSections = [{ id: 'workbench', title: 'On the workbench' }] as const;
 
   protected readonly legend = hobbyStatuses;
   protected readonly statusLabels = STATUS_LABELS;

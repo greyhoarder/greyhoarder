@@ -1,6 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { type Box, factionKey, type Mini, type OwnFaction, type Part, partKey } from '@greyhoarder/domain/hoard';
+import {
+  type Box,
+  factionKey,
+  type Mini,
+  type MiniStep,
+  type OwnFaction,
+  type StepChange,
+  type StepStatus,
+  type Part,
+  partKey,
+} from '@greyhoarder/domain/hoard';
 import { type ClientSession, type Connection, type Model, mongo } from 'mongoose';
 import { z } from 'zod';
 import { NameTakenMeanwhileError } from '../../models/errors/name-taken-meanwhile.error.js';
@@ -8,6 +18,7 @@ import type { HoardChange } from '../../models/hoard-change.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
 import { BoxDbo } from './schemas/mongo-box-schema.js';
 import { MiniDbo } from './schemas/mongo-mini-schema.js';
+import { MiniStepDbo } from './schemas/mongo-mini-step-schema.js';
 import { OwnFactionDbo } from './schemas/mongo-own-faction-schema.js';
 import { PartDbo } from './schemas/mongo-part-schema.js';
 
@@ -129,9 +140,15 @@ function toOwnFactionDbo(ownerId: string, faction: OwnFaction): OwnFactionDbo {
   return { _id: faction.id, ownerId, name: faction.name, nameKey: factionKey(faction.name) };
 }
 
+function stepId(miniId: string, status: StepStatus): string {
+  return `${miniId}/${status}`;
+}
+
 /** MongoDB adapter for the hoard: one document per box and per mini (ADR-0019). */
 @Injectable()
 export class MongoHoardRepository extends HoardRepository {
+  private readonly steps: Model<MiniStepDbo>;
+
   constructor(
     @InjectConnection() private readonly connection: Connection,
     @InjectModel(BoxDbo.name) private readonly boxes: Model<BoxDbo>,
@@ -140,6 +157,7 @@ export class MongoHoardRepository extends HoardRepository {
     @InjectModel(OwnFactionDbo.name) private readonly ownFactions: Model<OwnFactionDbo>,
   ) {
     super();
+    this.steps = connection.model<MiniStepDbo>(MiniStepDbo.name);
   }
 
   async findBoxes(ownerId: string): Promise<Box[]> {
@@ -207,6 +225,12 @@ export class MongoHoardRepository extends HoardRepository {
     return stored.map(toMini);
   }
 
+  async findSteps(ownerId: string): Promise<MiniStep[]> {
+    const stored = await this.steps.find({ ownerId }).lean().exec();
+
+    return stored.map(({ miniId, status, on }) => ({ miniId, status, on }));
+  }
+
   async findParts(ownerId: string): Promise<Part[]> {
     const stored = await this.parts.find({ ownerId }).lean().exec();
 
@@ -224,6 +248,7 @@ export class MongoHoardRepository extends HoardRepository {
       await this.insertAdded(ownerId, change, session);
       // Only what a mini's owner can change; box, sprue name and creation stay as they are.
       await this.writeMinis(ownerId, change.changed, session);
+      await this.writeSteps(ownerId, change.steps, session);
       await this.deleteDropped(ownerId, change, session);
     });
   }
@@ -232,6 +257,7 @@ export class MongoHoardRepository extends HoardRepository {
     await this.connection.transaction(async (session) => {
       await this.minis.deleteMany({ ownerId, _id: { $in: miniIds } }, { session });
       await this.writeMinis(ownerId, change.changed, session);
+      await this.writeSteps(ownerId, change.steps, session);
       await this.deleteDropped(ownerId, change, session);
     });
   }
@@ -239,6 +265,7 @@ export class MongoHoardRepository extends HoardRepository {
   async deleteHoard(ownerId: string): Promise<void> {
     await this.connection.transaction(async (session) => {
       await this.minis.deleteMany({ ownerId }, { session });
+      await this.steps.deleteMany({ ownerId }, { session });
       await this.boxes.deleteMany({ ownerId }, { session });
       await this.parts.deleteMany({ ownerId }, { session });
       await this.ownFactions.deleteMany({ ownerId }, { session });
@@ -260,6 +287,7 @@ export class MongoHoardRepository extends HoardRepository {
       await this.takeOutOfBoxes(ownerId, boxIds, change.keptMinis, session);
       await this.boxes.deleteMany({ ownerId, _id: inBoxes }, { session });
       await this.writeMinis(ownerId, change.changed, session);
+      await this.writeSteps(ownerId, change.steps, session);
       await this.deleteDropped(ownerId, change, session);
 
       return miniIds;
@@ -359,6 +387,22 @@ export class MongoHoardRepository extends HoardRepository {
   }
 
   /** Only what a mini's owner can change; box, sprue name and creation stay as they are. */
+  /** Removes the undone steps first, so a status reached again is stored anew. */
+  private async writeSteps(ownerId: string, change: StepChange | undefined, session: ClientSession): Promise<void> {
+    const undone = change?.undone.flatMap(({ miniId, statuses }) => statuses.map((status) => stepId(miniId, status)));
+
+    if (undone !== undefined && undone.length > 0) {
+      await this.steps.deleteMany({ ownerId, _id: { $in: undone } }, { session });
+    }
+
+    if (change !== undefined && change.reached.length > 0) {
+      await this.steps.insertMany(
+        change.reached.map((step) => ({ ...step, _id: stepId(step.miniId, step.status), ownerId })),
+        { session },
+      );
+    }
+  }
+
   private async writeMinis(ownerId: string, minis: readonly Mini[], session: ClientSession): Promise<void> {
     if (minis.length === 0) {
       return;

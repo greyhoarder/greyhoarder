@@ -1,6 +1,7 @@
 export type { Box, BoxKitReference } from './box.js';
 export { type ChangesToMinis, haveSameName, withChanges } from './changes-to-minis.js';
 export { EmptyBoxError } from './errors/empty-box.error.js';
+export { isoDay, type MiniStep, type StepChange, stepChange, stepsOfDeleted, type StepStatus } from './mini-steps.js';
 export { hasReached, type HobbyStatus, hobbyStatuses } from './hobby-status.js';
 export { InvalidMiniError } from './errors/invalid-mini.error.js';
 export { InvalidRowsError } from './errors/invalid-rows.error.js';

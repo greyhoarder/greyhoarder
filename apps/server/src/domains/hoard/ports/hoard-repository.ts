@@ -1,4 +1,4 @@
-import type { Box, Mini, OwnFaction, Part } from '@greyhoarder/domain/hoard';
+import type { Box, Mini, MiniStep, OwnFaction, Part } from '@greyhoarder/domain/hoard';
 import type { HoardChange } from '../models/hoard-change.js';
 
 /** The boxes and minis of each user's hoard; every method is scoped to one owner (ADR-0010). */
@@ -16,6 +16,9 @@ export abstract class HoardRepository {
 
   /** The owner's own factions. */
   abstract findOwnFactions(ownerId: string): Promise<OwnFaction[]>;
+
+  /** The recorded steps of the owner's minis. */
+  abstract findSteps(ownerId: string): Promise<MiniStep[]>;
 
   /**
    * Stores the change: the changed minis, the parts and factions they added and those they dropped.

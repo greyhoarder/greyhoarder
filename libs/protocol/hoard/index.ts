@@ -4,6 +4,7 @@ export {
   type AddBoxesResponse,
   addBoxesResponseSchema,
 } from './add-boxes.js';
+export { type ActivityResponse, activityResponseSchema } from './activity.js';
 export { type BoxesResponse, boxesResponseSchema } from './boxes.js';
 export {
   type DeleteBoxesRequest,

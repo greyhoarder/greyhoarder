@@ -1,7 +1,16 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
-import { type Box, boxKitName, type Kit, type Mini, newBoxes, parseTags, toKit } from '@greyhoarder/domain/hoard';
+import {
+  type Box,
+  boxKitName,
+  type Kit,
+  type Mini,
+  newBoxes,
+  parseTags,
+  stepsOfDeleted,
+  toKit,
+} from '@greyhoarder/domain/hoard';
 import { CatalogKitQueries, findContainedKits, type VersionedEntry } from '../../../catalog/api/index.js';
 import { boxDeletion } from '../../models/box-deletion.js';
 import { nextBoxNumber } from '../../models/box-numbers.js';
@@ -161,6 +170,7 @@ export class BoxesService {
     const deletedMiniIds = await this.hoard.deleteBoxes(ownerId, [...asked], {
       changed,
       keptMinis: kept,
+      steps: stepsOfDeleted([...deletedIds]),
       droppedPartIds: droppedParts(deleted, []),
       droppedFactionIds: droppedFactions(deleted, []),
     });
