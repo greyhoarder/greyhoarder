@@ -25,11 +25,14 @@ export function toMiniGroups(
     if (!first) {
       return [];
     }
+
     const group = [first, ...rest];
     const counts: Partial<Record<HobbyStatus, number>> = {};
+
     for (const { status } of group) {
       counts[status] = (counts[status] ?? 0) + 1;
     }
+
     return {
       id: groupKey(first),
       name: first.name,

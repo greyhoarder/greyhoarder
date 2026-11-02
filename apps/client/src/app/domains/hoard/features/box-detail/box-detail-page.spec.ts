@@ -66,6 +66,7 @@ const MINIS: Mini[] = [mini('m1', 'sprue'), mini('m2', 'sprue'), mini('m3', 'bui
 
 describe('Box page', () => {
   let fixture: ComponentFixture<BoxDetailPage>;
+
   const findKit = vi.fn(async () => ({
     kits: [BOYZ_KIT],
     containedKits: new Map(),
@@ -116,7 +117,9 @@ describe('Box page', () => {
   const all = (testId: string): HTMLElement[] => [
     ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
   ];
+
   const textOf = (testId: string): string => all(testId)[0]?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+
   const groupTexts = (): string[] =>
     all('box-group-toggle').map((toggle) => toggle.textContent?.replace(/\s+/g, ' ').trim() ?? '');
 
@@ -185,6 +188,7 @@ describe('Box page', () => {
     const tiles = all('box-status').map((tile) =>
       [...tile.querySelectorAll('span')].map((part) => part.textContent?.trim()).filter(Boolean),
     );
+
     expect(tiles).toEqual([
       ['On the sprue', '2'],
       ['Built', '1'],
@@ -273,6 +277,7 @@ describe('Box page', () => {
 
     const heading = (id: string): string | undefined =>
       (fixture.nativeElement as HTMLElement).querySelector(`#${id}`)?.textContent?.replace(/\s+/g, ' ').trim();
+
     expect([heading('box-minis-heading'), heading('box-sprue-heading')]).toEqual(['Minis 2', 'On the sprue 2']);
   });
 
@@ -299,6 +304,7 @@ describe('Box page', () => {
     await fixture.whenStable();
     all('box-menu')[0]?.click();
     await fixture.whenStable();
+
     return document.querySelector<HTMLElement>('[role="menu"]');
   }
 

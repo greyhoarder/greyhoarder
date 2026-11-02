@@ -50,16 +50,22 @@ export function partOptions(
   const { vocabulary, carried } = parts;
   const needle = partKey(filter);
   const isCarried = (name: string) => carried.some((part) => partKey(part) === partKey(name));
+
   const asOption = (name: string) => {
     const known = findPart(vocabulary, name);
+
     return known ? { name: known.name, partId: known.id, aliases: known.aliases } : { name, aliases: [] };
   };
+
   const matching = (option: PartOption & { readonly aliases: readonly string[] }): PartOption | undefined => {
     const { aliases, ...part } = option;
+
     if (needle === '' || partKey(part.name).includes(needle)) {
       return part;
     }
+
     const alias = aliases.find((candidate) => partKey(candidate).includes(needle));
+
     return alias === undefined ? undefined : { ...part, alias };
   };
 
@@ -67,14 +73,17 @@ export function partOptions(
   const kitOptions = kitParts.map(asOption);
   const fromKit = kitOptions.filter((part) => !isCarried(part.name)).flatMap((part) => matching(part) ?? []);
   const ownTerms = vocabulary.filter((known) => known.isFromCatalog !== true);
+
   const fromVocabulary = ownTerms
     .filter((known) => !kitOptions.some((part) => part.partId === known.id) && !isCarried(known.name))
     .map((known) => ({ name: known.name, partId: known.id, aliases: known.aliases }))
     .sort((a, b) => a.name.localeCompare(b.name))
     .flatMap((part) => matching(part) ?? []);
+
   const isOffered = (name: string) =>
     [...kitOptions, ...ownTerms].some((part) => partKey(part.name) === partKey(name)) ||
     findPart(ownTerms, name) !== undefined;
+
   const fromRange =
     needle === ''
       ? []
@@ -84,11 +93,14 @@ export function partOptions(
           .map((name) => {
             // A catalog part used before is its term of the vocabulary.
             const known = findPart(vocabulary, name);
+
             return known ? { name: known.name, partId: known.id } : { name };
           });
+
   const isKnown =
     findPart(vocabulary, filter) !== undefined ||
     [...kitParts, ...parts.range, ...carried].some((name) => partKey(name) === needle);
+
   return {
     fromKit,
     fromVocabulary,

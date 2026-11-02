@@ -2,6 +2,7 @@ import type { Kit, Part } from '@greyhoarder/domain/hoard';
 import { partOptions, RANGE_LIMIT } from './part-options';
 
 const POWER_KLAW: Part = { id: 'power-klaw', name: 'Power Klaw', aliases: ['Power Claw'] };
+
 const VOCABULARY: Part[] = [
   { id: 'trophy-rack', name: 'Trophy Rack', aliases: [] },
   { id: 'deffgun', name: 'Deffgun', aliases: [] },

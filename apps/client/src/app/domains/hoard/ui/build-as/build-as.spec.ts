@@ -26,12 +26,14 @@ describe('Build as', () => {
     fixture.componentRef.setInput('ownName', ownName);
     fixture.componentRef.setInput('count', count);
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 
   const tiles = (section: HTMLElement): HTMLElement[] => [
     ...section.querySelectorAll<HTMLElement>('[data-testid="mini-build-as"]'),
   ];
+
   const hintOf = (tile: HTMLElement | undefined): Element | null | undefined =>
     tile?.querySelector('[data-testid="mini-name-left"]');
 
@@ -70,6 +72,7 @@ describe('Build as', () => {
   it('marks the chosen name as pressed unless an own name is typed', async () => {
     const pressed = (section: HTMLElement): (string | null)[] =>
       tiles(section).map((tile) => tile.getAttribute('aria-pressed'));
+
     const chosen = pressed(await render({ name: 'Loota' }));
 
     const typed = pressed(await render({ name: 'Loota', ownName: 'Tankbusta' }));

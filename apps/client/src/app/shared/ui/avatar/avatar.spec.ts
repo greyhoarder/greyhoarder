@@ -7,6 +7,7 @@ describe('Avatar', () => {
     fixture.componentRef.setInput('name', 'mira');
     fixture.componentRef.setInput('url', url);
     await fixture.whenStable();
+
     return fixture.nativeElement as HTMLElement;
   };
 

@@ -8,12 +8,15 @@ describe('Delete panel', () => {
     fixture.componentRef.setInput('isDeleting', isDeleting);
     await fixture.whenStable();
     const panel: HTMLElement = fixture.nativeElement;
+
     const find = <T extends HTMLElement = HTMLElement>(testId: string): T | null =>
       panel.querySelector<T>(`[data-testid="${testId}"]`);
+
     const click = async (testId: string): Promise<void> => {
       find(testId)?.click();
       await fixture.whenStable();
     };
+
     return { fixture, panel, find, click };
   };
 

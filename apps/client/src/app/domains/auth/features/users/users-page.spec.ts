@@ -4,6 +4,7 @@ import { type Account, HttpAccountsAdapter } from '../../infrastructure/http-acc
 import { UsersPage } from './users-page';
 
 const MIRA: Account = { id: '1', username: 'mira', role: 'admin', disabled: false, createdAt: '2026-10-12T08:00:00Z' };
+
 const BEN: Account = {
   id: '2',
   username: 'ben',
@@ -27,27 +28,35 @@ describe('Users page', () => {
     await fixture.whenStable();
     const page: HTMLElement = fixture.nativeElement;
     const rows = (): HTMLElement[] => [...page.querySelectorAll<HTMLElement>('[data-testid="users-row"]')];
+
     const within = <T extends HTMLElement>(row: number, testId: string): T | null =>
       rows()[row]?.querySelector<T>(`[data-testid="${testId}"]`) ?? null;
+
     const dialog = (testId: string): HTMLElement | null => document.querySelector(`[data-testid="${testId}"]`);
+
     const open = async (row: number): Promise<void> => {
       within(row, 'users-toggle')?.click();
       await fixture.whenStable();
     };
+
     const search = async (query: string): Promise<void> => {
       const field = page.querySelector<HTMLInputElement>('[data-testid="users-search"]');
+
       if (field) {
         field.value = query;
         field.dispatchEvent(new Event('input'));
       }
+
       await fixture.whenStable();
     };
+
     const settled = async (expectation: () => void): Promise<void> => {
       await vi.waitFor(async () => {
         await fixture.whenStable();
         expectation();
       });
     };
+
     return { fixture, page, rows, within, dialog, open, search, settled };
   };
 
@@ -138,6 +147,7 @@ describe('Users page', () => {
     within(1, 'users-reset-password')?.click();
     await fixture.whenStable();
     const field = within<HTMLInputElement>(1, 'users-new-password');
+
     if (field) {
       field.value = 'new password';
       field.dispatchEvent(new Event('input'));

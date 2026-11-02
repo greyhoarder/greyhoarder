@@ -12,13 +12,17 @@ export async function findFactionLineage(
   const partOf = new Map<string, string>();
   const known = new Set<string>();
   let next = [...new Set(factionIds)];
+
   while (next.length > 0) {
     next.forEach((id) => known.add(id));
+
     const parents = (await findFactions(next)).flatMap(({ id, partOfId }) =>
       partOfId === undefined ? [] : [[id, partOfId] as const],
     );
+
     parents.forEach(([id, partOfId]) => partOf.set(id, partOfId));
     next = [...new Set(parents.map(([, partOfId]) => partOfId))].filter((id) => !known.has(id));
   }
+
   return partOf;
 }

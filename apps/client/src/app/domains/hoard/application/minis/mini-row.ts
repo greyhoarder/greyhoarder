@@ -43,11 +43,13 @@ export function toMiniRows(
 ): MiniRow[] {
   const toRow = rowOf(boxes, factionNames, partNames);
   const rows = new Map<string, MiniRow>();
+
   for (const mini of minis) {
     const key = alikeKey(mini);
     const row = rows.get(key);
     rows.set(key, row ? { ...row, count: row.count + 1 } : toRow(mini));
   }
+
   return [...rows.values()];
 }
 
@@ -67,6 +69,7 @@ function rowOf(
   partNames: ReadonlyMap<string, string>,
 ): (mini: Mini) => MiniRow {
   const byId = new Map(boxes.map((box) => [box.id, box]));
+
   return (mini) => ({
     id: mini.id,
     groupId: groupKey(mini),

@@ -39,25 +39,30 @@ export class FilterChip {
 
   protected readonly visibleOptions = computed(() => {
     const needle = this.query().trim().toLowerCase();
+
     return this.options().filter((option) => option.label.toLowerCase().includes(needle));
   });
 
   /** Up to two selected values are named on the chip; more are counted. */
   protected readonly summary = computed<readonly string[]>(() => {
     const selected = this.selected();
+
     if (selected.size > MAX_NAMED) {
       return [`${selected.size} selected`];
     }
+
     return [...selected].map((value) => this.options().find((option) => option.value === value)?.label ?? value);
   });
 
   protected toggle(value: string): void {
     const next = new Set(this.selected());
+
     if (next.has(value)) {
       next.delete(value);
     } else {
       next.add(value);
     }
+
     this.selectedChange.emit(next);
   }
 

@@ -4,6 +4,7 @@ import { EditedBadge } from './edited-badge';
 function render() {
   const fixture = TestBed.createComponent(EditedBadge);
   fixture.detectChanges();
+
   return fixture.nativeElement as HTMLElement;
 }
 

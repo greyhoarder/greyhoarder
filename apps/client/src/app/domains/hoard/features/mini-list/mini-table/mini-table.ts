@@ -65,8 +65,10 @@ export class MiniTable {
   protected sortBy(order: MiniSortOrder): void {
     if (order === this.sortOrder()) {
       this.sortDirection.update((direction) => (direction === 'ascending' ? 'descending' : 'ascending'));
+
       return;
     }
+
     this.sortOrder.set(order);
     this.sortDirection.set('ascending');
   }

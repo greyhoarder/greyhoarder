@@ -10,6 +10,7 @@ function render(count: number) {
   fixture.componentInstance.changed.subscribe((step) => changed.push(step));
   fixture.detectChanges();
   const find = (testId: string) => fixture.nativeElement.querySelector(`[data-testid="${testId}"]`) as HTMLElement;
+
   return { changed, find };
 }
 

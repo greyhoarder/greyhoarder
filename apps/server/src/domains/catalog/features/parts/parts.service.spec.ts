@@ -3,6 +3,7 @@ import type { CatalogKitQueries } from '../../ports/catalog-kit-queries.js';
 import { PartsService } from './parts.service.js';
 
 const SPACE_MARINES: CatalogFaction = { id: 'w40k/space-marines', systemId: 'w40k', name: 'Space Marines' };
+
 const DARK_ANGELS: CatalogFaction = {
   id: 'w40k/dark-angels',
   systemId: 'w40k',
@@ -13,6 +14,7 @@ const DARK_ANGELS: CatalogFaction = {
 /** A catalog whose kits offer these parts per faction. */
 function fakeCatalog(partsOf: Readonly<Record<string, readonly string[]>>): CatalogKitQueries {
   const factions = [SPACE_MARINES, DARK_ANGELS];
+
   return {
     searchKits: () => Promise.resolve([]),
     findKits: () => Promise.resolve([]),

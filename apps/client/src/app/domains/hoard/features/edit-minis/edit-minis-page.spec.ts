@@ -80,24 +80,31 @@ describe('Edit minis page', () => {
     });
     fixture = TestBed.createComponent(EditMinisPage);
     fixture.componentRef.setInput('ids', ids);
+
     if (box !== undefined) {
       fixture.componentRef.setInput('box', box);
     }
+
     await fixture.whenStable();
   }
 
   const all = (testId: string): HTMLElement[] => [
     ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
   ];
+
   const textOf = (testId: string): string => all(testId)[0]?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+
   const click = async (element: HTMLElement | undefined): Promise<void> => {
     element?.click();
     await fixture.whenStable();
   };
+
   const statusChip = (status: string): HTMLElement | undefined =>
     all('edit-minis-status').find((chip) => chip.dataset['status'] === status);
+
   const factionChip = (name: string): HTMLElement | undefined =>
     all('edit-minis-faction').find((chip) => chip.textContent?.includes(name));
+
   const removeButtonOf = (name: string): HTMLElement | null | undefined =>
     factionChip(name)?.querySelector<HTMLElement>('[data-testid="edit-minis-faction-remove"]');
 
@@ -105,10 +112,12 @@ describe('Edit minis page', () => {
   async function searchFactions(text: string): Promise<void> {
     await click(all('edit-minis-add-faction')[0]);
     const field = document.querySelector<HTMLInputElement>('[data-testid="edit-minis-faction-search"]');
+
     if (field) {
       field.value = text;
       field.dispatchEvent(new Event('input'));
     }
+
     await fixture.whenStable();
   }
 

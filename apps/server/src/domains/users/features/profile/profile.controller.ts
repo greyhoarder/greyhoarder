@@ -40,6 +40,7 @@ export class ProfileController {
       if (error instanceof InvalidAvatarError) {
         throw new UnprocessableEntityException(error.message);
       }
+
       throw error;
     }
   }
@@ -56,9 +57,11 @@ export class ProfileController {
   @Header('X-Content-Type-Options', 'nosniff')
   async avatar(@Param('id') id: string): Promise<StreamableFile> {
     const image = await this.profiles.avatarOf(id);
+
     if (image === undefined) {
       throw new NotFoundException();
     }
+
     return new StreamableFile(image, { type: 'image/jpeg' });
   }
 }

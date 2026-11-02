@@ -12,10 +12,12 @@ export function areAlike(a: Mini, b: Mini): boolean {
 /** Alike minis bundled, in the order their first mini comes. */
 export function alikeGroups(minis: readonly Mini[]): Mini[][] {
   const groups = new Map<string, Mini[]>();
+
   for (const mini of minis) {
     const key = alikeKey(mini);
     groups.set(key, [...(groups.get(key) ?? []), mini]);
   }
+
   return [...groups.values()];
 }
 

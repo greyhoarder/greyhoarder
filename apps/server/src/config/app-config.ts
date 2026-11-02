@@ -52,10 +52,13 @@ export class AppConfig {
 
   constructor(environment: NodeJS.ProcessEnv, development: boolean) {
     const result = environmentSchema.safeParse(development ? { ...DEVELOPMENT_DEFAULTS, ...environment } : environment);
+
     if (!result.success) {
       throw new Error(`Invalid configuration:\n${z.prettifyError(result.error)}`);
     }
+
     const env = result.data;
+
     if (!development && env.SESSION_SECRETS.includes(DEVELOPMENT_DEFAULTS.SESSION_SECRETS)) {
       throw new Error('Invalid configuration: the development session secret is not allowed.');
     }

@@ -22,6 +22,7 @@ export class HttpBoxesAdapter {
     readonly factionNames: ReadonlyMap<string, string>;
   }> {
     const response = await firstValueFrom(this.http.get<BoxesResponse>('/api/hoard/boxes'));
+
     return { boxes: response.boxes, factionNames: new Map(Object.entries(response.factionNames)) };
   }
 
@@ -35,6 +36,7 @@ export class HttpBoxesAdapter {
     addedOn: string,
   ): Promise<{ readonly boxes: readonly Box[]; readonly minis: readonly Mini[] }> {
     const body: AddBoxesRequest = { kitId, ...boxesToAdd, addedOn };
+
     return firstValueFrom(this.http.post<AddBoxesResponse>('/api/hoard/boxes', body));
   }
 
@@ -52,6 +54,7 @@ export class HttpBoxesAdapter {
     readonly minis: readonly Mini[];
   }> {
     const body: DeleteBoxesRequest = { ids, keepBuiltMinis };
+
     return firstValueFrom(this.http.delete<DeleteBoxesResponse>('/api/hoard/boxes', { body }));
   }
 }

@@ -23,6 +23,7 @@ describe('Catalog files', () => {
     await mkdir(join(catalogDirectory, 'kits/games-workshop/orks'), { recursive: true });
     await writeFile(join(catalogDirectory, 'factions/warhammer-40000.yaml'), ORKS_SYSTEM);
     await writeFile(join(catalogDirectory, 'kits/games-workshop/orks/boyz.yaml'), boyzFile);
+
     for (const [name, file] of Object.entries(otherKits)) {
       await writeFile(join(catalogDirectory, `kits/games-workshop/orks/${name}.yaml`), file);
     }

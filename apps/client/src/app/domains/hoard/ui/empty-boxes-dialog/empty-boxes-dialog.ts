@@ -27,6 +27,7 @@ export class EmptyBoxesDialog {
 
   protected readonly question = computed(() => {
     const names = this.names();
+
     return names.length === 1
       ? `${names[0]} has no minis left. Delete the box as well?`
       : `${names.length} boxes have no minis left: ${names.join(', ')}. Delete them as well?`;

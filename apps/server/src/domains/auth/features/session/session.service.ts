@@ -15,6 +15,7 @@ function lockDurationMs(failures: number): number {
   if (failures < FAILURES_BEFORE_LOCK) {
     return 0;
   }
+
   return Math.min(1000 * 2 ** (failures - FAILURES_BEFORE_LOCK), MAX_LOCK_MS);
 }
 
@@ -39,12 +40,14 @@ export class SessionService {
 
     await this.assertNotLocked(subjects);
     const user = await this.checkPassword(username, password);
+
     if (!user) {
       await this.recordFailure(subjects);
       throw new InvalidCredentialsError();
     }
 
     await this.attempts.reset(usernameSubject);
+
     return user;
   }
 
@@ -72,6 +75,7 @@ export class SessionService {
     const subjects = [`password:${user.id}`];
 
     await this.assertNotLocked(subjects);
+
     if (!(await this.checkPassword(user.username, currentPassword))) {
       await this.recordFailure(subjects);
       throw new InvalidCredentialsError();
@@ -85,6 +89,7 @@ export class SessionService {
   private async assertNotLocked(subjects: readonly string[]): Promise<void> {
     const lockedFor = await Promise.all(subjects.map((subject) => this.attempts.lockedForMs(subject)));
     const longestLockMs = Math.max(...lockedFor);
+
     if (longestLockMs > 0) {
       throw new TooManyLoginAttemptsError(longestLockMs);
     }
@@ -93,11 +98,15 @@ export class SessionService {
   /** The user if the password matches and the account is active. Same timing in every case. */
   private async checkPassword(username: string, password: string): Promise<User | undefined> {
     const record = await this.accounts.findCredentials(username);
+
     if (!record) {
       await this.passwords.spendVerificationTime(password);
+
       return undefined;
     }
+
     const matches = await this.passwords.verify(record.passwordHash, password);
+
     return matches && !record.user.disabled ? record.user : undefined;
   }
 
@@ -105,6 +114,7 @@ export class SessionService {
     await Promise.all(
       subjects.map(async (subject) => {
         const lockMs = lockDurationMs(await this.attempts.recordFailure(subject));
+
         if (lockMs > 0) {
           await this.attempts.lock(subject, lockMs);
         }

@@ -6,6 +6,7 @@ import { CurrentSession } from '../current-session';
 export const signedInGuard: CanActivateChildFn = async () => {
   const router = inject(Router);
   const user = await inject(CurrentSession).refresh();
+
   return user ? true : router.parseUrl('/login');
 };
 
@@ -17,5 +18,6 @@ export const administratorGuard: CanActivateFn = () =>
 export const signedOutGuard: CanActivateFn = async () => {
   const router = inject(Router);
   const user = await inject(CurrentSession).refresh();
+
   return user ? router.parseUrl('/') : true;
 };

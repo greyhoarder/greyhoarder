@@ -11,8 +11,10 @@ describe('Added bar', () => {
     fixture.componentRef.setInput('linkLabel', 'Show minis');
     fixture.componentRef.setInput('testId', 'add-minis-added');
     await fixture.whenStable();
+
     const find = (testId: string): HTMLElement | null =>
       (fixture.nativeElement as HTMLElement).querySelector(`[data-testid="${testId}"]`);
+
     return { fixture, find };
   };
 

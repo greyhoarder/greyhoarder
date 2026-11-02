@@ -49,12 +49,15 @@ export class MongoUserRepository extends UserRepository implements UserQueries {
     if (!isValidObjectId(id)) {
       return undefined;
     }
+
     const stored = await this.users.findById(id).lean().exec();
+
     return stored ? toUser(stored) : undefined;
   }
 
   async findByUsername(username: string): Promise<User | undefined> {
     const stored = await this.users.findOne({ username }).collation(CASE_INSENSITIVE).lean().exec();
+
     return stored ? toUser(stored) : undefined;
   }
 
@@ -64,6 +67,7 @@ export class MongoUserRepository extends UserRepository implements UserQueries {
 
   async findAll(): Promise<User[]> {
     const stored = await this.users.find().collation(CASE_INSENSITIVE).sort({ username: 1 }).lean().exec();
+
     return stored.map(toUser);
   }
 
@@ -74,6 +78,7 @@ export class MongoUserRepository extends UserRepository implements UserQueries {
       .select('+passwordHash')
       .lean()
       .exec();
+
     return stored ? { user: toUser(stored), passwordHash: stored.passwordHash } : undefined;
   }
 
@@ -84,6 +89,7 @@ export class MongoUserRepository extends UserRepository implements UserQueries {
       if (error instanceof mongo.MongoServerError && error.code === DUPLICATE_KEY) {
         throw new AccountsAlreadyExistError();
       }
+
       throw error;
     }
   }
@@ -95,6 +101,7 @@ export class MongoUserRepository extends UserRepository implements UserQueries {
       if (error instanceof mongo.MongoServerError && error.code === DUPLICATE_KEY) {
         throw new UsernameTakenError();
       }
+
       throw error;
     }
   }
@@ -107,11 +114,13 @@ export class MongoUserRepository extends UserRepository implements UserQueries {
     const entries = Object.entries(changes);
     const set = Object.fromEntries(entries.filter(([, value]) => value !== undefined));
     const unset = Object.fromEntries(entries.filter(([, value]) => value === undefined).map(([key]) => [key, '']));
+
     const stored = await this.users
       .findByIdAndUpdate(id, { $set: set, $unset: unset }, { returnDocument: 'after' })
       .lean()
       .orFail()
       .exec();
+
     return toUser(stored);
   }
 
@@ -121,6 +130,7 @@ export class MongoUserRepository extends UserRepository implements UserQueries {
       .lean()
       .orFail()
       .exec();
+
     return toUser(stored);
   }
 
@@ -137,6 +147,7 @@ export class MongoUserRepository extends UserRepository implements UserQueries {
     if (await this.users.exists({}).session(session).exec()) {
       throw new AccountsAlreadyExistError();
     }
+
     await this.markers.create([{ _id: INITIAL_ADMIN_MARKER_ID }], { session });
     await this.users.create([{ username, passwordHash, role: 'admin', disabled: false }], { session });
   }

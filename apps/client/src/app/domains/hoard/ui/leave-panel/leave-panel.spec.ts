@@ -9,12 +9,15 @@ describe('Leave panel', () => {
     await fixture.whenStable();
     const panel: HTMLElement = fixture.nativeElement;
     const find = <T extends HTMLElement = HTMLElement>(selector: string): T | null => panel.querySelector<T>(selector);
+
     const click = async (selector: string): Promise<void> => {
       find(selector)?.click();
       await fixture.whenStable();
     };
+
     const left = vi.fn();
     fixture.componentInstance.left.subscribe(left);
+
     return { fixture, find, click, left };
   };
 
@@ -35,10 +38,12 @@ describe('Leave panel', () => {
     const { fixture, find, click, left } = await render();
     await click(sold);
     const day = find<HTMLInputElement>('[data-testid="mini-leave-date"]');
+
     if (day) {
       day.value = '2026-09-14';
       day.dispatchEvent(new Event('change'));
     }
+
     await fixture.whenStable();
 
     await click(confirm);

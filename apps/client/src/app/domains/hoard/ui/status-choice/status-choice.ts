@@ -70,9 +70,11 @@ export class StatusChoice {
     const at = chosen === undefined ? (by > 0 ? -1 : statuses.length) : statuses.indexOf(chosen);
     const index = (at + by + statuses.length) % statuses.length;
     const next = statuses[index];
+
     if (next === undefined) {
       return;
     }
+
     this.chose.emit(next);
     this.chips()[index]?.nativeElement.focus();
   }

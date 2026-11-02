@@ -57,11 +57,13 @@ describe('Shell', () => {
 
     toggle?.click();
     await fixture.whenStable();
+
     const collapsed = {
       label: toggle?.getAttribute('aria-label'),
       expanded: toggle?.getAttribute('aria-expanded'),
       tooltip: dashboard?.getAttribute('title'),
     };
+
     toggle?.click();
     await fixture.whenStable();
 

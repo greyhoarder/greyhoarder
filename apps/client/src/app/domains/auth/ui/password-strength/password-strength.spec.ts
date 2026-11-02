@@ -7,6 +7,7 @@ describe('Password strength meter', () => {
     fixture.componentRef.setInput('password', password);
     fixture.componentRef.setInput('userInputs', userInputs);
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 

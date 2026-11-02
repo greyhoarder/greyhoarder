@@ -21,6 +21,7 @@ export class SquareImage {
       .getContext('2d')
       ?.drawImage(image, (image.width - side) / 2, (image.height - side) / 2, side, side, 0, 0, EDGE, EDGE);
     image.close();
+
     return canvas.toDataURL('image/jpeg', QUALITY).split(',')[1] ?? '';
   }
 }

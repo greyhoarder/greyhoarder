@@ -15,6 +15,7 @@ export class PartsService {
   async list(ownerId: string): Promise<VocabularyPart[]> {
     const parts = await this.hoard.findParts(ownerId);
     const offered = await this.catalog.findOfferedPartNames(parts.map((part) => part.name));
+
     return withCatalogOrigin(parts, offered);
   }
 }

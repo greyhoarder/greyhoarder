@@ -20,9 +20,11 @@ export function boxProgress(statuses: readonly HobbyStatus[], goneCount = 0): Bo
   if (statuses.length === 0) {
     return goneCount > 0 ? 'all-gone' : 'empty';
   }
+
   if (statuses.every((status) => status === 'sprue')) {
     return 'untouched';
   }
+
   return statuses.every((status) => hasReached(status, 'painted')) ? 'done' : 'started';
 }
 
@@ -42,7 +44,9 @@ export function progressPercent(statuses: readonly HobbyStatus[]): number {
   if (statuses.length === 0) {
     throw new EmptyBoxError();
   }
+
   const lastStep = hobbyStatuses.length - 1;
   const sum = statuses.reduce((total, status) => total + hobbyStatuses.indexOf(status) / lastStep, 0);
+
   return Math.round((sum / statuses.length) * 100);
 }

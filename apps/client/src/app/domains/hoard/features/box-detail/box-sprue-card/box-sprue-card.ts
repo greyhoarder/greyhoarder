@@ -113,6 +113,7 @@ export class BoxSprueCard {
 
   protected async build(): Promise<void> {
     await this.editor.build();
+
     if (this.editor.saveState() !== 'failed') {
       this.panelChange.emit(undefined);
     }
@@ -122,6 +123,7 @@ export class BoxSprueCard {
     this.isLeaving.set(true);
     const hasLeft = await this.editor.leave(departure, count);
     this.isLeaving.set(false);
+
     if (hasLeft) {
       this.panelChange.emit(undefined);
     }
@@ -131,9 +133,11 @@ export class BoxSprueCard {
     this.isDeleting.set(true);
     const { isDeleted, emptiedBoxIds } = await this.editor.delete(count);
     this.isDeleting.set(false);
+
     if (isDeleted) {
       this.panelChange.emit(undefined);
     }
+
     if (emptiedBoxIds.length > 0) {
       this.boxesEmptied.emit(emptiedBoxIds);
     }

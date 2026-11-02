@@ -50,8 +50,10 @@ describe('Kit card of a box', () => {
     fixture.componentRef.setInput('kit', kit);
     fixture.componentRef.setInput('factionNames', factionNames);
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
+
   const slotTexts = (card: HTMLElement): string[] =>
     [...card.querySelectorAll('[data-testid="box-kit-slot"]')].map(
       (row) => row.textContent?.replace(/\s+/g, ' ').trim() ?? '',
@@ -82,6 +84,7 @@ describe('Kit card of a box', () => {
       row.children[0]?.textContent?.trim(),
       row.children[1]?.children[0]?.textContent?.trim(),
     ]);
+
     expect(rows).toEqual([
       ['9×', 'Boy'],
       ['1×', 'Nob'],
@@ -96,6 +99,7 @@ describe('Kit card of a box', () => {
 
   it('lists what the kit suggests under a heading per army', async () => {
     const marines = 'warhammer-40000/space-marines';
+
     const kit: Kit = {
       ...BOYZ,
       factionIds: [marines, 'warhammer-40000/orks'],

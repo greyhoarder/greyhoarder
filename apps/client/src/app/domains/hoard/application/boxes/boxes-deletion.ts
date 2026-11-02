@@ -79,15 +79,18 @@ export class BoxesDeletion {
   ): Promise<boolean> {
     this.isDeleting.set(true);
     this.hasFailed.set(false);
+
     try {
       const { deletedMiniIds, minis } = await remove(this.ids());
       this.hoardChanges.removed(deletedMiniIds, minis);
       this.boxesStore.remove(this.ids());
       this.ids.set([]);
       this.isAsking.set(false);
+
       return true;
     } catch {
       this.hasFailed.set(true);
+
       return false;
     } finally {
       this.isDeleting.set(false);

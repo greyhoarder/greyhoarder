@@ -54,6 +54,7 @@ const LOOTAS_OR_BURNA_BOYZ: Kit = {
 
 const ORKS = 'warhammer-40000/orks';
 const MARINES = 'warhammer-40000/space-marines';
+
 const FACTION_NAMES = new Map([
   [ORKS, 'Orks'],
   [MARINES, 'Space Marines'],
@@ -102,8 +103,10 @@ describe('Box form', () => {
   }
 
   const form = (): HTMLElement => fixture.nativeElement;
+
   const byTestId = <T extends HTMLElement = HTMLElement>(id: string): T | null =>
     form().querySelector<T>(`[data-testid="${id}"]`);
+
   const allText = (id: string): string[] =>
     [...form().querySelectorAll(`[data-testid="${id}"]`)].map((element) =>
       (element.textContent ?? '').replace(/\s+/g, ' ').trim(),
@@ -116,18 +119,22 @@ describe('Box form', () => {
 
   async function typeName(name: string): Promise<void> {
     const input = byTestId<HTMLInputElement>('add-box-name');
+
     if (input) {
       input.value = name;
       input.dispatchEvent(new Event('input'));
     }
+
     await fixture.whenStable();
   }
 
   /** What a row shows, by part, wherever in the row it is. */
   function rowParts(index: number): Record<'count' | 'name' | 'builds' | 'parts', string[]> {
     const row = form().querySelectorAll<HTMLElement>('[data-testid="add-box-slot"]')[index];
+
     const texts = (testId: string) =>
       [...row.querySelectorAll(`[data-testid="${testId}"]`)].map((element) => element.textContent?.trim() ?? '');
+
     return {
       count: texts('add-box-slot-count'),
       name: texts('add-box-slot-name'),
@@ -138,10 +145,12 @@ describe('Box form', () => {
 
   async function typeTag(tag: string): Promise<void> {
     const input = byTestId<HTMLInputElement>('add-box-new-tag');
+
     if (input) {
       input.value = tag;
       input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
     }
+
     await fixture.whenStable();
   }
 

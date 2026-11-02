@@ -11,7 +11,9 @@ export class DomainEvents {
     const results = await Promise.allSettled(
       this.emitter.listeners(event.constructor.name).map((listener) => listener(event)),
     );
+
     const failed = results.find((result) => result.status === 'rejected');
+
     if (failed !== undefined) {
       throw failed.reason;
     }

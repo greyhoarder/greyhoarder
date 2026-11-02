@@ -7,10 +7,12 @@ import { hobbyStatuses, type Mini } from '@greyhoarder/domain/hoard';
  */
 export function builtGroups(minis: readonly Mini[]): Mini[][] {
   const groups = new Map<string, Mini[]>();
+
   for (const mini of minis.filter((built) => built.status !== 'sprue')) {
     const key = groupKey(mini);
     groups.set(key, [...(groups.get(key) ?? []), mini]);
   }
+
   return [...groups.values()].map((group) => [...group].sort(byFurthestStatus)).sort(byFirstMini);
 }
 
@@ -22,6 +24,7 @@ export function groupKey(mini: Mini): string {
 /** Groups by their first mini, which has their furthest status. */
 function byFirstMini(a: readonly Mini[], b: readonly Mini[]): number {
   const [first, other] = [a[0], b[0]];
+
   return first && other ? byFurthestStatus(first, other) || first.name.localeCompare(other.name) : 0;
 }
 

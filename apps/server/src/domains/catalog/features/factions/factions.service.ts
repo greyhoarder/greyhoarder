@@ -20,6 +20,7 @@ export class FactionsService {
   async search(text: string): Promise<FoundFaction[]> {
     const factions = await this.catalog.searchFactions(text, SEARCH_LIMIT);
     const systemNames = await this.catalog.findSystemNames(factions.map((faction) => faction.id));
+
     return factions.map((faction) => ({
       id: faction.id,
       name: faction.name,

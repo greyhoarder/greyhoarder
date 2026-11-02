@@ -34,11 +34,14 @@ export class KitsService {
       this.catalog.searchKits(text, SEARCH_LIMIT),
       this.findBundlesBuildableAs(text),
     ]);
+
     const byId = new Map([...found, ...bundles].map((kit) => [kit.entry.id, kit]));
+
     const kits = [...byId.values()]
       .filter((kit) => !kit.isRemoved)
       .sort((a, b) => compare(a.entry.name, b.entry.name) || compare(a.entry.id, b.entry.id))
       .slice(0, SEARCH_LIMIT);
+
     return this.withContainedKits(kits);
   }
 
@@ -47,18 +50,21 @@ export class KitsService {
     const knownIds = new Set(await this.catalog.findKitIdsBuildableAs(text));
     const bundles: VersionedEntry<CatalogKit>[] = [];
     let ids = [...knownIds];
+
     while (ids.length > 0) {
       const found = (await this.catalog.findBundlesContaining(ids)).filter(({ entry }) => !knownIds.has(entry.id));
       found.forEach(({ entry }) => knownIds.add(entry.id));
       bundles.push(...found);
       ids = found.map(({ entry }) => entry.id);
     }
+
     return bundles;
   }
 
   /** This version of the kit, also when it was removed later; no kit when there is no such version. */
   async find(id: string, version: number): Promise<KitSearchResult> {
     const kit = await this.catalog.findKitVersion(id, version);
+
     return this.withContainedKits(kit === undefined ? [] : [kit]);
   }
 
@@ -66,6 +72,7 @@ export class KitsService {
     const containedKits = await findContainedKits(kits, (ids) => this.catalog.findKits(ids));
     const factionIds = [...new Set([...kits, ...containedKits].flatMap(({ entry }) => factionIdsOf(entry)))];
     const factionNames = await this.catalog.findFactionNames(factionIds);
+
     return { kits, containedKits, factionNames };
   }
 }
@@ -75,6 +82,7 @@ function compare(a: string, b: string): number {
   if (a === b) {
     return 0;
   }
+
   return a < b ? -1 : 1;
 }
 

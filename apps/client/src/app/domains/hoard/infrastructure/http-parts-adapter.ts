@@ -12,6 +12,7 @@ export class HttpPartsAdapter {
   /** The signed-in user's vocabulary of parts, each telling whether it comes from the catalog. */
   async list(): Promise<readonly VocabularyPart[]> {
     const response = await firstValueFrom(this.http.get<PartsResponse>('/api/hoard/parts'));
+
     return response.parts;
   }
 }

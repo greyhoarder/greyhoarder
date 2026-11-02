@@ -39,18 +39,22 @@ export function toBoxRows(
 ): BoxRow[] {
   const counts = new Map<string, Partial<Record<HobbyStatus, number>>>();
   const goneCounts = new Map<string, number>();
+
   for (const mini of minis) {
     if (mini.boxId === undefined) {
       continue;
     }
+
     if (isGone(mini)) {
       goneCounts.set(mini.boxId, (goneCounts.get(mini.boxId) ?? 0) + 1);
       continue;
     }
+
     const count = counts.get(mini.boxId) ?? {};
     count[mini.status] = (count[mini.status] ?? 0) + 1;
     counts.set(mini.boxId, count);
   }
+
   return boxes.map((box) => ({
     id: box.id,
     name: box.name,
@@ -87,6 +91,7 @@ export function progressOf(box: BoxRow): BoxProgress {
 /** 0 to 100, weighted by status (see `progressPercent`); 0 once all minis are gone. */
 export function percentOf(box: BoxRow): number {
   const statuses = statusesOf(box);
+
   return statuses.length > 0 ? progressPercent(statuses) : 0;
 }
 

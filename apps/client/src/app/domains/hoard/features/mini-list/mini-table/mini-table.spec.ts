@@ -41,6 +41,7 @@ describe('Mini table', () => {
     await fixture.whenStable();
     const table: HTMLElement = fixture.nativeElement;
     const statusHeader = table.querySelector<HTMLButtonElement>('[data-testid="hoard-sort-status"]');
+
     const firstStatus = (): string | undefined =>
       table.querySelector('[data-testid="hoard-status"]')?.textContent?.trim();
 
@@ -62,9 +63,11 @@ describe('Mini table', () => {
       await fixture.whenStable();
       const allSelectedChange = vi.fn();
       fixture.componentInstance.allSelectedChange.subscribe(allSelectedChange);
+
       const check = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
         '[data-testid="hoard-select-all"]',
       );
+
       return { check, allSelectedChange };
     };
 

@@ -19,6 +19,7 @@ export class DashboardPage {
   private readonly user = inject(CurrentSession).user;
   protected readonly name = computed(() => {
     const user = this.user();
+
     return user && shownName(user);
   });
   protected readonly hoard = inject(HoardByFaction);

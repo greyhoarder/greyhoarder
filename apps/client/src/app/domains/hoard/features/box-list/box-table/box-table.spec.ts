@@ -39,6 +39,7 @@ describe('Box table', () => {
     await fixture.whenStable();
     const table: HTMLElement = fixture.nativeElement;
     const nameHeader = table.querySelector<HTMLButtonElement>('[data-testid="hoard-box-sort-name"]');
+
     const firstBox = (): string | undefined =>
       table.querySelector('[data-testid="hoard-box"] .font-medium')?.textContent?.trim();
 
@@ -83,9 +84,11 @@ describe('Box table', () => {
       await fixture.whenStable();
       const allSelectedChange = vi.fn();
       fixture.componentInstance.allSelectedChange.subscribe(allSelectedChange);
+
       const check = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
         '[data-testid="hoard-box-select-all"]',
       );
+
       return { check, allSelectedChange };
     };
 

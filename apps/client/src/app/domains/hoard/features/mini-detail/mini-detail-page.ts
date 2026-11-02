@@ -83,6 +83,7 @@ export class MiniDetailPage {
   /** Back to the box the screen was opened from, else to the hoard. */
   protected readonly back = computed(() => {
     const boxId = this.editor.box()?.id;
+
     return this.from() === 'box' && boxId !== undefined
       ? { link: ['/hoard/boxes', boxId], label: 'Box' }
       : { link: ['/hoard/minis'], label: 'Hoard' };
@@ -116,6 +117,7 @@ export class MiniDetailPage {
   /** How far the minis' box is, 0 to 100; none without a box or when all of its minis are gone. */
   protected readonly boxPercent = computed(() => {
     const minis = this.editor.minisOfBox().filter((mini) => !isGone(mini));
+
     return minis.length > 0 ? progressPercent(minis.map((mini) => mini.status)) : 0;
   });
 
@@ -155,6 +157,7 @@ export class MiniDetailPage {
   /** E.g. "Sold on 12 Oct 2026". */
   protected readonly departureText = computed(() => {
     const departure = this.editor.mini()?.departure;
+
     return departure && `${DEPARTURE_LABELS[departure.reason]} on ${formatDate(departure.on)}`;
   });
   protected readonly formatDate = formatDate;
@@ -163,6 +166,7 @@ export class MiniDetailPage {
     effect(() => this.editor.miniId.set(this.id()));
     effect(() => {
       const name = this.editor.name();
+
       if (this.editor.mini()) {
         this.title.setTitle(`${eitherOrText(name)} · Greyhoarder`);
       }
@@ -186,6 +190,7 @@ export class MiniDetailPage {
     this.isLeaving.set(true);
     const hasLeft = await this.editor.leave(departure, 1);
     this.isLeaving.set(false);
+
     if (hasLeft) {
       this.closePanel();
     }
@@ -197,6 +202,7 @@ export class MiniDetailPage {
     this.isDeleting.set(true);
     const { isDeleted, emptiedBoxIds } = await this.editor.delete(1);
     this.isDeleting.set(false);
+
     if (isDeleted) {
       this.openPanel.set(undefined);
       void this.router.navigate(boxId === undefined ? ['/hoard/minis'] : ['/hoard/boxes', boxId], {
@@ -210,6 +216,7 @@ export class MiniDetailPage {
     if (!this.isPickerOpen()) {
       this.openPanel.set(undefined);
     }
+
     this.isPickerOpen.update((isOpen) => !isOpen);
   }
 

@@ -12,6 +12,7 @@ export class HttpCatalogPartsAdapter {
   async rangeParts(factionIds: readonly string[]): Promise<readonly string[]> {
     const params: RangePartsRequest = { factionIds: factionIds.join(',') };
     const response = await firstValueFrom(this.http.get<RangePartsResponse>('/api/catalog/parts', { params }));
+
     return response.parts;
   }
 }

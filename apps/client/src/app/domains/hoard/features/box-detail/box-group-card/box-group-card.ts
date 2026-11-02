@@ -86,14 +86,17 @@ export class BoxGroupCard {
   protected readonly chips = computed(() => {
     const { factions, parts } = this.group();
     const boxFactions = this.boxFactions();
+
     const isLikeBox =
       factions.length === boxFactions.length && factions.every((faction) => boxFactions.includes(faction));
+
     return [...(isLikeBox ? [] : factions), ...parts];
   });
   /** The statuses the group has, in pipeline order, with their counts. */
   protected readonly legend = computed(() =>
     PROGRESS_STATUSES.flatMap((status) => {
       const count = this.group().counts[status] ?? 0;
+
       return count > 0 ? [{ status, count, label: STATUS_LABELS[status] }] : [];
     }),
   );
@@ -127,6 +130,7 @@ export class BoxGroupCard {
     this.isLeaving.set(true);
     const hasLeft = await this.editor.leaveMinis([...this.miniIds()], departure);
     this.isLeaving.set(false);
+
     if (hasLeft) {
       this.isLeavePanelOpen.set(false);
     }

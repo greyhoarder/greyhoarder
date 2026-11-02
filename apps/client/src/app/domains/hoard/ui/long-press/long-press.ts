@@ -30,6 +30,7 @@ export class LongPress {
 
   constructor() {
     const element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
     // Captured before the handlers of the element and its children, so the press neither opens
     // nor toggles what it just selected.
     const swallowClick = (event: MouseEvent): void => {
@@ -39,6 +40,7 @@ export class LongPress {
         event.preventDefault();
       }
     };
+
     element.addEventListener('click', swallowClick, { capture: true });
     inject(DestroyRef).onDestroy(() => {
       element.removeEventListener('click', swallowClick, { capture: true });
@@ -48,9 +50,11 @@ export class LongPress {
 
   protected start(event: PointerEvent): void {
     this.hasPressedLong = false;
+
     if (event.pointerType !== 'touch') {
       return;
     }
+
     this.origin = { x: event.clientX, y: event.clientY };
     this.timer = setTimeout(() => {
       this.timer = undefined;
@@ -61,6 +65,7 @@ export class LongPress {
 
   protected move(event: PointerEvent): void {
     const { origin } = this;
+
     if (origin && Math.hypot(event.clientX - origin.x, event.clientY - origin.y) > TOLERANCE_PX) {
       this.cancel();
     }

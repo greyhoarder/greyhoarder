@@ -28,6 +28,7 @@ export class SetupController {
       if (error instanceof AccountsAlreadyExistError) {
         throw new ConflictException(error.message);
       }
+
       throw error;
     }
   }

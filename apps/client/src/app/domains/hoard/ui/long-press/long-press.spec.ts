@@ -32,6 +32,7 @@ describe('Long press', () => {
     const fixture = TestBed.createComponent(Line);
     fixture.detectChanges();
     const button = (fixture.nativeElement as HTMLElement).querySelector('button');
+
     return { line: fixture.componentInstance, button };
   };
 

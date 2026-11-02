@@ -45,6 +45,7 @@ export class MinisController {
   @ZodSerializerDto(minisResponseSchema)
   async list(@CurrentUser() user: User): Promise<MinisResponse> {
     const { minis, factionNames, systemNames, partOf } = await this.minis.list(user.id);
+
     return {
       minis,
       factionNames: Object.fromEntries(factionNames),
@@ -66,9 +67,11 @@ export class MinisController {
       ) {
         throw new NotFoundException(error.message);
       }
+
       if (error instanceof InvalidMiniError || error instanceof LooseMiniOnSprueError) {
         throw new UnprocessableEntityException(error.message);
       }
+
       throw error;
     }
   }
@@ -83,6 +86,7 @@ export class MinisController {
   @ZodSerializerDto(updateMinisResponseSchema)
   async change(@CurrentUser() user: User, @Body() body: ChangeMinisRequestDto): Promise<UpdateMinisResponse> {
     const { ids, ...changes } = body;
+
     return changedMinisResponse(() => this.minis.change(user.id, ids, changes));
   }
 
@@ -95,6 +99,7 @@ export class MinisController {
       if (error instanceof UnknownMinisError) {
         throw new NotFoundException(error.message);
       }
+
       throw error;
     }
   }
@@ -104,6 +109,7 @@ export class MinisController {
 async function changedMinisResponse(change: () => Promise<ChangedMinis>): Promise<UpdateMinisResponse> {
   try {
     const { minis, ownFactionNames } = await change();
+
     return { minis, ownFactionNames: Object.fromEntries(ownFactionNames) };
   } catch (error) {
     if (
@@ -113,6 +119,7 @@ async function changedMinisResponse(change: () => Promise<ChangedMinis>): Promis
     ) {
       throw new NotFoundException(error.message);
     }
+
     if (
       error instanceof InvalidMiniError ||
       error instanceof LooseMiniOnSprueError ||
@@ -120,6 +127,7 @@ async function changedMinisResponse(change: () => Promise<ChangedMinis>): Promis
     ) {
       throw new UnprocessableEntityException(error.message);
     }
+
     throw error;
   }
 }

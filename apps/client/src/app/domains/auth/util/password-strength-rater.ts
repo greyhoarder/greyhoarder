@@ -14,11 +14,13 @@ let rater: Promise<PasswordStrengthRater> | undefined;
  */
 export function loadPasswordStrengthRater(): Promise<PasswordStrengthRater> {
   rater ??= createRater();
+
   return rater;
 }
 
 async function createRater(): Promise<PasswordStrengthRater> {
   const estimator = await createEstimator();
+
   return (password, userInputs) => toPasswordStrength(estimator.check(password, [...userInputs]).score);
 }
 
@@ -29,6 +31,7 @@ async function createEstimator(): Promise<ZxcvbnFactory> {
     import('@zxcvbn-ts/language-en'),
     import('@zxcvbn-ts/language-de'),
   ]);
+
   return new core.ZxcvbnFactory({
     graphs: common.adjacencyGraphs,
     dictionary: { ...common.dictionary, ...english.dictionary, ...german.dictionary },

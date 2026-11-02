@@ -58,14 +58,17 @@ describe('Boxes page', () => {
     const fixture = TestBed.createComponent(BoxListPage);
     await fixture.whenStable();
     const page: HTMLElement = fixture.nativeElement;
+
     for (const check of [...page.querySelectorAll<HTMLElement>('[data-testid="hoard-row-check"]')].slice(0, 2)) {
       check.click();
     }
+
     await fixture.whenStable();
     page.querySelector<HTMLElement>('[data-testid="hoard-box-selection-delete"]')?.click();
     await fixture.whenStable();
     // The dialog opens in an overlay outside the component.
     const dialogButton = (testId: string) => document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+
     return { fixture, page, dialogButton };
   }
 
@@ -81,6 +84,7 @@ describe('Boxes page', () => {
       search.value = 'second';
       search.dispatchEvent(new Event('input'));
     }
+
     await fixture.whenStable();
 
     expect(page.querySelectorAll('[data-testid="hoard-box"]')).toHaveLength(2);
@@ -155,6 +159,7 @@ describe('Boxes page', () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(BoxListPage);
     await fixture.whenStable();
+
     const name = (fixture.nativeElement as HTMLElement)
       .querySelector('[data-testid="hoard-box"]')
       ?.querySelector<HTMLButtonElement>('button[type="button"]:not([aria-label])');
@@ -170,6 +175,7 @@ describe('Boxes page', () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(BoxListPage);
     await fixture.whenStable();
+
     const name = (fixture.nativeElement as HTMLElement)
       .querySelector('[data-testid="hoard-box"]')
       ?.querySelector<HTMLButtonElement>('button[type="button"]:not([aria-label])');

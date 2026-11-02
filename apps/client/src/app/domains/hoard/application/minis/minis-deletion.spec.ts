@@ -44,6 +44,7 @@ describe('Minis deletion', () => {
     const store = TestBed.inject(MinisStore);
     store.minis();
     await TestBed.inject(ApplicationRef).whenStable();
+
     return { deletion: TestBed.inject(MinisDeletion), store };
   }
 

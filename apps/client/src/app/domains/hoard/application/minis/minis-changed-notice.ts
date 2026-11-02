@@ -17,12 +17,14 @@ export class MinisChangedNotice {
   /** How many minis selected in the hoard were changed; none to tell. */
   readonly hoardCount = computed(() => {
     const change = this.latest();
+
     return change?.boxId === undefined ? change?.count : undefined;
   });
 
   /** How many minis selected on the box were changed; none to tell. */
   countFor(boxId: string): number | undefined {
     const change = this.latest();
+
     return change?.boxId === boxId ? change.count : undefined;
   }
 

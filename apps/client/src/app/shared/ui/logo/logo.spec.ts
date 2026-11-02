@@ -6,10 +6,13 @@ import { Logo } from './logo';
 describe('Logo', () => {
   const renderLogo = async (size?: number) => {
     const fixture = TestBed.createComponent(Logo);
+
     if (size !== undefined) {
       fixture.componentRef.setInput('size', size);
     }
+
     await fixture.whenStable();
+
     return fixture.nativeElement.querySelector('img') as HTMLImageElement;
   };
 

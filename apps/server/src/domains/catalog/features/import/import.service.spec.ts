@@ -24,6 +24,7 @@ const NOTHING_SKIPPED: CatalogSnapshot['skipped'] = { systemIds: [], factionIds:
 describe('Catalog import', () => {
   function importWhere(snapshot: CatalogSnapshot, imported: ImportedCatalog, lastHash?: string) {
     const applyImport = vi.fn((_catalogImport: CatalogImport) => Promise.resolve());
+
     const service = new ImportService(
       { load: () => Promise.resolve(snapshot) },
       {
@@ -32,6 +33,7 @@ describe('Catalog import', () => {
         applyImport,
       },
     );
+
     return { service, applyImport };
   }
 
@@ -39,6 +41,7 @@ describe('Catalog import', () => {
     const system = { id: 'warhammer-40000', name: 'Warhammer 40,000', groups: [] };
     const faction = { id: 'warhammer-40000/orks', systemId: 'warhammer-40000', name: 'Orks' };
     const boyz = kit('games-workshop/orks/boyz');
+
     const { service, applyImport } = importWhere(
       { hash: 'first', systems: [system], factions: [faction], kits: [boyz], skipped: NOTHING_SKIPPED },
       NOTHING_IMPORTED,
@@ -56,6 +59,7 @@ describe('Catalog import', () => {
 
   it('imports nothing when the catalog has not changed since the last import', async () => {
     const boyz = kit('games-workshop/orks/boyz');
+
     const { service, applyImport } = importWhere(
       { hash: 'same', systems: [], factions: [], kits: [boyz], skipped: NOTHING_SKIPPED },
       { ...NOTHING_IMPORTED, kits: [{ entry: boyz, version: 1, isRemoved: false }] },
@@ -70,6 +74,7 @@ describe('Catalog import', () => {
   it('gives a changed kit the next version and leaves unchanged kits as they are', async () => {
     const intercessors = kit('games-workshop/space-marines/intercessors');
     const changedBoyz = kit('games-workshop/orks/boyz', 11);
+
     const { service, applyImport } = importWhere(
       { hash: 'second', systems: [], factions: [], kits: [changedBoyz, intercessors], skipped: NOTHING_SKIPPED },
       {
@@ -93,6 +98,7 @@ describe('Catalog import', () => {
 
   it('does not mark a kit as removed while its file is broken', async () => {
     const boyz = kit('games-workshop/orks/boyz');
+
     const { service, applyImport } = importWhere(
       {
         hash: 'broken',
@@ -113,6 +119,7 @@ describe('Catalog import', () => {
   it('does not mark the factions of a system as removed while its file is broken', async () => {
     const system = { id: 'warhammer-40000', name: 'Warhammer 40,000', groups: [] };
     const orks = { id: 'warhammer-40000/orks', systemId: 'warhammer-40000', name: 'Orks' };
+
     const { service, applyImport } = importWhere(
       {
         hash: 'broken',

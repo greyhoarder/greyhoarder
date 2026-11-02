@@ -30,10 +30,13 @@ describe('Profile page', () => {
     const fixture = TestBed.createComponent(ProfilePage);
     await fixture.whenStable();
     const page: HTMLElement = fixture.nativeElement;
+
     const find = <T extends HTMLElement>(testId: string): T | null =>
       page.querySelector<T>(`[data-testid="${testId}"]`);
+
     const typeName = async (name: string): Promise<void> => {
       const field = find<HTMLInputElement>('profile-display-name');
+
       if (field) {
         field.value = name;
         field.dispatchEvent(new Event('input'));
@@ -41,14 +44,18 @@ describe('Profile page', () => {
         field.dispatchEvent(new Event('blur'));
       }
     };
+
     const choosePicture = async (file: File): Promise<void> => {
       const field = find<HTMLInputElement>('profile-avatar-file');
+
       if (field) {
         Object.defineProperty(field, 'files', { value: [file], configurable: true });
         field.dispatchEvent(new Event('change'));
       }
+
       await fixture.whenStable();
     };
+
     return { fixture, find, typeName, choosePicture };
   };
 
@@ -74,10 +81,12 @@ describe('Profile page', () => {
     await typeName('Mira K.');
     await fixture.whenStable();
     const language = find<HTMLSelectElement>('profile-language');
+
     if (language) {
       language.value = 'de';
       language.dispatchEvent(new Event('change'));
     }
+
     await fixture.whenStable();
     await choosePicture(new File(['x'], 'mira.png', { type: 'image/png' }));
 

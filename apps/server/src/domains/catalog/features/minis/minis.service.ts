@@ -33,12 +33,15 @@ export class MinisService {
     const kits = await this.catalog.searchKitsByMini(words, KIT_LIMIT);
     const minis = catalogMinisOf(kits, words);
     const factionIds = [...new Set(minis.flatMap((mini) => (mini.factionId === undefined ? [] : [mini.factionId])))];
+
     const [factionNames, systemNames] = await Promise.all([
       this.catalog.findFactionNames(factionIds),
       this.catalog.findSystemNames(factionIds),
     ]);
+
     const factionOf = (mini: CatalogMini) =>
       mini.factionId === undefined ? '' : (factionNames.get(mini.factionId) ?? mini.factionId);
+
     const sorted = [...minis]
       .sort(
         (a, b) =>
@@ -50,6 +53,7 @@ export class MinisService {
           a.kit.name.localeCompare(b.kit.name),
       )
       .slice(0, SEARCH_LIMIT);
+
     return { minis: sorted, factionNames, systemNames };
   }
 
@@ -59,6 +63,7 @@ export class MinisService {
       .trim()
       .split(/\s+/)
       .filter((word) => word !== '');
+
     return Promise.all(
       words.map(async (word) => ({
         text: word,

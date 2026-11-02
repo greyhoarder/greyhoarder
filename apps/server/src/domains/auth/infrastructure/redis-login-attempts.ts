@@ -17,9 +17,11 @@ export class RedisLoginAttempts extends LoginAttempts {
 
   async recordFailure(subject: string): Promise<number> {
     const failures = await this.redis.incr(failureKey(subject));
+
     if (failures === 1) {
       await this.redis.expire(failureKey(subject), FAILURE_WINDOW_SECONDS);
     }
+
     return failures;
   }
 

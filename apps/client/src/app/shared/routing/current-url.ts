@@ -6,6 +6,7 @@ import { filter, map } from 'rxjs';
 /** The address of the open page, following every navigation. For injection contexts only. */
 export function currentUrl(): Signal<string> {
   const router = inject(Router);
+
   return toSignal(
     router.events.pipe(
       filter((event) => event instanceof NavigationEnd),

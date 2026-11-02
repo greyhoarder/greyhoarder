@@ -21,19 +21,24 @@ describe('Change password page', () => {
     const fixture = TestBed.createComponent(ChangePasswordPage);
     await fixture.whenStable();
     const page: HTMLElement = fixture.nativeElement;
+
     const fill = (testId: string, value: string): void => {
       const field = page.querySelector<HTMLInputElement>(`[data-testid="${testId}"]`);
+
       if (field) {
         field.value = value;
         field.dispatchEvent(new Event('input'));
       }
     };
+
     const submit = async (): Promise<void> => {
       page.querySelector('form')?.dispatchEvent(new Event('submit', { cancelable: true }));
       await fixture.whenStable();
     };
+
     const error = (): string | undefined =>
       page.querySelector('[data-testid="change-password-error"]')?.textContent?.trim();
+
     return { fill, submit, error };
   };
 

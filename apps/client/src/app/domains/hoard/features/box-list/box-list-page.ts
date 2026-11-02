@@ -56,6 +56,7 @@ export class BoxListPage {
   protected readonly summary = computed(() => {
     const boxes = this.store.visibleBoxes();
     const sprue = boxes.reduce((sum, box) => sum + sprueCount(box), 0);
+
     return `${boxes.length} ${boxes.length === 1 ? 'box' : 'boxes'} · ${sprue} minis still on the sprue`;
   });
 
@@ -93,6 +94,7 @@ export class BoxListPage {
 /** The values of the boxes, sorted, each with how many boxes have it. */
 function optionsOf(boxes: readonly BoxRow[], valuesOf: (box: BoxRow) => readonly string[]): FilterOption[] {
   const values = [...new Set(boxes.flatMap(valuesOf))].sort((a, b) => a.localeCompare(b));
+
   return values.map((value) => ({
     value,
     label: value,

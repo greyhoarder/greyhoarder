@@ -180,11 +180,13 @@ export class KitCard {
   protected readonly canChooseArmy = computed(() => this.isOpen() && !this.areSprues() && this.sections().length > 1);
   protected readonly armyChoices = computed(() => {
     const counts = kitRowCounts(this.kit());
+
     const armies: ArmyChoice[] = this.sections().map((section) => ({
       label: `Only ${section.army}`,
       army: section.army,
       minis: section.items.reduce((sum, { index }) => sum + (counts[index] ?? 0), 0),
     }));
+
     return [{ label: 'Whole box', minis: armies.reduce((sum, { minis }) => sum + minis, 0) }, ...armies];
   });
   protected readonly meta = computed(() => kitMeta(this.kit()));

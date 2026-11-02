@@ -57,14 +57,17 @@ export class ProfilePage {
 
   protected async saveName(): Promise<void> {
     const displayName = this.displayName().trim();
+
     if (this.isNameTooLong() || displayName === (this.user()?.displayName ?? '')) {
       return;
     }
+
     await this.save(() => this.profiles.update({ displayName }));
   }
 
   protected async chooseLanguage(event: Event): Promise<void> {
     const language = languages.find((each) => event.target instanceof HTMLSelectElement && each === event.target.value);
+
     if (language !== undefined) {
       this.language.set(language);
       await this.save(() => this.profiles.update({ language }));
@@ -74,16 +77,20 @@ export class ProfilePage {
   protected async choosePicture(event: Event): Promise<void> {
     const input = event.target instanceof HTMLInputElement ? event.target : undefined;
     const file = input?.files?.[0];
+
     if (file === undefined) {
       return;
     }
+
     this.avatarError.set('');
+
     try {
       const image = await this.imageOf(file);
       await this.save(() => this.profiles.setAvatar(image));
     } catch {
       this.avatarError.set('Choose an image.');
     }
+
     if (input) {
       input.value = '';
     }
@@ -95,6 +102,7 @@ export class ProfilePage {
 
   protected async signOutOthers(): Promise<void> {
     this.clearMessages();
+
     try {
       await this.sessions.signOutOthers();
       this.message.set('Other devices are signed out.');
@@ -107,17 +115,20 @@ export class ProfilePage {
     if (!file.type.startsWith('image/')) {
       throw new Error('This is no image.');
     }
+
     return this.squareImage.toJpeg(file);
   }
 
   /** Takes what the server stored; failing, shows what it has stored so far again. */
   private async save(change: () => Promise<SessionUser>): Promise<void> {
     this.clearMessages();
+
     try {
       this.session.replace(await change());
     } catch {
       this.failure.set(SAVE_FAILED);
     }
+
     this.displayName.set(this.user()?.displayName ?? '');
     this.language.set(this.user()?.language ?? 'en');
   }

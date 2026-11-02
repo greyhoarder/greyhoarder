@@ -14,8 +14,10 @@ export class SetupStatus {
     if (this.done) {
       return false;
     }
+
     const required = await this.setup.isSetupRequired();
     this.done = !required;
+
     return required;
   }
 

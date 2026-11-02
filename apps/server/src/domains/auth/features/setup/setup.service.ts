@@ -25,6 +25,7 @@ export class SetupService {
     if (!(await this.isRequired())) {
       throw new AccountsAlreadyExistError();
     }
+
     const passwordHash = await this.passwords.hash(password);
     await this.accounts.createInitialAdmin(username, passwordHash);
   }

@@ -9,8 +9,10 @@ describe('Selection bar', () => {
     fixture.componentRef.setInput('canLeave', canLeave);
     await fixture.whenStable();
     const bar: HTMLElement = fixture.nativeElement;
+
     const find = <T extends HTMLElement = HTMLElement>(testId: string): T | null =>
       bar.querySelector<T>(`[data-testid="${testId}"]`);
+
     return { fixture, find };
   };
 

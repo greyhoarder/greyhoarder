@@ -2,10 +2,12 @@ import type { Box, Mini } from '@greyhoarder/domain/hoard';
 import { toMiniRows } from './mini-row';
 
 const ORKS = 'warhammer-40000/orks';
+
 const NAMES = new Map([
   [ORKS, 'Orks'],
   ['warhammer-40000/space-marines', 'Space Marines'],
 ]);
+
 const BOXES: Box[] = [
   { id: 'a', name: 'Boyz (2026)', factionIds: [ORKS], tags: [], addedOn: '2026-10-24', number: 1 },
   { id: 'b', name: 'Boyz (2021)', factionIds: [ORKS], tags: [], addedOn: '2026-10-24', number: 1 },

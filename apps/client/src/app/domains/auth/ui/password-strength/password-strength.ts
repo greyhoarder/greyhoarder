@@ -63,6 +63,7 @@ export class PasswordStrengthMeter {
   protected readonly level = computed((): StrengthLevel | undefined => {
     const rate = this.rater.value();
     const password = this.password();
+
     return rate && password ? LEVELS[rate(password, this.userInputs())] : undefined;
   });
 }

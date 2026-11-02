@@ -136,12 +136,15 @@ describe('Mini page', () => {
   const all = (testId: string): HTMLElement[] => [
     ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
   ];
+
   const textsOf = (testId: string): string[] =>
     all(testId).map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '');
+
   const nameTile = (name: string) =>
     all('mini-build-as').find(
       (tile) => tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim() === name,
     );
+
   const partNames = () => textsOf('mini-part-name');
 
   async function click(element: HTMLElement | undefined): Promise<void> {
@@ -153,10 +156,12 @@ describe('Mini page', () => {
   async function searchFactions(text: string): Promise<void> {
     await click(all('mini-add-faction')[0]);
     const field = document.querySelector<HTMLInputElement>('[data-testid="mini-faction-search"]');
+
     if (field) {
       field.value = text;
       field.dispatchEvent(new Event('input'));
     }
+
     await fixture.whenStable();
   }
 
@@ -255,6 +260,7 @@ describe('Mini page', () => {
       tile.querySelector('[data-testid="mini-build-as-name"]')?.textContent?.trim(),
       tile.querySelector('[data-testid="mini-name-left"]')?.textContent?.trim(),
     ]);
+
     expect(tiles).toEqual([
       ['Loota', '4 left in this box'],
       ['Burna Boy', '4 left in this box'],
@@ -272,6 +278,7 @@ describe('Mini page', () => {
       kit: { id: LOOTAS_KIT.id, version: 1, name: 'Lootas / Burna Boyz (2008)' },
       isOnWorkbench: false,
     };
+
     showMini('l1', () => Promise.resolve([loose]));
 
     await fixture.whenStable();
@@ -281,6 +288,7 @@ describe('Mini page', () => {
       tile.querySelector('[data-testid="mini-name-left"]'),
       tile.getAttribute('aria-pressed'),
     ]);
+
     expect(tiles).toEqual([['Loota', null, 'false']]);
     expect(fixture.nativeElement.textContent).toContain('Suggested by Lootas or Burna Boyz (2008)');
   });

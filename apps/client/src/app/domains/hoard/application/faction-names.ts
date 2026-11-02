@@ -16,10 +16,12 @@ export class FactionNames {
   /** The name of the faction each faction is part of, by faction name, as the lists of the hoard filter by names. */
   readonly partOfByName = computed<ReadonlyMap<string, string>>(() => {
     const names = this.names();
+
     return new Map(
       [...this.minisStore.partOf()].flatMap(([id, partOfId]) => {
         const name = names.get(id);
         const partOfName = names.get(partOfId);
+
         return name === undefined || partOfName === undefined ? [] : [[name, partOfName] as const];
       }),
     );

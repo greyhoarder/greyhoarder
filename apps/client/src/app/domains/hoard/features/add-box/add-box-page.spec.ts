@@ -83,10 +83,12 @@ describe('Add box page', () => {
 
   async function searchFor(text: string): Promise<void> {
     const field = page().querySelector<HTMLInputElement>('[data-testid="add-box-search"]');
+
     if (field) {
       field.value = text;
       field.dispatchEvent(new Event('input'));
     }
+
     await fixture.whenStable();
   }
 

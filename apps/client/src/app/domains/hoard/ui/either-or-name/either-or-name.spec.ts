@@ -6,8 +6,10 @@ describe('Either-or name', () => {
     const fixture = TestBed.createComponent(EitherOrName);
     fixture.componentRef.setInput('name', name);
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
+
   const textOf = (element: HTMLElement): string => element.textContent?.replace(/\s+/g, ' ').trim() ?? '';
 
   it('shows the outcomes of an either-or name apart by a muted "or"', async () => {

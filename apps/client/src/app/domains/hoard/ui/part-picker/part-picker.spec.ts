@@ -62,13 +62,17 @@ describe('Part picker', () => {
   }
 
   const element = (): HTMLElement => fixture.nativeElement;
+
   const group = (name: string): HTMLElement | null =>
     element().querySelector(`[data-testid="mini-part-group"][data-group="${name}"]`);
+
   const optionsIn = (container: Element | null): HTMLElement[] => [
     ...(container?.querySelectorAll<HTMLElement>('[data-testid="mini-part-option"]') ?? []),
   ];
+
   const namesOf = (options: HTMLElement[]): string[] =>
     options.map((option) => option.textContent?.replace(/\s+/g, ' ').trim().replace(/^\+ /, '') ?? '');
+
   const filterField = (): HTMLInputElement =>
     element().querySelector<HTMLInputElement>('[data-testid="mini-part-filter"]')!;
 

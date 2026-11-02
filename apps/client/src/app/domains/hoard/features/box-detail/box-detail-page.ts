@@ -129,6 +129,7 @@ export class BoxDetailPage {
   /** Undefined while loading and for a box that isn't in the hoard. */
   protected readonly box = computed(() => {
     const box = this.storedBox();
+
     return box && toBoxRows([box], this.boxMinis(), this.factionNames.names())[0];
   });
   /** Statuses chosen but not saved yet; shown at once, gone once saved or failed. */
@@ -139,11 +140,13 @@ export class BoxDetailPage {
   protected readonly boxMinis = computed(() => {
     const boxId = this.storedBox()?.id;
     const pending = this.pendingStatuses();
+
     return this.minis
       .minis()
       .filter((mini) => mini.boxId === boxId)
       .map((mini) => {
         const status = pending.get(mini.id);
+
         return status === undefined ? mini : withStatus(mini, status);
       });
   });
@@ -159,11 +162,14 @@ export class BoxDetailPage {
   /** Alike minis on the sprue as one row, by name. */
   protected readonly sprueRows = computed(() => {
     const box = this.storedBox();
+
     if (!box) {
       return [];
     }
+
     const minis = this.presentMinis().filter((mini) => mini.status === 'sprue');
     const rows = toMiniRows(minis, [box], this.factionNames.names(), this.parts.names());
+
     return sortRows(rows, 'name', 'ascending');
   });
   protected readonly sprueCount = computed(() => countMinis(this.sprueRows()));
@@ -177,11 +183,14 @@ export class BoxDetailPage {
   /** Every gone mini on its own, by name, with its departure, e.g. "Sold on 12 Oct 2026". */
   protected readonly goneRows = computed(() => {
     const box = this.storedBox();
+
     if (!box) {
       return [];
     }
+
     const minis = this.boxMinis().filter(isGone);
     const rows = toSingleRows(minis, [box], this.factionNames.names(), this.parts.names());
+
     return sortRows(rows, 'name', 'ascending').map((row) => ({
       ...row,
       departureText: row.departure && `${DEPARTURE_LABELS[row.departure.reason]} on ${formatDate(row.departure.on)}`,
@@ -216,23 +225,28 @@ export class BoxDetailPage {
 
   protected readonly progress = computed(() => {
     const box = this.box();
+
     return box && progressOf(box);
   });
   protected readonly hasPercentage = computed(() => {
     const progress = this.progress();
+
     return progress !== undefined && hasPercent(progress);
   });
   protected readonly percent = computed(() => {
     const box = this.box();
+
     return box && percentOf(box);
   });
   protected readonly kitLine = computed(() => {
     const box = this.box();
+
     return box && kitLine(box);
   });
   /** Factions and date, e.g. "Orks · added 12 Oct 2026". */
   protected readonly meta = computed(() => {
     const box = this.box();
+
     return box && `${box.factions.join(', ')} · added ${formatDate(box.addedOn)}`;
   });
   /** Every status in pipeline order with its count, also zero. */
@@ -279,13 +293,16 @@ export class BoxDetailPage {
 
   protected async deleteSelected(): Promise<void> {
     const { isDeleted, emptiedBoxIds } = await this.deletion.confirm();
+
     if (!isDeleted) {
       return;
     }
+
     // A group deleted from its menu leaves the other selected minis selected.
     if (this.selectedCount() === 0) {
       this.selection.finish();
     }
+
     this.askIfEmptied(emptiedBoxIds);
   }
 
@@ -329,6 +346,7 @@ export class BoxDetailPage {
   /** Opens the first card on the sprue to build and moves the focus into it. */
   protected takeFromSprue(): void {
     const [first] = this.sprueRows();
+
     if (first) {
       this.openSprueCard(first.id, 'build');
       this.sprueCards()[0]?.focusPanel();
@@ -344,6 +362,7 @@ export class BoxDetailPage {
   protected async chooseStatus({ miniId, status }: StatusChoice): Promise<void> {
     this.hasSaveFailed.set(false);
     this.pendingStatuses.update((pending) => new Map(pending).set(miniId, status));
+
     try {
       this.minis.apply((await this.minisAdapter.update([miniId], { status })).minis);
     } catch {
@@ -352,6 +371,7 @@ export class BoxDetailPage {
       this.pendingStatuses.update((pending) => {
         const rest = new Map(pending);
         rest.delete(miniId);
+
         return rest;
       });
     }
@@ -360,12 +380,15 @@ export class BoxDetailPage {
   constructor() {
     // Told once on coming back to the box; leaving it ends that.
     inject(DestroyRef).onDestroy(() => this.changedNotice.dismiss());
+
     if (this.isEmptiedOnArrival) {
       // The id comes with the inputs, after construction.
       afterNextRender(() => this.askIfEmptied([this.id()]));
     }
+
     effect(() => {
       const box = this.box();
+
       if (box) {
         this.title.setTitle(`${eitherOrText(box.name)} · Greyhoarder`);
       }

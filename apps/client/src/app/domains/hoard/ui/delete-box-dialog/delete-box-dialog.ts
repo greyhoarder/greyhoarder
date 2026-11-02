@@ -38,6 +38,7 @@ export class DeleteBoxDialog {
 
   protected readonly title = computed(() => {
     const [first] = this.names();
+
     return `Delete ${this.isOne() ? first : `${this.names().length} boxes`} for good?`;
   });
 
@@ -45,6 +46,7 @@ export class DeleteBoxDialog {
     if (this.canKeep()) {
       return 'Delete with minis';
     }
+
     return this.isOne() ? 'Delete box' : 'Delete boxes';
   });
 
@@ -52,18 +54,21 @@ export class DeleteBoxDialog {
     const [its, it] = this.isOne() ? ['Its', 'it'] : ['Their', 'them'];
     const built = this.builtMiniCount();
     const sprue = this.sprueMiniCount();
+
     const builtText =
       built === 0
         ? ''
         : built === 1
           ? `${its} built mini can stay in your hoard without a box, or be deleted with ${it}. `
           : `${its} ${built} built minis can stay in your hoard without a box, or be deleted with ${it}, gone ones included. `;
+
     const sprueText =
       sprue === 0
         ? ''
         : sprue === 1
           ? `${its} mini on the sprue is deleted with ${it}. `
           : `${its} ${sprue} minis on the sprue are deleted with ${it}. `;
+
     return `${builtText}${sprueText}This can't be undone.`;
   });
 

@@ -6,6 +6,7 @@ describe('Box kind', () => {
     const fixture = TestBed.createComponent(BoxKind);
     fixture.componentRef.setInput('areSprues', areSprues);
     await fixture.whenStable();
+
     return (fixture.nativeElement as HTMLElement).querySelector('[data-testid="box-kind"]');
   };
 

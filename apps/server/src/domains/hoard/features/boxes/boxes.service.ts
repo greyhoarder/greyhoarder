@@ -69,6 +69,7 @@ export class BoxesService {
   async list(ownerId: string): Promise<BoxList> {
     const boxes = await this.hoard.findBoxes(ownerId);
     const factionNames = await this.catalog.findFactionNames([...new Set(boxes.flatMap((box) => box.factionIds))]);
+
     return { boxes, factionNames };
   }
 
@@ -82,11 +83,14 @@ export class BoxesService {
    */
   async add(ownerId: string, request: BoxesOfKit): Promise<AddedBoxes> {
     const [found] = await this.catalog.findKits([request.kitId]);
+
     if (found === undefined || found.isRemoved) {
       throw new UnknownKitError(request.kitId);
     }
+
     const kit = await this.toKit(found);
     const name = request.name ?? boxKitName(kit);
+
     const { boxes, minis } = newBoxes(
       kit,
       {
@@ -102,12 +106,15 @@ export class BoxesService {
         firstNumber: nextBoxNumber(await this.hoard.findBoxes(ownerId), name),
       },
     );
+
     await this.hoard.addBoxes(ownerId, boxes, minis);
+
     return { boxes, minis };
   }
 
   private async toKit(found: VersionedEntry<CatalogKit>): Promise<Kit> {
     const containedKits = await findContainedKits([found], (ids) => this.catalog.findKits(ids));
+
     return toKit(
       { ...found.entry, version: found.version },
       new Map(containedKits.map(({ entry, version }) => [entry.id, { ...entry, version }])),
@@ -128,10 +135,13 @@ export class BoxesService {
   ): Promise<BoxDeletion> {
     const asked = new Set(boxIds);
     const boxes = (await this.hoard.findBoxes(ownerId)).filter((box) => asked.has(box.id));
+
     if (boxes.length !== asked.size) {
       throw new UnknownBoxError();
     }
+
     const all = await this.hoard.findMinis(ownerId);
+
     const deletions = boxes.map((box) =>
       boxDeletion(
         box,
@@ -139,6 +149,7 @@ export class BoxesService {
         { keepBuiltMinis: options.keepBuiltMinis === true },
       ),
     );
+
     const deleted = deletions.flatMap((deletion) => deletion.deleted);
     const kept = deletions.flatMap((deletion) => deletion.kept);
     const deletedIds = new Set(deleted.map((mini) => mini.id));
@@ -146,12 +157,14 @@ export class BoxesService {
     const staying = all.filter((mini) => !deletedIds.has(mini.id)).map((mini) => keptById.get(mini.id) ?? mini);
     const changed = withoutDeletedRecipients(staying, deletedIds);
     const changedIds = new Set(changed.map((mini) => mini.id));
+
     const deletedMiniIds = await this.hoard.deleteBoxes(ownerId, [...asked], {
       changed,
       keptMinis: kept,
       droppedPartIds: droppedParts(deleted, []),
       droppedFactionIds: droppedFactions(deleted, []),
     });
+
     return { deletedMiniIds, minis: [...kept.filter((mini) => !changedIds.has(mini.id)), ...changed] };
   }
 }

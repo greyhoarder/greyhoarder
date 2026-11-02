@@ -12,12 +12,14 @@ export async function findContainedKits(
   const knownIds = new Set(kits.map(({ entry }) => entry.id));
   const containedKits: VersionedEntry<CatalogKit>[] = [];
   let ids = unknownContainedIds(kits, knownIds);
+
   while (ids.length > 0) {
     const found = await findKits(ids);
     ids.forEach((id) => knownIds.add(id));
     containedKits.push(...found);
     ids = unknownContainedIds(found, knownIds);
   }
+
   return containedKits;
 }
 

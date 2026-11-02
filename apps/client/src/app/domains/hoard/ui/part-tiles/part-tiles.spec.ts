@@ -13,6 +13,7 @@ describe('Part tiles', () => {
     fixture.componentRef.setInput('isPickerOpen', isPickerOpen);
     fixture.componentRef.setInput('source', { vocabulary: [], range: [], carried: [] });
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 
@@ -46,6 +47,7 @@ describe('Part tiles', () => {
   it('tells screen readers whether the part picker is open', async () => {
     const addPart = async (isOpen: boolean): Promise<HTMLElement | undefined> =>
       all(await render(isOpen), 'mini-add-part')[0];
+
     const [closed, opened] = [await addPart(false), await addPart(true)];
 
     const picker = opened?.ownerDocument.getElementById(opened.getAttribute('aria-controls') ?? '');

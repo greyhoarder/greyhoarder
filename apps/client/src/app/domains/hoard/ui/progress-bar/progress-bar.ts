@@ -47,6 +47,7 @@ export class ProgressBar {
   protected readonly segments = computed<Segment[]>(() => {
     const box = this.box();
     const total = hobbyStatuses.reduce((sum, status) => sum + (box.minis[status] ?? 0), 0);
+
     return PROGRESS_STATUSES.filter((status) => (box.minis[status] ?? 0) > 0).map((status) => ({
       status,
       share: ((box.minis[status] ?? 0) / total) * 100,
@@ -56,6 +57,7 @@ export class ProgressBar {
   /** E.g. "5 primed, 5 done". */
   protected readonly description = computed(() => {
     const box = this.box();
+
     return PROGRESS_STATUSES.filter((status) => (box.minis[status] ?? 0) > 0)
       .map((status) => `${box.minis[status]} ${STATUS_SHORT_LABELS[status]}`)
       .join(', ');

@@ -52,8 +52,10 @@ export class AddMinisPage {
   protected toggle({ key, mini, factionName }: MiniOffer): void {
     if (this.openKey() === key) {
       this.openKey.set(undefined);
+
       return;
     }
+
     this.openKey.set(key);
     const { name, factionId, parts, kit } = mini;
     this.addition.start({

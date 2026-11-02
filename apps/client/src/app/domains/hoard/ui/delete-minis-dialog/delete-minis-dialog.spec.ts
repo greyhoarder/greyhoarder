@@ -14,9 +14,11 @@ describe('Delete minis dialog', () => {
     fixture.componentRef.setInput('isDeleting', isDeleting);
     fixture.componentRef.setInput('hasFailed', hasFailed);
     await fixture.whenStable();
+
     // The dialog opens in an overlay outside the component.
     const find = <T extends HTMLElement = HTMLElement>(testId: string): T | null =>
       document.querySelector<T>(`[data-testid="${testId}"]`);
+
     return { fixture, find };
   };
 

@@ -6,7 +6,9 @@ export function formatDate(isoDate: string): string {
     year: 'numeric',
     timeZone: 'UTC',
   }).formatToParts(new Date(isoDate));
+
   const part = (type: Intl.DateTimeFormatPartTypes): string =>
     parts.find((candidate) => candidate.type === type)?.value ?? '';
+
   return `${part('day')} ${part('month')} ${part('year')}`;
 }

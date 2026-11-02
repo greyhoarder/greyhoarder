@@ -18,8 +18,10 @@ describe('Catalog mini card', () => {
     fixture.componentRef.setInput('owned', owned);
     fixture.componentRef.setInput('formId', 'add-minis-form');
     await fixture.whenStable();
+
     const find = (testId: string): HTMLElement | null =>
       (fixture.nativeElement as HTMLElement).querySelector(`[data-testid="${testId}"]`);
+
     return { fixture, find };
   };
 

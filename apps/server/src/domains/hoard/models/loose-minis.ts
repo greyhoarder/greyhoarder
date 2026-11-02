@@ -20,6 +20,7 @@ export interface LooseMinis {
  */
 export function looseMinis(minis: LooseMinis, newId: () => string): Mini[] {
   const { count, notes, ...alike } = minis;
+
   return Array.from({ length: count }, () =>
     parseMini({ id: newId(), ...alike, ...(notes ? { notes } : {}), isOnWorkbench: false }),
   );

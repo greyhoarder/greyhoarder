@@ -32,6 +32,7 @@ export class HttpMinisAdapter {
     readonly partOf: ReadonlyMap<string, string>;
   }> {
     const response = await firstValueFrom(this.http.get<MinisResponse>('/api/hoard/minis'));
+
     return {
       minis: response.minis,
       factionNames: new Map(Object.entries(response.factionNames)),
@@ -44,6 +45,7 @@ export class HttpMinisAdapter {
   async add(minis: MinisToAdd): Promise<readonly Mini[]> {
     const body: AddMinisRequest = minis;
     const response = await firstValueFrom(this.http.post<AddMinisResponse>('/api/hoard/minis', body));
+
     return response.minis;
   }
 
@@ -54,6 +56,7 @@ export class HttpMinisAdapter {
   async update(ids: readonly string[], changes: MiniChanges): Promise<ChangedMinis> {
     const body: UpdateMinisRequest = { ids, set: changes };
     const response = await firstValueFrom(this.http.patch<UpdateMinisResponse>('/api/hoard/minis', body));
+
     return {
       minis: response.minis,
       ownFactionNames: new Map(Object.entries(response.ownFactionNames)),
@@ -68,6 +71,7 @@ export class HttpMinisAdapter {
   async change(ids: readonly string[], changes: ChangesToSelectedMinis): Promise<ChangedMinis> {
     const body: ChangeMinisRequest = { ids, ...changes };
     const response = await firstValueFrom(this.http.patch<UpdateMinisResponse>('/api/hoard/minis/changes', body));
+
     return {
       minis: response.minis,
       ownFactionNames: new Map(Object.entries(response.ownFactionNames)),
@@ -85,6 +89,7 @@ export class HttpMinisAdapter {
     readonly minis: readonly Mini[];
   }> {
     const body: DeleteMinisRequest = { ids };
+
     return firstValueFrom(this.http.delete<DeleteMinisResponse>('/api/hoard/minis', { body }));
   }
 }

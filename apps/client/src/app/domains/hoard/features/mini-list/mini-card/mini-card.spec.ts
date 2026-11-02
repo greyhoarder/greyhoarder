@@ -21,6 +21,7 @@ describe('Mini card', () => {
     fixture.componentRef.setInput('row', row);
     fixture.componentRef.setInput('isSelectionMode', isSelectionMode);
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 

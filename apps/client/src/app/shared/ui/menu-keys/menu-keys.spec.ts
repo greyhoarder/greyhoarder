@@ -19,8 +19,10 @@ describe('Menu keys', () => {
     fixture.detectChanges();
     const items = [...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('[role="menuitem"]')];
     items[focused]?.focus();
+
     return items;
   };
+
   const press = (key: string): void => {
     document.activeElement?.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
   };

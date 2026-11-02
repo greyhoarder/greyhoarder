@@ -21,6 +21,7 @@ describe('Signed-in guard', () => {
     });
     const router = TestBed.inject(Router);
     await router.navigateByUrl(url);
+
     return router.url;
   };
 

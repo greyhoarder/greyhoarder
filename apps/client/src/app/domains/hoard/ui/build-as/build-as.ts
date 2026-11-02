@@ -39,10 +39,13 @@ export class BuildAs {
   protected readonly tiles = computed(() =>
     this.suggestions().map(({ name, left }) => {
       const isChosen = !this.hasOwnName() && name === this.name();
+
       if (left === undefined) {
         return { name, isChosen, isEmpty: false, isWarning: false, hint: '' };
       }
+
       const isTooMany = isChosen && this.count() > left;
+
       return {
         name,
         isChosen,

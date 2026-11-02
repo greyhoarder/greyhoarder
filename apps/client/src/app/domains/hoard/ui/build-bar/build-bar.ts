@@ -40,15 +40,19 @@ export class BuildBar {
 
   protected readonly summary = computed(() => {
     const name = this.name();
+
     if (name === '') {
       return 'Choose what to build.';
     }
+
     const parts = this.parts().map((part) => (part.isSwappable ? `${part.name} (swappable)` : part.name));
     const what = parts.length > 0 ? `${name} with ${parts.join(', ')}.` : `${name}, no parts.`;
     const [count, size] = [this.count(), this.rowSize()];
+
     if (size === 1) {
       return `This mini becomes ${what}`;
     }
+
     return `${count} of ${size} alike minis ${count === 1 ? 'becomes' : 'become'} ${what}`;
   });
 }

@@ -102,6 +102,7 @@ export class NameField {
   /** Groups without suggestions are left out; `offset` counts the suggestions of those before. */
   protected readonly groups = computed(() => {
     const own = this.ownNames();
+
     return [
       { label: 'Your minis', suggestions: own, offset: 0 },
       { label: 'From the catalog', suggestions: this.catalogNames(), offset: own.length },
@@ -132,6 +133,7 @@ export class NameField {
     const last = this.all().length - 1;
     this.active.update((index) => {
       const next = index + by;
+
       return next > last ? -1 : next < -1 ? last : next;
     });
   }
@@ -139,6 +141,7 @@ export class NameField {
   /** Enter fills in the suggestion chosen by the arrow keys, if any. */
   protected chooseActive(event: Event): void {
     const suggestion = this.isListShown() ? this.all()[this.active()] : undefined;
+
     if (suggestion !== undefined) {
       event.preventDefault();
       this.choose(suggestion);

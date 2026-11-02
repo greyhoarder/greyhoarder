@@ -32,6 +32,7 @@ export class RedisSessionRegistry extends SessionRegistry {
 
   async keepOnly(userId: string, sessionId: string): Promise<void> {
     const others = (await this.redis.sMembers(keyFor(userId))).filter((id) => id !== sessionId);
+
     if (others.length > 0) {
       await this.redis.sRem(keyFor(userId), others);
     }

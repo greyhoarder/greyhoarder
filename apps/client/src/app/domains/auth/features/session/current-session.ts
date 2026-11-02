@@ -13,6 +13,7 @@ export class CurrentSession {
   async refresh(): Promise<SessionUser | undefined> {
     const user = await this.sessions.currentUser();
     this.signedInUser.set(user);
+
     return user;
   }
 

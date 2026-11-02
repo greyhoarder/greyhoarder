@@ -10,9 +10,11 @@ describe('Status choice', () => {
     await fixture.whenStable();
     const chose = vi.fn();
     fixture.componentInstance.chose.subscribe(chose);
+
     const chips = Array.from(
       (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('[data-testid="add-minis-status"]'),
     );
+
     return { chose, chips };
   };
 

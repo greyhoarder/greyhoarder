@@ -68,6 +68,7 @@ export class SprueRow {
   /** The kit's name for undecided rows, otherwise what the minis can be built as, e.g. "Boy or Nob". */
   protected readonly name = computed(() => {
     const row = this.row();
+
     return row.isUndecided ? row.name : row.builds.join(' or ');
   });
 }

@@ -38,6 +38,7 @@ describe('Group card of the hoard', () => {
       fixture.componentRef.setInput('isOpen', !fixture.componentInstance.isOpen()),
     );
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 

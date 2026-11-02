@@ -37,10 +37,13 @@ export class NavigationFailure {
   /** Repeats the failed navigation; failing again records the new failure. */
   async retry(): Promise<void> {
     const failed = this.failed();
+
     if (!failed) {
       return;
     }
+
     this.isRetrying.set(true);
+
     try {
       await this.router.navigateByUrl(failed.url);
     } catch {

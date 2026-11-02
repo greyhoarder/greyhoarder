@@ -93,8 +93,10 @@ export class BoxTable {
   protected sortBy(order: BoxSortOrder): void {
     if (order === this.sortOrder()) {
       this.sortDirection.update((direction) => (direction === 'ascending' ? 'descending' : 'ascending'));
+
       return;
     }
+
     this.sortOrder.set(order);
     this.sortDirection.set('ascending');
   }

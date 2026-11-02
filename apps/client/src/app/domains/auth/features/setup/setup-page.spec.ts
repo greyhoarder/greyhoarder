@@ -32,9 +32,11 @@ describe('Setup page', () => {
 
   const field = (testId: string): HTMLInputElement => {
     const element = page.querySelector<HTMLInputElement>(`[data-testid="${testId}"]`);
+
     if (!element) {
       throw new Error(`No field ${testId}`);
     }
+
     return element;
   };
 

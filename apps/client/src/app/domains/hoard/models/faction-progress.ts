@@ -23,15 +23,19 @@ export function factionProgresses(
   partOf: ReadonlyMap<string, string> = new Map(),
 ): FactionProgress[] {
   const statusesByFaction = new Map<string | undefined, HobbyStatus[]>();
+
   for (const mini of minis) {
     for (const factionId of factionLineage(mini.factionIds, partOf)) {
       statusesByFaction.set(factionId, [...(statusesByFaction.get(factionId) ?? []), mini.status]);
     }
   }
+
   const withoutFaction = minis.filter((mini) => mini.factionIds.length === 0).map((mini) => mini.status);
+
   if (withoutFaction.length > 0) {
     statusesByFaction.set(undefined, withoutFaction);
   }
+
   return [...statusesByFaction].map(([factionId, statuses]) => ({
     ...(factionId === undefined ? {} : { factionId }),
     ...progressOf(statuses),
@@ -40,6 +44,7 @@ export function factionProgresses(
 
 function progressOf(statuses: readonly HobbyStatus[]): Omit<FactionProgress, 'factionId'> {
   const paintedCount = statuses.filter((status) => hasReached(status, 'painted')).length;
+
   return {
     miniCount: statuses.length,
     paintedCount,
@@ -50,6 +55,7 @@ function progressOf(statuses: readonly HobbyStatus[]): Omit<FactionProgress, 'fa
 
 function statusCountsOf(statuses: readonly HobbyStatus[]): Record<HobbyStatus, number> {
   const count = (step: HobbyStatus): number => statuses.filter((status) => status === step).length;
+
   return {
     sprue: count('sprue'),
     built: count('built'),

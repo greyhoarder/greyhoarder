@@ -15,6 +15,7 @@ export class PartsService {
     const partOf = await findFactionLineage(factionIds, (ids) => this.catalog.findFactions(ids));
     const lineage = new Set([...factionIds, ...partOf.values()]);
     const parts = await this.catalog.findKitParts([...lineage]);
+
     return parts.sort((a, b) => a.localeCompare(b));
   }
 }

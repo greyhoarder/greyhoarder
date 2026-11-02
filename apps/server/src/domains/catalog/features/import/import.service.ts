@@ -19,17 +19,21 @@ export class ImportService implements OnApplicationBootstrap {
 
   async importSnapshot(): Promise<void> {
     const [snapshot, lastHash] = await Promise.all([this.snapshots.load(), this.catalog.findLastSnapshotHash()]);
+
     if (snapshot.hash === lastHash) {
       return;
     }
+
     const imported = await this.catalog.findImported();
     const { skipped } = snapshot;
     // The factions of a system whose file was left out are unknown, so they all keep their version.
     const skippedSystemIds = new Set(skipped.systemIds);
+
     const keptFactionIds = [
       ...skipped.factionIds,
       ...imported.factions.filter(({ entry }) => skippedSystemIds.has(entry.systemId)).map(({ entry }) => entry.id),
     ];
+
     const kits = planCatalogUpdate(imported.kits, snapshot.kits, skipped.kitIds);
     await this.catalog.applyImport({
       snapshotHash: snapshot.hash,

@@ -187,6 +187,7 @@ describe('Minis page', () => {
     const SPACE_MARINES = 'warhammer-40000/space-marines';
     const DARK_ANGELS = 'warhammer-40000/dark-angels';
     const ORKS = 'warhammer-40000/orks';
+
     const FACTIONS = {
       names: new Map([
         [SPACE_MARINES, 'Space Marines'],
@@ -254,6 +255,7 @@ describe('Minis page', () => {
       addedOn,
       number: 1,
     });
+
     const BOXES = [box('b1', '2026-10-12'), box('b2', '2026-09-30')];
 
     beforeEach(async () => {
@@ -275,6 +277,7 @@ describe('Minis page', () => {
       const options = [...document.querySelectorAll('[data-testid="hoard-filter-option"] label')].map((label) =>
         label.textContent?.trim(),
       );
+
       expect(options).toEqual(['Boyz (2026) · 12 Oct 2026', 'Boyz (2026) · 30 Sep 2026']);
     });
 
@@ -337,6 +340,7 @@ describe('Minis page', () => {
       addedOn: '2026-10-25',
       number: 1,
     };
+
     showPage(() => Promise.resolve([mini('m2', { status: 'built', boxId: 'boyz' })]), [boyz]);
     await fixture.whenStable();
     deleteMinis.mockResolvedValue({ emptiedBoxIds: ['boyz'], minis: [] });

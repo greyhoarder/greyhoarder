@@ -13,6 +13,7 @@ export class HttpCatalogMinisAdapter {
   async search(text: string): Promise<CatalogMiniSearchResult> {
     const params: CatalogMiniSearchRequest = { search: text };
     const response = await firstValueFrom(this.http.get<CatalogMiniSearchResponse>('/api/catalog/minis', { params }));
+
     return {
       minis: response.minis,
       factionNames: new Map(Object.entries(response.factionNames)),

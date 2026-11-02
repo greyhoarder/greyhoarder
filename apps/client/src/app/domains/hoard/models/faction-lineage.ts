@@ -5,10 +5,12 @@
  */
 export function factionLineage(factions: readonly string[], partOf: ReadonlyMap<string, string>): string[] {
   const lineage = new Set<string>();
+
   for (const faction of factions) {
     for (let next: string | undefined = faction; next !== undefined && !lineage.has(next); next = partOf.get(next)) {
       lineage.add(next);
     }
   }
+
   return [...lineage];
 }

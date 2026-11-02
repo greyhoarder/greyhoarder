@@ -40,6 +40,7 @@ export class BoxesController {
   @ZodSerializerDto(boxesResponseSchema)
   async list(@CurrentUser() user: User): Promise<BoxesResponse> {
     const { boxes, factionNames } = await this.boxes.list(user.id);
+
     return { boxes, factionNames: Object.fromEntries(factionNames) };
   }
 
@@ -52,9 +53,11 @@ export class BoxesController {
       if (error instanceof UnknownKitError) {
         throw new NotFoundException(error.message);
       }
+
       if (error instanceof EmptyBoxError || error instanceof InvalidRowsError) {
         throw new UnprocessableEntityException(error.message);
       }
+
       throw error;
     }
   }
@@ -68,6 +71,7 @@ export class BoxesController {
       if (error instanceof UnknownBoxError) {
         throw new NotFoundException(error.message);
       }
+
       throw error;
     }
   }

@@ -8,16 +8,19 @@ const ORKS: FoundFaction = {
   name: 'Orks',
   systemName: 'Warhammer 40,000',
 };
+
 const SPACE_MARINES: FoundFaction = {
   id: 'warhammer-40000/space-marines',
   name: 'Space Marines',
   systemName: 'Warhammer 40,000',
 };
+
 const SPACE_WOLVES: FoundFaction = {
   id: 'warhammer-40000/space-wolves',
   name: 'Space Wolves',
   systemName: 'Warhammer 40,000',
 };
+
 const CRIMSON_WOLVES: OwnFaction = { id: 'own/crimson-wolves', name: 'Crimson Wolves' };
 
 /** The open search with this query and these factions found. */
@@ -37,9 +40,11 @@ async function render({
   fixture.componentRef.setInput('results', results);
   fixture.componentRef.setInput('ownResults', ownResults);
   await fixture.whenStable();
+
   // The search opens in a popover outside the component.
   const find = (testId: string): HTMLElement[] =>
     Array.from(document.querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`));
+
   return { fixture, find };
 }
 
@@ -60,6 +65,7 @@ describe('Add faction', () => {
     const offered = Array.from(document.querySelectorAll('[data-testid="mini-faction-result"]'), (result) =>
       result.textContent?.replace(/\s+/g, ' ').trim(),
     );
+
     expect(offered).toEqual(['Space Marines · Warhammer 40,000']);
   });
 

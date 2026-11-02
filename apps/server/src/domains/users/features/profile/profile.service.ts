@@ -21,10 +21,12 @@ export class ProfileService {
   /** An empty display name removes it. */
   update(userId: string, changes: { readonly displayName?: string; readonly language?: Language }): Promise<User> {
     const { displayName, language } = changes;
+
     const profile: ProfileChanges = {
       ...(displayName === undefined ? {} : { displayName: displayName === '' ? undefined : displayName }),
       ...(language === undefined ? {} : { language }),
     };
+
     return this.users.updateProfile(userId, profile);
   }
 
@@ -37,22 +39,26 @@ export class ProfileService {
     if (image.length > AVATAR_MAX_BYTES || !image.subarray(0, JPEG_START.length).equals(JPEG_START)) {
       throw new InvalidAvatarError();
     }
+
     const avatarId = randomUUID();
     await this.files.save(avatarId, image);
     const updated = await this.users.updateProfile(user.id, { avatarId });
     await this.removeFile(user);
+
     return updated;
   }
 
   async removeAvatar(user: User): Promise<User> {
     const updated = await this.users.updateProfile(user.id, { avatarId: undefined });
     await this.removeFile(user);
+
     return updated;
   }
 
   /** The user's picture; `undefined` without one, or for an id that is no user's. */
   async avatarOf(userId: string): Promise<Buffer | undefined> {
     const user = await this.queries.findById(userId);
+
     return user?.avatarId === undefined ? undefined : this.files.read(user.avatarId);
   }
 

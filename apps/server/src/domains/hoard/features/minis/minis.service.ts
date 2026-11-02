@@ -106,11 +106,13 @@ export class MinisService {
     const factionIds = [...new Set(minis.flatMap((mini) => mini.factionIds))].filter((id) => !isOwnFaction(id));
     const partOf = await findFactionLineage(factionIds, (ids) => this.catalog.findFactions(ids));
     const catalogIds = [...new Set([...factionIds, ...partOf.values()])];
+
     const [catalogNames, systemNames, ownFactions] = await Promise.all([
       this.catalog.findFactionNames(catalogIds),
       this.catalog.findSystemNames(catalogIds),
       this.hoard.findOwnFactions(ownerId),
     ]);
+
     return {
       minis,
       factionNames: new Map([...catalogNames, ...ownFactionNamesOf(minis, ownFactions)]),
@@ -139,6 +141,7 @@ export class MinisService {
     const { parts, newParts } = resolveParts(await this.hoard.findParts(ownerId), minis.parts, randomUUID);
     const added = looseMinis({ ...alike, factionIds, parts, ...(kit ? { kit } : {}) }, randomUUID);
     await this.hoard.addMinis(ownerId, added, { newParts, newFactions });
+
     return added;
   }
 
@@ -151,9 +154,11 @@ export class MinisService {
     readonly version: number;
   }): Promise<BoxKitReference> {
     const found = await this.catalog.findKitVersion(id, version);
+
     if (found === undefined) {
       throw new UnknownKitError(id);
     }
+
     return kitReferenceOf(toKit({ ...found.entry, version: found.version }, new Map()));
   }
 
@@ -175,6 +180,7 @@ export class MinisService {
     const departure = changes.departure && (await this.checkDeparture(ownerId, uniqueIds, changes.departure));
     const { parts, status, departure: _checked, factions: _resolved, ...rest } = changes;
     const resolved = parts && resolveParts(await this.hoard.findParts(ownerId), parts, randomUUID);
+
     const changed = minis.map((mini) => {
       let next: Mini = {
         ...mini,
@@ -182,10 +188,13 @@ export class MinisService {
         ...(factions ? { factionIds: factions.factionIds } : {}),
         ...(resolved ? { parts: resolved.parts } : {}),
       };
+
       next = status === undefined ? next : withStatus(next, status);
       next = departure === undefined ? next : withDeparture(next, departure ?? undefined);
+
       return parseMini(next);
     });
+
     return this.storeChanged(ownerId, minis, changed, {
       newParts: resolved?.newParts ?? [],
       newFactions: factions?.newFactions ?? [],
@@ -216,14 +225,18 @@ export class MinisService {
     const { minis } = await this.findOwnMinis(ownerId, ids);
     const { addFactions, addParts, ...rest } = changes;
     const changesParts = (addParts?.length ?? 0) + (rest.removePartIds?.length ?? 0) > 0;
+
     if (changesParts && !haveSameName(minis)) {
       throw new PartsOfDifferentMinisError();
     }
+
     const factions = await this.resolveFactions(ownerId, addFactions ?? []);
     const resolved = resolveParts(await this.hoard.findParts(ownerId), addParts ?? [], randomUUID);
+
     const changed = minis.map((mini) =>
       withChanges(mini, { ...rest, addFactionIds: factions.factionIds, addParts: resolved.parts }),
     );
+
     return this.storeChanged(ownerId, minis, changed, {
       newParts: resolved.newParts,
       newFactions: factions.newFactions,
@@ -239,9 +252,11 @@ export class MinisService {
   private async findOwnMinis(ownerId: string, ids: readonly string[]): Promise<{ uniqueIds: string[]; minis: Mini[] }> {
     const uniqueIds = [...new Set(ids)];
     const minis = await this.hoard.findMinisByIds(ownerId, uniqueIds);
+
     if (minis.length !== uniqueIds.length) {
       throw new UnknownMinisError();
     }
+
     return { uniqueIds, minis };
   }
 
@@ -267,6 +282,7 @@ export class MinisService {
       droppedPartIds: droppedParts(before, changed),
       droppedFactionIds: droppedFactions(before, changed),
     });
+
     return { minis: changed, ownFactionNames: ownFactionNamesOf(changed, ownFactions) };
   }
 
@@ -280,9 +296,11 @@ export class MinisService {
     const deleted = new Set(ids);
     const all = await this.hoard.findMinis(ownerId);
     const minis = all.filter((mini) => deleted.has(mini.id));
+
     if (minis.length !== deleted.size) {
       throw new UnknownMinisError();
     }
+
     const staying = all.filter((mini) => !deleted.has(mini.id));
     const changed = withoutDeletedRecipients(staying, deleted);
     await this.hoard.deleteMinis(ownerId, [...deleted], {
@@ -290,6 +308,7 @@ export class MinisService {
       droppedPartIds: droppedParts(minis, []),
       droppedFactionIds: droppedFactions(minis, []),
     });
+
     return { emptiedBoxIds: emptiedBoxIds(minis, staying), minis: changed };
   }
 
@@ -301,13 +320,17 @@ export class MinisService {
   private async checkDeparture(ownerId: string, ids: readonly string[], departure: Departure): Promise<Departure> {
     const parsed = parseDeparture(departure);
     const recipientIds = parsed.recipientMiniIds ?? [];
+
     if (recipientIds.length === 0) {
       return parsed;
     }
+
     const recipients = await this.hoard.findMinisByIds(ownerId, recipientIds);
+
     if (recipients.length !== recipientIds.length || recipientIds.some((id) => ids.includes(id))) {
       throw new UnknownMinisError();
     }
+
     return parsed;
   }
 
@@ -327,9 +350,11 @@ export class MinisService {
     const ownIds = new Set(ownFactions.map((faction) => faction.id));
     const catalogIds = factionIds.filter((id) => !isOwnFaction(id));
     const catalogNames = await this.catalog.findFactionNames(catalogIds);
+
     if (factionIds.some((id) => (isOwnFaction(id) ? !ownIds.has(id) : !catalogNames.has(id)))) {
       throw new UnknownFactionError();
     }
+
     return { factionIds, newFactions, ownFactions };
   }
 }
@@ -345,6 +370,7 @@ async function againIfNameTaken<T>(change: () => Promise<T>): Promise<T> {
     if (error instanceof NameTakenMeanwhileError) {
       return change();
     }
+
     throw error;
   }
 }

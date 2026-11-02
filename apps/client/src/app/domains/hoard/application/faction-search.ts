@@ -8,6 +8,7 @@ import { FactionNames } from './faction-names';
 /** The own factions whose name contains the query, ignoring case; none for an empty query. */
 export function matchingOwnFactions(factions: readonly OwnFaction[], query: string): OwnFaction[] {
   const key = factionKey(query);
+
   return key === '' ? [] : factions.filter((faction) => factionKey(faction.name).includes(key));
 }
 

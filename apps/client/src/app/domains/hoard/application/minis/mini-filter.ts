@@ -24,6 +24,7 @@ export function matchesFilter(row: MiniRow, filter: MiniFilter): boolean {
   if (isGone(row) && !filter.statuses.has(GONE)) {
     return false;
   }
+
   return (
     matchesAny(filter.factions, factionLineage(row.factions, filter.partOf)) &&
     matchesAny(filter.statuses, [isGone(row) ? GONE : row.status]) &&

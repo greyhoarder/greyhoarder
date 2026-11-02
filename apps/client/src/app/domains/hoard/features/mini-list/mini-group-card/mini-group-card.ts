@@ -48,24 +48,29 @@ export class MiniGroupCard {
   /** Factions and box or kit, e.g. "Orks · Boyz (2026)", or "Orks · 2 boxes". */
   protected readonly origin = computed(() => {
     const { factions } = this.group();
+
     return [factions.join(', '), this.from()].filter((text) => text !== '').join(' · ');
   });
   /** One box or kit by its name; several counted, e.g. "2 boxes", "2 kits" or "1 box, 1 kit". */
   private readonly from = computed(() => {
     const { boxes, kits } = this.group();
     const origins = [...boxes, ...kits];
+
     if (origins.length > 1) {
       return [countOf(boxes.length, 'box', 'boxes'), countOf(kits.length, 'kit', 'kits')]
         .filter((text) => text !== '')
         .join(', ');
     }
+
     const [origin] = origins;
+
     return origin === undefined ? 'Without box' : eitherOrText(origin);
   });
   /** The statuses the group has, in pipeline order, with their counts. */
   protected readonly legend = computed(() =>
     PROGRESS_STATUSES.flatMap((status) => {
       const count = this.group().counts[status] ?? 0;
+
       return count > 0 ? [{ status, count, label: STATUS_LABELS[status] }] : [];
     }),
   );

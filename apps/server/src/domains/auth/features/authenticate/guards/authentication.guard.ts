@@ -29,6 +29,7 @@ export class AuthenticationGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<Request>();
     const { userId } = request.session;
+
     if (!userId) {
       throw new UnauthorizedException();
     }
@@ -39,11 +40,14 @@ export class AuthenticationGuard implements CanActivate {
       if (!(error instanceof SessionInvalidError)) {
         throw error;
       }
+
       await this.authenticate.endSession(userId, request.sessionID);
       await destroySession(request);
       throw new UnauthorizedException();
     }
+
     this.assertRole(context, request.user);
+
     return true;
   }
 
@@ -52,6 +56,7 @@ export class AuthenticationGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+
     if (roles !== undefined && !roles.includes(user.role)) {
       throw new ForbiddenException();
     }

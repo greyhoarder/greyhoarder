@@ -58,13 +58,16 @@ export class MinisDeletion {
     const { ids } = this.asked();
     this.isDeleting.set(true);
     this.hasFailed.set(false);
+
     try {
       const { emptiedBoxIds, minis } = await this.adapter.delete(ids);
       this.hoardChanges.removed(ids, minis);
       this.isAsking.set(false);
+
       return { isDeleted: true, emptiedBoxIds };
     } catch {
       this.hasFailed.set(true);
+
       return { isDeleted: false, emptiedBoxIds: [] };
     } finally {
       this.isDeleting.set(false);

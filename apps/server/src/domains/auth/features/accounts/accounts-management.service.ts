@@ -32,6 +32,7 @@ export class AccountsManagementService {
     if ((await this.users.findById(id)) === undefined) {
       throw new UnknownAccountError();
     }
+
     await this.accounts.changePasswordHash(id, await this.passwords.hash(password));
     await this.sessions.removeAll(id);
   }

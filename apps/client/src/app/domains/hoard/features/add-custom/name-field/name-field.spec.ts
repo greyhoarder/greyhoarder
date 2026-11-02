@@ -14,13 +14,17 @@ describe('Name field', () => {
     const input = field.querySelector<HTMLInputElement>('[data-testid="add-custom-name"]');
     input?.dispatchEvent(new Event('input'));
     await fixture.whenStable();
+
     const press = async (key: string): Promise<void> => {
       input?.dispatchEvent(new KeyboardEvent('keydown', { key }));
       await fixture.whenStable();
     };
+
     const suggestions = (): HTMLElement[] =>
       Array.from(field.querySelectorAll<HTMLElement>('[data-testid="add-custom-name-suggestion"]'));
+
     const list = (): HTMLElement | null => field.querySelector('[role="listbox"]');
+
     return { valueChange, press, suggestions, list };
   };
 

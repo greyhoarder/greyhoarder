@@ -21,10 +21,13 @@ export class AuthenticateService {
     if (!(await this.sessions.has(userId, sessionId))) {
       throw new SessionInvalidError();
     }
+
     const user = await this.users.findById(userId);
+
     if (!user || user.disabled) {
       throw new SessionInvalidError();
     }
+
     return user;
   }
 

@@ -13,11 +13,13 @@ export class HttpProfileAdapter {
   /** An empty display name removes it. */
   async update(changes: { readonly displayName?: string; readonly language?: Language }): Promise<SessionUser> {
     const body: UpdateProfileRequest = changes;
+
     return (await firstValueFrom(this.http.patch<SessionResponse>('/api/users/me', body))).user;
   }
 
   async setAvatar(image: string): Promise<SessionUser> {
     const body: SetAvatarRequest = { image };
+
     return (await firstValueFrom(this.http.put<SessionResponse>('/api/users/me/avatar', body))).user;
   }
 

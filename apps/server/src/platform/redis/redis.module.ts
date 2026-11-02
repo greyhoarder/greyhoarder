@@ -20,6 +20,7 @@ export const REDIS_CLIENT = Symbol('REDIS_CLIENT');
       useFactory: async (config: AppConfig): Promise<RedisClient> => {
         const client = createRedisClient(config.redisUrl);
         await client.connect();
+
         return client;
       },
     },

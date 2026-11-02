@@ -4,20 +4,24 @@ import { SetupService } from './setup.service.js';
 describe('Initial setup', () => {
   function setupWhere({ accountExists }: { accountExists: boolean }) {
     const createInitialAdmin = vi.fn((_username: string, _passwordHash: string) => Promise.resolve());
+
     const users = {
       findById: () => Promise.resolve(undefined),
       findByUsername: () => Promise.resolve(undefined),
       hasAny: () => Promise.resolve(accountExists),
     };
+
     const accounts = new AccountsService({
       findCredentials: () => Promise.resolve(undefined),
       createInitialAdmin,
     });
+
     const passwords = {
       hash: (password: string) => Promise.resolve(`hashed:${password}`),
       verify: () => Promise.resolve(false),
       spendVerificationTime: () => Promise.resolve(),
     };
+
     return { setup: new SetupService(users, accounts, passwords), createInitialAdmin };
   }
 

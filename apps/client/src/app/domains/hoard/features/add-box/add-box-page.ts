@@ -55,7 +55,9 @@ export class AddBoxPage {
     if (!this.matches.hasValue()) {
       return [];
     }
+
     const { kits, containedKits } = this.matches.value();
+
     return kits.map((kit) => toKit(kit, containedKits));
   });
 
@@ -82,13 +84,16 @@ export class AddBoxPage {
     this.added.set(undefined);
     this.hasAddFailed.set(false);
     let addedBoxes;
+
     try {
       addedBoxes = await this.boxesAdapter.add(kit.id, boxesToAdd, today());
     } catch {
       // The open card keeps what the user chose, so they can try again.
       this.hasAddFailed.set(true);
+
       return;
     }
+
     const { boxes, minis } = addedBoxes;
     this.boxesStore.reload();
     this.minisStore.reload();
@@ -103,7 +108,9 @@ export class AddBoxPage {
     if (this.areSprues()) {
       return `Added ${name} with ${minisLabel(miniCount)} to your hoard.`;
     }
+
     const boxes = boxCount === 1 ? '1 box' : `${boxCount} boxes`;
+
     return `Added ${boxes} of ${name} with ${minisLabel(miniCount)} to your hoard.`;
   }
 }

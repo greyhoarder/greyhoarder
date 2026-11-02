@@ -27,14 +27,18 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
   async load(): Promise<CatalogSnapshot> {
     const [read, readKits] = await Promise.all([this.readSystems(), this.readKits()]);
     const resolved = withResolvedReferences({ systems: read.systems, factions: read.factions, kits: readKits.kits });
+
     for (const { id, problem } of resolved.leftOutKits) {
       this.logger.warn(`Left out ${id} of the catalog: ${problem}`);
     }
+
     for (const { id, problem } of [...resolved.correctedFactions, ...resolved.correctedKits]) {
       this.logger.warn(`Kept ${id} of the catalog without a reference: ${problem}`);
     }
+
     const content = { systems: read.systems, factions: resolved.factions, kits: resolved.kits };
     const hash = createHash('sha256').update(JSON.stringify(content)).digest('hex');
+
     return {
       hash,
       ...content,
@@ -55,18 +59,22 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
     const systems: GameSystem[] = [];
     const factions: CatalogFaction[] = [];
     const skippedSystemIds: string[] = [];
+
     for (const file of await yamlFiles(directory)) {
       const systemId = idOf(directory, file);
       const content = await this.readYaml(file, systemFileSchema);
+
       if (content === undefined) {
         skippedSystemIds.push(systemId);
         continue;
       }
+
       systems.push({
         id: systemId,
         name: content.name,
         groups: Object.entries(content.groups).map(([id, name]) => ({ id, name })),
       });
+
       for (const [id, faction] of Object.entries(content.factions)) {
         factions.push({
           id: `${systemId}/${id}`,
@@ -77,6 +85,7 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
         });
       }
     }
+
     return { systems, factions, skippedSystemIds };
   }
 
@@ -84,13 +93,16 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
     const directory = join(this.config.catalogDirectory, 'kits');
     const kits: CatalogKit[] = [];
     const skippedIds: string[] = [];
+
     for (const file of await yamlFiles(directory)) {
       const id = idOf(directory, file);
       const content = await this.readYaml(file, kitFileSchema);
+
       if (content === undefined) {
         skippedIds.push(id);
         continue;
       }
+
       kits.push({
         id,
         manufacturer: id.split('/')[0] ?? id,
@@ -112,16 +124,20 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
         })),
       });
     }
+
     return { kits, skippedIds };
   }
 
   /** `undefined` for a file that doesn't match the format. */
   private async readYaml<T>(file: string, schema: z.ZodType<T>): Promise<T | undefined> {
     const result = schema.safeParse(parse(await readFile(file, 'utf8')));
+
     if (!result.success) {
       this.logger.warn(`Left out ${file}, it does not match the catalog format:\n${z.prettifyError(result.error)}`);
+
       return undefined;
     }
+
     return result.data;
   }
 }
@@ -129,6 +145,7 @@ export class YamlCatalogSnapshotSource extends CatalogSnapshotSource {
 /** Sorted, so the same files always give the same hash. */
 async function yamlFiles(directory: string): Promise<string[]> {
   const entries = await readdir(directory, { recursive: true, withFileTypes: true });
+
   return entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.yaml'))
     .map((entry) => join(entry.parentPath, entry.name))

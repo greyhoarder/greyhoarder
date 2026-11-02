@@ -8,11 +8,13 @@ import { SetupStatus } from '../setup-status';
  */
 export const setupDoneGuard: CanActivateFn = async () => {
   const router = inject(Router);
+
   return (await inject(SetupStatus).isRequired()) ? router.parseUrl('/setup') : true;
 };
 
 /** Keeps the setup open only while no account exists; afterwards it leads to the login. */
 export const setupOpenGuard: CanActivateFn = async () => {
   const router = inject(Router);
+
   return (await inject(SetupStatus).isRequired()) ? true : router.parseUrl('/login');
 };

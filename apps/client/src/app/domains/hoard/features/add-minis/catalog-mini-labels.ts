@@ -17,10 +17,13 @@ export function factionText(
   systemNames: ReadonlyMap<string, string>,
 ): string {
   const { factionId } = mini;
+
   if (factionId === undefined) {
     return '';
   }
+
   const faction = factionNames.get(factionId) ?? factionId;
   const system = systemNames.get(factionId);
+
   return system === undefined ? faction : `${faction} · ${system}`;
 }

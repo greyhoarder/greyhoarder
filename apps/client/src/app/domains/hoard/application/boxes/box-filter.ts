@@ -19,9 +19,11 @@ export function matchesBoxFilter(box: BoxRow, filter: BoxFilter): boolean {
 /** Whether the box's name, its kit, the kit's article number or a tag contains the query, ignoring case. */
 export function matchesBoxSearch(box: BoxRow, query: string): boolean {
   const needle = query.trim().toLowerCase();
+
   if (!needle) {
     return true;
   }
+
   return [box.name, box.kit?.name, box.kit?.sku, ...box.tags].some((text) => text?.toLowerCase().includes(needle));
 }
 

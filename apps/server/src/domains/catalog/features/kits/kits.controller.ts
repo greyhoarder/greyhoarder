@@ -19,6 +19,7 @@ export class KitsController {
   async list(@Query(new ZodValidationPipe(kitsRequestSchema)) query: KitsRequest): Promise<KitSearchResponse> {
     const result =
       'search' in query ? await this.kits.search(query.search) : await this.kits.find(query.id, query.version);
+
     return {
       kits: result.kits.map(({ entry, version }) => ({ ...entry, version })),
       containedKits: result.containedKits.map(({ entry, version }) => ({ ...entry, version })),

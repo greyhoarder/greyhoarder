@@ -19,5 +19,6 @@ const COMPARERS: Record<BoxSortOrder, (a: BoxRow, b: BoxRow) => number> = {
 /** A sorted copy; boxes that compare equal keep their order in both directions. */
 export function sortBoxes(boxes: readonly BoxRow[], order: BoxSortOrder, direction: SortDirection): BoxRow[] {
   const sign = direction === 'ascending' ? 1 : -1;
+
   return [...boxes].sort((a, b) => sign * COMPARERS[order](a, b));
 }

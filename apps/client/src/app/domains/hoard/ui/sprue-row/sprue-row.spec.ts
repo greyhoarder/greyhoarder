@@ -17,10 +17,12 @@ function render(row: SprueMinis) {
   fixture.componentRef.setInput('count', row.count);
   fixture.componentRef.setInput('testId', 'row');
   fixture.detectChanges();
+
   const texts = (testId: string): string[] =>
     [...(fixture.nativeElement as HTMLElement).querySelectorAll(`[data-testid="${testId}"]`)].map(
       (element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '',
     );
+
   return { texts };
 }
 

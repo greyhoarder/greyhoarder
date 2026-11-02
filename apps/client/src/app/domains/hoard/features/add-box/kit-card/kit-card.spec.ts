@@ -4,6 +4,7 @@ import { KitCard } from './kit-card';
 
 const ORKS = 'warhammer-40000/orks';
 const MARINES = 'warhammer-40000/space-marines';
+
 const FACTION_NAMES = new Map([
   [ORKS, 'Orks'],
   [MARINES, 'Space Marines'],
@@ -133,14 +134,17 @@ describe('Kit card', () => {
       fixture.componentRef.setInput('areSprues', inputs.areSprues ?? false);
       await fixture.whenStable();
       const card: HTMLElement = fixture.nativeElement;
+
       const click = async (element: HTMLElement | null | undefined): Promise<void> => {
         element?.click();
         await fixture.whenStable();
       };
+
       // The menu opens in an overlay outside the component.
       const choices = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-testid="add-box-army"]')];
       const openChoices = (): Promise<void> => click(card.querySelector<HTMLElement>('[data-testid="add-box-armies"]'));
       const rows = (): number => card.querySelectorAll('[data-testid="add-box-slot"]').length;
+
       return { card, click, choices, openChoices, rows };
     };
 

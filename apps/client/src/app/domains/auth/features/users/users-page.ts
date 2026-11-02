@@ -37,6 +37,7 @@ export class UsersPage {
   /** The accounts the search leaves. */
   protected readonly visible = computed(() => {
     const query = this.query().trim().toLowerCase();
+
     return this.list().filter((user) => `${user.username} ${user.displayName ?? ''}`.toLowerCase().includes(query));
   });
   protected readonly roles = [...userRoles].reverse();
@@ -70,9 +71,11 @@ export class UsersPage {
   protected toggle({ id }: Account): void {
     this.openIds.update((ids) => {
       const opened = new Set(ids);
+
       if (!opened.delete(id)) {
         opened.add(id);
       }
+
       return opened;
     });
   }
@@ -83,9 +86,11 @@ export class UsersPage {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const time = formatDate(at, 'HH:mm', this.locale);
+
     if (day(at) === day(new Date())) {
       return `Today, ${time}`;
     }
+
     return day(at) === day(yesterday) ? `Yesterday, ${time}` : `${formatDate(at, 'd MMM y', this.locale)}, ${time}`;
   }
 
@@ -110,10 +115,13 @@ export class UsersPage {
 
   protected async setPassword(account: Account): Promise<void> {
     const password = this.newPasswords().get(account.id) ?? '';
+
     if (password === '') {
       this.note.set({ id: account.id, text: 'Enter a password.', hasFailed: true });
+
       return;
     }
+
     try {
       await this.accounts.setPassword(account.id, password);
       this.newPasswords.update((passwords) => new Map(passwords).set(account.id, ''));
@@ -136,11 +144,14 @@ export class UsersPage {
 
   protected async delete(): Promise<void> {
     const account = this.deleting();
+
     if (account === undefined) {
       return;
     }
+
     this.isDeleting.set(true);
     this.hasDeleteFailed.set(false);
+
     try {
       await this.accounts.remove(account.id);
       this.users.update((users) => users?.filter(({ id }) => id !== account.id));
@@ -155,6 +166,7 @@ export class UsersPage {
 
   private async change(account: Account, changes: Parameters<HttpAccountsAdapter['update']>[1]): Promise<void> {
     this.note.set(undefined);
+
     try {
       const updated = await this.accounts.update(account.id, changes);
       this.users.update((users) => users?.map((user) => (user.id === updated.id ? updated : user)));

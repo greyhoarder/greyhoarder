@@ -9,8 +9,10 @@ describe('Minis stepper', () => {
     await fixture.whenStable();
     const changed = vi.fn();
     fixture.componentInstance.changed.subscribe(changed);
+
     const find = (testId: string): HTMLButtonElement | null =>
       (fixture.nativeElement as HTMLElement).querySelector(`[data-testid="${testId}"]`);
+
     return { changed, find };
   };
 

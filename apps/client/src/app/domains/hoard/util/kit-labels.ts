@@ -30,8 +30,10 @@ export function minisLabel(count: number): string {
 export function kitMinis(kit: Kit): string {
   const counts = [...new Set(kit.variants.map((variant) => variant.minis))].sort((a, b) => a - b);
   const last = counts.at(-1) ?? kit.minis;
+
   if (counts.length <= 1) {
     return minisLabel(last);
   }
+
   return `${counts.slice(0, -1).join(', ')} or ${last} minis`;
 }

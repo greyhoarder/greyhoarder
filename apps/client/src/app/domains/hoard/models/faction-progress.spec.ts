@@ -21,6 +21,7 @@ describe('Faction progress', () => {
   it('counts a mini also under every faction its factions are part of', () => {
     const spaceMarines = 'warhammer-40000/space-marines';
     const darkAngels = 'warhammer-40000/dark-angels';
+
     const minis = [...Array<string>(4).fill(spaceMarines), ...Array<string>(2).fill(darkAngels)].map((factionId) =>
       mini('built', factionId),
     );

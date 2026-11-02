@@ -18,6 +18,7 @@ describe('Box card', () => {
     const fixture = TestBed.createComponent(BoxCard);
     fixture.componentRef.setInput('box', box);
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 

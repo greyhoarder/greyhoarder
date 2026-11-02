@@ -38,21 +38,25 @@ export class MiniBoxCard {
   /** The kit's name, e.g. "Lootas / Burna Boyz"; without a kit the box's name. */
   protected readonly title = computed(() => {
     const kit = this.kit();
+
     return kit ? kitName(kit) : (this.box()?.name ?? this.kitReference()?.name ?? '');
   });
   protected readonly meta = computed(() => {
     const kit = this.kit();
+
     return kit && kitMeta(kit);
   });
   protected readonly added = computed(() => {
     const box = this.box();
     const percent = this.percent();
+
     return box && percent !== undefined
       ? `Added ${formatDate(box.addedOn)} · box #${box.number} at ${percent}%`
       : undefined;
   });
   protected readonly suggestedParts = computed(() => {
     const kit = this.kit();
+
     return kit && this.name() !== '' ? kitParts(kit, this.name()) : [];
   });
 }

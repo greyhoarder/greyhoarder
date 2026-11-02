@@ -53,8 +53,10 @@ describe('Dashboard page', () => {
   const all = (testId: string): HTMLElement[] => [
     ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(`[data-testid="${testId}"]`),
   ];
+
   const textsOf = (testId: string): string[] =>
     all(testId).map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '');
+
   const ofCard = (index: number, testId: string): HTMLElement | null =>
     all('dashboard-hoard-faction')[index]?.querySelector(`[data-testid="${testId}"]`) ?? null;
 

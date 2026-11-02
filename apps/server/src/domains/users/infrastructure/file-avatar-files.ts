@@ -23,6 +23,7 @@ export class FileAvatarFiles extends AvatarFiles {
       if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
         return undefined;
       }
+
       throw error;
     }
   }

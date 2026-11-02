@@ -20,5 +20,6 @@ const COMPARERS: Record<MiniSortOrder, (a: MiniRow, b: MiniRow) => number> = {
 /** A sorted copy; rows that compare equal keep their order in both directions. */
 export function sortRows(rows: readonly MiniRow[], order: MiniSortOrder, direction: SortDirection): MiniRow[] {
   const sign = direction === 'ascending' ? 1 : -1;
+
   return [...rows].sort((a, b) => sign * COMPARERS[order](a, b));
 }

@@ -28,6 +28,7 @@ describe('Group card of a box', () => {
     fixture.componentRef.setInput('group', group);
     fixture.componentRef.setInput('boxFactions', ['Orks']);
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 
@@ -212,6 +213,7 @@ describe('Group card of a box', () => {
       const card = await render();
       vi.spyOn(editor(), 'leaveMinis').mockImplementation(async () => {
         editor().saveState.set('failed');
+
         return false;
       });
       await openLeavePanel(card);
@@ -232,6 +234,7 @@ describe('Group card of a box', () => {
         parts: [],
         isOnWorkbench: false,
       });
+
       TestBed.configureTestingModule({
         providers: [
           {

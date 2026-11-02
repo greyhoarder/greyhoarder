@@ -92,10 +92,12 @@ describe('Add custom page', () => {
     await click('add-custom-add-faction');
     // The search opens in a popover outside the page.
     const field = document.querySelector<HTMLInputElement>('[data-testid="add-custom-faction-search"]');
+
     if (field) {
       field.value = 'Crimson Wolves';
       field.dispatchEvent(new Event('input'));
     }
+
     await fixture.whenStable();
     document.querySelector<HTMLElement>('[data-testid="add-custom-faction-create"]')?.click();
     await fixture.whenStable();

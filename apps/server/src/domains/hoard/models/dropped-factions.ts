@@ -8,5 +8,6 @@ import { isOwnFaction, type Mini } from '@greyhoarder/domain/hoard';
 export function droppedFactions(before: readonly Mini[], after: readonly Mini[]): string[] {
   const kept = new Set(after.flatMap((mini) => mini.factionIds));
   const carried = new Set(before.flatMap((mini) => mini.factionIds).filter(isOwnFaction));
+
   return [...carried].filter((factionId) => !kept.has(factionId));
 }

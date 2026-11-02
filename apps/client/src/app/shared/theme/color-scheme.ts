@@ -39,6 +39,7 @@ export class ColorScheme {
 
   private stored(): Theme {
     const stored = this.window?.localStorage.getItem(STORAGE_KEY);
+
     return themes.find((theme) => theme === stored) ?? 'system';
   }
 }

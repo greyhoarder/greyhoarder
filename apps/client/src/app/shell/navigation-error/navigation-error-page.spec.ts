@@ -27,6 +27,7 @@ describe('Navigation error page', () => {
                   if (!isServerUp) {
                     throw failure;
                   }
+
                   return true;
                 },
               ],
@@ -44,6 +45,7 @@ describe('Navigation error page', () => {
       .catch(() => false);
     const fixture = TestBed.createComponent(NavigationErrorPage);
     await fixture.whenStable();
+
     return fixture;
   }
 

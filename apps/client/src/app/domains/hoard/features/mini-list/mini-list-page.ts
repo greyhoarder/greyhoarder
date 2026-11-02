@@ -70,6 +70,7 @@ export class MiniListPage {
   /** By box, so boxes with the same name stay apart. */
   protected readonly boxOptions = computed(() => {
     const names = distinctBoxNames(this.boxes.boxes());
+
     return optionsOf(
       this.store.presentRows(),
       (row) => [row.boxId ?? NONE],
@@ -89,14 +90,17 @@ export class MiniListPage {
       .rows()
       .filter((row) => this.store.selectedIds().has(row.id))
       .map((row) => row.id);
+
     void this.router.navigate(['/hoard/minis/edit'], { queryParams: { ids: ids.join(',') } });
   }
 
   protected async deleteSelected(): Promise<void> {
     const { isDeleted, emptiedBoxIds } = await this.deletion.confirm();
+
     if (isDeleted) {
       this.store.finishSelecting();
     }
+
     if (emptiedBoxIds.length > 0) {
       this.boxesDeletion.ask(emptiedBoxIds);
     }

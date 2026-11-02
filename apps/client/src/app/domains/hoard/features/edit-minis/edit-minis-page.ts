@@ -57,6 +57,7 @@ export class EditMinisPage {
   /** Back to where the minis were selected. */
   protected readonly back = computed(() => {
     const box = this.box();
+
     return box === undefined
       ? { link: ['/hoard/minis'], label: 'Hoard' }
       : { link: ['/hoard/boxes', box], label: 'Box' };
@@ -66,9 +67,11 @@ export class EditMinisPage {
   protected readonly workbenchNow = computed(() => {
     const onIt = this.editor.onWorkbenchCount();
     const count = this.editor.count();
+
     if (onIt === 0) {
       return 'None on the workbench';
     }
+
     return onIt === count ? 'All on the workbench' : `${onIt} of ${count} on the workbench`;
   });
 
@@ -96,9 +99,12 @@ export class EditMinisPage {
   protected moveWorkbench(event: Event, by: 1 | -1): void {
     event.preventDefault();
     const choices = this.workbenchChoices;
+
     const index =
       (choices.findIndex((choice) => choice.value === this.editor.workbench()) + by + choices.length) % choices.length;
+
     const next = choices[index];
+
     if (next !== undefined) {
       this.editor.workbench.set(next.value);
       this.workbenchOptions()[index]?.nativeElement.focus();
@@ -108,13 +114,17 @@ export class EditMinisPage {
   /** Leads back to where the minis were selected, which then says how many were changed. */
   protected async apply(): Promise<void> {
     const count = this.editor.count();
+
     if (!(await this.editor.apply())) {
       return;
     }
+
     const boxId = this.box();
+
     if (boxId === undefined) {
       this.minisList.finishSelecting();
     }
+
     this.changedNotice.tell({ count, boxId });
     void this.router.navigate(this.back().link, { replaceUrl: true });
   }

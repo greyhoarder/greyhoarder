@@ -43,9 +43,11 @@ export class SessionController {
 
     await regenerateSession(request);
     request.session.userId = user.id;
+
     if (body.keepSignedIn) {
       request.session.cookie.maxAge = this.config.sessionMaxLifetimeMs;
     }
+
     await this.sessions.startSession(user.id, request.sessionID);
 
     return { user };
@@ -92,12 +94,14 @@ export class SessionController {
       if (error instanceof InvalidCredentialsError) {
         throw new UnprocessableEntityException(error.message);
       }
+
       if (error instanceof TooManyLoginAttemptsError) {
         throw new HttpException(
           { message: error.message, retryAfterSeconds: Math.ceil(error.retryAfterMs / 1000) },
           HttpStatus.TOO_MANY_REQUESTS,
         );
       }
+
       throw error;
     }
   }
@@ -109,12 +113,14 @@ export class SessionController {
       if (error instanceof InvalidCredentialsError) {
         throw new UnauthorizedException(error.message);
       }
+
       if (error instanceof TooManyLoginAttemptsError) {
         throw new HttpException(
           { message: error.message, retryAfterSeconds: Math.ceil(error.retryAfterMs / 1000) },
           HttpStatus.TOO_MANY_REQUESTS,
         );
       }
+
       throw error;
     }
   }

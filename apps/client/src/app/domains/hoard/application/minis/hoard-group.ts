@@ -29,21 +29,27 @@ export interface HoardGroup {
 /** The rows as groups, in the order their first row comes. */
 export function toHoardGroups(rows: readonly MiniRow[]): HoardGroup[] {
   const byGroup = new Map<string, MiniRow[]>();
+
   for (const row of rows) {
     const groupId = row.groupId ?? row.id;
     byGroup.set(groupId, [...(byGroup.get(groupId) ?? []), row]);
   }
+
   return [...byGroup.values()].flatMap((members) => {
     const [first] = members;
+
     if (!first) {
       return [];
     }
+
     const counts: Partial<Record<HobbyStatus, number>> = {};
+
     for (const row of members) {
       if (!isGone(row)) {
         counts[row.status] = (counts[row.status] ?? 0) + row.count;
       }
     }
+
     return {
       id: first.groupId ?? first.id,
       name: first.name,

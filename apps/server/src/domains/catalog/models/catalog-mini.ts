@@ -44,6 +44,7 @@ export function catalogMinisOf(
   words: readonly MiniSearchWord[],
 ): CatalogMini[] {
   const needles = words.map((word) => ({ text: word.text.toLowerCase(), factionIds: new Set(word.factionIds) }));
+
   return mergeByNameFactionAndKit(kits.flatMap((kit) => matchingSlotMinis(kit, needles)));
 }
 
@@ -54,8 +55,10 @@ export function catalogMinisOf(
 export function relevanceOf(mini: CatalogMini, words: readonly MiniSearchWord[]): number {
   const name = mini.name.toLowerCase();
   const nameWords = name.split(/\s+/);
+
   return words.reduce((sum, word) => {
     const text = word.text.toLowerCase();
+
     const score = nameWords.some((nameWord) => nameWord.startsWith(text))
       ? 4
       : name.includes(text)
@@ -63,6 +66,7 @@ export function relevanceOf(mini: CatalogMini, words: readonly MiniSearchWord[])
         : mini.factionId !== undefined && word.factionIds.includes(mini.factionId)
           ? 2
           : 1;
+
     return sum + score;
   }, 0);
 }
@@ -74,6 +78,7 @@ function matchingSlotMinis(
 ): SlotMini[] {
   const kitName = kit.name.toLowerCase();
   const miniKit = miniKitOf(kit, version);
+
   return kit.variants
     .flatMap((variant) => variant.slots)
     .flatMap((slot) => slotMinis(kit, slot, miniKit))
@@ -91,6 +96,7 @@ function matchingSlotMinis(
 function slotMinis(kit: CatalogKit, slot: KitSlot, miniKit: CatalogMiniKit): SlotMini[] {
   const factionIds = slot.factionIds.length > 0 ? slot.factionIds : kit.factionIds;
   const factions = factionIds.length > 0 ? factionIds : [undefined];
+
   return slot.buildsAs.flatMap((name) =>
     factions.map((factionId) => ({ name, factionId, parts: slot.parts, kit: miniKit })),
   );
@@ -99,6 +105,7 @@ function slotMinis(kit: CatalogKit, slot: KitSlot, miniKit: CatalogMiniKit): Slo
 /** The same name, ignoring case, for the same faction of the same kit is one mini with the parts of all its slots. */
 function mergeByNameFactionAndKit(slotMinis: readonly SlotMini[]): CatalogMini[] {
   const byKey = new Map<string, CatalogMini>();
+
   for (const slotMini of slotMinis) {
     const key = `${slotMini.name.toLowerCase()}\n${slotMini.factionId ?? ''}\n${slotMini.kit.id}`;
     const known = byKey.get(key);
@@ -107,17 +114,20 @@ function mergeByNameFactionAndKit(slotMinis: readonly SlotMini[]): CatalogMini[]
       known ? { ...known, parts: [...new Set([...known.parts, ...slotMini.parts])] } : withoutFaction(slotMini),
     );
   }
+
   return [...byKey.values()];
 }
 
 /** Leaves the faction out instead of setting it to undefined. */
 function withoutFaction(mini: CatalogMini): CatalogMini {
   const { factionId, ...rest } = mini;
+
   return factionId === undefined ? rest : mini;
 }
 
 function miniKitOf(kit: CatalogKit, version: number): CatalogMiniKit {
   const year = oldestYear(kit);
   const kitOf = { id: kit.id, version, name: kit.name, isDraft: kit.isDraft };
+
   return year === undefined ? kitOf : { ...kitOf, year };
 }

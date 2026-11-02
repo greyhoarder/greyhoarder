@@ -9,6 +9,7 @@ describe('Count stepper', () => {
     fixture.componentRef.setInput('label', 'How many to build');
     fixture.componentRef.setInput('testId', 'mini-build');
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 

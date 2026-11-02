@@ -38,6 +38,7 @@ export class AccountsController {
       if (error instanceof UsernameTakenError) {
         throw new ConflictException(error.message);
       }
+
       throw error;
     }
   }
@@ -52,6 +53,7 @@ export class AccountsController {
       if (error instanceof UnknownAccountError) {
         throw new NotFoundException(error.message);
       }
+
       throw error;
     }
   }

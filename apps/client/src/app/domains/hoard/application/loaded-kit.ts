@@ -15,13 +15,16 @@ export interface LoadedKit {
 /** Loads the kit a reference names, anew when it changes; to call while constructing a class. */
 export function loadedKit(reference: () => BoxKitReference | undefined): LoadedKit {
   const catalogKits = inject(HttpKitsAdapter);
+
   const loaded = resource({
     params: reference,
     loader: async ({ params: { id, version } }): Promise<Kit | undefined> => {
       const { kits, containedKits } = await catalogKits.find(id, version);
+
       return kits[0] && toKit(kits[0], containedKits);
     },
   });
+
   return {
     kit: computed(() => (loaded.hasValue() ? loaded.value() : undefined)),
     isLoading: computed(() => loaded.isLoading()),

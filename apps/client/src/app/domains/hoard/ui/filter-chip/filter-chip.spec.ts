@@ -26,12 +26,15 @@ describe('Filter chip', () => {
   const wordsOf = (element: Element): string => {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
     const texts: string[] = [];
+
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const text = node.textContent?.trim();
+
       if (text) {
         texts.push(text);
       }
     }
+
     return texts.join(' ');
   };
 
@@ -63,6 +66,7 @@ describe('Filter chip', () => {
       search.value = 'pri';
       search.dispatchEvent(new Event('input'));
     }
+
     await fixture.whenStable();
 
     expect(optionTexts()).toEqual(['Primed 6']);

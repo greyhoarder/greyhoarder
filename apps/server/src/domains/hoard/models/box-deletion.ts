@@ -19,6 +19,7 @@ export function boxDeletion(
   if (!options.keepBuiltMinis) {
     return { deleted: minisOfBox, kept: [] };
   }
+
   return {
     deleted: minisOfBox.filter((mini) => mini.status === 'sprue'),
     kept: minisOfBox.filter((mini) => mini.status !== 'sprue').map((mini) => withoutBox(mini, box)),
@@ -27,5 +28,6 @@ export function boxDeletion(
 
 function withoutBox(mini: Mini, box: Box): Mini {
   const { boxId: _boxId, ...rest } = mini;
+
   return box.kit === undefined ? rest : { ...rest, kit: box.kit };
 }

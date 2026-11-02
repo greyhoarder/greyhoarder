@@ -22,6 +22,7 @@ function webAppOptions(directory: string | undefined): ServeStaticModuleOptions[
   if (!directory) {
     return [];
   }
+
   return [
     {
       rootPath: directory,

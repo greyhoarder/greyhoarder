@@ -6,6 +6,7 @@ import { factionKey, isOwnFaction, type Mini, type OwnFaction } from '@greyhoard
  */
 export function ownFactionsOf(minis: readonly Mini[], names: ReadonlyMap<string, string>): OwnFaction[] {
   const ids = new Set(minis.flatMap((mini) => mini.factionIds).filter(isOwnFaction));
+
   return [...ids]
     .map((id) => ({ id, name: names.get(id) ?? '' }))
     .filter((faction) => faction.name !== '')
@@ -19,5 +20,6 @@ export function ownFactionsOf(minis: readonly Mini[], names: ReadonlyMap<string,
 export function newFactionName(typed: string, found: readonly { readonly name: string }[]): string | undefined {
   const name = typed.trim();
   const isTaken = found.some((faction) => factionKey(faction.name) === factionKey(name));
+
   return name === '' || isTaken ? undefined : name;
 }

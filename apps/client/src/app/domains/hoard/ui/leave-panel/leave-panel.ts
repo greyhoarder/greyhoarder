@@ -72,6 +72,7 @@ export class LeavePanel {
   protected readonly choices = computed(() => {
     const needle = this.query().trim().toLowerCase();
     const chosen = new Set(this.recipients().map((recipient) => recipient.id));
+
     return this.recipientChoices()
       .filter((choice) => !chosen.has(choice.id) && eitherOrText(choice.name).toLowerCase().includes(needle))
       .slice(0, MAX_CHOICES);
@@ -110,9 +111,11 @@ export class LeavePanel {
 
   protected leave(): void {
     const reason = this.reason();
+
     if (reason === undefined) {
       return;
     }
+
     const recipientMiniIds = this.recipients().map((recipient) => recipient.id);
     this.left.emit({
       departure: {

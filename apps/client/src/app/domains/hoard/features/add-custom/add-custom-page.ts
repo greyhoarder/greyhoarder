@@ -52,6 +52,7 @@ export class AddCustomPage {
 
   protected changeName(name: string): void {
     this.addition.name.set(name);
+
     if (name.trim() !== '') {
       this.isNameMissing.set(false);
     }
@@ -78,8 +79,10 @@ export class AddCustomPage {
   protected async add(): Promise<void> {
     if (this.addition.name().trim() === '') {
       this.isNameMissing.set(true);
+
       return;
     }
+
     await this.addition.add();
   }
 }

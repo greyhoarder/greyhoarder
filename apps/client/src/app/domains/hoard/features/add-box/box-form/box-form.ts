@@ -55,6 +55,7 @@ export class BoxForm {
   /** Minis per box of each row. */
   protected readonly rows = linkedSignal(() => {
     const shown = new Set(this.sections().flatMap((section) => section.items.map((item) => item.index)));
+
     return this.kitCounts().map((count, row) => (!this.areSprues() && shown.has(row) ? count : 0));
   });
   /** Sprues are always an edited box; only a box differing from its kit says so. */
@@ -93,9 +94,11 @@ export class BoxForm {
   protected toggleTag(tag: string): void {
     this.selectedTags.update((tags) => {
       const next = new Set(tags);
+
       if (!next.delete(tag)) {
         next.add(tag);
       }
+
       return next;
     });
   }
@@ -103,14 +106,18 @@ export class BoxForm {
   /** Enter adds the typed tag and selects it. */
   protected addTag(event: Event): void {
     event.preventDefault();
+
     if (!(event.target instanceof HTMLInputElement)) {
       return;
     }
+
     const tag = event.target.value.trim();
     event.target.value = '';
+
     if (tag === '') {
       return;
     }
+
     this.tags.update((tags) => (tags.includes(tag) ? tags : [...tags, tag]));
     this.selectedTags.update((tags) => new Set([...tags, tag]));
   }

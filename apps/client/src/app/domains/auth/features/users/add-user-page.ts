@@ -54,10 +54,13 @@ export class AddUserPage {
     const username = this.username().trim();
     const failure = invalidInput(username, this.password());
     this.failure.set(failure);
+
     if (failure !== '') {
       return;
     }
+
     this.isAdding.set(true);
+
     try {
       await this.accounts.add({ username, role: this.role(), password: this.password() });
       await this.router.navigateByUrl('/settings/users');
@@ -75,11 +78,14 @@ function invalidInput(username: string, password: string): string {
   if (username === '') {
     return 'Enter a username.';
   }
+
   if (username.length < USERNAME_MIN_LENGTH || username.length > USERNAME_MAX_LENGTH) {
     return `Use ${USERNAME_MIN_LENGTH} to ${USERNAME_MAX_LENGTH} characters.`;
   }
+
   if (!USERNAME_PATTERN.test(username)) {
     return 'Use only letters, digits, dots, underscores and hyphens.';
   }
+
   return password === '' ? 'Enter a password.' : '';
 }

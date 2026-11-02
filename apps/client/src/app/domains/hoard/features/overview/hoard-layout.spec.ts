@@ -125,6 +125,7 @@ describe('Hoard layout', () => {
   async function openAddMenu(): Promise<HTMLElement | null> {
     (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('[data-testid="hoard-add-menu"]')?.click();
     await fixture.whenStable();
+
     return document.querySelector<HTMLElement>('[role="menu"]');
   }
 

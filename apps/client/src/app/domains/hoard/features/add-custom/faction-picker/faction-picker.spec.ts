@@ -21,9 +21,11 @@ describe('Faction picker', () => {
     fixture.componentRef.setInput('isOpen', isOpen);
     fixture.componentRef.setInput('results', results);
     await fixture.whenStable();
+
     // The search opens in a popover outside the component.
     const find = <T extends HTMLElement = HTMLElement>(testId: string): T[] =>
       Array.from(document.querySelectorAll<T>(`[data-testid="${testId}"]`));
+
     return { fixture, find };
   };
 

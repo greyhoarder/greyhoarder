@@ -14,11 +14,13 @@ describe('Build bar', () => {
     fixture.componentRef.setInput('rowSize', rowSize);
     fixture.componentRef.setInput('isOnWorkbench', true);
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
 
   const summaryOf = (bar: HTMLElement): string =>
     bar.querySelector('[data-testid="mini-build-summary"]')?.textContent?.trim() ?? '';
+
   const buildButton = (bar: HTMLElement): HTMLButtonElement | null =>
     bar.querySelector<HTMLButtonElement>('[data-testid="mini-build"]');
 

@@ -21,6 +21,7 @@ export interface MiniOffer {
 export function toMiniOffers(result: CatalogMiniSearchResult, hoard: readonly Mini[]): MiniOffer[] {
   const owned = ownedCounts(hoard);
   const { factionNames, systemNames } = result;
+
   return result.minis.map((mini) => {
     const offer = {
       mini,
@@ -29,6 +30,7 @@ export function toMiniOffers(result: CatalogMiniSearchResult, hoard: readonly Mi
       kit: kitText(mini),
       owned: owned.get(ownedKey(mini.name, mini.factionId)) ?? 0,
     };
+
     return mini.factionId === undefined
       ? offer
       : { ...offer, factionName: factionNames.get(mini.factionId) ?? mini.factionId };
@@ -38,12 +40,15 @@ export function toMiniOffers(result: CatalogMiniSearchResult, hoard: readonly Mi
 /** How many minis that are not gone have each name per faction; minis without a faction count for none. */
 function ownedCounts(hoard: readonly Mini[]): Map<string, number> {
   const counts = new Map<string, number>();
+
   for (const mini of hoard.filter((owned) => !isGone(owned))) {
     const factionIds = mini.factionIds.length > 0 ? mini.factionIds : [undefined];
+
     for (const key of factionIds.map((factionId) => ownedKey(mini.name, factionId))) {
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
   }
+
   return counts;
 }
 

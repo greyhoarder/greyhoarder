@@ -33,9 +33,11 @@ async function httpErrors<T>(action: () => Promise<T>): Promise<T> {
     if (error instanceof UnknownAccountError) {
       throw new NotFoundException(error.message);
     }
+
     if (error instanceof LastAdministratorError) {
       throw new ConflictException(error.message);
     }
+
     throw error;
   }
 }

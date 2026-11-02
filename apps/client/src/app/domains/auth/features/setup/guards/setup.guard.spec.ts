@@ -18,6 +18,7 @@ describe('Setup guards', () => {
         { provide: HttpSetupAdapter, useValue: { isSetupRequired } },
       ],
     });
+
     return TestBed.inject(Router);
   };
 

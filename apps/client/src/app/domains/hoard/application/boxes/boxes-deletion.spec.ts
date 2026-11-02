@@ -28,6 +28,7 @@ const mini = (id: string, boxId: string, overrides: Partial<Mini> = {}): Mini =>
 });
 
 const BOXES = [box('boyz'), box('nobz')];
+
 const MINIS = [
   mini('boy-1', 'boyz'),
   mini('boy-2', 'boyz'),
@@ -65,6 +66,7 @@ describe('Boxes deletion', () => {
     minis.minis();
     boxes.boxes();
     await TestBed.inject(ApplicationRef).whenStable();
+
     return { deletion: TestBed.inject(BoxesDeletion), minis, boxes };
   }
 
@@ -75,6 +77,7 @@ describe('Boxes deletion', () => {
       deletedMiniIds: ['boy-1', 'boy-2', 'sold-boy'],
       minis: [],
     }));
+
     deletion.ask(['boyz']);
 
     await deletion.confirm();
@@ -100,6 +103,7 @@ describe('Boxes deletion', () => {
       deletedMiniIds: ['boy-1', 'boy-2', 'sold-boy', 'nob'],
       minis: [],
     }));
+
     const { deletion, minis, boxes } = await deletionWith(remove);
     deletion.ask(['boyz', 'nobz']);
 
@@ -141,6 +145,7 @@ describe('Boxes deletion', () => {
       deletedMiniIds: [],
       minis: MINIS.filter((each) => each.boxId === 'boyz').map((each) => ({ ...each, boxId: undefined })),
     }));
+
     const { deletion, minis, boxes } = await deletionWith(remove);
     deletion.ask(['boyz']);
 

@@ -25,14 +25,18 @@ export interface BoxesToAdd {
  */
 export function parseBoxesToAdd(boxesToAdd: BoxesToAdd): BoxesToAdd {
   const { boxes, tags, name, rows } = boxesToAdd;
+
   if (!Number.isInteger(boxes) || boxes < MIN_BOXES) {
     throw new InvalidBoxCountError(boxes);
   }
+
   if (name?.trim() === '') {
     throw new MissingBoxNameError();
   }
+
   if (rows && parseRowCounts(rows).every((count) => count === 0)) {
     throw new EmptyBoxError();
   }
+
   return { ...boxesToAdd, tags: parseTags(tags), name: name?.trim() };
 }

@@ -29,6 +29,7 @@ export class HoardByFaction {
   readonly factions = computed<readonly FactionOverview[]>(() => {
     const names = this.factionNames.names();
     const systemNames = this.factionNames.systemNames();
+
     return factionProgresses(this.minis(), this.minisStore.partOf())
       .map(({ factionId, ...progress }) => ({
         ...progress,

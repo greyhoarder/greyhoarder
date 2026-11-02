@@ -3,6 +3,7 @@ import { armiesText, armySections, kitSections } from './army-sections';
 
 const ORKS = 'warhammer-40000/orks';
 const MARINES = 'warhammer-40000/space-marines';
+
 const NAMES = new Map([
   [ORKS, 'Orks'],
   [MARINES, 'Space Marines'],

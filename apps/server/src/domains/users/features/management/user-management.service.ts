@@ -25,6 +25,7 @@ export class UserManagementService {
   async change(id: string, changes: { readonly role?: UserRole; readonly disabled?: boolean }): Promise<User> {
     const isDemoted = changes.role === 'member' || changes.disabled === true;
     await this.accountOf(id, isDemoted);
+
     return this.users.updateAccount(id, changes);
   }
 
@@ -38,13 +39,16 @@ export class UserManagementService {
   async remove(id: string): Promise<void> {
     const account = await this.accountOf(id, true);
     await this.users.updateAccount(id, { disabled: true });
+
     try {
       await this.events.dispatch(new UserDeleting(id));
     } catch (error) {
       await this.users.updateAccount(id, { disabled: account.disabled });
       throw error;
     }
+
     await this.users.remove(id);
+
     if (account.avatarId !== undefined) {
       await this.files.remove(account.avatarId);
     }
@@ -53,12 +57,15 @@ export class UserManagementService {
   private async accountOf(id: string, isDemoted: boolean): Promise<User> {
     const accounts = await this.queries.findAll();
     const account = accounts.find((each) => each.id === id);
+
     if (account === undefined) {
       throw new UnknownAccountError();
     }
+
     if (isDemoted && isLastActiveAdministrator(account, accounts)) {
       throw new LastAdministratorError();
     }
+
     return account;
   }
 }

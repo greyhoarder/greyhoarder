@@ -56,9 +56,12 @@ describe('Mini box card', () => {
     fixture.componentRef.setInput('percent', inputs.percent ?? 27);
     fixture.componentRef.setInput('name', inputs.name ?? '');
     await fixture.whenStable();
+
     return fixture.nativeElement;
   };
+
   const textOf = (element: Element | null): string => element?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+
   const suggestedParts = (card: HTMLElement): string[] =>
     [...card.querySelectorAll('[data-testid="mini-box-part"]')].map(textOf);
 

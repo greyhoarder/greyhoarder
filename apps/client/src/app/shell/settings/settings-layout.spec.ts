@@ -12,6 +12,7 @@ describe('Settings', () => {
     const fixture = TestBed.createComponent(SettingsLayout);
     await fixture.whenStable();
     const links = (fixture.nativeElement as HTMLElement).querySelectorAll('nav a');
+
     return [...links].map((link) => link.textContent?.trim());
   };
 

@@ -71,6 +71,7 @@ describe('Kit search', () => {
       ...kit('games-workshop/orks/nobz'),
       variants: [{ name: 'Nobz', slots: [{ count: 5, buildsAs: ['Nob'], parts: [], factionIds: [] }] }],
     };
+
     const starter = kit('games-workshop/orks/starter', [nobz.id]);
     const bigBox = kit('games-workshop/orks/big-box', [starter.id]);
     const service = new KitsService(fakeQueries({ found: [nobz], catalog: [nobz, starter, bigBox] }));
@@ -84,6 +85,7 @@ describe('Kit search', () => {
 describe('Kit of a box', () => {
   it('returns the kit in the version a box records, even when a newer one exists', async () => {
     const renamed = { ...C, name: 'C (renamed)' };
+
     const service = new KitsService(
       fakeQueries({
         catalog: [renamed],

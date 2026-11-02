@@ -9,7 +9,9 @@ export function suggestionKit(name: string, parts: readonly string[]): Kit | und
   if (parts.length === 0) {
     return undefined;
   }
+
   const slot = { count: 1, names: [name], parts, factionIds: [] };
+
   return {
     id: '',
     version: 0,

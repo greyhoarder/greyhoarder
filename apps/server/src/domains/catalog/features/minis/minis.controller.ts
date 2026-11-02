@@ -13,6 +13,7 @@ export class MinisController {
   @ZodSerializerDto(catalogMiniSearchResponseSchema)
   async search(@Query() query: CatalogMiniSearchRequestDto): Promise<CatalogMiniSearchResponse> {
     const { minis, factionNames, systemNames } = await this.minis.search(query.search);
+
     return {
       minis,
       factionNames: Object.fromEntries(factionNames),
