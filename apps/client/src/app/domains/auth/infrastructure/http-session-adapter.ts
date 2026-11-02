@@ -29,11 +29,13 @@ export class HttpSessionAdapter {
    */
   async signIn(credentials: Credentials): Promise<SessionUser> {
     const request: LoginRequest = { ...credentials };
+
     try {
       const session = await firstValueFrom(this.http.post<SessionResponse>('/api/auth/session', request));
+
       return session.user;
     } catch (error) {
-      throw toSignInError(error);
+      throwSignInError(error);
     }
   }
 
@@ -57,6 +59,7 @@ export class HttpSessionAdapter {
       if (hasStatus(error, HttpStatusCode.UnprocessableEntity)) {
         throw new WrongPasswordError();
       }
+
       throw hasStatus(error, HttpStatusCode.TooManyRequests) ? new TooManyLoginAttemptsError() : error;
     }
   }
@@ -65,25 +68,31 @@ export class HttpSessionAdapter {
   async currentUser(): Promise<SessionUser | undefined> {
     try {
       const session = await firstValueFrom(this.http.get<SessionResponse>('/api/auth/session'));
+
       return session.user;
     } catch (error) {
       if (hasStatus(error, HttpStatusCode.Unauthorized)) {
         return undefined;
       }
+
       throw isUnreachable(error) ? new ServerUnreachableError() : error;
     }
   }
 }
 
-function toSignInError(error: unknown): unknown {
-  if (hasStatus(error, HttpStatusCode.Unauthorized)) {
-    return new InvalidCredentialsError();
+/** Throws the error the server's answer means, or the cause itself when it means none of them. */
+function throwSignInError(cause: unknown): never {
+  if (hasStatus(cause, HttpStatusCode.Unauthorized)) {
+    throw new InvalidCredentialsError();
   }
-  if (hasStatus(error, HttpStatusCode.TooManyRequests)) {
-    return new TooManyLoginAttemptsError();
+
+  if (hasStatus(cause, HttpStatusCode.TooManyRequests)) {
+    throw new TooManyLoginAttemptsError();
   }
-  if (isUnreachable(error)) {
-    return new ServerUnreachableError();
+
+  if (isUnreachable(cause)) {
+    throw new ServerUnreachableError();
   }
-  return error;
+
+  throw cause;
 }

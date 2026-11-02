@@ -77,6 +77,7 @@ export class SeveralMinisEditor {
   /** The selected minis still in the hoard, gone ones included, in the order selected. */
   readonly minis = computed(() => {
     const byId = new Map(this.minisStore.minis().map((mini) => [mini.id, mini]));
+
     return this.ids().flatMap((id) => byId.get(id) ?? []);
   });
   readonly count = computed(() => this.minis().length);
@@ -114,6 +115,7 @@ export class SeveralMinisEditor {
   readonly factions = computed((): FactionChip[] => {
     const names = this.factionNames.names();
     const added = this.addedFactions();
+
     const carried = factionShares(this.minis()).map(({ id, count }) => ({
       id,
       name: this.addedFactionNames().get(id) ?? names.get(id) ?? id,
@@ -124,9 +126,11 @@ export class SeveralMinisEditor {
         added.some((faction) => faction.id === id),
       ),
     }));
+
     const fresh = added
       .filter((faction) => !carried.some((chip) => chip.id !== undefined && chip.id === faction.id))
       .map((faction) => ({ ...faction, isOwn: isOwnDraft(faction), count: 0, mark: 'added' as const }));
+
     return [...carried, ...fresh];
   });
   /** The factions every mini will carry, which the search does not offer again. */
@@ -150,8 +154,10 @@ export class SeveralMinisEditor {
   readonly parts = computed((): PartTile[] => {
     const names = this.partsStore.names();
     const chosen = this.chosenParts();
+
     const carried = partShares(this.minis()).map(({ partId, count, carried }) => {
       const isSwappable = chosen.get(partId);
+
       return {
         partId,
         name: names.get(partId) ?? '',
@@ -161,12 +167,14 @@ export class SeveralMinisEditor {
         mark: this.markOf(this.removedPartIds().has(partId), isSwappable !== undefined && count < this.count()),
       };
     });
+
     const fresh = this.newParts().map((part) => ({
       ...part,
       count: 0,
       carried: swappableOrGlued(part.isSwappable),
       mark: 'added' as const,
     }));
+
     return [...carried, ...fresh];
   });
 
@@ -175,6 +183,7 @@ export class SeveralMinisEditor {
   private readonly rangeParts = resource({
     params: () => {
       const factionIds = this.factionIds();
+
       return factionIds.length > 0 ? { factionIds } : undefined;
     },
     loader: ({ params: { factionIds } }) => this.catalogParts.rangeParts(factionIds),
@@ -196,13 +205,16 @@ export class SeveralMinisEditor {
     const workbench = this.workbench();
     const addFactions = this.addedFactions().map(toFactionChange);
     const removeFactionIds = [...this.removedFactionIds()];
+
     const addParts = [
       ...[...this.chosenParts()].map(([partId, isSwappable]) => ({ partId, isSwappable })),
       ...this.newParts().map(({ partId, name, isSwappable }) =>
         partId === undefined ? { name, isSwappable } : { partId, isSwappable },
       ),
     ];
+
     const removePartIds = [...this.removedPartIds()];
+
     return {
       ...(status === undefined ? {} : { status }),
       ...(workbench === 'keep' ? {} : { workbench }),
@@ -229,6 +241,7 @@ export class SeveralMinisEditor {
     this.addedFactionNames.update((names) => new Map([...names, [id, name]]));
     this.undoRemovingFaction(id);
     const isOnEveryMini = factionShares(this.minis()).some((share) => share.id === id && share.count === this.count());
+
     if (!isOnEveryMini && !hasFaction(this.addedFactions(), { id, name })) {
       this.addedFactions.update((factions) => [...factions, { id, name }]);
     }
@@ -245,8 +258,10 @@ export class SeveralMinisEditor {
   removeFaction(chip: FactionChip): void {
     if (chip.mark === 'added') {
       this.addedFactions.update((factions) => factions.filter((faction) => !isSameFaction(faction, chip)));
+
       return;
     }
+
     if (chip.id !== undefined) {
       const { id } = chip;
       this.removedFactionIds.update((ids) => new Set([...ids, id]));
@@ -258,27 +273,33 @@ export class SeveralMinisEditor {
   }
 
   /** Puts a part the picker offers, or a new one by name, glued on every mini. */
-  addPart(part: PartOption | string): void {
-    const { partId, name } = typeof part === 'string' ? { partId: undefined, name: part } : part;
+  addPart({ partId, name }: PartOption): void {
     if (partId !== undefined && this.parts().some((tile) => tile.partId === partId && tile.count > 0)) {
       this.undoRemovingPart(partId);
       this.chosenParts.update((chosen) => new Map([...chosen, [partId, false]]));
+
       return;
     }
+
     this.newParts.update((parts) => [...parts, { partId, name, isSwappable: false }]);
   }
 
   /** Removes a part the minis carry from all of them, or takes back adding one. */
   removePart(tile: PartTile): void {
     const { partId } = tile;
+
     if (tile.count === 0) {
       this.newParts.update((parts) => parts.filter((part) => part.name !== tile.name));
+
       return;
     }
+
     if (partId === undefined) {
       return;
     }
+
     this.chosenParts.update((chosen) => new Map([...chosen].filter(([id]) => id !== partId)));
+
     if (tile.mark !== 'added') {
       this.removedPartIds.update((ids) => new Set([...ids, partId]));
     }
@@ -291,14 +312,19 @@ export class SeveralMinisEditor {
   /** Glued becomes swappable and back; mixed becomes swappable. */
   toggleSwappable(tile: PartTile): void {
     const isSwappable = tile.carried !== 'swappable';
+
     if (tile.count === 0) {
       this.newParts.update((parts) => parts.map((part) => (part.name === tile.name ? { ...part, isSwappable } : part)));
+
       return;
     }
+
     const { partId } = tile;
+
     if (partId === undefined) {
       return;
     }
+
     const share = partShares(this.minis()).find((carried) => carried.partId === partId);
     const isAsCarried = share?.count === this.count() && share.carried === swappableOrGlued(isSwappable);
     this.chosenParts.update(
@@ -316,15 +342,19 @@ export class SeveralMinisEditor {
   async apply(): Promise<boolean> {
     this.isApplying.set(true);
     this.hasApplyFailed.set(false);
+
     try {
       const changed = await this.adapter.change(
         this.minis().map((mini) => mini.id),
         this.changes(),
       );
+
       this.hoardChanges.changed(changed);
+
       return true;
     } catch {
       this.hasApplyFailed.set(true);
+
       return false;
     } finally {
       this.isApplying.set(false);
@@ -335,6 +365,7 @@ export class SeveralMinisEditor {
     if (isRemoved) {
       return 'removed';
     }
+
     return isAdded ? 'added' : 'kept';
   }
 }

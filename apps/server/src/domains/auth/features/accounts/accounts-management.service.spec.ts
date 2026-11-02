@@ -4,6 +4,7 @@ import { type AccountsService, type UserQueries, UsernameTakenError } from '../.
 import type { PasswordHasher } from '../../ports/password-hasher.js';
 import type { SessionRegistry } from '../../ports/session-registry.js';
 import { AccountsManagementService } from './accounts-management.service.js';
+import { partialFake } from '../../../../shared/testing/partial-fake.js';
 
 const MIRA: User = { id: '1', username: 'mira', role: 'admin', disabled: false };
 const BEN: User = { id: '2', username: 'ben', role: 'member', disabled: false };
@@ -12,11 +13,12 @@ function serviceWith(create = vi.fn(async () => undefined)) {
   const queries = { findAll: vi.fn(async () => [MIRA, BEN]), findById: vi.fn(async () => BEN) };
   const accounts = { create };
   const passwords = { hash: vi.fn(async (password: string) => `hash of ${password}`) };
+
   return new AccountsManagementService(
-    queries as unknown as UserQueries,
-    accounts as unknown as AccountsService,
-    passwords as unknown as PasswordHasher,
-    { removeAll: vi.fn(async () => undefined) } as unknown as SessionRegistry,
+    partialFake<UserQueries>(queries),
+    partialFake<AccountsService>(accounts),
+    partialFake<PasswordHasher>(passwords),
+    partialFake<SessionRegistry>({ removeAll: vi.fn(async () => undefined) }),
   );
 }
 
@@ -52,11 +54,12 @@ describe('Accounts of the instance', () => {
   it('sets a new password and ends all sessions', async () => {
     const changePasswordHash = vi.fn(async () => undefined);
     const removeAll = vi.fn(async () => undefined);
+
     const service = new AccountsManagementService(
-      { findById: vi.fn(async () => BEN) } as unknown as UserQueries,
-      { changePasswordHash } as unknown as AccountsService,
-      { hash: vi.fn(async (password: string) => `hash of ${password}`) } as unknown as PasswordHasher,
-      { removeAll } as unknown as SessionRegistry,
+      partialFake<UserQueries>({ findById: vi.fn(async () => BEN) }),
+      partialFake<AccountsService>({ changePasswordHash }),
+      partialFake<PasswordHasher>({ hash: vi.fn(async (password: string) => `hash of ${password}`) }),
+      partialFake<SessionRegistry>({ removeAll }),
     );
 
     await service.setPassword(BEN.id, 'new password');

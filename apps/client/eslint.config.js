@@ -4,6 +4,8 @@ const { defineConfig } = require('eslint/config');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 const betterTailwindcss = require('eslint-plugin-better-tailwindcss');
+const stylistic = require('@stylistic/eslint-plugin');
+const { default: greyhoarder, READABLE_SPACING } = require('../../scripts/lint/index.mjs');
 
 /** docs/coding-guidelines.md and docs/architecture-testing.md: syntax no file may use. */
 const RESTRICTED_SYNTAX = [
@@ -17,6 +19,9 @@ const RESTRICTED_SYNTAX = [
 ];
 const NO_DEFAULT_EXPORT = { selector: 'ExportDefaultDeclaration', message: 'Use a named export.' };
 
+/** docs/coding-guidelines.md, "Types": greyhoarder's own rules, the same as in the server. */
+const OWN_RULES = Object.fromEntries(Object.keys(greyhoarder.rules).map((rule) => [`greyhoarder/${rule}`, 'error']));
+
 module.exports = defineConfig([
   // Generated Spartan helm components follow upstream and use arbitrary values (ADR-0011).
   { ignores: ['src/app/shared/ui/helm/**'] },
@@ -29,6 +34,7 @@ module.exports = defineConfig([
       angular.configs.tsRecommended,
     ],
     processor: angular.processInlineTemplates,
+    plugins: { greyhoarder, '@stylistic': stylistic },
     languageOptions: {
       parserOptions: { projectService: true, tsconfigRootDir: __dirname },
     },
@@ -44,6 +50,8 @@ module.exports = defineConfig([
       // DOM events are changed through their target by design.
       'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['event'] }],
       'no-restricted-syntax': ['error', ...RESTRICTED_SYNTAX, NO_DEFAULT_EXPORT],
+      ...OWN_RULES,
+      '@stylistic/padding-line-between-statements': ['error', ...READABLE_SPACING],
       // docs/architecture-angular.md
       '@angular-eslint/prefer-inject': 'error',
       '@angular-eslint/prefer-signals': 'error',
@@ -104,7 +112,7 @@ module.exports = defineConfig([
           ],
         },
       ],
-      // Line wrapping is left to Prettier.
+      // Line wrapping is left to oxfmt.
       'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
     },
   },

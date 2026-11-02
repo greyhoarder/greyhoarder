@@ -8,10 +8,10 @@ const UNREACHABLE_STATUSES = [
   HttpStatusCode.GatewayTimeout,
 ];
 
-export function hasStatus(error: unknown, status: HttpStatusCode): boolean {
-  return error instanceof HttpErrorResponse && error.status === status;
+export function hasStatus(cause: unknown, status: HttpStatusCode): boolean {
+  return cause instanceof HttpErrorResponse && cause.status === status;
 }
 
-export function isUnreachable(error: unknown): boolean {
-  return UNREACHABLE_STATUSES.some((status) => hasStatus(error, status));
+export function isUnreachable(cause: unknown): boolean {
+  return UNREACHABLE_STATUSES.some((status) => hasStatus(cause, status));
 }

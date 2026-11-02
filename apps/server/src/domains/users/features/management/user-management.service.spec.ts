@@ -6,6 +6,7 @@ import type { UserQueries } from '../../ports/user-queries.js';
 import type { UserRepository } from '../../ports/user-repository.js';
 import { LastAdministratorError } from './errors/last-administrator.error.js';
 import { UserManagementService } from './user-management.service.js';
+import { partialFake } from '../../../../shared/testing/partial-fake.js';
 
 const MIRA: User = { id: 'mira', username: 'mira', role: 'admin', disabled: false };
 const BEN: User = { id: 'ben', username: 'ben', role: 'member', disabled: false, avatarId: 'picture' };
@@ -15,14 +16,17 @@ function serviceWith({ dispatch = vi.fn(async () => undefined) } = {}) {
     updateAccount: vi.fn(async (id: string, changes: Partial<User>) => ({ ...BEN, id, ...changes })),
     remove: vi.fn(async () => undefined),
   };
+
   const queries = { findAll: vi.fn(async () => [MIRA, BEN]) };
   const files = { remove: vi.fn(async () => undefined) };
+
   const service = new UserManagementService(
-    users as unknown as UserRepository,
-    queries as unknown as UserQueries,
-    files as unknown as AvatarFiles,
-    { dispatch } as unknown as DomainEvents,
+    partialFake<UserRepository>(users),
+    partialFake<UserQueries>(queries),
+    partialFake<AvatarFiles>(files),
+    partialFake<DomainEvents>({ dispatch }),
   );
+
   return { service, users, files, dispatch };
 }
 

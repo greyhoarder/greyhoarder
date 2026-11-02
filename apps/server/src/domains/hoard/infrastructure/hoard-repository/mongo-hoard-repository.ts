@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { type Box, factionKey, type Mini, type OwnFaction, type Part, partKey } from '@greyhoarder/domain/hoard';
 import { type ClientSession, type Connection, type Model, mongo } from 'mongoose';
+import { z } from 'zod';
 import { NameTakenMeanwhileError } from '../../models/errors/name-taken-meanwhile.error.js';
 import type { HoardChange } from '../../models/hoard-change.js';
 import { HoardRepository } from '../../ports/hoard-repository.js';
@@ -9,6 +10,9 @@ import { BoxDbo } from './schemas/mongo-box-schema.js';
 import { MiniDbo } from './schemas/mongo-mini-schema.js';
 import { OwnFactionDbo } from './schemas/mongo-own-faction-schema.js';
 import { PartDbo } from './schemas/mongo-part-schema.js';
+
+/** What `distinct` finds in id fields, parsed at the boundary. */
+const distinctIdsSchema = z.array(z.string());
 
 /** Copies only the fields of `Box`, so the owner, `__v` and timestamps never leave this adapter. */
 function toBox(stored: BoxDbo, number: number): Box {
@@ -141,6 +145,7 @@ export class MongoHoardRepository extends HoardRepository {
   async findBoxes(ownerId: string): Promise<Box[]> {
     const stored = await this.boxes.find({ ownerId }).lean().exec();
     const missing = await this.numberUnnumbered(ownerId, stored);
+
     return stored.map((box) => toBox(box, box.number ?? missing.get(box._id) ?? 0));
   }
 
@@ -154,21 +159,27 @@ export class MongoHoardRepository extends HoardRepository {
     const unnumbered = stored
       .filter((box) => box.number === undefined)
       .sort((a, b) => a.addedOn.localeCompare(b.addedOn));
+
     if (unnumbered.length === 0) {
       return new Map();
     }
+
     const highest = new Map<string, number>();
+
     for (const { name, number } of stored) {
       if (number !== undefined) {
         highest.set(name, Math.max(highest.get(name) ?? 0, number));
       }
     }
+
     const given = new Map<string, number>();
+
     for (const box of unnumbered) {
       const number = (highest.get(box.name) ?? 0) + 1;
       highest.set(box.name, number);
       given.set(box._id, number);
     }
+
     await this.boxes.bulkWrite(
       [...given].map(([id, number]) => ({
         updateOne: {
@@ -177,11 +188,13 @@ export class MongoHoardRepository extends HoardRepository {
         },
       })),
     );
+
     return given;
   }
 
   async findMinis(ownerId: string): Promise<Mini[]> {
     const stored = await this.minis.find({ ownerId }).sort({ updatedAt: 1 }).lean().exec();
+
     return stored.map(toMini);
   }
 
@@ -190,16 +203,19 @@ export class MongoHoardRepository extends HoardRepository {
       .find({ ownerId, _id: { $in: ids } })
       .lean()
       .exec();
+
     return stored.map(toMini);
   }
 
   async findParts(ownerId: string): Promise<Part[]> {
     const stored = await this.parts.find({ ownerId }).lean().exec();
+
     return stored.map(toPart);
   }
 
   async findOwnFactions(ownerId: string): Promise<OwnFaction[]> {
     const stored = await this.ownFactions.find({ ownerId }).lean().exec();
+
     return stored.map(toOwnFaction);
   }
 
@@ -245,6 +261,7 @@ export class MongoHoardRepository extends HoardRepository {
       await this.boxes.deleteMany({ ownerId, _id: inBoxes }, { session });
       await this.writeMinis(ownerId, change.changed, session);
       await this.deleteDropped(ownerId, change, session);
+
       return miniIds;
     });
   }
@@ -259,9 +276,11 @@ export class MongoHoardRepository extends HoardRepository {
     if (minis.length === 0) {
       return;
     }
+
     await this.minis.bulkWrite(
       minis.map((mini) => {
         const { kit } = toMiniDbo(ownerId, mini);
+
         return {
           updateOne: {
             filter: { _id: mini.id, ownerId, boxId: { $in: [...boxIds] } },
@@ -290,6 +309,7 @@ export class MongoHoardRepository extends HoardRepository {
           { session },
         );
       }
+
       if (newFactions.length > 0) {
         await this.ownFactions.insertMany(
           newFactions.map((faction) => toOwnFactionDbo(ownerId, faction)),
@@ -301,6 +321,7 @@ export class MongoHoardRepository extends HoardRepository {
       if (error instanceof mongo.MongoServerError && error.code === DUPLICATE_KEY) {
         throw new NameTakenMeanwhileError();
       }
+
       throw error;
     }
   }
@@ -315,6 +336,7 @@ export class MongoHoardRepository extends HoardRepository {
       const carriedIds = await this.stillCarried(ownerId, 'parts.partId', droppedPartIds, session);
       await this.parts.deleteMany({ ownerId, _id: { $in: droppedPartIds, $nin: carriedIds } }, { session });
     }
+
     if (droppedFactionIds.length > 0) {
       const carriedIds = await this.stillCarried(ownerId, 'factionIds', droppedFactionIds, session);
       await this.ownFactions.deleteMany({ ownerId, _id: { $in: droppedFactionIds, $nin: carriedIds } }, { session });
@@ -328,11 +350,12 @@ export class MongoHoardRepository extends HoardRepository {
     ids: readonly string[],
     session: ClientSession,
   ): Promise<string[]> {
-    const carried: unknown[] = await this.minis
+    const carried = await this.minis
       .distinct(field, { ownerId, [field]: { $in: ids } })
       .session(session)
       .exec();
-    return carried.filter((id): id is string => typeof id === 'string');
+
+    return distinctIdsSchema.parse(carried);
   }
 
   /** Only what a mini's owner can change; box, sprue name and creation stay as they are. */
@@ -340,13 +363,16 @@ export class MongoHoardRepository extends HoardRepository {
     if (minis.length === 0) {
       return;
     }
+
     await this.minis.bulkWrite(
       minis.map((mini) => {
         const { name, factionIds, status, parts, notes, isOnWorkbench, departure } = toMiniDbo(ownerId, mini);
+
         const unset = {
           ...(notes === undefined ? { notes: '' } : {}),
           ...(departure === undefined ? { departure: '' } : {}),
         };
+
         return {
           updateOne: {
             filter: { _id: mini.id, ownerId },

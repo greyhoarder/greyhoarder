@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "vitest"],
+  "jsPlugins": ["../../scripts/lint/index.mjs", "@stylistic/eslint-plugin"],
   "rules": {
     "typescript/no-explicit-any": "error",
     "typescript/no-floating-promises": "error",
@@ -38,11 +39,60 @@
         }
       }
     ],
-    "vitest/require-mock-type-parameters": "off"
+    "vitest/require-mock-type-parameters": "off",
+    "greyhoarder/no-chained-type-assertions": "error",
+    "greyhoarder/no-known-value-widening": "error",
+    "greyhoarder/no-runtime-typeof": "error",
+    "greyhoarder/no-unknown-parameters": "error",
+    "greyhoarder/no-unknown-returns": "error",
+    "greyhoarder/no-unsafe-dictionary-type": "error",
+    "@stylistic/padding-line-between-statements": [
+      "error",
+      {
+        "blankLine": "always",
+        "prev": "import",
+        "next": "*"
+      },
+      {
+        "blankLine": "any",
+        "prev": "import",
+        "next": "import"
+      },
+      {
+        "blankLine": "always",
+        "prev": "*",
+        "next": ["function", "class", "interface", "type", "multiline-export"]
+      },
+      {
+        "blankLine": "always",
+        "prev": ["function", "class", "interface", "type", "multiline-export"],
+        "next": "*"
+      },
+      {
+        "blankLine": "always",
+        "prev": "*",
+        "next": ["multiline-const", "multiline-let", "multiline-var"]
+      },
+      {
+        "blankLine": "always",
+        "prev": ["multiline-const", "multiline-let", "multiline-var"],
+        "next": "*"
+      },
+      {
+        "blankLine": "always",
+        "prev": "*",
+        "next": ["return", "if", "switch", "try", "for", "while", "do"]
+      },
+      {
+        "blankLine": "always",
+        "prev": "block-like",
+        "next": "*"
+      }
+    ]
   },
   "overrides": [
     {
-      "files": ["**/*.spec.ts"],
+      "files": ["**/*.spec.ts", "src/shared/testing/**"],
       "rules": {
         "typescript/no-non-null-assertion": "off",
         "typescript/consistent-type-assertions": "off"

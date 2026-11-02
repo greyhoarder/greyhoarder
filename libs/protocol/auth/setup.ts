@@ -26,6 +26,13 @@ export const setupRequestSchema = z.object({ username: usernameSchema, password:
 
 export type SetupRequest = z.infer<typeof setupRequestSchema>;
 
+/** The body of a request the server could not validate: the path of each failing field and its message. */
+export const validationErrorResponseSchema = z.object({
+  errors: z.array(z.object({ path: z.array(z.union([z.string(), z.number()])), message: z.string() })),
+});
+
+export type ValidationErrorResponse = z.infer<typeof validationErrorResponseSchema>;
+
 /** Whether the instance still needs its first administrator. */
 export const setupStatusResponseSchema = z.object({
   required: z.boolean(),

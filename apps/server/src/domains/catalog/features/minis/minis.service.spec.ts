@@ -1,6 +1,7 @@
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import type { CatalogKitQueries } from '../../ports/catalog-kit-queries.js';
 import { MinisService } from './minis.service.js';
+import { partialFake } from '../../../../shared/testing/partial-fake.js';
 
 /** A box of Boyz released in that year, whose slot builds Boys. */
 const boyz = (year: number): CatalogKit => ({
@@ -17,7 +18,7 @@ const boyz = (year: number): CatalogKit => ({
 
 describe('Minis service', () => {
   it('finds a mini once per kit it comes from, the newest kit first', async () => {
-    const catalog = {
+    const catalog = partialFake<CatalogKitQueries>({
       searchFactions: () => Promise.resolve([]),
       searchKitsByMini: () =>
         Promise.resolve([
@@ -26,7 +27,8 @@ describe('Minis service', () => {
         ]),
       findFactionNames: () => Promise.resolve(new Map([['warhammer-40000/orks', 'Orks']])),
       findSystemNames: () => Promise.resolve(new Map()),
-    } as unknown as CatalogKitQueries;
+    });
+
     const service = new MinisService(catalog);
 
     const { minis } = await service.search('boy');

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import type { CatalogKit } from '@greyhoarder/domain/catalog';
 import type { ClientSession, Connection, Model } from 'mongoose';
+import { z } from 'zod';
 import type { CatalogFaction } from '../../models/catalog-faction.js';
 import type { CatalogImport } from '../../models/catalog-import.js';
 import type { MiniSearchWord } from '../../models/catalog-mini.js';
@@ -29,6 +30,9 @@ function escapeRegExp(text: string): string {
 }
 
 /** MongoDB adapter for both catalog ports: the import's repository and the read-only kit queries. */
+/** What `distinct` finds in string fields, parsed at the boundary. */
+const distinctStringsSchema = z.array(z.string());
+
 @Injectable()
 export class MongoCatalogRepository extends CatalogRepository implements CatalogKitQueries {
   constructor(
@@ -43,6 +47,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
 
   async findLastSnapshotHash(): Promise<string | undefined> {
     const last = await this.imports.findOne().sort({ createdAt: -1 }).lean().exec();
+
     return last?.snapshotHash;
   }
 
@@ -52,6 +57,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       this.factions.find(LATEST).lean().exec(),
       this.kits.find(LATEST).lean().exec(),
     ]);
+
     return {
       systems: systems.map((stored) => toVersionedEntry(stored, toGameSystem)),
       factions: factions.map((stored) => toVersionedEntry(stored, toCatalogFaction)),
@@ -70,6 +76,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
 
   async searchKits(text: string, limit: number): Promise<VersionedEntry<CatalogKit>[]> {
     const contains = new RegExp(escapeRegExp(text), 'i');
+
     const kits = await this.kits
       .find({
         ...LATEST,
@@ -87,14 +94,16 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       .limit(limit)
       .lean()
       .exec();
+
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
   async findKitIdsBuildableAs(text: string): Promise<string[]> {
-    const ids: unknown[] = await this.kits
+    const ids = await this.kits
       .distinct('kitId', { ...LATEST, 'variants.slots.buildsAs': new RegExp(escapeRegExp(text), 'i') })
       .exec();
-    return ids.filter((id): id is string => typeof id === 'string');
+
+    return distinctStringsSchema.parse(ids);
   }
 
   async findBundlesContaining(kitIds: readonly string[]): Promise<VersionedEntry<CatalogKit>[]> {
@@ -102,6 +111,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       .find({ ...LATEST, 'contains.kitId': { $in: kitIds } })
       .lean()
       .exec();
+
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
@@ -109,6 +119,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
     const eachWord = words.map((word) => {
       const contains = new RegExp(escapeRegExp(word.text), 'i');
       const factionIds = [...word.factionIds];
+
       return {
         $or: [
           { name: contains },
@@ -118,12 +129,14 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
         ],
       };
     });
+
     const kits = await this.kits
       .find({ ...LATEST, isRemoved: false, $and: eachWord })
       .sort({ name: 1, kitId: 1 })
       .limit(limit)
       .lean()
       .exec();
+
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
@@ -134,6 +147,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       .limit(limit)
       .lean()
       .exec();
+
     return factions.map(toCatalogFaction);
   }
 
@@ -142,11 +156,13 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       .find({ ...LATEST, kitId: { $in: ids } })
       .lean()
       .exec();
+
     return kits.map((stored) => toVersionedEntry(stored, toCatalogKit));
   }
 
   async findKitVersion(id: string, version: number): Promise<VersionedEntry<CatalogKit> | undefined> {
     const kit = await this.kits.findOne({ kitId: id, version }).lean().exec();
+
     return kit === null ? undefined : toVersionedEntry(kit, toCatalogKit);
   }
 
@@ -161,6 +177,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
         .lean()
         .exec(),
     ]);
+
     return new Map([
       ...systems.map((system) => [system.systemId, system.name] as const),
       ...factions.map((faction) => [faction.factionId, faction.name] as const),
@@ -172,6 +189,7 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       .find({ ...LATEST, isRemoved: false, factionId: { $in: ids } })
       .lean()
       .exec();
+
     return factions.map(toCatalogFaction);
   }
 
@@ -183,21 +201,24 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
         $or: [{ factionIds: { $in: factionIds } }, { 'variants.slots.factionIds': { $in: factionIds } }],
       })
       .exec();
-    return parts.filter((part): part is string => typeof part === 'string');
+
+    return distinctStringsSchema.parse(parts);
   }
 
   async findOfferedPartNames(names: readonly string[]): Promise<string[]> {
     if (names.length === 0) {
       return [];
     }
+
     // Surrounding spaces don't tell parts apart.
     const exactly = names.map((name) => new RegExp(`^\\s*${escapeRegExp(name.trim())}\\s*$`, 'i'));
-    const parts: unknown[] = await this.kits
+
+    const parts = await this.kits
       .distinct('variants.slots.parts', { ...LATEST, isRemoved: false, 'variants.slots.parts': { $in: exactly } })
       .exec();
-    const offered = new Set(
-      parts.filter((part): part is string => typeof part === 'string').map((part) => part.trim().toLowerCase()),
-    );
+
+    const offered = new Set(distinctStringsSchema.parse(parts).map((part) => part.trim().toLowerCase()));
+
     return names.filter((name) => offered.has(name.trim().toLowerCase()));
   }
 
@@ -206,15 +227,20 @@ export class MongoCatalogRepository extends CatalogRepository implements Catalog
       .find({ ...LATEST, factionId: { $in: factionIds } })
       .lean()
       .exec();
+
     const systemIds = [...new Set(factions.map((faction) => faction.systemId))];
+
     const systems = await this.systems
       .find({ ...LATEST, systemId: { $in: systemIds } })
       .lean()
       .exec();
+
     const systemNames = new Map(systems.map((system) => [system.systemId, system.name] as const));
+
     return new Map(
       factions.flatMap((faction) => {
         const name = systemNames.get(faction.systemId);
+
         return name === undefined ? [] : [[faction.factionId, name] as const];
       }),
     );

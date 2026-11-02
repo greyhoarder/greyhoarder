@@ -12,6 +12,7 @@ import { UnknownMinisError } from './errors/unknown-minis.error.js';
 import { NameTakenMeanwhileError } from '../../models/errors/name-taken-meanwhile.error.js';
 import { UnknownPartError } from '../../models/errors/unknown-part.error.js';
 import { MinisService } from './minis.service.js';
+import { partialFake } from '../../../../shared/testing/partial-fake.js';
 
 const BOY: Mini = {
   id: 'boy',
@@ -35,6 +36,7 @@ function fakeHoard(
 ) {
   const updateMinis = vi.fn<HoardRepository['updateMinis']>(() => Promise.resolve());
   const deleteMinis = vi.fn<HoardRepository['deleteMinis']>(() => Promise.resolve());
+
   const hoard: HoardRepository = {
     findBoxes: vi.fn(),
     findMinis: vi.fn(() => Promise.resolve([...minis])),
@@ -46,6 +48,7 @@ function fakeHoard(
     deleteMinis,
     deleteBoxes: vi.fn(),
   };
+
   return { hoard, updateMinis, deleteMinis };
 }
 
@@ -73,6 +76,7 @@ describe('Minis service', () => {
       addBoxes: vi.fn(),
       updateMinis: vi.fn(),
     };
+
     const service = new MinisService(hoard, CATALOG);
 
     const { systemNames } = await service.list('owner');
@@ -93,11 +97,13 @@ describe('Minis service', () => {
   it("lists the factions the minis' factions are part of, up the whole chain, with their names", async () => {
     const wolf = { ...BOY, factionIds: ['warhammer-40000/crimson-wolves'] };
     const { hoard } = fakeHoard([wolf]);
+
     const factions = [
       { id: 'warhammer-40000/crimson-wolves', partOfId: 'warhammer-40000/dark-angels', name: 'Crimson Wolves' },
       { id: 'warhammer-40000/dark-angels', partOfId: 'warhammer-40000/space-marines', name: 'Dark Angels' },
       { id: 'warhammer-40000/space-marines', name: 'Space Marines' },
     ];
+
     const catalog: CatalogKitQueries = {
       searchKits: () => Promise.resolve([]),
       findKits: () => Promise.resolve([]),
@@ -115,6 +121,7 @@ describe('Minis service', () => {
           new Map(factions.filter((faction) => ids.includes(faction.id)).map((faction) => [faction.id, faction.name])),
         ),
     };
+
     const service = new MinisService(hoard, catalog);
 
     const { partOf, factionNames } = await service.list('owner');
@@ -262,10 +269,12 @@ describe('Minis service', () => {
   it('changes several minis at once, each keeping what was not changed', async () => {
     const slugga = { partId: 'slugga', isSwappable: false };
     const choppa = { partId: 'choppa', isSwappable: false };
+
     const { hoard, updateMinis } = fakeHoard([
       { ...BOY, status: 'built', parts: [slugga] },
       { ...BOY, id: 'boy-2', status: 'primed', parts: [choppa] },
     ]);
+
     const service = new MinisService(hoard, CATALOG);
 
     await service.change('owner', ['boy', 'boy-2'], {
@@ -347,7 +356,8 @@ describe('Minis service', () => {
     const addMinis = vi.fn<HoardRepository['addMinis']>(() => Promise.resolve());
     const { hoard } = fakeHoard([]);
     hoard.addMinis = addMinis;
-    const catalog = {
+
+    const catalog = partialFake<CatalogKitQueries>({
       findFactionNames: () => Promise.resolve(new Map([['warhammer-40000/orks', 'Orks']])),
       findKitVersion: () =>
         Promise.resolve({
@@ -365,7 +375,8 @@ describe('Minis service', () => {
           version: 1,
           isRemoved: false,
         }),
-    } as unknown as CatalogKitQueries;
+    });
+
     const service = new MinisService(hoard, catalog);
 
     const [added] = await service.add('owner', {

@@ -80,25 +80,31 @@ export class LoginPage {
 
   private async signIn(): Promise<void> {
     this.failure.set(undefined);
+
     try {
       await this.sessions.signIn(this.credentials());
     } catch (error) {
       this.failure.set(failureMessage(error));
+
       return;
     }
+
     await this.router.navigateByUrl('/');
   }
 }
 
-function failureMessage(error: unknown): string {
-  if (error instanceof InvalidCredentialsError) {
+function failureMessage(cause: unknown): string {
+  if (cause instanceof InvalidCredentialsError) {
     return 'Username or password is incorrect.';
   }
-  if (error instanceof TooManyLoginAttemptsError) {
+
+  if (cause instanceof TooManyLoginAttemptsError) {
     return 'Too many attempts. Sign-in is paused for a moment.';
   }
-  if (error instanceof ServerUnreachableError) {
+
+  if (cause instanceof ServerUnreachableError) {
     return "Can't reach the server. Try again in a moment.";
   }
-  throw error;
+
+  throw cause;
 }

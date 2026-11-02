@@ -29,6 +29,7 @@ export function planCatalogUpdate<T extends { readonly id: string }>(
 
   for (const entry of snapshot) {
     const current = latestById.get(entry.id);
+
     if (!current) {
       versions.push({ entry, version: 1 });
     } else if (!hasSameContent(current.entry, entry)) {
@@ -46,13 +47,13 @@ export function planCatalogUpdate<T extends { readonly id: string }>(
 }
 
 /** Key order and left-out optional fields don't count as a change; the order within lists does. */
-function hasSameContent(a: unknown, b: unknown): boolean {
+function hasSameContent<T>(a: T, b: T): boolean {
   return canonicalJson(a) === canonicalJson(b);
 }
 
-function canonicalJson(value: unknown): string {
-  return JSON.stringify(value, (_key, nested: unknown) =>
-    nested !== null && typeof nested === 'object' && !Array.isArray(nested)
+function canonicalJson<T>(value: T): string {
+  return JSON.stringify(value, (_key, nested) =>
+    nested instanceof Object && !Array.isArray(nested)
       ? Object.fromEntries(Object.entries(nested).sort(([a], [b]) => a.localeCompare(b)))
       : nested,
   );

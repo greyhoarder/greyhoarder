@@ -6,6 +6,12 @@ export type PartChange =
   | { readonly partId: string; readonly isSwappable: boolean }
   | { readonly name: string; readonly isSwappable: boolean };
 
+/** Parts of the vocabulary, and the parts to add to it for new names. */
+export interface ResolvedParts {
+  readonly parts: MiniPart[];
+  readonly newParts: Part[];
+}
+
 /**
  * The parts as parts of the vocabulary. A name refers to the part with that name or alias, or to a
  * new part, one per name however often it is given; a part from a kit becomes one of the vocabulary
@@ -17,23 +23,29 @@ export function resolveParts(
   vocabulary: readonly Part[],
   changes: readonly PartChange[],
   newId: () => string,
-): { parts: MiniPart[]; newParts: Part[] } {
+): ResolvedParts {
   const newParts: Part[] = [];
   const parts: MiniPart[] = [];
+
   for (const change of changes) {
     if ('partId' in change) {
       checkKnown(vocabulary, change.partId);
       parts.push({ partId: change.partId, isSwappable: change.isSwappable });
       continue;
     }
+
     let known = findPart([...vocabulary, ...newParts], change.name);
+
     if (!known) {
       known = { id: newId(), name: change.name.trim(), aliases: [] };
       newParts.push(known);
     }
+
     parts.push({ partId: known.id, isSwappable: change.isSwappable });
   }
+
   const unique = parts.filter((part, index) => parts.findIndex((other) => other.partId === part.partId) === index);
+
   return { parts: unique, newParts };
 }
 

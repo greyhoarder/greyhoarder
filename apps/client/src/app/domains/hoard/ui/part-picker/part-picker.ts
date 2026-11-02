@@ -50,8 +50,8 @@ export class PartPicker {
   readonly boxName = input<string>();
   /** For "{range name} range", e.g. "Orks". */
   readonly rangeName = input<string>();
-  /** An offered part, or the name of a new one. */
-  readonly added = output<PartOption | string>();
+  /** An offered part, or a new one by its name only. */
+  readonly added = output<PartOption>();
 
   readonly id = `part-picker-${nextId++}`;
 
@@ -67,7 +67,7 @@ export class PartPicker {
   }
 
   /** Adds an offered part, or creates one by name; the filter empties, the picker stays open. */
-  protected add(part: PartOption | string): void {
+  protected add(part: PartOption): void {
     this.added.emit(part);
     this.filter.set('');
   }

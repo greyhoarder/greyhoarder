@@ -7,7 +7,9 @@ in the other `architecture-*.md` guides. Judgment calls on finished code
 (code smells, cohesion, coupling) are checked by the `code-review` skill,
 not here.
 
-Formatting is left to oxfmt and EditorConfig. Don't format by hand.
+Formatting is left to oxfmt and EditorConfig. Don't format by hand. Blank
+lines go around imports, declarations, multiline bindings and blocks, and
+before `return`, `if` and loops; lint adds missing ones with `--fix`.
 
 ## Principles
 
@@ -41,10 +43,21 @@ Fence**. In this project that means in particular:
 
 ## Types
 
-- No `any`; use `unknown` and narrow it.
+- No `any`. `unknown` only for input nobody has parsed yet: parse it at
+  the boundary with a schema, then branch on domain values, not with
+  `typeof` (`typeof value === 'undefined'` is fine).
+- An unknown error is a parameter named `cause`, e.g. in
+  `function throwSignInError(cause: unknown): never`.
+- No dictionaries of `unknown`, `any`, `object` or `{}`.
 - No non-null assertions (`value!`) and no type assertions (`as`, except
-  `as const`) outside tests.
-- Exported functions and public methods declare their return type.
+  `as const`) outside tests. In tests, no chained assertions
+  (`as unknown as`); a fake with only some members is a
+  `partialFake<T>()` (server: `shared/testing/`).
+- Exported functions and public methods declare their return type; an
+  object type gets a name instead of an anonymous `{ … }`.
+- Don't annotate a known value with a wider type (`unknown`, `object`,
+  `{ … }`, `Record<string, …>`); keep the inferred type or use
+  `satisfies`.
 - String literal unions instead of `enum`: `type Role = 'admin' | 'member'`.
 - `readonly` for data that must not change.
 - `undefined` for "no value"; `null` only where an external API needs it.

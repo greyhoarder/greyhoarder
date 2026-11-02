@@ -8,14 +8,21 @@ export function slotsOf(kit: Kit): KitSlot[] {
   ];
 }
 
+/** The names minis can be built as, with the parts that come with them. */
+export interface SprueOffer {
+  readonly names: string[];
+  readonly parts: string[];
+}
+
 /**
  * What minis with the sprue name can be built as and the parts they come with, as a box of the kit
  * put them on the sprue, each once in the kit's order; every name and part of the kit when it put
  * none with that name there.
  */
-export function sprueOffer(kit: Kit, sprueName: string | undefined): { names: string[]; parts: string[] } {
+export function sprueOffer(kit: Kit, sprueName: string | undefined): SprueOffer {
   const minis = sprueMinis(kit).filter((kind) => kind.name === sprueName);
   const slots = minis.length > 0 ? minis.map((kind) => ({ names: kind.builds, parts: kind.parts })) : slotsOf(kit);
+
   return {
     names: [...new Set(slots.flatMap((slot) => slot.names))],
     parts: [...new Set(slots.flatMap((slot) => slot.parts))],

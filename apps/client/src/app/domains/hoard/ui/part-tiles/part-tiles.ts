@@ -37,7 +37,7 @@ export class PartTiles {
   readonly removed = output<number>();
   /** The index of the part. */
   readonly swappableToggled = output<number>();
-  readonly added = output<PartOption | string>();
+  readonly added = output<PartOption>();
   readonly pickerToggled = output();
 
   protected readonly headingId = `part-tiles-${nextId++}-heading`;

@@ -21,9 +21,11 @@ export interface BuildSuggestion {
 export function buildSuggestions(kit: Kit, minisOfBox: readonly Mini[], sprueName?: string): BuildSuggestion[] {
   const allNames = [...new Set(slotsOf(kit).flatMap((slot) => slot.names))];
   const kinds = sprueMinis(kit);
+
   /** What the kit put minis with this sprue name on the sprue to be built as; none for other names. */
   const offeredBy = (sprueName: string | undefined): readonly string[] =>
     kinds.filter((kind) => kind.name === sprueName).flatMap((kind) => kind.builds);
+
   return sprueOffer(kit, sprueName).names.map((name) => {
     const usedUp = minisOfBox.filter(
       (mini) =>
@@ -32,6 +34,7 @@ export function buildSuggestions(kit: Kit, minisOfBox: readonly Mini[], sprueNam
           (!allNames.includes(mini.name) && mini.sprueName === name) ||
           offeredBy(mini.sprueName).includes(name)),
     ).length;
+
     return { name, left: Math.max(0, provided(kit, name) - usedUp) };
   });
 }
@@ -43,13 +46,21 @@ export function buildSuggestions(kit: Kit, minisOfBox: readonly Mini[], sprueNam
  */
 export function looseSuggestions(mini: Mini, kit: Kit | undefined): BuildSuggestion[] {
   const name = mini.sprueName ?? mini.name;
+
   if (kit === undefined) {
     return [];
   }
+
   const slots = slotsOf(kit);
   const offering = slots.filter((slot) => slot.names.includes(name));
   const names = (offering.length > 0 ? offering : slots).flatMap((slot) => slot.names);
+
   return [...new Set(names)].map((suggested) => ({ name: suggested }));
+}
+
+/** A part the kit offers, by its name only: it may not be one of the vocabulary yet. */
+export interface KitPart {
+  readonly name: string;
 }
 
 /**
@@ -61,18 +72,22 @@ export function preselectedParts(
   minis: readonly Mini[],
   kit: Kit | undefined,
   name: string,
-): readonly MiniPart[] | readonly string[] {
+): readonly MiniPart[] | readonly KitPart[] {
   const latest = [...minis].reverse().find((mini) => mini.status !== 'sprue' && mini.name === name);
+
   if (latest) {
     return latest.parts;
   }
+
   const parts = kit ? kitParts(kit, name) : [];
-  return parts.length === 1 ? parts : [];
+
+  return parts.length === 1 ? parts.map((part) => ({ name: part })) : [];
 }
 
 /** The parts the kit's slots for a name offer, each once in the kit's order. */
 export function kitParts(kit: Kit, name: string): string[] {
   const slots = slotsOf(kit).filter((slot) => slot.names.includes(name));
+
   return [...new Set(slots.flatMap((slot) => slot.parts))];
 }
 
@@ -84,5 +99,6 @@ function provided(kit: Kit, name: string): number {
       variant.slots.filter((slot) => slot.names.includes(name)).reduce((sum, slot) => sum + slot.count, 0),
     ),
   );
+
   return kit.contains.reduce((sum, { kit: contained, count }) => sum + count * provided(contained, name), ownMinis);
 }

@@ -5,6 +5,7 @@ import type { UserQueries } from '../../ports/user-queries.js';
 import type { UserRepository } from '../../ports/user-repository.js';
 import { InvalidAvatarError } from './errors/invalid-avatar.error.js';
 import { ProfileService } from './profile.service.js';
+import { partialFake } from '../../../../shared/testing/partial-fake.js';
 
 const MIRA: User = { id: 'a'.repeat(24), username: 'mira', role: 'admin', disabled: false };
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]);
@@ -12,16 +13,19 @@ const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]);
 function serviceWith() {
   const repository = { updateProfile: vi.fn(async () => MIRA) };
   const queries = { findById: vi.fn(async () => MIRA) };
+
   const files = {
-    save: vi.fn(async () => undefined),
+    save: vi.fn(async (_avatarId: string, _image: Buffer) => undefined),
     read: vi.fn(async () => undefined),
     remove: vi.fn(async () => undefined),
   };
+
   const service = new ProfileService(
-    repository as unknown as UserRepository,
-    queries as unknown as UserQueries,
-    files as unknown as AvatarFiles,
+    partialFake<UserRepository>(repository),
+    partialFake<UserQueries>(queries),
+    partialFake<AvatarFiles>(files),
   );
+
   return { service, repository, files };
 }
 
@@ -61,7 +65,7 @@ describe('Profiles', () => {
 
     await service.setAvatar({ ...MIRA, avatarId: 'old' }, JPEG);
 
-    const [[newId]] = files.save.mock.calls as unknown as [[string]];
+    const [[newId]] = files.save.mock.calls;
     expect(newId).not.toBe('old');
     expect(repository.updateProfile).toHaveBeenCalledWith(MIRA.id, { avatarId: newId });
     expect(files.remove).toHaveBeenCalledWith('old');

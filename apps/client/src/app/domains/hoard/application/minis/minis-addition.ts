@@ -58,6 +58,7 @@ export class MinisAddition {
   private readonly rangeParts = resource({
     params: () => {
       const factionIds = this.factionIds();
+
       return factionIds.length > 0 ? { factionIds } : undefined;
     },
     loader: ({ params: { factionIds } }) => this.catalogParts.rangeParts(factionIds),
@@ -105,11 +106,12 @@ export class MinisAddition {
   }
 
   /** Adds a part the picker offers, or a new one by name, as glued. */
-  addPart(part: PartOption | string): void {
+  addPart(part: PartOption): void {
     const draft: PartDraft =
-      typeof part === 'string'
-        ? { name: part, isSwappable: false }
+      part.partId === undefined
+        ? { name: part.name, isSwappable: false }
         : { partId: part.partId, name: part.name, isSwappable: false };
+
     this.parts.update((parts) => [...parts, draft]);
   }
 
@@ -132,20 +134,24 @@ export class MinisAddition {
     if (this.isAdding()) {
       return;
     }
+
     // Taken before the request, so changes made while it runs don't change what is reported.
     const minis = this.minisToAdd();
     this.added.set(undefined);
     this.hasAddFailed.set(false);
     this.isAdding.set(true);
+
     try {
       await this.minisAdapter.add(minis);
     } catch {
       // The form keeps what was chosen, so the user can try again.
       this.hasAddFailed.set(true);
+
       return;
     } finally {
       this.isAdding.set(false);
     }
+
     this.reloadHoard(minis);
     this.added.set(addedMessage(minis));
   }
@@ -153,6 +159,7 @@ export class MinisAddition {
   private minisToAdd(): MinisToAdd {
     const notes = this.notes().trim();
     const kit = this.kit();
+
     return {
       ...(kit === undefined ? {} : { kit }),
       name: this.name().trim(),
@@ -167,6 +174,7 @@ export class MinisAddition {
   /** The vocabulary loads anew only when parts were added to it by name. */
   private reloadHoard(minis: MinisToAdd): void {
     this.minisStore.reload();
+
     if (minis.parts.some((part) => !('partId' in part))) {
       this.partsStore.reload();
     }

@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import type { SetupRequest, SetupStatusResponse } from '@greyhoarder/protocol/auth';
+import { type SetupRequest, type SetupStatusResponse, validationErrorResponseSchema } from '@greyhoarder/protocol/auth';
 import { firstValueFrom } from 'rxjs';
 import { AccountsAlreadyExistError } from '../util/accounts-already-exist.error';
 import { type AdministratorField, InvalidAdministratorError } from '../util/invalid-administrator.error';
@@ -16,6 +16,7 @@ export class HttpSetupAdapter {
   async isSetupRequired(): Promise<boolean> {
     try {
       const status = await firstValueFrom(this.http.get<SetupStatusResponse>('/api/auth/setup'));
+
       return status.required;
     } catch (error) {
       throw isUnreachable(error) ? new ServerUnreachableError() : error;
@@ -28,41 +29,44 @@ export class HttpSetupAdapter {
    */
   async createAdministrator(username: string, password: string): Promise<void> {
     const request: SetupRequest = { username, password };
+
     try {
       await firstValueFrom(this.http.post<void>('/api/auth/setup', request));
     } catch (error) {
-      throw toSetupError(error);
+      throwSetupError(error);
     }
   }
 }
 
-function toSetupError(error: unknown): unknown {
-  if (error instanceof HttpErrorResponse && error.status === HttpStatusCode.BadRequest) {
-    return new InvalidAdministratorError(fieldMessages(error.error));
+/** Throws the error the server's answer means, or the cause itself when it means none of them. */
+function throwSetupError(cause: unknown): never {
+  if (cause instanceof HttpErrorResponse && cause.status === HttpStatusCode.BadRequest) {
+    throw new InvalidAdministratorError(fieldMessages(cause));
   }
-  if (hasStatus(error, HttpStatusCode.Conflict)) {
-    return new AccountsAlreadyExistError();
+
+  if (hasStatus(cause, HttpStatusCode.Conflict)) {
+    throw new AccountsAlreadyExistError();
   }
-  if (isUnreachable(error)) {
-    return new ServerUnreachableError();
+
+  if (isUnreachable(cause)) {
+    throw new ServerUnreachableError();
   }
-  return error;
+
+  throw cause;
 }
 
-/** The first message per field from the server's validation errors (`errors[].path`, `errors[].message`). */
-function fieldMessages(body: unknown): Partial<Record<AdministratorField, string>> {
+/** The first message per field from the server's validation errors. */
+function fieldMessages(response: HttpErrorResponse): Partial<Record<AdministratorField, string>> {
+  const parsed = validationErrorResponseSchema.safeParse(response.error);
   const messages: Partial<Record<AdministratorField, string>> = {};
-  const errors: unknown[] = isRecord(body) && Array.isArray(body['errors']) ? body['errors'] : [];
-  for (const entry of errors) {
-    const field: unknown = isRecord(entry) && Array.isArray(entry['path']) ? entry['path'][0] : undefined;
-    const message = isRecord(entry) ? entry['message'] : undefined;
-    if ((field === 'username' || field === 'password') && typeof message === 'string') {
+
+  for (const { path, message } of parsed.success ? parsed.data.errors : []) {
+    const [field] = path;
+
+    if (field === 'username' || field === 'password') {
       messages[field] ??= message;
     }
   }
-  return messages;
-}
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+  return messages;
 }

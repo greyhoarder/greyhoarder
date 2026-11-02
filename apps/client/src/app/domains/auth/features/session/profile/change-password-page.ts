@@ -39,10 +39,13 @@ export class ChangePasswordPage {
     event.preventDefault();
     const failure = this.invalidInput();
     this.failure.set(failure);
+
     if (failure !== '') {
       return;
     }
+
     this.isChanging.set(true);
+
     try {
       await this.sessions.changePassword({
         currentPassword: this.currentPassword(),
@@ -60,18 +63,21 @@ export class ChangePasswordPage {
     if (this.currentPassword() === '') {
       return 'Enter your current password.';
     }
+
     if (this.newPassword() === '') {
       return 'Enter a new password.';
     }
+
     return this.newPassword() === this.repeatedPassword() ? '' : 'The passwords do not match.';
   }
 }
 
-function messageFor(error: unknown): string {
-  if (error instanceof WrongPasswordError) {
-    return error.message;
+function messageFor(cause: unknown): string {
+  if (cause instanceof WrongPasswordError) {
+    return cause.message;
   }
-  return error instanceof TooManyLoginAttemptsError
+
+  return cause instanceof TooManyLoginAttemptsError
     ? 'Too many attempts. Try again in a moment.'
     : "Can't change the password right now. Try again in a moment.";
 }

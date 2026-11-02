@@ -3,6 +3,12 @@ import { findOwnFaction, type OwnFaction, ownFactionId } from '@greyhoarder/doma
 /** A faction to give minis: a catalog faction or an own one by its id, or a name. */
 export type FactionChange = { readonly id: string } | { readonly name: string };
 
+/** Factions as ids, and the own factions to add for new names. */
+export interface ResolvedFactions {
+  readonly factionIds: string[];
+  readonly newFactions: OwnFaction[];
+}
+
 /**
  * The factions as ids. A name refers to the own faction of that name, or to a new own faction, one
  * per name however often it is given (docs/domains/hoard.md, Factions). Ids are taken as they are;
@@ -12,18 +18,23 @@ export function resolveFactions(
   ownFactions: readonly OwnFaction[],
   changes: readonly FactionChange[],
   newId: () => string,
-): { factionIds: string[]; newFactions: OwnFaction[] } {
+): ResolvedFactions {
   const newFactions: OwnFaction[] = [];
+
   const factionIds = changes.map((change) => {
     if ('id' in change) {
       return change.id;
     }
+
     let known = findOwnFaction([...ownFactions, ...newFactions], change.name);
+
     if (!known) {
       known = { id: ownFactionId(newId()), name: change.name.trim() };
       newFactions.push(known);
     }
+
     return known.id;
   });
+
   return { factionIds: [...new Set(factionIds)], newFactions };
 }

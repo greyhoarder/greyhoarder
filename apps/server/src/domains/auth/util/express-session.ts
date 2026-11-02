@@ -23,12 +23,12 @@ export const SESSION_COOKIE_OPTIONS: CookieOptions = {
 
 export function regenerateSession(request: Request): Promise<void> {
   return new Promise((resolve, reject) =>
-    request.session.regenerate((error: unknown) => (error ? reject(error) : resolve())),
+    request.session.regenerate((cause: unknown) => (cause ? reject(cause) : resolve())),
   );
 }
 
 export function destroySession(request: Request): Promise<void> {
   return new Promise((resolve, reject) =>
-    request.session.destroy((error: unknown) => (error ? reject(error) : resolve())),
+    request.session.destroy((cause: unknown) => (cause ? reject(cause) : resolve())),
   );
 }

@@ -99,34 +99,43 @@ export class SetupPage {
   private async createAdministrator(): Promise<TreeValidationResult> {
     this.failure.set(undefined);
     const { username, password } = this.administrator();
+
     try {
       await this.setup.createAdministrator(username, password);
     } catch (error) {
       return this.handleRejection(error);
     }
+
     this.setupStatus.markDone();
     await this.signInAs(username, password);
+
     return undefined;
   }
 
-  private async handleRejection(error: unknown): Promise<TreeValidationResult> {
-    if (error instanceof InvalidAdministratorError) {
-      const { username, password } = error.messages;
+  private async handleRejection(cause: unknown): Promise<TreeValidationResult> {
+    if (cause instanceof InvalidAdministratorError) {
+      const { username, password } = cause.messages;
+
       return [
         ...(username ? [{ kind: 'server', message: username, fieldTree: this.setupForm.username }] : []),
         ...(password ? [{ kind: 'server', message: password, fieldTree: this.setupForm.password }] : []),
       ];
     }
-    if (error instanceof AccountsAlreadyExistError) {
+
+    if (cause instanceof AccountsAlreadyExistError) {
       this.setupStatus.markDone();
       await this.router.navigateByUrl('/login', { info: SETUP_ALREADY_DONE });
+
       return undefined;
     }
-    if (error instanceof ServerUnreachableError) {
+
+    if (cause instanceof ServerUnreachableError) {
       this.failure.set("Can't reach the server. Try again in a moment.");
+
       return undefined;
     }
-    throw error;
+
+    throw cause;
   }
 
   /** The account exists at this point; if signing in fails anyway, the login takes over. */
@@ -135,8 +144,10 @@ export class SetupPage {
       await this.sessions.signIn({ username, password, keepSignedIn: false });
     } catch {
       await this.router.navigateByUrl('/login');
+
       return;
     }
+
     await this.router.navigateByUrl('/');
   }
 }

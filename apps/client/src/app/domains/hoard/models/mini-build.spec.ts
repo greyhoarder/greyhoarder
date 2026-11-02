@@ -146,7 +146,7 @@ describe('Preselected parts', () => {
   it('takes the only part the kit offers for the name without such a mini', () => {
     const parts = preselectedParts([], LOOTAS, 'Loota');
 
-    expect(parts).toEqual(['Deffgun']);
+    expect(parts).toEqual([{ name: 'Deffgun' }]);
   });
 
   it('preselects nothing when the kit offers several parts for the name', () => {

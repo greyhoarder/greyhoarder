@@ -7,6 +7,7 @@ import type { SessionRegistry } from '../../ports/session-registry.js';
 import { InvalidCredentialsError } from './errors/invalid-credentials.error.js';
 import { TooManyLoginAttemptsError } from './errors/too-many-login-attempts.error.js';
 import { SessionService } from './session.service.js';
+import { partialFake } from '../../../../shared/testing/partial-fake.js';
 
 const MIRA: User = { id: 'mira-id', username: 'mira', role: 'admin', disabled: false };
 
@@ -16,23 +17,28 @@ function serviceWith({ lockedForMs = 0 } = {}) {
     changePasswordHash: vi.fn(async () => undefined),
     recordLogin: vi.fn(async () => undefined),
   };
+
   const passwords = {
     hash: vi.fn(async (password: string) => `hash of ${password}`),
     verify: vi.fn(async (_hash: string, password: string) => password === 'right'),
     spendVerificationTime: vi.fn(async () => undefined),
   };
+
   const attempts = {
     lockedForMs: vi.fn(async () => lockedForMs),
     recordFailure: vi.fn(async () => 1),
     reset: vi.fn(async () => undefined),
   };
+
   const sessions = { add: vi.fn(async () => undefined), keepOnly: vi.fn(async () => undefined) };
+
   const service = new SessionService(
-    accounts as unknown as AccountsService,
-    passwords as unknown as PasswordHasher,
-    attempts as unknown as LoginAttempts,
-    sessions as unknown as SessionRegistry,
+    partialFake<AccountsService>(accounts),
+    partialFake<PasswordHasher>(passwords),
+    partialFake<LoginAttempts>(attempts),
+    partialFake<SessionRegistry>(sessions),
   );
+
   return { service, accounts, sessions };
 }
 
