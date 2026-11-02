@@ -16,17 +16,23 @@ const CLIENT = '@greyhoarder/client';
 const SERVER = '@greyhoarder/server';
 const ARCHITECTURE = '@greyhoarder/architecture';
 
-/** The workspaces a changed path needs checked; libraries are checked through the apps that use them. */
+const DOMAIN = '@greyhoarder/domain';
+const PROTOCOL = '@greyhoarder/protocol';
+
+/**
+ * The workspaces a changed path needs checked. The apps build against the built libraries, so an
+ * app is always checked after building them anew: their last build may be older than their code.
+ */
 const affected = [
-  { prefix: 'apps/client/', workspaces: [CLIENT, ARCHITECTURE] },
-  { prefix: 'apps/server/', workspaces: [SERVER, ARCHITECTURE] },
-  { prefix: 'libs/domain/', workspaces: ['@greyhoarder/domain', CLIENT, SERVER, ARCHITECTURE] },
-  { prefix: 'libs/protocol/', workspaces: ['@greyhoarder/protocol', CLIENT, SERVER, ARCHITECTURE] },
+  { prefix: 'apps/client/', workspaces: [DOMAIN, PROTOCOL, CLIENT, ARCHITECTURE] },
+  { prefix: 'apps/server/', workspaces: [DOMAIN, PROTOCOL, SERVER, ARCHITECTURE] },
+  { prefix: 'libs/domain/', workspaces: [DOMAIN, PROTOCOL, CLIENT, SERVER, ARCHITECTURE] },
+  { prefix: 'libs/protocol/', workspaces: [PROTOCOL, CLIENT, SERVER, ARCHITECTURE] },
   { prefix: 'tests/architecture/', workspaces: [ARCHITECTURE] },
 ];
 
 /** Libraries first, since the apps build and test against them. */
-const order = ['@greyhoarder/domain', '@greyhoarder/protocol', CLIENT, SERVER, ARCHITECTURE];
+const order = [DOMAIN, PROTOCOL, CLIENT, SERVER, ARCHITECTURE];
 const steps = ['build', 'lint', 'test'];
 
 function git(...args) {
@@ -72,11 +78,13 @@ export function runSensors(files, workspaces) {
   const failures = [];
   const existing = files.filter((file) => existsSync(join(root, file)));
   if (existing.length > 0) {
-    const run = shell(`npx prettier --check --ignore-unknown ${existing.map((file) => `"${file}"`).join(' ')}`);
+    const run = shell(
+      `npx --no-install oxfmt --check --no-error-on-unmatched-pattern ${existing.map((file) => `"${file}"`).join(' ')}`,
+    );
     if (run.status !== 0) {
       failures.push({
         workspace: 'changed files',
-        step: 'prettier --check',
+        step: 'oxfmt --check',
         output: tail(`${run.stdout}\n${run.stderr}`),
       });
     }

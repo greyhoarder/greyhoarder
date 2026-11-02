@@ -14,7 +14,7 @@ Report only; change nothing unless asked.
    result; if none is at hand, run `npm run check:changed` once. Report
    its failures first, and at the end of a feature the end-to-end result.
 3. **Guides:** read only the guides `AGENTS.md` routes the changed paths
-   to. Skip what Sheriff, ArchUnitTS, ESLint, oxlint and Prettier already
+   to. Skip what Sheriff, ArchUnitTS, ESLint, oxlint and oxfmt already
    check.
 4. **Architecture** (rules of those guides), in particular:
    - boundaries: business rules only in `models/` or `libs/domain`; types

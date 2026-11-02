@@ -7,7 +7,7 @@ in the other `architecture-*.md` guides. Judgment calls on finished code
 (code smells, cohesion, coupling) are checked by the `code-review` skill,
 not here.
 
-Formatting is left to Prettier and EditorConfig. Don't format by hand.
+Formatting is left to oxfmt and EditorConfig. Don't format by hand.
 
 ## Principles
 
