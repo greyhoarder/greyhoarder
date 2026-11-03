@@ -25,18 +25,30 @@ the sidebar, on the `background`, from top to bottom:
 
 Compact: the heatmap is at most about 110 px high. Next to the heading
 the total in muted text. Below, on the card surface, one row of month
-labels and seven rows of cells of about 10 px, Monday on top, with "Mon",
-"Wed" and "Fri" before them, the last 52 weeks left to right; it scrolls
-sideways when too narrow, showing the newest week. Cells have 4 shades of
+labels and seven rows of cells of up to 10 px, Monday on top, with "Mon", "Wed", "Fri" and "Sun" before them, the weeks of the year left to right; it scrolls
+sideways when too narrow. Cells have 4 shades of
 gold by steps per day, an empty one for none; each has a tooltip. Below
-the grid, in small muted text, the note on the left and the legend "Less …
-More" on the right.
+the grid, on the right, the legend "Less … More" in small muted text.
 
-Below the card, per month the newest first, a small semibold heading with
-a border, and one line per entry: a round icon of the status color, or
-a plus for boxes, on a thin vertical line; the text; a chevron. An opened
-line lists its minis or boxes as links. Two months show at first; below
-them an outline button over the full width.
+The card is as wide as its cells at 10 px and shrinks with less room; it
+never stretches. To the left of it, taking the rest of the width, on the
+card surface, the summary of the chosen year: four tiles in two columns, each a small muted label, a large
+semibold value and a small muted note.
+
+To the right of the card the year picker: the current year and every
+year with activity, newest first, stacked and scrolling at the height of
+the card, the chosen one on `primary`; on narrow screens a row above the
+months. Every year shows January to December, days to come
+empty.
+
+Below the card, per month the newest first, a timeline: the month with
+its year muted, small, and a line to the right; per entry a round icon of the
+status color, or a plus for boxes, on a thin vertical line that ends at the last entry shown; beside it the
+text and a chevron on the right. An entry starts closed; opened, one at
+a time, it lists below its text a row per army or box with its minis
+small and muted, each a link. Below the card, centered, at first
+only a muted text button shows, without a background, the text turning
+to `foreground` on hover; each press adds one entry above it.
 
 Each other section has its heading above its content. Until the content exists,
 a section shows an empty area with a dashed border. For "In the hoard",
@@ -64,10 +76,11 @@ Each card is a bordered card on the card surface with rounded corners:
 | Browser tab title | Dashboard · Greyhoarder |
 | Heading | Welcome back, {username} |
 | Section headings | Activity · On the workbench · In the hoard |
-| Activity total | {n} minis moved a step in the last year |
-| Activity note | Counts every mini that moved a step: built, primed, painted, done. |
+| Activity total | {n} minis moved a step in {year} |
+| Activity summary | Boxes added {n}, {m} minis · Minis painted {n}, {m} finished · Active days {n}, of {days so far} · Best streak {n} days, in a row |
 | Cell tooltip | {n} steps on {date}; No steps on {date} |
-| Activity lines | Built / Primed / Painted / Finished {n} minis · {faction}, or in {n} factions; Added {n} boxes · {m} minis |
+| Activity entries | Built / Primed / Painted / Finished {n} minis in {n} factions; Added {n} boxes |
+| Activity rows | {army or box} {n} minis |
 | Activity empty | No activity yet. Steps show up here from now on. |
 | More button | Show more activity |
 | Activity failed | Can't load your activity right now. Try again in a moment. |

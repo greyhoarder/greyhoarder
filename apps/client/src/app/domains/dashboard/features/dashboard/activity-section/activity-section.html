@@ -5,111 +5,170 @@
   </p>
 </div>
 
-<div class="flex flex-col gap-2 rounded-xl border bg-card p-3">
-  <div class="overflow-x-auto" #grid>
-    <div
-      class="grid w-fit gap-0.5 text-xs leading-none text-muted-foreground"
-      [style.grid-template-columns]="gridColumns"
-      [style.grid-template-rows]="gridRows"
-      role="img"
-      [attr.aria-label]="totalText()"
-    >
-      @for (month of monthLabels(); track month.column) {
-        <span class="col-span-3 whitespace-nowrap" [style.grid-column-start]="month.column + 1" [style.grid-row]="1">{{
-          month.label
-        }}</span>
-      }
-      <span class="col-start-1 row-start-2 self-center">Mon</span>
-      <span class="col-start-1 row-start-4 self-center">Wed</span>
-      <span class="col-start-1 row-start-6 self-center">Fri</span>
-      @for (cell of cells(); track cell.date; let index = $index) {
-        <span
-          class="rounded-xs"
-          [class]="cell.shade"
-          [style.grid-column]="(index - (index % 7)) / 7 + 2"
-          [style.grid-row]="(index % 7) + 2"
-          [title]="cell.label"
-          data-testid="dashboard-activity-day"
-        ></span>
-      }
+<div class="flex flex-wrap items-start gap-3">
+  <div class="flex min-w-0 flex-1 basis-96 flex-col gap-3">
+    <div class="flex flex-col items-stretch gap-3 md:flex-row">
+      <dl
+        class="grid min-w-48 flex-1 shrink-0 grid-cols-2 content-between gap-x-3 gap-y-2 rounded-xl border bg-card p-3"
+      >
+        @for (row of summary(); track row.label) {
+          <div class="flex min-w-0 flex-col" data-testid="dashboard-activity-summary">
+            <dt class="truncate text-xs text-muted-foreground">{{ row.label }}</dt>
+            <dd class="text-lg leading-tight font-semibold tabular-nums">{{ row.value }}</dd>
+            <dd class="truncate text-xs text-muted-foreground">{{ row.note }}</dd>
+          </div>
+        }
+      </dl>
+      <div
+        class="flex min-w-0 grow-0 flex-col gap-2 rounded-xl border bg-card p-3"
+        [style.flex-basis.rem]="cardWidth()"
+      >
+        <div
+          class="grid gap-x-1 gap-y-0.5 text-xs leading-none text-muted-foreground"
+          role="img"
+          [style.grid-template-columns]="'1.75rem minmax(0, 1fr)'"
+          [style.max-width.rem]="maxWidth()"
+          [attr.aria-label]="totalText()"
+        >
+          <div class="relative col-start-2 h-3.5">
+            @for (month of monthLabels(); track month.column) {
+              <span class="absolute whitespace-nowrap" [style.left.%]="(month.column / weeks()) * 100">{{
+                month.label
+              }}</span>
+            }
+          </div>
+          <div class="relative">
+            @for (day of dayLabels; track day.label) {
+              <span class="absolute -translate-y-1/2" [style.top.%]="day.top">{{ day.label }}</span>
+            }
+          </div>
+          <!-- An SVG scales every cell alike; grid columns of fractions of a pixel would round unevenly. -->
+          <svg class="block w-full" [attr.viewBox]="viewBox()" aria-hidden="true">
+            @for (cell of cells(); track cell.date; let index = $index) {
+              <rect
+                width="10"
+                height="10"
+                rx="2"
+                [attr.x]="((index - (index % 7)) / 7) * 12"
+                [attr.y]="(index % 7) * 12"
+                [attr.class]="cell.fill"
+                data-testid="dashboard-activity-day"
+              >
+                <title>{{ cell.label }}</title>
+              </rect>
+            }
+          </svg>
+        </div>
+        @if (total() === 0) {
+          <p class="text-sm text-muted-foreground" data-testid="dashboard-activity-empty">
+            No activity yet. Steps show up here from now on.
+          </p>
+        }
+        <div class="flex justify-end text-xs text-muted-foreground" [style.max-width.rem]="maxWidth()">
+          <span class="flex items-center gap-1" aria-hidden="true">
+            Less
+            @for (shade of shades; track shade) {
+              <span class="size-2.5 rounded-xs" [class]="shade"></span>
+            }
+            More
+          </span>
+        </div>
+      </div>
     </div>
-  </div>
-  @if (total() === 0) {
-    <p class="text-sm text-muted-foreground" data-testid="dashboard-activity-empty">
-      No activity yet. Steps show up here from now on.
-    </p>
-  }
-  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-muted-foreground">
-    <span>Counts every mini that moved a step: built, primed, painted, done.</span>
-    <span class="flex items-center gap-1" aria-hidden="true">
-      Less
-      @for (shade of shades; track shade) {
-        <span class="size-2.5 rounded-xs" [class]="shade"></span>
-      }
-      More
-    </span>
-  </div>
-</div>
 
-@for (month of shownMonths(); track month.title) {
-  <section class="flex flex-col gap-1" data-testid="dashboard-activity-month">
-    <h3 class="border-b pb-1.5 text-sm font-semibold">{{ month.title }}</h3>
-    <ul class="flex flex-col">
-      @for (entry of month.entries; track entry.id) {
-        <li>
-          <button
-            type="button"
-            class="flex w-full items-center gap-3 rounded-md px-1 py-1.5 text-left text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            [attr.aria-expanded]="openEntryId() === entry.id"
-            data-testid="dashboard-activity-entry"
-            (click)="toggle(entry.id)"
-          >
-            <span class="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted" aria-hidden="true">
-              @if (entry.kind === 'box') {
-                <ng-icon name="lucidePlus" size="12" class="text-muted-foreground" />
-              } @else {
-                <span class="size-2.5 rounded-xs" [class]="iconColors[entry.kind]"></span>
-              }
-            </span>
-            <span class="min-w-0 flex-1 truncate">
-              <span class="font-medium">{{ entry.text }}</span>
-              <span class="text-muted-foreground"> {{ entry.detail }}</span>
-            </span>
-            <ng-icon
-              name="lucideChevronDown"
-              size="14"
-              class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
-              [class.rotate-180]="openEntryId() === entry.id"
-            />
-          </button>
-          @if (openEntryId() === entry.id) {
-            <ul class="ml-10 flex flex-wrap gap-x-3 gap-y-1 pt-1 pb-2 text-sm">
-              @for (item of entry.items; track item.id) {
-                <li>
-                  <a
-                    class="text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-                    [routerLink]="item.link"
-                    >{{ item.name }}</a
-                  >
-                </li>
-              }
-            </ul>
+    @for (month of shownMonths(); track month.id; let lastMonth = $last) {
+      <section class="flex flex-col" data-testid="dashboard-activity-month">
+        <div class="flex items-center gap-3">
+          <h3 class="text-xs font-semibold">
+            {{ month.name }} <span class="font-normal text-muted-foreground">{{ month.year }}</span>
+          </h3>
+          <span class="h-px flex-1 bg-border" aria-hidden="true"></span>
+        </div>
+        <ul class="flex flex-col gap-3 py-3 pl-1">
+          @for (entry of month.entries; track entry.id; let lastEntry = $last) {
+            <li class="relative flex gap-4" data-testid="dashboard-activity-entry">
+              <!-- Behind the icon and past it, up to the next entry; the last one shown ends at its icon. -->
+              <span
+                class="absolute -top-3 left-4 w-px bg-muted-foreground/40"
+                [class.-bottom-3]="!lastMonth || !lastEntry"
+                [class.h-7]="lastMonth && lastEntry"
+                aria-hidden="true"
+              ></span>
+              <span
+                class="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-background"
+                aria-hidden="true"
+              >
+                <ng-icon [name]="icons[entry.kind]" size="16" />
+              </span>
+              <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-3 rounded-sm pt-0.5 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  [attr.aria-expanded]="openEntryId() === entry.id"
+                  data-testid="dashboard-activity-toggle"
+                  (click)="toggle(entry.id)"
+                >
+                  <span class="min-w-0 flex-1 truncate text-base font-medium">{{ entry.text }}</span>
+                  <ng-icon
+                    name="lucideChevronDown"
+                    size="16"
+                    class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
+                    [class.rotate-180]="openEntryId() === entry.id"
+                  />
+                </button>
+                @if (openEntryId() === entry.id) {
+                  <ul class="flex flex-col gap-1">
+                    @for (row of entry.rows; track row.name) {
+                      <li class="flex items-baseline gap-3" data-testid="dashboard-activity-row">
+                        <a
+                          class="truncate text-sm text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline"
+                          [routerLink]="row.link"
+                          >{{ row.name }}</a
+                        >
+                        <span
+                          class="shrink-0 text-xs text-muted-foreground underline decoration-dotted underline-offset-4"
+                          >{{ row.count }}</span
+                        >
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+            </li>
           }
-        </li>
-      }
-    </ul>
-  </section>
-}
+        </ul>
+      </section>
+    }
 
-@if (hasMoreMonths()) {
-  <button
-    hlmBtn
-    variant="outline"
-    type="button"
-    class="w-full"
-    data-testid="dashboard-activity-more"
-    (click)="showMore()"
-  >
-    Show more activity
-  </button>
-}
+    @if (hasMore()) {
+      <button
+        type="button"
+        class="w-fit self-center rounded-sm text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        data-testid="dashboard-activity-more"
+        (click)="showMore()"
+      >
+        Show more activity
+      </button>
+    }
+  </div>
+
+  <ul class="flex max-h-36 flex-wrap gap-1 overflow-y-auto md:flex-col md:flex-nowrap" aria-label="Year">
+    @for (each of years(); track each) {
+      <li>
+        <button
+          type="button"
+          class="rounded-md px-4 py-1.5 text-sm tabular-nums transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          [class.bg-primary]="each === year()"
+          [class.text-primary-foreground]="each === year()"
+          [class.text-muted-foreground]="each !== year()"
+          [class.hover:bg-accent]="each !== year()"
+          [attr.aria-pressed]="each === year()"
+          data-testid="dashboard-activity-year"
+          (click)="yearChosen.emit(each)"
+        >
+          {{ each }}
+        </button>
+      </li>
+    }
+  </ul>
+</div>

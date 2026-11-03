@@ -17,9 +17,10 @@ export const activityResponseSchema = z.object({
               count: z.number().int(),
               /** How many minis, also for `box`. */
               minis: z.number().int(),
-              /** The names of the armies of the minis; empty for `box`. */
-              factions: z.array(z.string()).readonly(),
-              items: z.array(z.object({ id: z.string(), name: z.string() })).readonly(),
+              /** Per army of the minis the most first, or per box with its id. */
+              rows: z
+                .array(z.object({ id: z.string().optional(), name: z.string(), minis: z.number().int() }))
+                .readonly(),
             }),
           )
           .readonly(),

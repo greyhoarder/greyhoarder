@@ -1,5 +1,4 @@
 import { Controller, Get } from '@nestjs/common';
-import { isoDay } from '@greyhoarder/domain/hoard';
 import type { User } from '@greyhoarder/domain/users';
 import { type ActivityResponse, activityResponseSchema } from '@greyhoarder/protocol/hoard';
 import { ZodSerializerDto } from 'nestjs-zod';
@@ -14,6 +13,6 @@ export class ActivityController {
   @Get()
   @ZodSerializerDto(activityResponseSchema)
   overview(@CurrentUser() user: User): Promise<ActivityResponse> {
-    return this.activity.overview(user.id, isoDay(new Date()));
+    return this.activity.overview(user.id);
   }
 }

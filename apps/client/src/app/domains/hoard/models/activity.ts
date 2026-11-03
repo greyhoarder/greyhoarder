@@ -5,9 +5,8 @@ export interface ActivityEntryData {
   readonly count: number;
   /** How many minis, also for `box`. */
   readonly minis: number;
-  /** The names of the armies of the minis; empty for `box`. */
-  readonly factions: readonly string[];
-  readonly items: readonly { readonly id: string; readonly name: string }[];
+  /** Per army of the minis the most first, or per box with its id. */
+  readonly rows: readonly { readonly id?: string; readonly name: string; readonly minis: number }[];
 }
 
 /** The last year of a hoard: the days with steps and what happened month by month, newest first. */

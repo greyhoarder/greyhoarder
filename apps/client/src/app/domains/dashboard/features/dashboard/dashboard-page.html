@@ -12,7 +12,14 @@
 } @else if (activity.isLoading()) {
   <hlm-skeleton class="h-36 w-full rounded-xl" data-testid="dashboard-activity-loading" />
 } @else {
-  <app-activity-section [days]="activityDays()" [months]="activityMonths()" />
+  <app-activity-section
+    [days]="activityDays()"
+    [months]="activityMonths()"
+    [summary]="activitySummary()"
+    [years]="activityYears()"
+    [year]="activityYear()"
+    (yearChosen)="activityYear.set($event)"
+  />
 }
 
 @for (section of upcomingSections; track section.id) {

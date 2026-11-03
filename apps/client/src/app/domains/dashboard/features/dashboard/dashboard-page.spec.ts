@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import type { Mini } from '@greyhoarder/domain/hoard';
 import type { ActivityResponse, MinisResponse } from '@greyhoarder/protocol/hoard';
 import { NEVER, type Observable, of, throwError } from 'rxjs';
@@ -43,6 +44,7 @@ describe('Dashboard page', () => {
   ): void {
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         {
           provide: CurrentSession,
           useValue: { user: signal({ id: '1', username: 'lucas', role: 'admin' }) },
@@ -192,5 +194,32 @@ describe('Dashboard page', () => {
 
     const error = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="dashboard-activity-error"]');
     expect(error?.textContent?.trim()).toBe("Can't load your activity right now. Try again in a moment.");
+  });
+
+  it('shows the days and months of the chosen year', async () => {
+    showDashboard(
+      of(HOARD),
+      of({
+        days: [{ date: '2024-03-01', steps: 3 }],
+        months: [
+          { month: '2024-03', entries: [{ kind: 'done', count: 3, minis: 3, rows: [{ name: 'Orks', minis: 3 }] }] },
+        ],
+      }),
+    );
+    await fixture.whenStable();
+    const page: HTMLElement = fixture.nativeElement;
+    const years = [...page.querySelectorAll<HTMLElement>('[data-testid="dashboard-activity-year"]')];
+
+    years.at(-1)?.click();
+    await fixture.whenStable();
+    page.querySelector<HTMLElement>('[data-testid="dashboard-activity-more"]')?.click();
+    await fixture.whenStable();
+
+    expect(page.querySelector('[data-testid="dashboard-activity-total"]')?.textContent?.trim()).toBe(
+      '3 minis moved a step in 2024',
+    );
+    expect(page.querySelector('[data-testid="dashboard-activity-entry"]')?.textContent).toContain(
+      'Finished 3 minis in 1 faction',
+    );
   });
 });

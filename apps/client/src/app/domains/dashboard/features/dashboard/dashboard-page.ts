@@ -1,11 +1,11 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { shownName } from '@greyhoarder/domain/users';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { CurrentSession } from '../../../auth/api';
 import { type FactionOverview, HoardActivity, HoardByFaction, STATUS_LABELS } from '../../../hoard/api';
 import { ActivitySection } from './activity-section/activity-section';
-import { activityDays, activityMonths } from './activity-section/activity';
+import { activityDays, activityMonths, activitySummary, activityYears } from './activity-section/activity';
 
 /** The dots of a card, from the furthest status to the sprue. */
 const DOT_ORDER: readonly HobbyStatus[] = [...hobbyStatuses].reverse();
@@ -27,8 +27,15 @@ export class DashboardPage {
   });
   protected readonly hoard = inject(HoardByFaction);
   protected readonly activity = inject(HoardActivity);
-  protected readonly activityDays = computed(() => activityDays(this.activity.days(), new Date()));
-  protected readonly activityMonths = computed(() => activityMonths(this.activity.months()));
+  protected readonly activityYear = signal(new Date().getFullYear());
+  protected readonly activityYears = computed(() =>
+    activityYears({ days: this.activity.days(), months: this.activity.months() }, new Date()),
+  );
+  protected readonly activityDays = computed(() => activityDays(this.activity.days(), this.activityYear()));
+  protected readonly activitySummary = computed(() =>
+    activitySummary(this.activity.months(), this.activityDays(), this.activityYear(), new Date()),
+  );
+  protected readonly activityMonths = computed(() => activityMonths(this.activity.months(), this.activityYear()));
 
   /** The sections whose content does not exist yet. */
   protected readonly upcomingSections = [{ id: 'workbench', title: 'On the workbench' }] as const;

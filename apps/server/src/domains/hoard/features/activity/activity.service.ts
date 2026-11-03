@@ -10,10 +10,6 @@ type Entry = ActivityResponse['months'][number]['entries'][number];
 /** The furthest first, as the lines of a month are listed. */
 const STEP_ORDER = ['done', 'painted', 'primed', 'built'] as const;
 
-/** More than 52 weeks, so that a whole first week is there. */
-const DAYS_BACK = 371;
-const MS_PER_DAY = 86_400_000;
-
 /** What got done in a hoard (docs/use-cases/see-activity.md). */
 @Injectable()
 export class ActivityService {
@@ -22,7 +18,7 @@ export class ActivityService {
     private readonly catalog: CatalogKitQueries,
   ) {}
 
-  async overview(ownerId: string, today: string): Promise<ActivityResponse> {
+  async overview(ownerId: string): Promise<ActivityResponse> {
     const [steps, boxes, minis, ownFactions] = await Promise.all([
       this.hoard.findSteps(ownerId),
       this.hoard.findBoxes(ownerId),
@@ -35,10 +31,9 @@ export class ActivityService {
     );
 
     const factionNames = new Map([...catalogNames, ...ownFactionNamesOf(minis, ownFactions)]);
-    const firstDay = new Date(new Date(today).getTime() - DAYS_BACK * MS_PER_DAY).toISOString().slice(0, 10);
     const stepCounts = new Map<string, number>();
 
-    for (const { on } of steps.filter((step) => step.on >= firstDay)) {
+    for (const { on } of steps) {
       stepCounts.set(on, (stepCounts.get(on) ?? 0) + 1);
     }
 
@@ -78,8 +73,7 @@ function monthEntries(
           kind,
           count: reached.length,
           minis: reached.length,
-          factions: [...new Set(reached.flatMap((mini) => factionNames.get(mini.factionIds[0] ?? '') ?? []))],
-          items: reached.map(({ id, name }) => ({ id, name })),
+          rows: armyRows(reached, factionNames),
         };
   });
 
@@ -97,8 +91,23 @@ function monthEntries(
       kind: 'box',
       count: added.length,
       minis: minis.filter((mini) => mini.boxId !== undefined && addedIds.has(mini.boxId)).length,
-      factions: [],
-      items: added.map(({ id, name }) => ({ id, name })),
+      rows: added.map(({ id, name }) => ({
+        id,
+        name,
+        minis: minis.filter((mini) => mini.boxId === id).length,
+      })),
     },
   ];
+}
+
+/** The minis by their first faction, the most first. */
+function armyRows(minis: readonly Mini[], factionNames: ReadonlyMap<string, string>): Entry['rows'][number][] {
+  const counts = new Map<string, number>();
+
+  for (const mini of minis) {
+    const army = factionNames.get(mini.factionIds[0] ?? '') ?? 'No faction';
+    counts.set(army, (counts.get(army) ?? 0) + 1);
+  }
+
+  return [...counts].map(([name, count]) => ({ name, minis: count })).sort((a, b) => b.minis - a.minis);
 }

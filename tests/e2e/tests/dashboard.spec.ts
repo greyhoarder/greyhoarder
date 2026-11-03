@@ -33,7 +33,11 @@ test.describe('Dashboard', () => {
 
     await page.goto(`${signedIn.url}/dashboard`);
 
-    await expect(page.getByTestId('dashboard-activity-total')).toHaveText('1 mini moved a step in the last year');
-    await expect(page.getByTestId('dashboard-activity-entry').first()).toContainText('Painted 1 mini');
+    await page.getByTestId('dashboard-activity-more').click();
+
+    await expect(page.getByTestId('dashboard-activity-total')).toHaveText(
+      `1 mini moved a step in ${new Date().getFullYear()}`,
+    );
+    await expect(page.getByTestId('dashboard-activity-entry').first()).toContainText('Painted 1 mini in 1 faction');
   });
 });

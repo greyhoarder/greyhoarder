@@ -57,7 +57,7 @@ function service(steps: readonly MiniStep[], minis: readonly Mini[], boxes: read
 }
 
 describe('Activity service', () => {
-  it('counts the steps per day of the last year, only of the owner', async () => {
+  it('counts the steps per day of every year, only of the owner', async () => {
     const { activity, findSteps } = service(
       [
         { miniId: 'm1', status: 'painted', on: '2026-11-02' },
@@ -67,10 +67,13 @@ describe('Activity service', () => {
       [mini('m1', [ORKS]), mini('m2', [ORKS])],
     );
 
-    const { days } = await activity.overview('owner', '2026-11-02');
+    const { days } = await activity.overview('owner');
 
     expect(findSteps).toHaveBeenCalledWith('owner');
-    expect(days).toEqual([{ date: '2026-11-02', steps: 2 }]);
+    expect(days).toEqual([
+      { date: '2024-01-01', steps: 1 },
+      { date: '2026-11-02', steps: 2 },
+    ]);
   });
 
   it('lists a month with a line per status and per added boxes', async () => {
@@ -83,7 +86,7 @@ describe('Activity service', () => {
       [box],
     );
 
-    const { months } = await activity.overview('owner', '2026-11-02');
+    const { months } = await activity.overview('owner');
 
     expect(months.map((month) => month.month)).toEqual(['2026-11']);
     expect(months[0]?.entries.map(({ kind, count, minis }) => [kind, count, minis])).toEqual([
@@ -93,18 +96,31 @@ describe('Activity service', () => {
     ]);
   });
 
-  it('names one faction, or how many when there are several', async () => {
+  it('lists the minis per army, the most first', async () => {
     const { activity } = service(
       [
         { miniId: 'm1', status: 'painted', on: '2026-11-02' },
         { miniId: 'm2', status: 'painted', on: '2026-11-02' },
-        { miniId: 'm3', status: 'done', on: '2026-11-02' },
+        { miniId: 'm3', status: 'painted', on: '2026-11-02' },
       ],
-      [mini('m1', [ORKS]), mini('m2', [NECRONS]), mini('m3', [ORKS])],
+      [mini('m1', [NECRONS]), mini('m2', [ORKS]), mini('m3', [ORKS])],
     );
 
-    const { months } = await activity.overview('owner', '2026-11-02');
+    const { months } = await activity.overview('owner');
 
-    expect(months[0]?.entries.map((entry) => entry.factions)).toEqual([['Orks'], ['Orks', 'Necrons']]);
+    expect(months[0]?.entries[0]?.rows).toEqual([
+      { name: 'Orks', minis: 2 },
+      { name: 'Necrons', minis: 1 },
+    ]);
+  });
+
+  it('lists added boxes with their minis', async () => {
+    const { activity } = service([], [mini('m1', [ORKS], 'b1'), mini('m2', [ORKS], 'b1')], [box]);
+
+    const { months } = await activity.overview('owner');
+
+    expect(months[0]?.entries).toEqual([
+      { kind: 'box', count: 1, minis: 2, rows: [{ id: 'b1', name: 'Boyz', minis: 2 }] },
+    ]);
   });
 });

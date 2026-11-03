@@ -7,8 +7,7 @@
 
 ## Goal
 
-Right after signing in, the user sees how much they got done in the last
-year: on which days minis moved a step, and what happened month by month.
+Right after signing in, the user sees how much they got done in a year: on which days minis moved a step, and what happened month by month.
 
 ## Not in scope
 
@@ -50,10 +49,12 @@ Deleting a mini SHALL remove its steps; a mini leaving the hoard keeps them.
 - **When** the user deletes it
 - **Then** its steps are gone and the days count 2 fewer
 
-### Requirement: Show the last year day by day
+### Requirement: Show a year day by day
 
-The system SHALL show the last 52 weeks with one cell per day, shaded by
-the number of steps on that day, and the total of the last year.
+The system SHALL show a year from January to December, the current one
+unless the user chooses another, with one cell per day, shaded by
+the number of steps on that day, and their total. It SHALL offer the current year
+and every year with activity.
 
 #### Scenario: A busy day (ACTIVITY-05)
 
@@ -72,15 +73,15 @@ the number of steps on that day, and the total of the last year.
 
 The system SHALL list per month, newest first, one line per status with
 its minis and factions, one line per added box, and offer older months
-two at a time. Opening a line SHALL list its minis or boxes.
+one entry at a time on request, none at first, of the shown year. Opening a line SHALL list its armies or boxes with their minis.
 
 #### Scenario: A month (ACTIVITY-07)
 
 - **Given** in November 5 Orks were painted, 2 Orks primed and a box of 46
   minis added
 - **When** the user opens the dashboard
-- **Then** November shows "Painted 5 minis · Orks", "Primed 2 minis ·
-  Orks" and "Added 1 box · 46 minis"
+- **Then** November shows "Painted 5 minis in 1 faction", "Primed 2 minis
+  in 1 faction" and "Added 1 box"
 
 #### Scenario: Several factions (ACTIVITY-08)
 
@@ -88,17 +89,32 @@ two at a time. Opening a line SHALL list its minis or boxes.
 - **When** the user opens the dashboard
 - **Then** October shows "Finished 27 minis in 2 factions"
 
-#### Scenario: Opening a line (ACTIVITY-09)
+#### Scenario: Rows of an entry (ACTIVITY-09)
 
-- **Given** the line "Painted 5 minis · Orks"
-- **When** the user opens it
-- **Then** it lists the 5 minis, each a link to its mini
+- **Given** in October 20 Orks and 7 Necrons were painted
+- **When** the user opens "Painted 27 minis in 2 factions"
+- **Then** it lists "Orks 20 minis" above
+  "Necrons 7 minis"; added boxes list each box as a link to it
 
 #### Scenario: Older months (ACTIVITY-10)
 
 - **Given** activity in 5 months
 - **When** the user presses "Show more activity"
-- **Then** two more months are shown
+- **Then** the next entry is shown, a new month when it comes to one
+
+#### Scenario: Summary of a year (ACTIVITY-12)
+
+- **Given** in 2026 2 boxes of 30 minis were added, 12 minis painted and 3
+  finished, on 4 days of which 3 in a row
+- **When** the user opens the dashboard
+- **Then** the summary says 2 boxes added with 30 minis, 12 minis painted
+  with 3 finished, 4 active days of the days so far and a streak of 3 days
+
+#### Scenario: An earlier year (ACTIVITY-11)
+
+- **Given** steps in 2025 and 2026
+- **When** the user chooses 2025
+- **Then** the heatmap, the total and the months are those of 2025
 
 ## Open questions
 
