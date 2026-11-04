@@ -39,7 +39,7 @@ import { STATUS_LABELS } from '../../util/status-labels';
   ],
   providers: [provideIcons({ lucideSearch, lucideX }), MinisDeletion, BoxesDeletion],
   templateUrl: './mini-list-page.html',
-  host: { class: 'flex flex-col gap-3' },
+  host: { class: 'flex flex-col gap-2' },
 })
 export class MiniListPage {
   protected readonly store = inject(MinisList);

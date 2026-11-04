@@ -4,7 +4,7 @@
 
 @if (activity.hasFailed()) {
   <section class="flex flex-col gap-4" aria-labelledby="dashboard-activity-heading">
-    <h2 class="text-lg font-semibold" id="dashboard-activity-heading">Activity</h2>
+    <h2 class="font-semibold" id="dashboard-activity-heading">Activity</h2>
     <p class="text-destructive" role="alert" data-testid="dashboard-activity-error">
       Can't load your activity right now. Try again in a moment.
     </p>
@@ -24,7 +24,7 @@
 
 @for (section of upcomingSections; track section.id) {
   <section class="flex flex-col gap-4" [attr.aria-labelledby]="'dashboard-' + section.id">
-    <h2 class="text-lg font-semibold" [id]="'dashboard-' + section.id">{{ section.title }}</h2>
+    <h2 class="font-semibold" [id]="'dashboard-' + section.id">{{ section.title }}</h2>
     <div
       class="min-h-40 rounded-xl border border-dashed border-border"
       [attr.data-testid]="'dashboard-' + section.id"
@@ -35,7 +35,7 @@
 <section class="flex flex-col gap-4" aria-labelledby="dashboard-hoard">
   <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
     <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-      <h2 class="text-lg font-semibold" id="dashboard-hoard">In the hoard</h2>
+      <h2 class="font-semibold" id="dashboard-hoard">In the hoard</h2>
       @if (hoard.isLoading()) {
         <hlm-skeleton class="h-4 w-40" />
       } @else if (hoard.miniCount() > 0) {

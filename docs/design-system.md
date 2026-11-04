@@ -62,6 +62,12 @@ _(derived from [ADR-0011](adr/0011-ui-components-with-spartan-and-tailwind.md))_
 - Use Tailwind's spacing scale; no arbitrary spacing values.
 - Related elements sit closer together than unrelated ones: label and field
   closer than one field and the next.
+- Inside a card: 20 px (`p-5`) for cards and tiles, also in grids; 16 px
+  (`p-4`) for full-width rows of a list and the rows of a divided card.
+- Between cards: 8 px (`gap-2`) stacked in a list, 16 px (`gap-4`) side by
+  side in a grid or row, 24 px (`gap-6`) between the columns of a page.
+- A section heading is `font-semibold` at the base size, 16 px (`gap-4`)
+  above its content.
 - Layouts of individual screens are specified in
   [screens/](screens/README.md).
 

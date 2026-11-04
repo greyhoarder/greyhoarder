@@ -122,7 +122,7 @@
     </div>
   </header>
 
-  <section class="flex flex-col gap-3" aria-labelledby="box-progress-heading">
+  <section class="flex flex-col gap-4" aria-labelledby="box-progress-heading">
     <div class="flex items-baseline justify-between gap-4">
       <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="box-progress-heading">Progress</h2>
       @if (hasPercentage()) {
@@ -181,7 +181,7 @@
           <ng-container *ngTemplateOutlet="selectionBar" />
         }
         @if (groups().length > 0) {
-          <section class="flex flex-col gap-3" aria-labelledby="box-minis-heading">
+          <section class="flex flex-col gap-4" aria-labelledby="box-minis-heading">
             <!-- While minis are selected, the selection bar takes the place of the heading, so nothing moves. -->
             <div class="flex min-h-13 items-center justify-between gap-4">
               <h2 class="font-semibold" id="box-minis-heading" [class.sr-only]="selection.isSelecting()">
@@ -215,7 +215,7 @@
           </section>
         }
         @if (sprueRows().length > 0) {
-          <section class="flex flex-col gap-3" aria-labelledby="box-sprue-heading">
+          <section class="flex flex-col gap-4" aria-labelledby="box-sprue-heading">
             <h2 class="font-semibold" id="box-sprue-heading">
               On the sprue
               <span class="font-normal text-muted-foreground">{{ sprueCount() }}</span>
@@ -240,7 +240,7 @@
           </section>
         }
         @if (goneRows().length > 0) {
-          <section class="flex flex-col gap-3">
+          <section class="flex flex-col gap-4">
             <div class="flex items-center justify-between gap-4">
               <h2>
                 <button
