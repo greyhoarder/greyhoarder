@@ -44,8 +44,8 @@ empty.
 Below the card, per month the newest first, a timeline: the month with
 its year muted, small, and a line to the right; per entry a round icon of the
 status color, or a plus for boxes, on a thin vertical line that ends at the last entry shown; beside it the
-text and a chevron on the right. An entry starts closed; opened, one at
-a time, it lists below its text a row per army or box with its minis
+text and a chevron on the right. An entry starts closed; opened, each on
+its own, it lists below its text a row per army or box with its minis
 small and muted, each a link. Below the card, centered, at first
 only a muted text button shows, without a background, the text turning
 to `foreground` on hover; each press adds one entry above it.

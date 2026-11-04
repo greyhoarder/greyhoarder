@@ -61,11 +61,11 @@ export class ActivitySection {
   /** Cells stop growing at 10 px, 12 with their gap, plus the column of the day labels. */
   protected readonly maxWidth = computed(() => this.weeks() * 0.75 + 2);
   /** With its padding and border, so the bobbles never stretch. */
-  protected readonly cardWidth = computed(() => this.maxWidth() + 1.625);
+  protected readonly cardWidth = computed(() => this.maxWidth() + 2.625);
   protected readonly shades = SHADES;
   protected readonly icons = ICONS;
-  /** Entries start closed; one is open at a time. */
-  protected readonly openEntryId = signal<string | undefined>(undefined);
+  /** Entries start closed; each opens and closes on its own. */
+  protected readonly openEntryIds = signal<ReadonlySet<string>>(new Set());
   /** Only the button shows at first; another year starts over. */
   protected readonly shownEntryCount = linkedSignal({ source: this.year, computation: () => 0 });
 
@@ -108,7 +108,15 @@ export class ActivitySection {
   );
 
   protected toggle(id: string): void {
-    this.openEntryId.update((open) => (open === id ? undefined : id));
+    this.openEntryIds.update((open) => {
+      const next = new Set(open);
+
+      if (!next.delete(id)) {
+        next.add(id);
+      }
+
+      return next;
+    });
   }
 
   protected showMore(): void {

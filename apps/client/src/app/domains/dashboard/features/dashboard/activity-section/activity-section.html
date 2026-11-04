@@ -1,15 +1,15 @@
 <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-  <h2 class="text-lg font-semibold" id="dashboard-activity">Activity</h2>
+  <h2 class="font-semibold" id="dashboard-activity">Activity</h2>
   <p class="text-sm text-muted-foreground" data-testid="dashboard-activity-total">
     {{ totalText() }}
   </p>
 </div>
 
-<div class="flex flex-wrap items-start gap-3">
-  <div class="flex min-w-0 flex-1 basis-96 flex-col gap-3">
-    <div class="flex flex-col items-stretch gap-3 md:flex-row">
+<div class="flex flex-wrap items-start gap-4">
+  <div class="flex min-w-0 flex-1 basis-96 flex-col gap-4">
+    <div class="flex flex-col items-stretch gap-4 md:flex-row">
       <dl
-        class="grid min-w-48 flex-1 shrink-0 grid-cols-2 content-between gap-x-3 gap-y-2 rounded-xl border bg-card p-3"
+        class="grid min-w-48 flex-1 shrink-0 grid-cols-2 content-between gap-x-3 gap-y-2 rounded-xl border bg-card p-5"
       >
         @for (row of summary(); track row.label) {
           <div class="flex min-w-0 flex-col" data-testid="dashboard-activity-summary">
@@ -20,7 +20,7 @@
         }
       </dl>
       <div
-        class="flex min-w-0 grow-0 flex-col gap-2 rounded-xl border bg-card p-3"
+        class="flex min-w-0 grow-0 flex-col gap-2 rounded-xl border bg-card p-5"
         [style.flex-basis.rem]="cardWidth()"
       >
         <div
@@ -104,7 +104,7 @@
                 <button
                   type="button"
                   class="flex w-full items-center gap-3 rounded-sm pt-0.5 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                  [attr.aria-expanded]="openEntryId() === entry.id"
+                  [attr.aria-expanded]="openEntryIds().has(entry.id)"
                   data-testid="dashboard-activity-toggle"
                   (click)="toggle(entry.id)"
                 >
@@ -113,15 +113,15 @@
                     name="lucideChevronDown"
                     size="16"
                     class="shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none"
-                    [class.rotate-180]="openEntryId() === entry.id"
+                    [class.rotate-180]="openEntryIds().has(entry.id)"
                   />
                 </button>
-                @if (openEntryId() === entry.id) {
+                @if (openEntryIds().has(entry.id)) {
                   <ul class="flex flex-col gap-1">
                     @for (row of entry.rows; track row.name) {
                       <li class="flex items-baseline gap-3" data-testid="dashboard-activity-row">
                         <a
-                          class="truncate text-sm text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline"
+                          class="truncate text-sm text-muted-foreground underline-offset-2 transition-colors pointer-over:text-foreground pointer-over:underline"
                           [routerLink]="row.link"
                           >{{ row.name }}</a
                         >
@@ -143,7 +143,7 @@
     @if (hasMore()) {
       <button
         type="button"
-        class="w-fit self-center rounded-sm text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        class="w-fit self-center rounded-sm text-sm text-muted-foreground transition-colors pointer-over:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         data-testid="dashboard-activity-more"
         (click)="showMore()"
       >
@@ -161,7 +161,7 @@
           [class.bg-primary]="each === year()"
           [class.text-primary-foreground]="each === year()"
           [class.text-muted-foreground]="each !== year()"
-          [class.hover:bg-accent]="each !== year()"
+          [class.pointer-over:bg-accent]="each !== year()"
           [attr.aria-pressed]="each === year()"
           data-testid="dashboard-activity-year"
           (click)="yearChosen.emit(each)"
