@@ -29,9 +29,7 @@ on the right; on narrow content widths the box card moves below them.
      diagonal stripes, a camera icon and "Add photo";
    - middle, stacked: the name as the title, followed by the status
      badge; below it the factions as chips (an own faction followed by a
-     muted "· own") and a dashed chip "+ Faction"; below them, for a built
-     mini that is not gone, the status control "Built" to "Done", a
-     segmented control as on [Box](box.md#layout), without a label;
+     muted "· own") and a dashed chip "+ Faction";
    - right: the workbench toggle (outline, `h-10`, a brush icon) and the
      "⋮" button (outline, `size-10`) for the mini menu.
 
@@ -54,6 +52,10 @@ on the right; on narrow content widths the box card moves below them.
    departure ("Sold on {date}") and, for minis stripped for parts, "Parts
    went to {names}", each name a link; on the right "Back to hoard"
    (outline).
+   Below the header, over the full width, for a built mini that is not
+   gone: the heading "Progress" as on [Box](box.md#layout) and below it the
+   status control "Built" to "Done", a segmented control as on Box whose
+   segments share the width.
 3. The "Parts" section: the heading "Parts" with their count in muted text,
    and on its right a muted hint; below it one tile per part, each with
    the part's name, a "×" button to remove it and below the name the

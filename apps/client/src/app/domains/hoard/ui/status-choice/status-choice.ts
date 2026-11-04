@@ -16,7 +16,8 @@ let nextId = 0;
       <span class="text-sm font-medium tracking-wide text-muted-foreground" [id]="labelId">Status</span>
     }
     <div
-      class="flex w-fit overflow-hidden rounded-lg border bg-card"
+      class="flex overflow-hidden rounded-lg border bg-card"
+      [class.w-fit]="!isFullWidth()"
       role="radiogroup"
       [attr.aria-labelledby]="isLabelHidden() ? null : labelId"
       [attr.aria-label]="isLabelHidden() ? 'Status' : null"
@@ -26,6 +27,7 @@ let nextId = 0;
           #chip
           type="button"
           role="radio"
+          [class.flex-1]="isFullWidth()"
           class="h-8 px-3 text-sm text-muted-foreground transition-colors not-first:border-l focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground"
           [attr.data-testid]="testId()"
           [attr.data-status]="status"
@@ -53,6 +55,8 @@ export class StatusChoice {
   readonly testId = input.required<string>();
   /** For a page with a heading of its own; the group is still named "Status". */
   readonly isLabelHidden = input(false);
+  /** The segments share the full width, e.g. in a side column. */
+  readonly isFullWidth = input(false);
   readonly chose = output<HobbyStatus>();
 
   protected readonly labelId = `status-choice-${nextId++}`;

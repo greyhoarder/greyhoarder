@@ -92,15 +92,6 @@
           (toggled)="factionSearch.toggle()"
         />
       </div>
-      @if (canChooseStatus()) {
-        <app-status-choice
-          testId="mini-status"
-          [isLabelHidden]="true"
-          [statuses]="statuses"
-          [chosen]="editor.status()"
-          (chose)="chooseStatus($event)"
-        />
-      }
     </div>
 
     <div class="flex flex-wrap gap-3">
@@ -202,6 +193,25 @@
         Back to hoard
       </button>
     </div>
+  }
+
+  @if (canChooseStatus()) {
+    <section class="flex flex-col gap-4" aria-labelledby="mini-progress-heading" data-testid="mini-progress">
+      <!-- As high as the heading row and the bar with its legend on Box, so the cards below start alike. -->
+      <div class="flex min-h-7 items-baseline">
+        <h2 class="text-sm font-medium tracking-wide text-muted-foreground" id="mini-progress-heading">Progress</h2>
+      </div>
+      <div class="min-h-12">
+        <app-status-choice
+          testId="mini-status"
+          [isLabelHidden]="true"
+          [isFullWidth]="true"
+          [statuses]="statuses"
+          [chosen]="editor.status()"
+          (chose)="chooseStatus($event)"
+        />
+      </div>
+    </section>
   }
 
   <div class="@container">
