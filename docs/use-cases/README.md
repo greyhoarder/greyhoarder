@@ -41,6 +41,12 @@ use case you build or change; how its screens look is in
 - An existing use case without a spec gets one when it is next changed.
 - Agents may draft and change specs, but only the user sets the status to
   `Approved`. A changed spec is `Draft` again until the user approves it.
+- A use case that is wanted but not started yet is `Planned`. Its spec may
+  be rough and full of open questions. Parts of it may already exist
+  because other use cases need them, but the use case as a whole is not
+  built. Agents don't implement a `Planned` use case and don't treat its
+  spec as current behavior; what already exists is described by the use
+  cases that built it. When the user starts it, it becomes `Draft`.
 
 _(derived from [ADR-0027](../adr/0027-use-case-specs-with-acceptance-criteria.md))_
 
@@ -81,7 +87,7 @@ _(derived from [ADR-0027](../adr/0027-use-case-specs-with-acceptance-criteria.md
 # Use case: <name>
 
 - **ID:** <USE-CASE-ID>
-- **Status:** Draft | Approved
+- **Status:** Planned | Draft | Approved
 - **Screens:** <links to the screen specs it runs over>
 - **Domain rules:** <links to the domain rules it relies on>
 
