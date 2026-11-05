@@ -12,7 +12,7 @@
     <span class="truncate font-semibold"><app-either-or-name [name]="group().name" /></span>
     <span class="truncate text-sm text-muted-foreground">{{ origin() }}</span>
     <!-- Always present, so groups without parts are as tall as the others. -->
-    <span class="flex min-h-6 flex-wrap gap-1.5">
+    <span class="flex min-h-6 flex-wrap items-center gap-1.5">
       @for (part of group().parts; track part) {
         <span class="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{{ part }}</span>
       }
