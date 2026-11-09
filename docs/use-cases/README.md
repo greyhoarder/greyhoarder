@@ -30,6 +30,9 @@ use case you build or change; how its screens look is in
 | `DELETE` | [Delete minis and boxes](delete-minis-and-boxes.md) | Draft |
 | `ACTIVITY` | [See activity](see-activity.md) | Draft |
 | `OVERVIEW` | [See progress by faction](progress-by-faction.md) | Draft |
+| `GAME-SYSTEMS` | [Choose the offered game systems](offer-game-systems.md) | Planned |
+| `SET-UP-BASICS` | [Choose the basic settings while setting up](set-up-the-basics.md) | Planned |
+| `LOADOUTS` | [Give minis a loadout](use-loadouts.md) | Planned |
 
 ## When a spec is needed
 
