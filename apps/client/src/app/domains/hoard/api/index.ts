@@ -4,4 +4,5 @@ export { type FactionOverview, HoardByFaction } from '../application/hoard-by-fa
 export { HoardActivity } from '../application/hoard-activity';
 export type { ActivityEntryData, ActivityOverview } from '../models/activity';
 /** The hobby statuses in words, e.g. "On the sprue". */
+export { STATUS_COLORS } from '../util/status-colors';
 export { STATUS_LABELS } from '../util/status-labels';

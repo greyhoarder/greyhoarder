@@ -25,8 +25,9 @@ the sidebar, as wide as the hoard, from top to bottom:
    with their counts, e.g. "Boy ×3, Nob ×2", followed by "· {n} gone"
    when gone minis are among them. Texts are cut off with an ellipsis.
 3. The "Status" section: the label "Status" in small `muted-foreground`
-   text; below it a segmented control "Built" to "Done", as on
-   [Box](box.md#layout), with the chosen status on the `muted` surface.
+   text; below it the status control "Built" to "Done" of
+   [Mini](mini.md#layout), with a dot in its color on each segment and
+   the chosen one filled with it.
    While the minis share a status, it is chosen; while they don't, none
    is, and a muted line says how they are mixed. A changed status shows a
    ghost button "Keep as it is" beside the control.

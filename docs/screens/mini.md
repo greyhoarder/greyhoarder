@@ -54,8 +54,10 @@ on the right; on narrow content widths the box card moves below them.
    (outline).
    Below the header, over the full width, for a built mini that is not
    gone: the heading "Progress" as on [Box](box.md#layout) and below it the
-   status control "Built" to "Done", a segmented control as on Box whose
-   segments share the width.
+   status control "Built" to "Done", a segmented control whose segments
+   share the width. Each segment shows a dot in the color of its status,
+   as in the progress legend of [Box](box.md#layout); the chosen one is
+   filled with that color instead, like the status badge.
 3. The "Parts" section: the heading "Parts" with their count in muted text,
    and on its right a muted hint; below it one tile per part, each with
    the part's name, a "×" button to remove it and below the name the
@@ -86,8 +88,8 @@ on the right; on narrow content widths the box card moves below them.
 4. The "Build as" section: the heading "Build as" and on its right, muted,
    "Suggested by {box name}"; below it one tile per suggested name, each
    with the name and a small line "{n} left in this box", and last a
-   dashed tile "Your own name" with an input. The chosen tile has the
-   `muted` surface and a `muted-foreground` border; a typed own name turns
+   dashed tile "Your own name" with an input. The chosen tile has a
+   `primary` border and a light `primary` tint; a typed own name turns
    its tile solid and chooses it.
 5. The "Notes" section: the heading "Notes" and a text area.
 

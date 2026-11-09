@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
+import { STATUS_COLORS } from '../../util/status-colors';
 import { STATUS_SHORT_LABELS } from '../../util/status-labels';
 
 /** How many minis of a box stand at each status. */
@@ -66,12 +67,3 @@ export class ProgressBar {
 
 /** The statuses that count as progress; the sprue is where every mini starts. */
 export const PROGRESS_STATUSES: readonly HobbyStatus[] = hobbyStatuses.filter((status) => status !== 'sprue');
-
-/** Grey getting lighter towards primed, gold once painted, like the status badges. */
-export const STATUS_COLORS: Readonly<Record<HobbyStatus, string>> = {
-  sprue: 'bg-muted',
-  built: 'bg-muted-foreground/45',
-  primed: 'bg-muted-foreground/75',
-  painted: 'bg-primary/60',
-  done: 'bg-primary',
-};

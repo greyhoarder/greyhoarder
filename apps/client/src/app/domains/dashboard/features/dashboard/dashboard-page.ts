@@ -3,7 +3,7 @@ import { type HobbyStatus, hobbyStatuses } from '@greyhoarder/domain/hoard';
 import { shownName } from '@greyhoarder/domain/users';
 import { HlmSkeleton } from '@spartan-ng/helm/skeleton';
 import { CurrentSession } from '../../../auth/api';
-import { type FactionOverview, HoardActivity, HoardByFaction, STATUS_LABELS } from '../../../hoard/api';
+import { type FactionOverview, HoardActivity, HoardByFaction, STATUS_COLORS, STATUS_LABELS } from '../../../hoard/api';
 import { ActivitySection } from './activity-section/activity-section';
 import { activityDays, activityMonths, activitySummary, activityYears } from './activity-section/activity';
 
@@ -43,14 +43,7 @@ export class DashboardPage {
   protected readonly legend = hobbyStatuses;
   protected readonly statusLabels = STATUS_LABELS;
 
-  /** The colors of the status badges in the hoard. */
-  protected readonly dotClasses: Readonly<Record<HobbyStatus, string>> = {
-    sprue: 'bg-muted',
-    built: 'bg-muted-foreground/40',
-    primed: 'bg-muted-foreground/70',
-    painted: 'bg-primary/60',
-    done: 'bg-primary',
-  };
+  protected readonly dotClasses = STATUS_COLORS;
 
   protected minisLine(miniCount: number, paintedCount: number): string {
     return `${miniCount === 1 ? '1 mini' : `${miniCount} minis`} · ${paintedCount} painted`;

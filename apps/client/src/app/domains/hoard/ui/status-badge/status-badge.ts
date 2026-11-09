@@ -1,12 +1,12 @@
 import { Component, computed, input } from '@angular/core';
 import type { HobbyStatus } from '@greyhoarder/domain/hoard';
 import { HlmBadge } from '@spartan-ng/helm/badge';
+import { STATUS_COLORS, STATUS_TEXT_COLORS } from '../../util/status-colors';
 import { STATUS_LABELS } from '../../util/status-labels';
 
 /**
- * The hobby status of a mini as a badge: grey while unpainted, lighter with
- * each step, gold once painted. The colors hang on `data-status`, so they
- * win over the badge's own variant colors.
+ * The hobby status of a mini as a badge in the status's color. The color fills an inner span, so
+ * it wins over the badge's own variant colors.
  */
 @Component({
   selector: 'app-status-badge',
@@ -15,11 +15,11 @@ import { STATUS_LABELS } from '../../util/status-labels';
     <span
       hlmBadge
       variant="outline"
-      class="h-6 border-transparent px-2.5 text-sm font-medium data-[status=built]:bg-muted-foreground/40 data-[status=done]:bg-primary data-[status=done]:text-primary-foreground data-[status=painted]:bg-primary/60 data-[status=painted]:text-primary-foreground data-[status=primed]:bg-muted-foreground/70 data-[status=primed]:text-background data-[status=sprue]:bg-muted"
+      class="h-6 border-transparent p-0 text-sm font-medium"
       [attr.data-status]="status()"
       data-testid="hoard-status"
     >
-      {{ label() }}
+      <span class="flex h-full items-center px-2.5" [class]="colors()">{{ label() }}</span>
     </span>
   `,
 })
@@ -27,4 +27,5 @@ export class StatusBadge {
   readonly status = input.required<HobbyStatus>();
 
   protected readonly label = computed(() => STATUS_LABELS[this.status()]);
+  protected readonly colors = computed(() => [STATUS_COLORS[this.status()], STATUS_TEXT_COLORS[this.status()]]);
 }

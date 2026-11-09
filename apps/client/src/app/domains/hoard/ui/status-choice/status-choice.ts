@@ -1,5 +1,6 @@
 import { Component, ElementRef, input, output, viewChildren } from '@angular/core';
 import type { HobbyStatus } from '@greyhoarder/domain/hoard';
+import { STATUS_COLORS, STATUS_TEXT_COLORS } from '../../util/status-colors';
 import { STATUS_LABELS } from '../../util/status-labels';
 
 /** Tells the groups apart for their labels. */
@@ -28,7 +29,8 @@ let nextId = 0;
           type="button"
           role="radio"
           [class.flex-1]="isFullWidth()"
-          class="h-8 px-3 text-sm text-muted-foreground transition-colors not-first:border-l focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset aria-checked:bg-muted aria-checked:font-medium aria-checked:text-foreground"
+          class="group inline-flex h-8 items-center justify-center gap-1.5 px-3 text-sm transition-colors not-first:border-l focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset aria-checked:font-medium"
+          [class]="status === chosen() ? [colors[status], textColors[status]] : 'text-muted-foreground'"
           [attr.data-testid]="testId()"
           [attr.data-status]="status"
           [attr.aria-checked]="status === chosen()"
@@ -39,6 +41,11 @@ let nextId = 0;
           (keydown.arrowLeft)="move($event, -1)"
           (keydown.arrowUp)="move($event, -1)"
         >
+          <span
+            class="size-2 shrink-0 rounded-full group-aria-checked:hidden"
+            [class]="colors[status]"
+            aria-hidden="true"
+          ></span>
           {{ labels[status] }}
         </button>
       }
@@ -61,6 +68,8 @@ export class StatusChoice {
 
   protected readonly labelId = `status-choice-${nextId++}`;
   protected readonly labels = STATUS_LABELS;
+  protected readonly colors = STATUS_COLORS;
+  protected readonly textColors = STATUS_TEXT_COLORS;
 
   /** One per offered status, in the same order. */
   private readonly chips = viewChildren<ElementRef<HTMLButtonElement>>('chip');

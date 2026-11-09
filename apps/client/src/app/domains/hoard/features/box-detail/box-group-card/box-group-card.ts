@@ -12,7 +12,8 @@ import type { MiniGroup } from '../mini-group';
 import { EitherOrName } from '../../../ui/either-or-name/either-or-name';
 import { LongPress } from '../../../ui/long-press/long-press';
 import { RowCheck } from '../../../ui/row-check/row-check';
-import { PROGRESS_STATUSES, ProgressBar, STATUS_COLORS } from '../../../ui/progress-bar/progress-bar';
+import { PROGRESS_STATUSES, ProgressBar } from '../../../ui/progress-bar/progress-bar';
+import { STATUS_COLORS } from '../../../util/status-colors';
 import { minisLabel } from '../../../util/kit-labels';
 import { STATUS_LABELS } from '../../../util/status-labels';
 
